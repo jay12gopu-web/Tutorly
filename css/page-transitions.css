@@ -1,0 +1,91 @@
+:root {
+  --mt-blue: #3f7cff;
+  --mt-purple: #7a5dff;
+}
+
+body.mt-page-motion {
+  opacity: 0.98;
+  transform: translateY(3px);
+}
+
+body.mt-page-ready {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 220ms ease, transform 300ms cubic-bezier(.2,.8,.2,1);
+}
+
+body.mt-page-ready :where(.shell, .app-shell, main, .panel, .card, .glass-card, .section-card, .hero-panel, .stat-card, .chat-shell, .welcome-page) {
+  animation: mtSoftEnter 300ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+body.mt-page-ready :where(.panel, .card, .glass-card, .section-card, .stat-card, .plan-card, .test-card, .shop-card, .quest-card, .btn, button) {
+  transition:
+    transform 190ms ease,
+    box-shadow 190ms ease,
+    border-color 190ms ease,
+    filter 190ms ease,
+    background 190ms ease;
+}
+
+.mt-page-transition-overlay {
+  display: none;
+}
+
+.mt-page-transition-overlay::before {
+  content: none;
+}
+
+body.mt-page-leaving {
+  cursor: progress;
+}
+
+body.mt-page-leaving :where(main, .shell, .app-shell, .chat-shell, .welcome-page) {
+  transform: none;
+  opacity: 0.96;
+  transition: opacity 90ms ease;
+}
+
+body.mt-page-leaving .mt-page-transition-overlay {
+  opacity: 1;
+}
+
+@keyframes mtSoftEnter {
+  from {
+    opacity: 0.96;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mtTransitionMark {
+  from {
+    transform: scale(0.88) rotate(-5deg);
+    filter: saturate(1);
+  }
+  to {
+    transform: scale(1) rotate(4deg);
+    filter: saturate(1.16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.mt-page-motion,
+  body.mt-page-ready,
+  body.mt-page-leaving :where(main, .shell, .app-shell, .chat-shell, .welcome-page) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  body.mt-page-ready :where(.shell, .app-shell, main, .panel, .card, .glass-card, .section-card, .hero-panel, .stat-card, .chat-shell, .welcome-page),
+  .mt-page-transition-overlay::before {
+    animation: none;
+  }
+
+  .mt-page-transition-overlay {
+    display: none;
+  }
+}

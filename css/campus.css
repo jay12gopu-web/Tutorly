@@ -1,0 +1,214 @@
+.campus-choice-grid,
+.campus-card-grid,
+.campus-compare-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.campus-choice-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.campus-card-grid,
+.campus-compare-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.campus-option {
+  border: 1px solid #dbe7fb;
+  border-radius: 18px;
+  padding: 15px;
+  color: #22345c;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  font-weight: 850;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.campus-option:hover,
+.campus-option.active {
+  transform: translateY(-2px);
+  border-color: #7a5dff;
+  box-shadow: 0 16px 30px rgba(63, 124, 255, 0.14);
+}
+
+.campus-option strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.campus-option span {
+  display: block;
+  color: #64759b;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.campus-section {
+  border: 1px solid #dce7fb;
+  border-radius: 22px;
+  padding: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(245,248,255,.92));
+  box-shadow: 0 16px 34px rgba(37, 63, 122, 0.1);
+}
+
+.campus-section h2,
+.campus-section h3 {
+  margin: 0;
+  color: #172033;
+}
+
+.campus-section p {
+  color: #64759b;
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.campus-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 6px 11px;
+  color: #4c1d95;
+  background: #f2eaff;
+  border: 1px solid #ddc9ff;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.campus-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.campus-form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.campus-home {
+  margin-bottom: 16px;
+  border: 1px solid rgba(122, 93, 255, 0.22);
+  border-radius: 28px;
+  padding: 20px;
+  color: #172033;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(122,93,255,.18), transparent 28%),
+    linear-gradient(145deg, rgba(255,255,255,.96), rgba(239,246,255,.94));
+  box-shadow: 0 22px 54px rgba(37, 63, 122, 0.14);
+}
+
+.campus-home-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.campus-home h2 {
+  margin: 8px 0 4px;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+}
+
+.campus-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.campus-mini-card {
+  border: 1px solid #dce7fb;
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,.78);
+}
+
+.campus-mini-card span {
+  color: #64759b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.campus-mini-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #172033;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.campus-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.campus-tool {
+  min-height: 116px;
+  border: 1px solid #dce7fb;
+  border-radius: 18px;
+  padding: 14px;
+  background: #fff;
+}
+
+.campus-tool strong {
+  display: block;
+  color: #172033;
+  font-size: 16px;
+}
+
+.campus-tool span {
+  display: block;
+  margin-top: 5px;
+  color: #64759b;
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.campus-plan-card {
+  position: relative;
+  border: 1px solid #dce7fb;
+  border-radius: 24px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(37, 63, 122, 0.1);
+}
+
+.campus-plan-card.featured {
+  border-color: rgba(122, 93, 255, .4);
+  background: linear-gradient(145deg, #fff, #f7f3ff);
+}
+
+.campus-plan-card h2 {
+  margin: 8px 0;
+  font-size: 28px;
+}
+
+.campus-plan-card ul {
+  margin: 14px 0;
+  padding-left: 20px;
+  color: #465a7d;
+  font-weight: 750;
+  line-height: 1.7;
+}
+
+@media (max-width: 860px) {
+  .campus-choice-grid,
+  .campus-card-grid,
+  .campus-compare-grid,
+  .campus-form-grid,
+  .campus-metric-grid,
+  .campus-tool-grid {
+    grid-template-columns: 1fr;
+  }
+}

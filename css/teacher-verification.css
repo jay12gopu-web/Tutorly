@@ -1,0 +1,282 @@
+.degree-page {
+  min-height: 100vh;
+  width: min(860px, calc(100% - 28px));
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  padding: 28px 0 48px;
+}
+
+.degree-card,
+.degree-success {
+  width: 100%;
+  border-radius: 28px;
+  padding: clamp(20px, 4vw, 34px);
+  box-shadow: 0 24px 58px rgba(60, 84, 146, 0.16);
+}
+
+.degree-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.degree-entry {
+  padding: 16px;
+  border: 1px solid rgba(207, 224, 255, 0.95);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.degree-entry-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.degree-entry-top strong {
+  color: var(--primary-dark);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.remove-degree-btn {
+  border: 1px solid rgba(239, 68, 68, 0.26);
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: #b91c1c;
+  background: #fff4f4;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.degree-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.degree-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.degree-grid span {
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.degree-upload {
+  grid-column: 1 / -1;
+}
+
+.degree-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.degree-upload label {
+  min-height: 108px;
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  padding: 16px;
+  border: 1px dashed rgba(26, 115, 232, 0.42);
+  border-radius: 18px;
+  background: rgba(232, 240, 254, 0.45);
+  color: var(--primary-dark);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.degree-upload label:hover {
+  transform: translateY(-1px);
+  background: rgba(232, 240, 254, 0.78);
+  box-shadow: 0 14px 26px rgba(26, 115, 232, 0.12);
+}
+
+.degree-upload strong,
+.degree-upload em {
+  display: block;
+}
+
+.degree-upload em {
+  max-width: 100%;
+  color: #137333;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.degree-file-error .degree-upload em {
+  color: #b91c1c;
+}
+
+.add-degree-btn {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 14px;
+  border: 1px dashed rgba(26, 115, 232, 0.45);
+  border-radius: 16px;
+  color: var(--primary-dark);
+  background: rgba(255, 255, 255, 0.72);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.degree-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 166, 126, 0.18);
+  border-radius: 16px;
+  color: #0f766e;
+  background: rgba(230, 244, 234, 0.62);
+  font-weight: 800;
+}
+
+.degree-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.degree-actions .btn-primary {
+  flex: 1;
+  min-width: 220px;
+}
+
+#submitDegreeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.degree-success {
+  text-align: center;
+}
+
+.degree-success .btn {
+  margin-top: 18px;
+}
+
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.location-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.location-grid span,
+.location-map-card strong {
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.location-map-field {
+  grid-column: 1 / -1;
+}
+
+.location-map-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(124, 92, 255, 0.16);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(124, 92, 255, 0.14), transparent 42%),
+    rgba(255, 255, 255, 0.74);
+}
+
+.location-map-card p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.location-map-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.map-preview {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px dashed rgba(26, 115, 232, 0.35);
+  border-radius: 16px;
+  color: #24457c;
+  background: rgba(232, 240, 254, 0.58);
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.location-hint {
+  min-height: 22px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.location-hint[data-type="success"] {
+  color: #137333;
+}
+
+.location-hint[data-type="error"] {
+  color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+  .degree-page {
+    width: min(100% - 18px, 860px);
+    padding-top: 18px;
+  }
+
+  .degree-grid,
+  .degree-actions,
+  .location-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .degree-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .degree-actions .btn,
+  .degree-actions .btn-primary {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .location-map-card,
+  .location-map-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

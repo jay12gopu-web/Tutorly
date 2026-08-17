@@ -1,0 +1,2913 @@
+{
+  "generatedAt": "2026-06-11T14:45:38.494828+00:00",
+  "label": "baseline",
+  "summary": {
+    "cases": 50,
+    "passed": 1,
+    "flagged": 49,
+    "averageScores": {
+      "accuracy": 3.39,
+      "educational_value": 10.0,
+      "clarity": 6.08,
+      "completeness": 6.67,
+      "relevance": 8.07,
+      "hallucination_safety": 8.6
+    },
+    "failureCategories": {
+      "clarity_below_target": 49,
+      "accuracy_below_target": 48,
+      "incomplete_answer": 39,
+      "relevance_below_target": 32,
+      "hallucination_risk": 28
+    },
+    "groupScores": {
+      "English": {
+        "accuracy": 4.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 7.24,
+        "relevance": 8.5,
+        "hallucination_safety": 9.25
+      },
+      "History/Geography": {
+        "accuracy": 1.62,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.57,
+        "relevance": 7.3,
+        "hallucination_safety": 7.75
+      },
+      "Mathematics": {
+        "accuracy": 3.38,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.69,
+        "relevance": 8.2,
+        "hallucination_safety": 9.0
+      },
+      "Mixed": {
+        "accuracy": 2.93,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.42,
+        "relevance": 7.9,
+        "hallucination_safety": 8.25
+      },
+      "Science": {
+        "accuracy": 4.81,
+        "educational_value": 10.0,
+        "clarity": 6.4,
+        "completeness": 7.42,
+        "relevance": 8.45,
+        "hallucination_safety": 8.75
+      }
+    }
+  },
+  "weakestAnswers": [
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve 2x + 5 = 17.",
+      "expectedTerms": [
+        "2x = 12",
+        "x = 6",
+        "subtract",
+        "divide"
+      ],
+      "requiredTerms": [
+        "x = 6"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: solve\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Break the problem into clear steps and verify the final answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "x = 6"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 2x = 12, x = 6, subtract, divide",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "What is Ohm's law?",
+      "expectedTerms": [
+        "V = IR",
+        "voltage",
+        "current",
+        "resistance"
+      ],
+      "requiredTerms": [
+        "V = IR"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Electricity and Circuits** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: balanced\n- Keywords: ohm, law\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Explain Newton's first law of motion._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "V = IR"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: V = IR, voltage, current, resistance",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "What is cellular respiration?",
+      "expectedTerms": [
+        "glucose",
+        "oxygen",
+        "energy",
+        "ATP",
+        "carbon dioxide"
+      ],
+      "requiredTerms": [
+        "energy"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Biology**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Biology\n- Difficulty: balanced\n- Keywords: cellular, respiration\n\n### 3. Concept or Rule\nExplain the process in order, connect structure to function, and add a memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: biology: Explain photosynthesis._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "energy"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: glucose, oxygen, energy, ATP, carbon dioxide",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Use a or an before the word apple.",
+      "expectedTerms": [
+        "an apple",
+        "vowel sound",
+        "article"
+      ],
+      "requiredTerms": [
+        "an apple"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Grammar**. We need to answer it using the right **Sentence Rules** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Grammar\n- Difficulty: balanced\n- Keywords: use, before, word, apple\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nIdentify the tense: She has finished her homework.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: What is the difference between affect and effect?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "an apple"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: an apple, vowel sound, article",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What caused World War I?",
+      "expectedTerms": [
+        "militarism",
+        "alliances",
+        "imperialism",
+        "nationalism",
+        "assassination"
+      ],
+      "requiredTerms": [
+        "assassination"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: caused, world, war\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: What is 64 + 88?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "assassination"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: militarism, alliances, imperialism, nationalism, assassination",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "Explain the main causes of the French Revolution.",
+      "expectedTerms": [
+        "tax",
+        "inequality",
+        "estates",
+        "enlightenment",
+        "financial crisis"
+      ],
+      "requiredTerms": [
+        "inequality"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: explain, main, causes, french, revolution\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Explain the theme of honesty in a story._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "inequality"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: tax, inequality, estates, enlightenment, financial crisis",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What was the Industrial Revolution?",
+      "expectedTerms": [
+        "machines",
+        "factories",
+        "industry",
+        "Britain",
+        "production"
+      ],
+      "requiredTerms": [
+        "machines"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: was, industrial, revolution\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: history: Explain the main causes of the French Revolution._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "machines"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: machines, factories, industry, Britain, production",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What were the effects of colonialism?",
+      "expectedTerms": [
+        "resources",
+        "trade",
+        "exploitation",
+        "culture",
+        "economy"
+      ],
+      "requiredTerms": [
+        "exploitation"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: were, effects, colonialism\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: history: Explain the main causes of the French Revolution._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "exploitation"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: resources, trade, exploitation, culture, economy",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Where is India located?",
+      "expectedTerms": [
+        "South Asia",
+        "Asia",
+        "Indian Ocean",
+        "Northern Hemisphere"
+      ],
+      "requiredTerms": [
+        "South Asia"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Location**. We need to answer it using the right **Map Skills and Place Hierarchy** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Location\n- Difficulty: balanced\n- Keywords: india, located\n\n### 3. Concept or Rule\nAnswer exact location first, then show city/state/country/continent hierarchy and one memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: What is 64 + 88?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "South Asia"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: South Asia, Asia, Indian Ocean, Northern Hemisphere",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Explain the water cycle.",
+      "expectedTerms": [
+        "evaporation",
+        "condensation",
+        "precipitation",
+        "collection"
+      ],
+      "requiredTerms": [
+        "evaporation"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Geography**. We need to answer it using the right **Physical and Human Geography** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Geography\n- Difficulty: balanced\n- Keywords: explain, water, cycle\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Where is India located?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "evaporation"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: evaporation, condensation, precipitation, collection",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "Riya and Aman share chocolates in the ratio 2:3. If total chocolates are 50, how many does each get?",
+      "expectedTerms": [
+        "2 + 3",
+        "5 parts",
+        "20",
+        "30"
+      ],
+      "requiredTerms": [
+        "20",
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Ratio and Proportion**. We need to answer it using the right **Ratios, Sharing, and Percentages** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Ratio and Proportion\n- Difficulty: school\n- Keywords: riya, aman, share, chocolates, ratio, total\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "20",
+        "30"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 2 + 3, 5 parts, 20, 30",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "chemistry",
+      "question": "Balance the equation H2 + O2 -> H2O.",
+      "expectedTerms": [
+        "2H2",
+        "O2",
+        "2H2O",
+        "atoms",
+        "balanced"
+      ],
+      "requiredTerms": [
+        "2H2",
+        "2H2O"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nThe question is about **Chemistry**. We need to answer it using the right **Chemical Equations** method.\n\n### 2. Identify Given Information\n- Subject: Chemistry\n- Topic: Chemistry\n- Difficulty: school\n- Keywords: balance, equation, h2o\n\n### 3. Concept or Rule\nExplain particles or reaction behavior, connect to observable changes, and add an example.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as chemistry and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of chemistry by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nExplain the difference between an acid and a base with one example each.\n\n### Personalized Tip\n\n_This connects with your earlier study context: chemistry: What is the difference between an acid and a base?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "2H2",
+        "2H2O"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 2H2, O2, 2H2O, atoms, balanced",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "biology",
+      "question": "How does photosynthesis help plants survive?",
+      "expectedTerms": [
+        "glucose",
+        "food",
+        "energy",
+        "oxygen",
+        "sunlight"
+      ],
+      "requiredTerms": [
+        "food",
+        "glucose"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Photosynthesis**. We need to answer it using the right **Plant Nutrition** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Photosynthesis\n- Difficulty: balanced\n- Keywords: photosynthesis, help, plants, survive\n\n### 3. Concept or Rule\nExplain the process in order, connect structure to function, and add a memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: biology: Explain photosynthesis._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "food",
+        "glucose"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: glucose, food, energy, oxygen, sunlight",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve x^2 - 5x + 6 = 0.",
+      "expectedTerms": [
+        "factor",
+        "(x - 2)",
+        "(x - 3)",
+        "x = 2",
+        "x = 3"
+      ],
+      "requiredTerms": [
+        "x = 2",
+        "x = 3"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Quadratic Equations**. We need to answer it using the right **Factoring and Roots** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Quadratic Equations\n- Difficulty: school\n- Keywords: solve\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Break the problem into clear steps and verify the final answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** the result is -3.0.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Solve 2x + 5 = 17._",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "x = 2",
+        "x = 3"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: (x - 2), (x - 3), x = 2, x = 3",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Explain Newton's first law of motion.",
+      "expectedTerms": [
+        "object",
+        "rest",
+        "uniform motion",
+        "external force",
+        "inertia"
+      ],
+      "requiredTerms": [
+        "inertia"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Force, Motion, and Mechanics** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: balanced\n- Keywords: explain, newton, first, law, motion\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Why do astronauts appear weightless inside a spacecraft orbiting Earth?_",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "inertia"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: rest, uniform motion, external force, inertia",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "What are chromosomes?",
+      "expectedTerms": [
+        "DNA",
+        "genes",
+        "cell",
+        "nucleus",
+        "hereditary"
+      ],
+      "requiredTerms": [
+        "DNA"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Biology**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Biology\n- Difficulty: balanced\n- Keywords: are, chromosomes\n\n### 3. Concept or Rule\nExplain the process in order, connect structure to function, and add a memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: biology: What is cellular respiration?_",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "DNA"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: DNA, genes, nucleus, hereditary",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "geography",
+      "question": "Why are rivers important for settlements?",
+      "expectedTerms": [
+        "water",
+        "farming",
+        "transport",
+        "trade",
+        "settlements"
+      ],
+      "requiredTerms": [
+        "water"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Geography**. We need to answer it using the right **Physical and Human Geography** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Geography\n- Difficulty: balanced\n- Keywords: are, rivers, important, settlements\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Why do earthquakes occur near tectonic plate boundaries?_",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "water"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: water, farming, transport, trade",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "A rectangular garden has area 84 square meters and length 5 meters longer than width. Find both dimensions.",
+      "expectedTerms": [
+        "w(w + 5)",
+        "84",
+        "w = 7",
+        "length = 12",
+        "width = 7"
+      ],
+      "requiredTerms": [
+        "12",
+        "7"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Geometry Word Problem**. We need to answer it using the right **Quadratic Equation from Area** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Geometry Word Problem\n- Difficulty: school\n- Keywords: rectangular, garden, has, area, square, meters\n\n### 3. Concept or Rule\nName width as x, convert length relationship, form area equation, solve, and check dimensions.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nA rectangle has a width of 6 m and a length 4 m longer than its width. Find its area.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the area of a triangle with base 10 cm and height 8 cm._",
+      "scores": {
+        "accuracy": 1.5,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.25,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "12"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: w(w + 5), 84, w = 7, length = 12, width = 7",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the mean of 12, 15, 18, 20, and 25.",
+      "expectedTerms": [
+        "12 + 15 + 18 + 20 + 25",
+        "90",
+        "5",
+        "18"
+      ],
+      "requiredTerms": [
+        "18"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: find, mean\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find 20 percent of 150._",
+      "scores": {
+        "accuracy": 1.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.7,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.33,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "18"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 12 + 15 + 18 + 20 + 25, 90, 18",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "english",
+      "question": "What are homophones? Give examples.",
+      "expectedTerms": [
+        "same sound",
+        "different meaning",
+        "different spelling",
+        "example"
+      ],
+      "requiredTerms": [
+        "same sound"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Vocabulary**. We need to answer it using the right **Commonly Confused Words** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Vocabulary\n- Difficulty: balanced\n- Keywords: are, homophones, give, examples\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: What is the difference between affect and effect?_",
+      "scores": {
+        "accuracy": 1.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.7,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.33,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "same sound"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: same sound, different meaning, different spelling",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    }
+  ],
+  "results": [
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve 2x + 5 = 17.",
+      "expectedTerms": [
+        "2x = 12",
+        "x = 6",
+        "subtract",
+        "divide"
+      ],
+      "requiredTerms": [
+        "x = 6"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: solve\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Break the problem into clear steps and verify the final answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "x = 6"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 2x = 12, x = 6, subtract, divide",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve x^2 - 5x + 6 = 0.",
+      "expectedTerms": [
+        "factor",
+        "(x - 2)",
+        "(x - 3)",
+        "x = 2",
+        "x = 3"
+      ],
+      "requiredTerms": [
+        "x = 2",
+        "x = 3"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Quadratic Equations**. We need to answer it using the right **Factoring and Roots** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Quadratic Equations\n- Difficulty: school\n- Keywords: solve\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Break the problem into clear steps and verify the final answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** the result is -3.0.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Solve 2x + 5 = 17._",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "x = 2",
+        "x = 3"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: (x - 2), (x - 3), x = 2, x = 3",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "What is 64 + 88?",
+      "expectedTerms": [
+        "64",
+        "88",
+        "152",
+        "carry"
+      ],
+      "requiredTerms": [
+        "152"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: not enough keywords\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Break the problem into clear steps and verify the final answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** the result is 152.0.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Solve 2x + 5 = 17._",
+      "scores": {
+        "accuracy": 4.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 7.6,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 7.15,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: 64, 88, carry",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find 20 percent of 150.",
+      "expectedTerms": [
+        "20%",
+        "150",
+        "30"
+      ],
+      "requiredTerms": [
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Ratio and Proportion**. We need to answer it using the right **Ratios, Sharing, and Percentages** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Ratio and Proportion\n- Difficulty: school\n- Keywords: find, percent, 150\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Solve 2x + 5 = 17._",
+      "scores": {
+        "accuracy": 2.3,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.0,
+        "relevance": 7.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 6.88,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target"
+      ],
+      "missingTerms": [
+        "30"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 20%, 30",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the mean of 12, 15, 18, 20, and 25.",
+      "expectedTerms": [
+        "12 + 15 + 18 + 20 + 25",
+        "90",
+        "5",
+        "18"
+      ],
+      "requiredTerms": [
+        "18"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: find, mean\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find 20 percent of 150._",
+      "scores": {
+        "accuracy": 1.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.7,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.33,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "18"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 12 + 15 + 18 + 20 + 25, 90, 18",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the area of a triangle with base 10 cm and height 8 cm.",
+      "expectedTerms": [
+        "1/2",
+        "base",
+        "height",
+        "40",
+        "cm"
+      ],
+      "requiredTerms": [
+        "40"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Geometry**. We need to answer it using the right **Area, Perimeter, and Shapes** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Geometry\n- Difficulty: school\n- Keywords: find, area, triangle, base, height\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nA rectangle has a width of 6 m and a length 4 m longer than its width. Find its area.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the mean of 12, 15, 18, 20, and 25._",
+      "scores": {
+        "accuracy": 2.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.3,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 7.52,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [
+        "40"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 1/2, 40, cm",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4.",
+      "expectedTerms": [
+        "3^2",
+        "4^2",
+        "25",
+        "5"
+      ],
+      "requiredTerms": [
+        "5"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Advanced and Core Operations** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: use, pythagoras, theorem, find, hypotenuse, sides\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the mean of 12, 15, 18, 20, and 25._",
+      "scores": {
+        "accuracy": 6.5,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 8.7,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.53,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: 3^2, 4^2",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Simplify the fraction 18/24.",
+      "expectedTerms": [
+        "divide",
+        "6",
+        "3/4"
+      ],
+      "requiredTerms": [
+        "3/4"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: simplify, fraction\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Break the problem into clear steps and verify the final answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** the result is 0.75.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the mean of 12, 15, 18, 20, and 25._",
+      "scores": {
+        "accuracy": 2.3,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.0,
+        "relevance": 7.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 6.88,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target"
+      ],
+      "missingTerms": [
+        "3/4"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: divide, 3/4",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "A train travels 120 km in 2 hours. Find its speed.",
+      "expectedTerms": [
+        "speed",
+        "distance",
+        "time",
+        "120/2",
+        "60 km/h"
+      ],
+      "requiredTerms": [
+        "60"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Rates**. We need to answer it using the right **Speed, Distance, Time, and Work** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Rates\n- Difficulty: school\n- Keywords: train, travels, 120, hours, find, its\n\n### 3. Concept or Rule\nExtract distance and time, write the formula, substitute values, calculate, then check units.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nA bus travels 180 km in 3 hours. What is its average speed?\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the area of a triangle with base 10 cm and height 8 cm._",
+      "scores": {
+        "accuracy": 4.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 7.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 7.9,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [
+        "60"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 120/2, 60 km/h",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the square root of 144.",
+      "expectedTerms": [
+        "12",
+        "12 x 12",
+        "144"
+      ],
+      "requiredTerms": [
+        "12"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Mathematics**. We need to answer it using the right **Advanced and Core Operations** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Mathematics\n- Difficulty: school\n- Keywords: find, square, root, 144\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the mean of 12, 15, 18, 20, and 25._",
+      "scores": {
+        "accuracy": 7.7,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.5,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.87,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: 12 x 12",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Why do astronauts appear weightless inside a spacecraft orbiting Earth?",
+      "expectedTerms": [
+        "gravity",
+        "free fall",
+        "orbit",
+        "normal force",
+        "microgravity"
+      ],
+      "requiredTerms": [
+        "free fall",
+        "gravity"
+      ],
+      "answer": "# Apparent Weightlessness in Orbit\n\n### 1. Understand the Question\nThe question asks why astronauts seem weightless inside an orbiting spacecraft even though Earth's gravity is still acting on them.\n\n### 2. Identify Given Information\n- The spacecraft is orbiting Earth.\n- Earth's gravity still pulls on both the spacecraft and astronauts.\n- The astronauts float relative to the spacecraft.\n\n### 3. Concept or Rule\n**Felt weight comes from a support force, also called the normal force.** In orbit, astronauts and the spacecraft are both in free fall around Earth, so the floor does not push up on them in the usual way.\n\n### 4. Step-by-Step Solution\n1. Gravity pulls the spacecraft and astronauts toward Earth.\n2. Their sideways speed makes their path curve around Earth, forming an orbit.\n3. The spacecraft and astronauts fall together under gravity.\n4. Because they fall together, there is almost no normal/support force between the astronaut and the floor.\n5. With almost no support force, the astronaut feels weightless.\n\n### 5. Final Answer\n**Astronauts appear weightless because they and the spacecraft are in free fall around Earth together. Gravity is still present; it provides the centripetal acceleration that keeps them in orbit. They feel weightless because there is almost no normal/support force pushing on their bodies.**\n\n### 6. Why This Works\nOn Earth, you feel your weight because the ground pushes up on you. In orbit, the spacecraft and everything inside it accelerate together under gravity, so objects float relative to each other. This condition is called microgravity.\n\n### 7. Common Mistakes\n- Thinking there is no gravity in space.\n- Thinking weightlessness means astronauts have no mass.\n- Forgetting that orbit is a form of free fall around Earth.\n\n### 8. Practice Question\nWhy does a person in a freely falling elevator feel lighter for a short time?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Explain Newton's first law of motion.",
+      "expectedTerms": [
+        "object",
+        "rest",
+        "uniform motion",
+        "external force",
+        "inertia"
+      ],
+      "requiredTerms": [
+        "inertia"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Force, Motion, and Mechanics** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: balanced\n- Keywords: explain, newton, first, law, motion\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Why do astronauts appear weightless inside a spacecraft orbiting Earth?_",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "inertia"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: rest, uniform motion, external force, inertia",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "A force of 10 N acts on a 2 kg body. Find acceleration.",
+      "expectedTerms": [
+        "F = ma",
+        "a = F/m",
+        "10/2",
+        "5 m/s"
+      ],
+      "requiredTerms": [
+        "5"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Force, Motion, and Mechanics** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: school\n- Keywords: force, acts, body, find, acceleration\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the area of a triangle with base 10 cm and height 8 cm._",
+      "scores": {
+        "accuracy": 3.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.67,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: F = ma, a = F/m, 10/2, 5 m/s",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "What is Ohm's law?",
+      "expectedTerms": [
+        "V = IR",
+        "voltage",
+        "current",
+        "resistance"
+      ],
+      "requiredTerms": [
+        "V = IR"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Electricity and Circuits** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: balanced\n- Keywords: ohm, law\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Explain Newton's first law of motion._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "V = IR"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: V = IR, voltage, current, resistance",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "Why does increasing temperature increase reaction rate?",
+      "expectedTerms": [
+        "particles",
+        "kinetic energy",
+        "collision",
+        "activation energy",
+        "reaction rate"
+      ],
+      "requiredTerms": [
+        "collision"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nThe question is about **Reaction Rates**. We need to answer it using the right **Collision Theory and Activation Energy** method.\n\n### 2. Identify Given Information\n- Subject: Chemistry\n- Topic: Reaction Rates\n- Difficulty: balanced\n- Keywords: increasing, temperature, increase, reaction, rate\n\n### 3. Concept or Rule\nExplain particles or reaction behavior, connect to observable changes, and add an example.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as chemistry and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of chemistry by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nExplain the difference between an acid and a base with one example each.\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Why do astronauts appear weightless inside a spacecraft orbiting Earth?_",
+      "scores": {
+        "accuracy": 8.6,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.1,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: kinetic energy",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "How does a catalyst affect a chemical reaction?",
+      "expectedTerms": [
+        "catalyst",
+        "activation energy",
+        "faster",
+        "not consumed"
+      ],
+      "requiredTerms": [
+        "activation energy"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nThe question is about **Reaction Rates**. We need to answer it using the right **Collision Theory and Activation Energy** method.\n\n### 2. Identify Given Information\n- Subject: Chemistry\n- Topic: Reaction Rates\n- Difficulty: balanced\n- Keywords: catalyst, affect, chemical, reaction\n\n### 3. Concept or Rule\nExplain particles or reaction behavior, connect to observable changes, and add an example.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as chemistry and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of chemistry by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nExplain the difference between an acid and a base with one example each.\n\n### Personalized Tip\n\n_This connects with your earlier study context: chemistry: Why does increasing temperature increase reaction rate?_",
+      "scores": {
+        "accuracy": 6.5,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 8.7,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.53,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: faster, not consumed",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "What is the difference between an acid and a base?",
+      "expectedTerms": [
+        "acid",
+        "base",
+        "pH",
+        "hydrogen",
+        "hydroxide"
+      ],
+      "requiredTerms": [
+        "acid",
+        "base"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nThe question is about **Acids and Bases**. We need to answer it using the right **pH and Neutralisation** method.\n\n### 2. Identify Given Information\n- Subject: Chemistry\n- Topic: Acids and Bases\n- Difficulty: balanced\n- Keywords: difference, between, acid, base\n\n### 3. Concept or Rule\nExplain particles or reaction behavior, connect to observable changes, and add an example.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as chemistry and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of chemistry by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nExplain the difference between an acid and a base with one example each.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the area of a triangle with base 10 cm and height 8 cm._",
+      "scores": {
+        "accuracy": 7.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.73,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: hydrogen, hydroxide",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "Explain photosynthesis.",
+      "expectedTerms": [
+        "sunlight",
+        "carbon dioxide",
+        "water",
+        "glucose",
+        "oxygen",
+        "chlorophyll"
+      ],
+      "requiredTerms": [
+        "glucose",
+        "oxygen"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Photosynthesis**. We need to answer it using the right **Plant Nutrition** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Photosynthesis\n- Difficulty: balanced\n- Keywords: explain, photosynthesis\n\n### 3. Concept or Rule\nStart with a definition, then connect sunlight, chlorophyll, water, carbon dioxide, glucose, and oxygen.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Explain Newton's first law of motion._",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.33,
+      "failures": [
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "What is cellular respiration?",
+      "expectedTerms": [
+        "glucose",
+        "oxygen",
+        "energy",
+        "ATP",
+        "carbon dioxide"
+      ],
+      "requiredTerms": [
+        "energy"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Biology**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Biology\n- Difficulty: balanced\n- Keywords: cellular, respiration\n\n### 3. Concept or Rule\nExplain the process in order, connect structure to function, and add a memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: biology: Explain photosynthesis._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "energy"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: glucose, oxygen, energy, ATP, carbon dioxide",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "What are chromosomes?",
+      "expectedTerms": [
+        "DNA",
+        "genes",
+        "cell",
+        "nucleus",
+        "hereditary"
+      ],
+      "requiredTerms": [
+        "DNA"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Biology**. We need to answer it using the right **Core Concept** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Biology\n- Difficulty: balanced\n- Keywords: are, chromosomes\n\n### 3. Concept or Rule\nExplain the process in order, connect structure to function, and add a memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: biology: What is cellular respiration?_",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "DNA"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: DNA, genes, nucleus, hereditary",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "What is the difference between affect and effect?",
+      "expectedTerms": [
+        "affect",
+        "verb",
+        "effect",
+        "noun",
+        "example"
+      ],
+      "requiredTerms": [
+        "affect",
+        "effect"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Vocabulary**. We need to answer it using the right **Commonly Confused Words** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Vocabulary\n- Difficulty: balanced\n- Keywords: difference, between, affect, effect\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: chemistry: What is the difference between an acid and a base?_",
+      "scores": {
+        "accuracy": 7.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.73,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: verb, noun",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Identify the noun in this sentence: The cat slept on the mat.",
+      "expectedTerms": [
+        "cat",
+        "mat",
+        "noun",
+        "person, place, thing"
+      ],
+      "requiredTerms": [
+        "cat",
+        "mat"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Grammar**. We need to answer it using the right **Sentence Rules** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Grammar\n- Difficulty: balanced\n- Keywords: identify, noun, sentence, cat, slept, mat\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nIdentify the tense: She has finished her homework.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: What is the difference between affect and effect?_",
+      "scores": {
+        "accuracy": 8.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.8,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.0,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: person, place, thing",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Identify the tense: She has finished her homework.",
+      "expectedTerms": [
+        "present perfect",
+        "has",
+        "past participle",
+        "finished"
+      ],
+      "requiredTerms": [
+        "present perfect"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Grammar**. We need to answer it using the right **Sentence Rules** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Grammar\n- Difficulty: balanced\n- Keywords: identify, tense, she, has, finished, her\n\n### 3. Concept or Rule\nState the grammar rule first, correct the sentence, then add one similar practice sentence.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nIdentify the tense: She has finished her homework.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Identify the noun in this sentence: The cat slept on the mat._",
+      "scores": {
+        "accuracy": 3.5,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.8,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 7.72,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [
+        "present perfect"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: present perfect, past participle",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Change this sentence into passive voice: The boy kicked the ball.",
+      "expectedTerms": [
+        "The ball was kicked by the boy",
+        "object",
+        "passive"
+      ],
+      "requiredTerms": [
+        "ball was kicked"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Grammar**. We need to answer it using the right **Sentence Rules** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Grammar\n- Difficulty: balanced\n- Keywords: change, sentence, passive, voice, boy, kicked\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nIdentify the tense: She has finished her homework.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Identify the noun in this sentence: The cat slept on the mat._",
+      "scores": {
+        "accuracy": 2.3,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.0,
+        "relevance": 7.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 6.88,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target"
+      ],
+      "missingTerms": [
+        "ball was kicked"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: The ball was kicked by the boy, object",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Use a or an before the word apple.",
+      "expectedTerms": [
+        "an apple",
+        "vowel sound",
+        "article"
+      ],
+      "requiredTerms": [
+        "an apple"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Grammar**. We need to answer it using the right **Sentence Rules** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Grammar\n- Difficulty: balanced\n- Keywords: use, before, word, apple\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nIdentify the tense: She has finished her homework.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: What is the difference between affect and effect?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "an apple"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: an apple, vowel sound, article",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Give a synonym for happy.",
+      "expectedTerms": [
+        "joyful",
+        "glad",
+        "pleased",
+        "synonym"
+      ],
+      "requiredTerms": [
+        "synonym"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Vocabulary**. We need to answer it using the right **Commonly Confused Words** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Vocabulary\n- Difficulty: balanced\n- Keywords: give, synonym, happy\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Use a or an before the word apple._",
+      "scores": {
+        "accuracy": 4.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 7.6,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 7.15,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: joyful, glad, pleased",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "What is a metaphor?",
+      "expectedTerms": [
+        "comparison",
+        "without like or as",
+        "example"
+      ],
+      "requiredTerms": [
+        "without like or as"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Literature**. We need to answer it using the right **Text Analysis** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Literature\n- Difficulty: balanced\n- Keywords: metaphor\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: What is the difference between affect and effect?_",
+      "scores": {
+        "accuracy": 2.3,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.0,
+        "relevance": 7.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 6.88,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target"
+      ],
+      "missingTerms": [
+        "without like or as"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: comparison, without like or as",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Explain the theme of honesty in a story.",
+      "expectedTerms": [
+        "theme",
+        "honesty",
+        "truth",
+        "message",
+        "evidence"
+      ],
+      "requiredTerms": [
+        "honesty"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Literature**. We need to answer it using the right **Text Analysis** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Literature\n- Difficulty: balanced\n- Keywords: explain, theme, honesty, story\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Identify the noun in this sentence: The cat slept on the mat._",
+      "scores": {
+        "accuracy": 7.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.73,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: truth, message",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Correct the punctuation in this sentence: wow that is amazing",
+      "expectedTerms": [
+        "Wow, that is amazing!",
+        "capital",
+        "comma",
+        "exclamation"
+      ],
+      "requiredTerms": [
+        "Wow"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Grammar**. We need to answer it using the right **Sentence Rules** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Grammar\n- Difficulty: balanced\n- Keywords: correct, punctuation, sentence, wow, amazing\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nIdentify the tense: She has finished her homework.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Identify the noun in this sentence: The cat slept on the mat._",
+      "scores": {
+        "accuracy": 3.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.67,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: Wow, that is amazing!, capital, comma, exclamation",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Explain the idiom once in a blue moon.",
+      "expectedTerms": [
+        "rarely",
+        "not often",
+        "idiom",
+        "example"
+      ],
+      "requiredTerms": [
+        "rarely"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Vocabulary**. We need to answer it using the right **Commonly Confused Words** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Vocabulary\n- Difficulty: balanced\n- Keywords: explain, idiom, once, blue, moon\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Explain the theme of honesty in a story._",
+      "scores": {
+        "accuracy": 3.5,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.8,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 7.72,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [
+        "rarely"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: rarely, not often",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What caused World War I?",
+      "expectedTerms": [
+        "militarism",
+        "alliances",
+        "imperialism",
+        "nationalism",
+        "assassination"
+      ],
+      "requiredTerms": [
+        "assassination"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: caused, world, war\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: What is 64 + 88?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "assassination"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: militarism, alliances, imperialism, nationalism, assassination",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "Explain the main causes of the French Revolution.",
+      "expectedTerms": [
+        "tax",
+        "inequality",
+        "estates",
+        "enlightenment",
+        "financial crisis"
+      ],
+      "requiredTerms": [
+        "inequality"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: explain, main, causes, french, revolution\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Explain the theme of honesty in a story._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "inequality"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: tax, inequality, estates, enlightenment, financial crisis",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "Who was Ashoka and why is he important?",
+      "expectedTerms": [
+        "Mauryan",
+        "emperor",
+        "Kalinga",
+        "Buddhism",
+        "edicts"
+      ],
+      "requiredTerms": [
+        "Ashoka"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: who, was, ashoka, important\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: history: What caused World War I?_",
+      "scores": {
+        "accuracy": 3.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.67,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: Mauryan, emperor, Kalinga, Buddhism, edicts",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What was the Industrial Revolution?",
+      "expectedTerms": [
+        "machines",
+        "factories",
+        "industry",
+        "Britain",
+        "production"
+      ],
+      "requiredTerms": [
+        "machines"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: was, industrial, revolution\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: history: Explain the main causes of the French Revolution._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "machines"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: machines, factories, industry, Britain, production",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What were the effects of colonialism?",
+      "expectedTerms": [
+        "resources",
+        "trade",
+        "exploitation",
+        "culture",
+        "economy"
+      ],
+      "requiredTerms": [
+        "exploitation"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: were, effects, colonialism\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: history: Explain the main causes of the French Revolution._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "exploitation"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: resources, trade, exploitation, culture, economy",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Where is India located?",
+      "expectedTerms": [
+        "South Asia",
+        "Asia",
+        "Indian Ocean",
+        "Northern Hemisphere"
+      ],
+      "requiredTerms": [
+        "South Asia"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Location**. We need to answer it using the right **Map Skills and Place Hierarchy** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Location\n- Difficulty: balanced\n- Keywords: india, located\n\n### 3. Concept or Rule\nAnswer exact location first, then show city/state/country/continent hierarchy and one memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: What is 64 + 88?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "South Asia"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: South Asia, Asia, Indian Ocean, Northern Hemisphere",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Why do earthquakes occur near tectonic plate boundaries?",
+      "expectedTerms": [
+        "tectonic plates",
+        "boundary",
+        "stress",
+        "fault",
+        "seismic waves"
+      ],
+      "requiredTerms": [
+        "tectonic"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Earth Science**. We need to answer it using the right **Plate Tectonics** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Earth Science\n- Difficulty: balanced\n- Keywords: earthquakes, occur, near, tectonic, plate, boundaries\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Where is India located?_",
+      "scores": {
+        "accuracy": 3.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.67,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: tectonic plates, boundary, stress, fault, seismic waves",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "What causes monsoon rainfall in India?",
+      "expectedTerms": [
+        "land",
+        "sea",
+        "pressure",
+        "moist winds",
+        "Indian Ocean"
+      ],
+      "requiredTerms": [
+        "monsoon"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Geography**. We need to answer it using the right **Physical and Human Geography** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Geography\n- Difficulty: balanced\n- Keywords: causes, monsoon, rainfall, india\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Where is India located?_",
+      "scores": {
+        "accuracy": 5.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 8.3,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.35,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: pressure, moist winds, Indian Ocean",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Explain the water cycle.",
+      "expectedTerms": [
+        "evaporation",
+        "condensation",
+        "precipitation",
+        "collection"
+      ],
+      "requiredTerms": [
+        "evaporation"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Geography**. We need to answer it using the right **Physical and Human Geography** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Geography\n- Difficulty: balanced\n- Keywords: explain, water, cycle\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Where is India located?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "evaporation"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: evaporation, condensation, precipitation, collection",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "What is erosion?",
+      "expectedTerms": [
+        "wearing away",
+        "soil",
+        "rock",
+        "water",
+        "wind"
+      ],
+      "requiredTerms": [
+        "erosion"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Earth Science**. We need to answer it using the right **Rocks, Weathering, and Erosion** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Earth Science\n- Difficulty: balanced\n- Keywords: erosion\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Where is India located?_",
+      "scores": {
+        "accuracy": 4.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 7.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 7.05,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: wearing away, soil, water, wind",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "A rectangular garden has area 84 square meters and length 5 meters longer than width. Find both dimensions.",
+      "expectedTerms": [
+        "w(w + 5)",
+        "84",
+        "w = 7",
+        "length = 12",
+        "width = 7"
+      ],
+      "requiredTerms": [
+        "12",
+        "7"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Geometry Word Problem**. We need to answer it using the right **Quadratic Equation from Area** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Geometry Word Problem\n- Difficulty: school\n- Keywords: rectangular, garden, has, area, square, meters\n\n### 3. Concept or Rule\nName width as x, convert length relationship, form area equation, solve, and check dimensions.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nA rectangle has a width of 6 m and a length 4 m longer than its width. Find its area.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Find the area of a triangle with base 10 cm and height 8 cm._",
+      "scores": {
+        "accuracy": 1.5,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.25,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "12"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: w(w + 5), 84, w = 7, length = 12, width = 7",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "Riya and Aman share chocolates in the ratio 2:3. If total chocolates are 50, how many does each get?",
+      "expectedTerms": [
+        "2 + 3",
+        "5 parts",
+        "20",
+        "30"
+      ],
+      "requiredTerms": [
+        "20",
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nThe question is about **Ratio and Proportion**. We need to answer it using the right **Ratios, Sharing, and Percentages** method.\n\n### 2. Identify Given Information\n- Subject: Mathematics\n- Topic: Ratio and Proportion\n- Difficulty: school\n- Keywords: riya, aman, share, chocolates, ratio, total\n\n### 3. Concept or Rule\nShow formula, substitution, calculation, verification, common mistake, and practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as mathematics and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n4. Used tools: calculator.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of mathematics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not skip the setup. Students often use the right numbers with the wrong relationship.\n\n### 8. Practice Question\nCreate one similar problem by changing the numbers, then solve it using the same method.\n\n### Personalized Tip\n\n_This connects with your earlier study context: mathematics: Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "20",
+        "30"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 2 + 3, 5 parts, 20, 30",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "physics",
+      "question": "Explain the difference between mass and weight.",
+      "expectedTerms": [
+        "mass",
+        "weight",
+        "gravity",
+        "kg",
+        "newton"
+      ],
+      "requiredTerms": [
+        "mass",
+        "weight"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Gravity, Orbit, and Weight** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: balanced\n- Keywords: explain, difference, between, mass, weight\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: chemistry: What is the difference between an acid and a base?_",
+      "scores": {
+        "accuracy": 7.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.73,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: kg, newton",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "chemistry",
+      "question": "Balance the equation H2 + O2 -> H2O.",
+      "expectedTerms": [
+        "2H2",
+        "O2",
+        "2H2O",
+        "atoms",
+        "balanced"
+      ],
+      "requiredTerms": [
+        "2H2",
+        "2H2O"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nThe question is about **Chemistry**. We need to answer it using the right **Chemical Equations** method.\n\n### 2. Identify Given Information\n- Subject: Chemistry\n- Topic: Chemistry\n- Difficulty: school\n- Keywords: balance, equation, h2o\n\n### 3. Concept or Rule\nExplain particles or reaction behavior, connect to observable changes, and add an example.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as chemistry and identify the student's intent.\n2. Use guided reasoning with school difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of chemistry by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nExplain the difference between an acid and a base with one example each.\n\n### Personalized Tip\n\n_This connects with your earlier study context: chemistry: What is the difference between an acid and a base?_",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "2H2",
+        "2H2O"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: 2H2, O2, 2H2O, atoms, balanced",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "biology",
+      "question": "How does photosynthesis help plants survive?",
+      "expectedTerms": [
+        "glucose",
+        "food",
+        "energy",
+        "oxygen",
+        "sunlight"
+      ],
+      "requiredTerms": [
+        "food",
+        "glucose"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nThe question is about **Photosynthesis**. We need to answer it using the right **Plant Nutrition** method.\n\n### 2. Identify Given Information\n- Subject: Biology\n- Topic: Photosynthesis\n- Difficulty: balanced\n- Keywords: photosynthesis, help, plants, survive\n\n### 3. Concept or Rule\nExplain the process in order, connect structure to function, and add a memory clue.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as biology and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of biology by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not memorize only keywords; explain the process in the correct order.\n\n### 8. Practice Question\nExplain why chlorophyll is important for photosynthesis.\n\n### Personalized Tip\n\n_This connects with your earlier study context: biology: Explain photosynthesis._",
+      "scores": {
+        "accuracy": 0.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 4.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 5.83,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "food",
+        "glucose"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: glucose, food, energy, oxygen, sunlight",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "english",
+      "question": "Write a character sketch of a brave student.",
+      "expectedTerms": [
+        "brave",
+        "qualities",
+        "evidence",
+        "conclusion",
+        "student"
+      ],
+      "requiredTerms": [
+        "brave"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Literature**. We need to answer it using the right **Text Analysis** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Literature\n- Difficulty: balanced\n- Keywords: write, character, sketch, brave, student\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: Explain the theme of honesty in a story._",
+      "scores": {
+        "accuracy": 7.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.73,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: qualities, conclusion",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "history",
+      "question": "Explain nationalism in Europe.",
+      "expectedTerms": [
+        "nationalism",
+        "nation",
+        "identity",
+        "Europe",
+        "unification"
+      ],
+      "requiredTerms": [
+        "nationalism"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nThe question is about **History**. We need to answer it using the right **Context, Sequence, Cause and Effect** method.\n\n### 2. Identify Given Information\n- Subject: History\n- Topic: History\n- Difficulty: balanced\n- Keywords: explain, nationalism, europe\n\n### 3. Concept or Rule\nSet context, explain timeline, connect cause and effect, and highlight exam points.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as history and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of history by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not list facts without explaining cause and effect.\n\n### 8. Practice Question\nName one cause and one effect of the French Revolution.\n\n### Personalized Tip\n\n_This connects with your earlier study context: history: Explain the main causes of the French Revolution._",
+      "scores": {
+        "accuracy": 7.2,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 9.2,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 8.73,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: identity, unification",
+        "Answer is too generic, too short, too long, or contains template-like phrasing."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "geography",
+      "question": "Why are rivers important for settlements?",
+      "expectedTerms": [
+        "water",
+        "farming",
+        "transport",
+        "trade",
+        "settlements"
+      ],
+      "requiredTerms": [
+        "water"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nThe question is about **Geography**. We need to answer it using the right **Physical and Human Geography** method.\n\n### 2. Identify Given Information\n- Subject: Geography\n- Topic: Geography\n- Difficulty: balanced\n- Keywords: are, rivers, important, settlements\n\n### 3. Concept or Rule\nAnswer exact location or concept, show hierarchy/map context, and add exam facts.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as geography and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of geography by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not stop at a broad location if the question asks for a city, state, or exact region.\n\n### 8. Practice Question\nWhere is Pune located? Write the city, state, country, and continent.\n\n### Personalized Tip\n\n_This connects with your earlier study context: geography: Why do earthquakes occur near tectonic plate boundaries?_",
+      "scores": {
+        "accuracy": 1.4,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.4,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.22,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "water"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: water, farming, transport, trade",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "physics",
+      "question": "Why do metals conduct heat well?",
+      "expectedTerms": [
+        "free electrons",
+        "particles",
+        "thermal energy",
+        "conduction"
+      ],
+      "requiredTerms": [
+        "conduct"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nThe question is about **Physics**. We need to answer it using the right **Heat Transfer** method.\n\n### 2. Identify Given Information\n- Subject: Physics\n- Topic: Physics\n- Difficulty: balanced\n- Keywords: metals, conduct, heat, well\n\n### 3. Concept or Rule\nExplain the principle, connect units/formulas, show real-life meaning, and check the result.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as physics and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of physics by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not use a formula before checking what each value means and whether the units match.\n\n### 8. Practice Question\nA force of 10 N moves an object 4 m. How much work is done?\n\n### Personalized Tip\n\n_This connects with your earlier study context: physics: Why do astronauts appear weightless inside a spacecraft orbiting Earth?_",
+      "scores": {
+        "accuracy": 3.0,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 6.5,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.67,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [],
+      "whyItFailed": [
+        "Missing expected concepts: free electrons, particles, thermal energy, conduction",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "english",
+      "question": "What are homophones? Give examples.",
+      "expectedTerms": [
+        "same sound",
+        "different meaning",
+        "different spelling",
+        "example"
+      ],
+      "requiredTerms": [
+        "same sound"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nThe question is about **Vocabulary**. We need to answer it using the right **Commonly Confused Words** method.\n\n### 2. Identify Given Information\n- Subject: English\n- Topic: Vocabulary\n- Difficulty: balanced\n- Keywords: are, homophones, give, examples\n\n### 3. Concept or Rule\nState the rule or literary focus, apply it, explain why, and add exam-style practice.\n\n### 4. Step-by-Step Solution\n\n1. Detect the subject as english and identify the student's intent.\n2. Use guided reasoning with balanced difficulty.\n3. Format the final response as a clean learning note with a highlighted answer.\n\n### 5. Final Answer\n**Final answer:** understand the main idea of english by connecting meaning, reason, and example.\n\n### 6. Why This Works\nThis works because the explanation follows the question's topic, applies the correct rule, and checks the result instead of jumping straight to an answer.\n\n### 7. Common Mistakes\nDo not choose what sounds right without connecting it to the rule or evidence.\n\n### 8. Practice Question\nWrite a short paragraph explaining the theme of honesty in a story.\n\n### Personalized Tip\n\n_This connects with your earlier study context: english: What is the difference between affect and effect?_",
+      "scores": {
+        "accuracy": 1.8,
+        "educational_value": 10.0,
+        "clarity": 6.0,
+        "completeness": 5.7,
+        "relevance": 7.0,
+        "hallucination_safety": 7.5
+      },
+      "average": 6.33,
+      "failures": [
+        "accuracy_below_target",
+        "clarity_below_target",
+        "incomplete_answer",
+        "relevance_below_target",
+        "hallucination_risk"
+      ],
+      "missingTerms": [
+        "same sound"
+      ],
+      "whyItFailed": [
+        "Missing expected concepts: same sound, different meaning, different spelling",
+        "Answer is too generic, too short, too long, or contains template-like phrasing.",
+        "Answer does not fully cover required terms and final answer structure.",
+        "Answer does not stay tightly enough on the question.",
+        "Answer uses overconfident or unsupported wording."
+      ],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    }
+  ]
+}

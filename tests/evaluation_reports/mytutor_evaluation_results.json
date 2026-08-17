@@ -1,0 +1,4152 @@
+{
+  "generatedAt": "2026-07-21T12:24:48.328647+00:00",
+  "caseCount": 100,
+  "summary": {
+    "cases": 100,
+    "passed": 97,
+    "failed": 3,
+    "averageScores": {
+      "clarity": 100.0,
+      "correctness": 99.4,
+      "educational_quality": 100.0,
+      "relevance": 99.4
+    },
+    "failureCategories": {
+      "search_failure": 3
+    },
+    "severityCounts": {
+      "high": 3
+    },
+    "groupFailureRates": {
+      "Chemistry/Biology": {
+        "failed": 1,
+        "total": 20,
+        "rate": 0.05
+      },
+      "English": {
+        "failed": 0,
+        "total": 20,
+        "rate": 0.0
+      },
+      "History/Geography": {
+        "failed": 1,
+        "total": 20,
+        "rate": 0.05
+      },
+      "Mathematics": {
+        "failed": 0,
+        "total": 20,
+        "rate": 0.0
+      },
+      "Physics": {
+        "failed": 1,
+        "total": 20,
+        "rate": 0.05
+      }
+    }
+  },
+  "results": [
+    {
+      "group": "Mathematics",
+      "question": "Solve x^2 - 5x + 6 = 0",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Quadratic"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Quadratic Equations",
+        "subtopic": "Factoring and Roots",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.89,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.89,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Solve x^2 - 5x + 6 = 0"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Solve 2x + 5 = 17",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Algebra",
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Core Concept",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.89,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.89,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Solve 2x + 5 = 17"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "What is 64 + 88?",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Core Concept",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.78,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.78,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is 64 + 88?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "A rectangular garden has area 84 square meters and length 5 meters longer than width. Find both dimensions.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Geometry"
+        ],
+        "search": false,
+        "type": "problem_solving",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Geometry Word Problem",
+        "subtopic": "Quadratic Equation from Area",
+        "difficulty": "school",
+        "questionType": "problem_solving",
+        "analyzerConfidence": 0.96,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.68,
+        "patternMatch": true,
+        "bestPattern": {
+          "id": "seed_rectangle_area_quadratic",
+          "subject": "mathematics",
+          "topic": "Geometry Word Problem",
+          "solution_pattern": "Use area = length x width, express one side in terms of the other, solve the quadratic, reject impossible dimensions.",
+          "teaching_pattern": "Name width as x, convert length relationship, form area equation, solve, and check dimensions.",
+          "difficulty": "school",
+          "success_score": 0.8,
+          "similarity": 0.984,
+          "relevance_score": 1.0,
+          "examples": [
+            "A rectangular garden has length 5 m longer than width and area 84 m²."
+          ]
+        },
+        "knowledgeConfidence": 0.96,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Name width as x, convert length relationship, form area equation, solve, and check dimensions.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nSuccessful pattern to reuse: Use area = length x width, express one side in terms of the other, solve the quadratic, reject impossible dimensions.\nTeaching strategy: Name width as x, convert length relationship, form area equation, solve, and check dimensions.\nLearner memory: A rectangular garden has area"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Find 20 percent of 150.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Ratio",
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Ratio and Proportion",
+        "subtopic": "Ratios, Sharing, and Percentages",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.81,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.68,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.81,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find 20 percent of 150."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Find the mean of 12, 15, 18, 20, and 25.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics",
+          "Statistics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Core Concept",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.68,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find the mean of 12, 15, 18, 20, and 25."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "What is the probability of getting heads when tossing a fair coin?",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics",
+          "Probability"
+        ],
+        "search": false,
+        "type": null,
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.84,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.84,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the probability of getting heads when tossing a fair coin?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Find the LCM of 12 and 18.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find the LCM of 12 and 18."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Calculate compound interest on 5000 at 10 percent for 2 years.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Calculate compound interest on 5000 at 10 percent for 2 years."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Find the area of a triangle with base 10 cm and height 8 cm.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Geometry"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Geometry",
+        "subtopic": "Area, Perimeter, and Shapes",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.68,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find the area of a triangle with base 10 cm and height 8 cm."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Geometry",
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.95,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.95,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Simplify the fraction 18/24.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": null,
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Core Concept",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Simplify the fraction 18/24."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Solve the simultaneous equations x + y = 10 and x - y = 2.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Algebra",
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Core Concept",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.81,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.81,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Solve the simultaneous equations x + y = 10 and x - y = 2."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Differentiate x^3 with respect to x.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": null,
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Differentiate x^3 with respect to x."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Integrate 2x with respect to x.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": null,
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Integrate 2x with respect to x."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Riya and Aman share chocolates in the ratio 2:3. If total chocolates are 50, how many does each get?",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Ratio"
+        ],
+        "search": false,
+        "type": "problem_solving",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Ratio and Proportion",
+        "subtopic": "Ratios, Sharing, and Percentages",
+        "difficulty": "school",
+        "questionType": "problem_solving",
+        "analyzerConfidence": 0.96,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.96,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Riya and Aman share chocolates in the ratio 2:3. If total chocolates are 50, how many does each"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "A train travels 120 km in 2 hours. Find its speed.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Rates"
+        ],
+        "search": false,
+        "type": "problem_solving",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Rates",
+        "subtopic": "Speed, Distance, Time, and Work",
+        "difficulty": "school",
+        "questionType": "problem_solving",
+        "analyzerConfidence": 0.95,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": true,
+        "bestPattern": {
+          "id": "seed_speed_distance_time",
+          "subject": "mathematics",
+          "topic": "Rates",
+          "solution_pattern": "Speed = Distance / Time",
+          "teaching_pattern": "Extract distance and time, write the formula, substitute values, calculate, then check units.",
+          "difficulty": "school",
+          "success_score": 0.78,
+          "similarity": 1.0,
+          "relevance_score": 1.0,
+          "examples": [
+            "A train travels 120 km in 2 hours."
+          ]
+        },
+        "knowledgeConfidence": 0.96,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Extract distance and time, write the formula, substitute values, calculate, then check units.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nSuccessful pattern to reuse: Speed = Distance / Time\nTeaching strategy: Extract distance and time, write the formula, substitute values, calculate, then check units.\nLearner memory: A train travels 120 km in 2 hours. Find its speed."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Find the square root of 144.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find the square root of 144."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Solve log base 10 of x equals 2.",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": null,
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Solve log base 10 of x equals 2."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Mathematics",
+      "question": "Find the determinant of the matrix [[1, 2], [3, 4]].",
+      "expected": {
+        "subject": "mathematics",
+        "topicTerms": [
+          "Mathematics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Mathematics"
+      },
+      "actual": {
+        "subject": "mathematics",
+        "topic": "Mathematics",
+        "subtopic": "Advanced and Core Operations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Mathematics",
+        "teachingStrategy": "Show formula, substitution, calculation, verification, common mistake, and practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find the determinant of the matrix [[1, 2], [3, 4]]."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Why do astronauts appear weightless inside a spacecraft orbiting Earth?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Gravity, Orbit, and Weight",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.95,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.95,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why do astronauts appear weightless inside a spacecraft orbiting Earth?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Explain Newton's first law of motion.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain Newton's first law of motion."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "A force of 10 N acts on a 2 kg body. Find acceleration.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: A force of 10 N acts on a 2 kg body. Find acceleration."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "What is the difference between speed and velocity?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the difference between speed and velocity?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Why does friction oppose motion?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why does friction oppose motion?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Explain conservation of energy with an example.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain conservation of energy with an example."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Calculate power if 100 J of work is done in 5 seconds.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Core Concept",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Calculate power if 100 J of work is done in 5 seconds."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "What causes sound waves to travel through air?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Light, Sound, and Waves",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What causes sound waves to travel through air?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Explain why light bends when it enters water.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Light, Sound, and Waves",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain why light bends when it enters water."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "What is Ohm's law?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Electricity and Circuits",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Science",
+        "routerConfidence": 0.94,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is Ohm's law?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Find current when voltage is 12 V and resistance is 4 ohms.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "numerical",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Electricity and Circuits",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "Science",
+        "routerConfidence": 0.94,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Find current when voltage is 12 V and resistance is 4 ohms."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Explain how a magnet attracts iron.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.74,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.76,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain how a magnet attracts iron."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "What is density and how is it calculated?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Pressure, Fluids, and Density",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is density and how is it calculated?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Why does pressure increase when force increases on the same area?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "Science",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why does pressure increase when force increases on the same area?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Explain buoyancy in simple words.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Pressure, Fluids, and Density",
+        "difficulty": "beginner",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain buoyancy in simple words."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "What is momentum?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.89,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.89,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is momentum?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Why do metals conduct heat well?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Heat Transfer",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why do metals conduct heat well?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Explain the difference between mass and weight.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Gravity, Orbit, and Weight",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the difference between mass and weight."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "What is centripetal force?",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Force, Motion, and Mechanics",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Science",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is centripetal force?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Physics",
+      "question": "Latest NASA mission today for students.",
+      "expected": {
+        "subject": "physics",
+        "topicTerms": [
+          "Physics"
+        ],
+        "search": true,
+        "type": "current_events",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "physics",
+        "topic": "Physics",
+        "subtopic": "Gravity, Orbit, and Weight",
+        "difficulty": "balanced",
+        "questionType": "current_events",
+        "analyzerConfidence": 0.77,
+        "routerCategory": "Recent Science and Technology",
+        "routerConfidence": 0.98,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.52,
+        "searchTriggered": true,
+        "searchProvider": "disabled",
+        "searchResults": 0,
+        "searchWarning": "No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_ENGINE_ID, or BING_SEARCH_API_KEY.",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the principle, connect units/formulas, show real-life meaning, and check the result.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Latest NASA mission today for students.\nVerified external knowledge: No live Google/search results were available. Do not answer from memory for this current-information question. Provider error: No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_"
+      },
+      "scores": {
+        "correctness": 80,
+        "relevance": 80,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": [
+        {
+          "category": "search_failure",
+          "severity": "high",
+          "detail": "No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_ENGINE_ID, or BING_SEARCH_API_KEY."
+        }
+      ]
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Why does increasing temperature increase reaction rate?",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Reaction Rates"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Reaction Rates",
+        "subtopic": "Collision Theory and Activation Energy",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why does increasing temperature increase reaction rate?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain activation energy in chemistry.",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Reaction Rates",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Reaction Rates",
+        "subtopic": "Collision Theory and Activation Energy",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Science",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain activation energy in chemistry."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is collision theory?",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Reaction Rates",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Reaction Rates",
+        "subtopic": "Collision Theory and Activation Energy",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is collision theory?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "How does a catalyst affect a chemical reaction?",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Reaction Rates",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Reaction Rates",
+        "subtopic": "Collision Theory and Activation Energy",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Science",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: How does a catalyst affect a chemical reaction?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is the difference between an acid and a base?",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Acids",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Acids and Bases",
+        "subtopic": "pH and Neutralisation",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.74,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.76,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the difference between an acid and a base?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain pH scale with examples.",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Acids",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Acids and Bases",
+        "subtopic": "pH and Neutralisation",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain pH scale with examples."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is a mole in chemistry?",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Stoichiometry",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Stoichiometry",
+        "subtopic": "Moles and Balanced Equations",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is a mole in chemistry?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Balance the equation H2 + O2 -> H2O.",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Chemistry"
+        ],
+        "search": false,
+        "type": null,
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Chemistry",
+        "subtopic": "Chemical Equations",
+        "difficulty": "school",
+        "questionType": "numerical",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Mathematics",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Balance the equation H2 + O2 -> H2O."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain oxidation and reduction.",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Redox",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Redox and Electrochemistry",
+        "subtopic": "Electron Transfer",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain oxidation and reduction."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What happens during electrolysis of water?",
+      "expected": {
+        "subject": "chemistry",
+        "topicTerms": [
+          "Redox",
+          "Chemistry"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "chemistry",
+        "topic": "Redox and Electrochemistry",
+        "subtopic": "Electron Transfer",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain particles or reaction behavior, connect to observable changes, and add an example.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What happens during electrolysis of water?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain photosynthesis.",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Photosynthesis"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Photosynthesis",
+        "subtopic": "Plant Nutrition",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": true,
+        "bestPattern": {
+          "id": "seed_photosynthesis_process",
+          "subject": "biology",
+          "topic": "Photosynthesis",
+          "solution_pattern": "Explain inputs, process, outputs, and importance.",
+          "teaching_pattern": "Start with a definition, then connect sunlight, chlorophyll, water, carbon dioxide, glucose, and oxygen.",
+          "difficulty": "balanced",
+          "success_score": 0.86,
+          "similarity": 1.0,
+          "relevance_score": 1.0,
+          "examples": [
+            "Explain photosynthesis."
+          ]
+        },
+        "knowledgeConfidence": 0.96,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Start with a definition, then connect sunlight, chlorophyll, water, carbon dioxide, glucose, and oxygen.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nSuccessful pattern to reuse: Explain inputs, process, outputs, and importance.\nTeaching strategy: Start with a definition, then connect sunlight, chlorophyll, water, carbon dioxide, glucose, and oxygen.\nLearner memory: Explain photosynthesis."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "How does photosynthesis help plants survive?",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Photosynthesis"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Photosynthesis",
+        "subtopic": "Plant Nutrition",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: How does photosynthesis help plants survive?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is cellular respiration?",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Biology"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Cell Biology",
+        "subtopic": "Mitochondria and ATP",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is cellular respiration?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain germination in seeds.",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Germination"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Germination",
+        "subtopic": "Plant Growth",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain germination in seeds."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is the function of the heart?",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Biology"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Biology",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the function of the heart?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain digestion in humans.",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Biology"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Biology",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain digestion in humans."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is the difference between plant and animal cells?",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Biology"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Biology",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the difference between plant and animal cells?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "Explain ecosystems with an example.",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Biology"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Biology",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain ecosystems with an example."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What are chromosomes?",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Biology"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Biology",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Science",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What are chromosomes?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "Chemistry/Biology",
+      "question": "What is the latest discovery about photosynthesis this week?",
+      "expected": {
+        "subject": "biology",
+        "topicTerms": [
+          "Photosynthesis",
+          "Biology"
+        ],
+        "search": true,
+        "type": "current_events",
+        "template": "Science"
+      },
+      "actual": {
+        "subject": "biology",
+        "topic": "Photosynthesis",
+        "subtopic": "Plant Nutrition",
+        "difficulty": "balanced",
+        "questionType": "current_events",
+        "analyzerConfidence": 0.77,
+        "routerCategory": "Recent Science and Technology",
+        "routerConfidence": 0.94,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.52,
+        "searchTriggered": true,
+        "searchProvider": "disabled",
+        "searchResults": 0,
+        "searchWarning": "No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_ENGINE_ID, or BING_SEARCH_API_KEY.",
+        "teachingTemplate": "Science",
+        "teachingStrategy": "Explain the process in order, connect structure to function, and add a memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the latest discovery about photosynthesis this week?\nVerified external knowledge: No live Google/search results were available. Do not answer from memory for this current-information question. Provider error: No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KE"
+      },
+      "scores": {
+        "correctness": 80,
+        "relevance": 80,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": [
+        {
+          "category": "search_failure",
+          "severity": "high",
+          "detail": "No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_ENGINE_ID, or BING_SEARCH_API_KEY."
+        }
+      ]
+    },
+    {
+      "group": "English",
+      "question": "What is the difference between affect and effect?",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Vocabulary",
+        "subtopic": "Commonly Confused Words",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the difference between affect and effect?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Identify the noun in this sentence: The cat slept on the mat.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Identify the noun in this sentence: The cat slept on the mat."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Identify the tense: She has finished her homework.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.95,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": true,
+        "bestPattern": {
+          "id": "seed_english_grammar_rule",
+          "subject": "english",
+          "topic": "Grammar",
+          "solution_pattern": "Identify the rule, apply it, show corrected answer, and explain why.",
+          "teaching_pattern": "State the grammar rule first, correct the sentence, then add one similar practice sentence.",
+          "difficulty": "balanced",
+          "success_score": 0.79,
+          "similarity": 1.0,
+          "relevance_score": 1.0,
+          "examples": [
+            "Identify the tense in: She has finished her homework."
+          ]
+        },
+        "knowledgeConfidence": 0.96,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the grammar rule first, correct the sentence, then add one similar practice sentence.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nSuccessful pattern to reuse: Identify the rule, apply it, show corrected answer, and explain why.\nTeaching strategy: State the grammar rule first, correct the sentence, then add one similar practice sentence.\nLearner memory: Identify the tense: She has finished her homework."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Change this sentence into passive voice: The boy kicked the ball.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.95,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.95,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Change this sentence into passive voice: The boy kicked the ball."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Change direct speech to indirect speech: He said, I am tired.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Change direct speech to indirect speech: He said, I am tired."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Use a or an before the word apple.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Use a or an before the word apple."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Fill the correct preposition: She is good ___ math.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Fill the correct preposition: She is good ___ math."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Give a synonym for happy.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": null,
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Vocabulary",
+        "subtopic": "Commonly Confused Words",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Give a synonym for happy."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Give an antonym for ancient.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": null,
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Vocabulary",
+        "subtopic": "Commonly Confused Words",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Give an antonym for ancient."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "What is a metaphor?",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Literature",
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": "literature",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Literature",
+        "subtopic": "Text Analysis",
+        "difficulty": "balanced",
+        "questionType": "literature",
+        "analyzerConfidence": 0.89,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.89,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is a metaphor?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "What is a simile?",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Literature",
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": "literature",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Literature",
+        "subtopic": "Text Analysis",
+        "difficulty": "balanced",
+        "questionType": "literature",
+        "analyzerConfidence": 0.89,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.89,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is a simile?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Explain the theme of honesty in a story.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Literature"
+        ],
+        "search": false,
+        "type": "literature",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Literature",
+        "subtopic": "Text Analysis",
+        "difficulty": "balanced",
+        "questionType": "literature",
+        "analyzerConfidence": 0.74,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.76,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the theme of honesty in a story."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Write a character sketch of a brave student.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Literature"
+        ],
+        "search": false,
+        "type": "literature",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Literature",
+        "subtopic": "Text Analysis",
+        "difficulty": "balanced",
+        "questionType": "literature",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Write a character sketch of a brave student."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Summarize a short story about friendship.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Literature"
+        ],
+        "search": false,
+        "type": null,
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Literature",
+        "subtopic": "Text Analysis",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.68,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Summarize a short story about friendship."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Write a formal letter to the principal asking for leave.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar",
+          "English"
+        ],
+        "search": false,
+        "type": "essay",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "English",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "essay",
+        "analyzerConfidence": 0.76,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.76,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Write a formal letter to the principal asking for leave."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Write an essay on the importance of reading.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "English"
+        ],
+        "search": false,
+        "type": "essay",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "English",
+        "subtopic": "Core Concept",
+        "difficulty": "balanced",
+        "questionType": "essay",
+        "analyzerConfidence": 0.74,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.76,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Write an essay on the importance of reading."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Correct the punctuation in this sentence: wow that is amazing",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Correct the punctuation in this sentence: wow that is amazing"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "What is the difference between adjective and adverb?",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Grammar"
+        ],
+        "search": false,
+        "type": "grammar",
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Grammar",
+        "subtopic": "Sentence Rules",
+        "difficulty": "balanced",
+        "questionType": "grammar",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "English",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the difference between adjective and adverb?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "Explain the idiom once in a blue moon.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": null,
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Vocabulary",
+        "subtopic": "Commonly Confused Words",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the idiom once in a blue moon."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "English",
+      "question": "What are homophones? Give examples.",
+      "expected": {
+        "subject": "english",
+        "topicTerms": [
+          "Vocabulary"
+        ],
+        "search": false,
+        "type": null,
+        "template": "English"
+      },
+      "actual": {
+        "subject": "english",
+        "topic": "Vocabulary",
+        "subtopic": "Commonly Confused Words",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "English",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "English",
+        "teachingStrategy": "State the rule or literary focus, apply it, explain why, and add exam-style practice.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What are homophones? Give examples."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What caused World War I?",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What caused World War I?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain the main causes of the French Revolution.",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.93,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.93,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the main causes of the French Revolution."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Who was Ashoka and why is he important?",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Who was Ashoka and why is he important?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain the features of the Harappan civilization.",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the features of the Harappan civilization."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What was the Industrial Revolution?",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What was the Industrial Revolution?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Why did India start the Non-Cooperation Movement?",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why did India start the Non-Cooperation Movement?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain nationalism in Europe.",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain nationalism in Europe."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What were the effects of colonialism?",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What were the effects of colonialism?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain the Mughal Empire in brief.",
+      "expected": {
+        "subject": "history",
+        "topicTerms": [
+          "History"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "history",
+        "topic": "History",
+        "subtopic": "Context, Sequence, Cause and Effect",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Set context, explain timeline, connect cause and effect, and highlight exam points.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the Mughal Empire in brief."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Latest election result in India today.",
+      "expected": {
+        "subject": "general",
+        "topicTerms": [
+          "General"
+        ],
+        "search": true,
+        "type": "current_events",
+        "template": "General"
+      },
+      "actual": {
+        "subject": "general",
+        "topic": "General",
+        "subtopic": "Current Information",
+        "difficulty": "balanced",
+        "questionType": "current_events",
+        "analyzerConfidence": 0.77,
+        "routerCategory": "Current Government Information",
+        "routerConfidence": 0.94,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.52,
+        "searchTriggered": true,
+        "searchProvider": "disabled",
+        "searchResults": 0,
+        "searchWarning": "No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_ENGINE_ID, or BING_SEARCH_API_KEY.",
+        "teachingTemplate": "General",
+        "teachingStrategy": "Teach clearly, answer directly, and reinforce with one practice question.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Latest election result in India today.\nVerified external knowledge: No live Google/search results were available. Do not answer from memory for this current-information question. Provider error: No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_K"
+      },
+      "scores": {
+        "correctness": 80,
+        "relevance": 80,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": [
+        {
+          "category": "search_failure",
+          "severity": "high",
+          "detail": "No search provider is configured. Set TAVILY_API_KEY, BRAVE_SEARCH_API_KEY, GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_ENGINE_ID, or BING_SEARCH_API_KEY."
+        }
+      ]
+    },
+    {
+      "group": "History/Geography",
+      "question": "Where is India located?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Location"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Location",
+        "subtopic": "Map Skills and Place Hierarchy",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.88,
+        "patternMatch": true,
+        "bestPattern": {
+          "id": "seed_geography_location",
+          "subject": "geography",
+          "topic": "Location",
+          "solution_pattern": "Give quick answer, hierarchy, and map context.",
+          "teaching_pattern": "Answer exact location first, then show city/state/country/continent hierarchy and one memory clue.",
+          "difficulty": "balanced",
+          "success_score": 0.81,
+          "similarity": 0.961,
+          "relevance_score": 1.0,
+          "examples": [
+            "Where is Hyderabad located?"
+          ]
+        },
+        "knowledgeConfidence": 0.957,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location first, then show city/state/country/continent hierarchy and one memory clue.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nSuccessful pattern to reuse: Give quick answer, hierarchy, and map context.\nTeaching strategy: Answer exact location first, then show city/state/country/continent hierarchy and one memory clue.\nLearner memory: Where is India located?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Why do earthquakes occur near tectonic plate boundaries?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Earth Science"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Earth Science",
+        "subtopic": "Plate Tectonics",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.94,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.94,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why do earthquakes occur near tectonic plate boundaries?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain how volcanoes are formed.",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Earth Science"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Earth Science",
+        "subtopic": "Plate Tectonics",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.88,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain how volcanoes are formed."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What causes monsoon rainfall in India?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Geography"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Geography",
+        "subtopic": "Physical and Human Geography",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What causes monsoon rainfall in India?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain the water cycle.",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Geography"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Geography",
+        "subtopic": "Physical and Human Geography",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain the water cycle."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What is erosion?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Earth Science"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Earth Science",
+        "subtopic": "Rocks, Weathering, and Erosion",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.89,
+        "routerCategory": "General Education",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.89,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is erosion?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Why are rivers important for settlements?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Geography"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Geography",
+        "subtopic": "Physical and Human Geography",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.92,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.92,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Why are rivers important for settlements?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What is climate change?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Geography"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Geography",
+        "subtopic": "Physical and Human Geography",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is climate change?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "Explain latitude and longitude.",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Location",
+          "Geography"
+        ],
+        "search": false,
+        "type": "explanation",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Location",
+        "subtopic": "Map Skills and Place Hierarchy",
+        "difficulty": "balanced",
+        "questionType": "explanation",
+        "analyzerConfidence": 0.91,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.91,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: Explain latitude and longitude."
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    },
+    {
+      "group": "History/Geography",
+      "question": "What is the capital of Brazil?",
+      "expected": {
+        "subject": "geography",
+        "topicTerms": [
+          "Location"
+        ],
+        "search": false,
+        "type": "conceptual",
+        "template": "Social Studies"
+      },
+      "actual": {
+        "subject": "geography",
+        "topic": "Location",
+        "subtopic": "Map Skills and Place Hierarchy",
+        "difficulty": "balanced",
+        "questionType": "conceptual",
+        "analyzerConfidence": 0.9,
+        "routerCategory": "Social Studies",
+        "routerConfidence": 0.8,
+        "patternMatch": false,
+        "bestPattern": null,
+        "knowledgeConfidence": 0.9,
+        "searchTriggered": false,
+        "searchProvider": null,
+        "searchResults": 0,
+        "searchWarning": "",
+        "teachingTemplate": "Social Studies",
+        "teachingStrategy": "Answer exact location or concept, show hierarchy/map context, and add exam facts.",
+        "mergedKnowledgePreview": "Use Tutorly's strict teaching format.\nGenerate a relevant practice question after the answer.\nLearner memory: What is the capital of Brazil?"
+      },
+      "scores": {
+        "correctness": 100,
+        "relevance": 100,
+        "educational_quality": 100,
+        "clarity": 100
+      },
+      "failures": []
+    }
+  ]
+}

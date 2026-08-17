@@ -1,0 +1,2070 @@
+{
+  "generatedAt": "2026-06-11T14:55:23.553270+00:00",
+  "label": "final",
+  "summary": {
+    "cases": 50,
+    "passed": 50,
+    "flagged": 0,
+    "averageScores": {
+      "accuracy": 10.0,
+      "educational_value": 10.0,
+      "clarity": 10.0,
+      "completeness": 10.0,
+      "relevance": 9.88,
+      "hallucination_safety": 9.98
+    },
+    "failureCategories": {},
+    "groupScores": {
+      "English": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "History/Geography": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "Mathematics": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "Mixed": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.9,
+        "hallucination_safety": 10.0
+      },
+      "Science": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 9.92
+      }
+    }
+  },
+  "weakestAnswers": [
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Explain Newton's first law of motion.",
+      "expectedTerms": [
+        "object",
+        "rest",
+        "uniform motion",
+        "external force",
+        "inertia"
+      ],
+      "requiredTerms": [
+        "inertia"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to explain Newton's first law of motion.\n\n### 2. Identify Given Information\n- The question asks about motion.\n- It focuses on what happens when no external force changes motion.\n\n### 3. Concept or Rule\nNewton's first law says an object remains at rest or in uniform motion in a straight line unless acted on by an external force. This property is called inertia.\n\n### 4. Step-by-Step Solution\n1. If an object is at rest, it stays at rest unless a force acts.\n2. If it is moving uniformly, it keeps moving with the same velocity unless a force acts.\n3. Inertia is the tendency to resist changes in motion.\n\n### 5. Final Answer\n**Final answer:** Newton's first law is the law of inertia: motion changes only when an external force acts.\n\n### 6. Why This Works\nForces are needed to change motion, not to keep ideal uniform motion going.\n\n### 7. Common Mistakes\nDo not think force is always needed to keep an object moving; force is needed to change motion.\n\n### 8. Practice Question\nWhy does a passenger move forward when a bus suddenly stops?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 9.2
+      },
+      "average": 9.87,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve 2x + 5 = 17.",
+      "expectedTerms": [
+        "2x = 12",
+        "x = 6",
+        "subtract",
+        "divide"
+      ],
+      "requiredTerms": [
+        "x = 6"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to solve the linear equation and find the value of x.\n\n### 2. Identify Given Information\n- Equation: 2x + 5 = 17\n- Unknown: x\n\n### 3. Concept or Rule\nUse inverse operations: subtract first, then divide.\n\n### 4. Step-by-Step Solution\n1. Subtract 5 from both sides: 2x + 5 - 5 = 17 - 5.\n2. So, 2x = 12.\n3. Divide both sides by 2: x = 12 / 2 = 6.\n\n### 5. Final Answer\n**Final answer:** x = 6\n\n### 6. Why This Works\nThe same operation is done on both sides, so the equation stays balanced.\n\n### 7. Common Mistakes\nDo not divide before removing +5; isolate the term with x first.\n\n### 8. Practice Question\nSolve 3x + 4 = 19.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve x^2 - 5x + 6 = 0.",
+      "expectedTerms": [
+        "factor",
+        "(x - 2)",
+        "(x - 3)",
+        "x = 2",
+        "x = 3"
+      ],
+      "requiredTerms": [
+        "x = 2",
+        "x = 3"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to solve a quadratic equation by finding the values of x that make it equal to zero.\n\n### 2. Identify Given Information\n- Equation: x^2 - 5x + 6 = 0\n- We need two numbers that multiply to 6 and add to -5.\n\n### 3. Concept or Rule\nFactoring rewrites a quadratic as a product of two brackets.\n\n### 4. Step-by-Step Solution\n1. x^2 - 5x + 6 = 0.\n2. Factor: (x - 2)(x - 3) = 0.\n3. Set each factor to zero: x - 2 = 0 or x - 3 = 0.\n4. So, x = 2 or x = 3.\n\n### 5. Final Answer\n**Final answer:** x = 2 or x = 3\n\n### 6. Why This Works\nIf either factor is zero, the whole product becomes zero.\n\n### 7. Common Mistakes\nDo not stop after factoring; set each bracket equal to zero.\n\n### 8. Practice Question\nSolve x^2 - 7x + 12 = 0.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "What is 64 + 88?",
+      "expectedTerms": [
+        "64",
+        "88",
+        "152",
+        "carry"
+      ],
+      "requiredTerms": [
+        "152"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to add 64 and 88 using place value.\n\n### 2. Identify Given Information\n- 64 has 6 tens and 4 ones.\n- 88 has 8 tens and 8 ones.\n\n### 3. Concept or Rule\nAdd ones first, carry if needed, then add tens.\n\n### 4. Step-by-Step Solution\n1. Ones: 4 + 8 = 12, write 2 and carry 1.\n2. Tens: 6 + 8 + 1 = 15.\n3. So, 64 + 88 = 152.\n\n### 5. Final Answer\n**Final answer:** 152\n\n### 6. Why This Works\nThe carry moves one ten into the tens column, which keeps place value correct.\n\n### 7. Common Mistakes\nDo not write 12 fully in the ones column; carry the 1 to the tens column.\n\n### 8. Practice Question\nAdd 57 + 69.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find 20 percent of 150.",
+      "expectedTerms": [
+        "20%",
+        "150",
+        "30"
+      ],
+      "requiredTerms": [
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find 20% of 150.\n\n### 2. Identify Given Information\n- Percentage: 20%\n- Whole amount: 150\n\n### 3. Concept or Rule\nA percentage means out of 100, so 20% = 20/100 = 0.2.\n\n### 4. Step-by-Step Solution\n1. 20% of 150 = (20/100) x 150.\n2. 0.2 x 150 = 30.\n\n### 5. Final Answer\n**Final answer:** 30\n\n### 6. Why This Works\nPercent means parts per hundred, so multiplying by 20/100 gives the required part.\n\n### 7. Common Mistakes\nDo not add 20 to 150; percentage questions usually need multiplication.\n\n### 8. Practice Question\nFind 15 percent of 200.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the mean of 12, 15, 18, 20, and 25.",
+      "expectedTerms": [
+        "12 + 15 + 18 + 20 + 25",
+        "90",
+        "5",
+        "18"
+      ],
+      "requiredTerms": [
+        "18"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the average of the five numbers.\n\n### 2. Identify Given Information\n- Numbers: 12, 15, 18, 20, 25\n- Count: 5 numbers\n\n### 3. Concept or Rule\nMean = sum of values / number of values.\n\n### 4. Step-by-Step Solution\n1. Add the values: 12 + 15 + 18 + 20 + 25 = 90.\n2. Divide by the count: 90 / 5 = 18.\n\n### 5. Final Answer\n**Final answer:** Mean = 18\n\n### 6. Why This Works\nThe mean shares the total equally among all values.\n\n### 7. Common Mistakes\nDo not forget to divide by the number of values after adding.\n\n### 8. Practice Question\nFind the mean of 8, 10, 12, and 14.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the area of a triangle with base 10 cm and height 8 cm.",
+      "expectedTerms": [
+        "1/2",
+        "base",
+        "height",
+        "40",
+        "cm"
+      ],
+      "requiredTerms": [
+        "40"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the area of a triangle from its base and height.\n\n### 2. Identify Given Information\n- Base = 10 cm\n- Height = 8 cm\n\n### 3. Concept or Rule\nArea of triangle = 1/2 x base x height.\n\n### 4. Step-by-Step Solution\n1. Area = 1/2 x 10 x 8.\n2. Area = 5 x 8 = 40 cm^2.\n\n### 5. Final Answer\n**Final answer:** 40 cm^2\n\n### 6. Why This Works\nA triangle is half of a rectangle with the same base and height.\n\n### 7. Common Mistakes\nDo not forget the 1/2 in the triangle area formula.\n\n### 8. Practice Question\nFind the area of a triangle with base 12 cm and height 5 cm.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4.",
+      "expectedTerms": [
+        "3^2",
+        "4^2",
+        "25",
+        "5"
+      ],
+      "requiredTerms": [
+        "5"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the hypotenuse of a right triangle.\n\n### 2. Identify Given Information\n- Short sides: 3 and 4\n- Unknown: hypotenuse\n\n### 3. Concept or Rule\nPythagoras theorem: a^2 + b^2 = c^2.\n\n### 4. Step-by-Step Solution\n1. 3^2 + 4^2 = c^2.\n2. 9 + 16 = 25.\n3. c = square root of 25 = 5.\n\n### 5. Final Answer\n**Final answer:** Hypotenuse = 5\n\n### 6. Why This Works\nIn a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides.\n\n### 7. Common Mistakes\nDo not add 3 + 4 directly; use squares for right triangles.\n\n### 8. Practice Question\nFind the hypotenuse when the other sides are 5 and 12.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Simplify the fraction 18/24.",
+      "expectedTerms": [
+        "divide",
+        "6",
+        "3/4"
+      ],
+      "requiredTerms": [
+        "3/4"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to simplify the fraction 18/24.\n\n### 2. Identify Given Information\n- Numerator = 18\n- Denominator = 24\n- Greatest common factor = 6\n\n### 3. Concept or Rule\nDivide the numerator and denominator by the same non-zero number.\n\n### 4. Step-by-Step Solution\n1. 18 / 6 = 3.\n2. 24 / 6 = 4.\n3. So, 18/24 = 3/4.\n\n### 5. Final Answer\n**Final answer:** 3/4\n\n### 6. Why This Works\nDividing both parts by 6 keeps the fraction's value the same but makes it simpler.\n\n### 7. Common Mistakes\nDo not divide only the numerator or only the denominator.\n\n### 8. Practice Question\nSimplify 20/30.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "A train travels 120 km in 2 hours. Find its speed.",
+      "expectedTerms": [
+        "speed",
+        "distance",
+        "time",
+        "120/2",
+        "60 km/h"
+      ],
+      "requiredTerms": [
+        "60"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find speed from distance and time.\n\n### 2. Identify Given Information\n- Distance = 120 km\n- Time = 2 hours\n\n### 3. Concept or Rule\nSpeed = distance / time.\n\n### 4. Step-by-Step Solution\n1. Speed = 120 / 2.\n2. Speed = 60 km/h.\n\n### 5. Final Answer\n**Final answer:** 60 km/h\n\n### 6. Why This Works\nSpeed tells how much distance is covered in one unit of time.\n\n### 7. Common Mistakes\nDo not write only 60; include the unit km/h.\n\n### 8. Practice Question\nA car travels 180 km in 3 hours. Find its speed.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the square root of 144.",
+      "expectedTerms": [
+        "12",
+        "12 x 12",
+        "144"
+      ],
+      "requiredTerms": [
+        "12"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need the number that gives 144 when multiplied by itself.\n\n### 2. Identify Given Information\n- Number: 144\n\n### 3. Concept or Rule\nSquare root means the opposite of squaring.\n\n### 4. Step-by-Step Solution\n1. 12 x 12 = 144.\n2. Therefore, square root of 144 = 12.\n\n### 5. Final Answer\n**Final answer:** 12\n\n### 6. Why This Works\nSince 12 squared equals 144, 12 is the principal square root.\n\n### 7. Common Mistakes\nDo not confuse square root with dividing by 2.\n\n### 8. Practice Question\nFind the square root of 169.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "A rectangular garden has area 84 square meters and length 5 meters longer than width. Find both dimensions.",
+      "expectedTerms": [
+        "w(w + 5)",
+        "84",
+        "w = 7",
+        "length = 12",
+        "width = 7"
+      ],
+      "requiredTerms": [
+        "12",
+        "7"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the width and length of a rectangle using area.\n\n### 2. Identify Given Information\n- Area = 84 square meters\n- Length is 5 meters longer than width\n- Let width = w, so length = w + 5\n\n### 3. Concept or Rule\nArea of rectangle = length x width.\n\n### 4. Step-by-Step Solution\n1. w(w + 5) = 84.\n2. w^2 + 5w - 84 = 0.\n3. Factor: (w + 12)(w - 7) = 0.\n4. Width cannot be negative, so w = 7.\n5. Length = w + 5 = 12.\n\n### 5. Final Answer\n**Final answer:** Width = 7 m and length = 12 m\n\n### 6. Why This Works\nThe area relationship creates a quadratic equation, and the positive solution gives the real garden dimensions.\n\n### 7. Common Mistakes\nDo not accept the negative width because lengths cannot be negative in this context.\n\n### 8. Practice Question\nA rectangle has area 54 m^2 and length 3 m longer than width. Find both dimensions.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "Riya and Aman share chocolates in the ratio 2:3. If total chocolates are 50, how many does each get?",
+      "expectedTerms": [
+        "2 + 3",
+        "5 parts",
+        "20",
+        "30"
+      ],
+      "requiredTerms": [
+        "20",
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to share 50 chocolates in the ratio 2:3.\n\n### 2. Identify Given Information\n- Ratio = 2:3\n- Total chocolates = 50\n- Total parts = 2 + 3 = 5 parts\n\n### 3. Concept or Rule\nOne part = total amount / total ratio parts.\n\n### 4. Step-by-Step Solution\n1. One part = 50 / 5 = 10.\n2. Riya gets 2 parts = 2 x 10 = 20.\n3. Aman gets 3 parts = 3 x 10 = 30.\n\n### 5. Final Answer\n**Final answer:** Riya gets 20 chocolates and Aman gets 30 chocolates\n\n### 6. Why This Works\nRatios split a total into equal parts first, then assign the parts.\n\n### 7. Common Mistakes\nDo not split 50 directly into 2 and 3; first find the value of one part.\n\n### 8. Practice Question\nShare 60 candies in the ratio 1:2.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Why do astronauts appear weightless inside a spacecraft orbiting Earth?",
+      "expectedTerms": [
+        "gravity",
+        "free fall",
+        "orbit",
+        "normal force",
+        "microgravity"
+      ],
+      "requiredTerms": [
+        "free fall",
+        "gravity"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to explain why astronauts float in orbit even though gravity is still acting on them.\n\n### 2. Identify Given Information\n- The spacecraft is orbiting Earth.\n- Gravity still pulls on the spacecraft and astronauts.\n- Astronauts float inside the spacecraft.\n\n### 3. Concept or Rule\nApparent weight depends on the normal force. In orbit, astronauts and the spacecraft are in continuous free fall together, creating microgravity.\n\n### 4. Step-by-Step Solution\n1. Gravity pulls both the astronaut and spacecraft toward Earth.\n2. Their sideways speed makes them keep missing Earth, so they orbit.\n3. Both fall together at almost the same acceleration.\n4. Because the floor does not push strongly on the astronaut, the normal force is almost zero.\n5. With almost no support force, the astronaut feels weightless.\n\n### 5. Final Answer\n**Final answer:** Astronauts appear weightless because they and the spacecraft are in free fall around Earth together; gravity is present, but the normal force is almost zero.\n\n### 6. Why This Works\nYou feel weight from the support force of the ground. In orbit, the astronaut and spacecraft accelerate together, so there is little support force.\n\n### 7. Common Mistakes\nDo not say there is no gravity in space; gravity keeps the spacecraft in orbit.\n\n### 8. Practice Question\nWhy does a person in a falling elevator feel lighter for a short time?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "A force of 10 N acts on a 2 kg body. Find acceleration.",
+      "expectedTerms": [
+        "F = ma",
+        "a = F/m",
+        "10/2",
+        "5 m/s"
+      ],
+      "requiredTerms": [
+        "5"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to calculate acceleration from force and mass.\n\n### 2. Identify Given Information\n- Force = 10 N\n- Mass = 2 kg\n\n### 3. Concept or Rule\nNewton's second law: F = ma, so a = F/m.\n\n### 4. Step-by-Step Solution\n1. a = F/m.\n2. a = 10/2.\n3. a = 5 m/s^2.\n\n### 5. Final Answer\n**Final answer:** Acceleration = 5 m/s^2\n\n### 6. Why This Works\nFor the same mass, a larger force creates a larger acceleration.\n\n### 7. Common Mistakes\nDo not forget the unit m/s^2 for acceleration.\n\n### 8. Practice Question\nA force of 20 N acts on a 4 kg object. Find acceleration.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "What is Ohm's law?",
+      "expectedTerms": [
+        "V = IR",
+        "voltage",
+        "current",
+        "resistance"
+      ],
+      "requiredTerms": [
+        "V = IR"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to define Ohm's law and connect voltage, current, and resistance.\n\n### 2. Identify Given Information\n- Voltage is the push.\n- Current is the flow of charge.\n- Resistance opposes current.\n\n### 3. Concept or Rule\nOhm's law: V = IR, where V is voltage, I is current, and R is resistance.\n\n### 4. Step-by-Step Solution\n1. If resistance stays constant, current increases when voltage increases.\n2. If voltage stays constant, current decreases when resistance increases.\n\n### 5. Final Answer\n**Final answer:** Ohm's law is V = IR.\n\n### 6. Why This Works\nThe formula shows the direct relationship between voltage and current and the opposing effect of resistance.\n\n### 7. Common Mistakes\nDo not mix up current and resistance; current is I, resistance is R.\n\n### 8. Practice Question\nFind current when V = 10 V and R = 5 ohms.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "Why does increasing temperature increase reaction rate?",
+      "expectedTerms": [
+        "particles",
+        "kinetic energy",
+        "collision",
+        "activation energy",
+        "reaction rate"
+      ],
+      "requiredTerms": [
+        "collision"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to explain why higher temperature usually makes a chemical reaction faster.\n\n### 2. Identify Given Information\n- Temperature increases.\n- Reaction rate changes.\n\n### 3. Concept or Rule\nCollision theory: reactions happen when particles collide with enough energy and correct orientation. Higher temperature increases kinetic energy.\n\n### 4. Step-by-Step Solution\n1. Particles move faster at higher temperature.\n2. Faster particles collide more often.\n3. More particles have enough energy to overcome activation energy.\n4. So, successful collisions increase and the reaction rate rises.\n\n### 5. Final Answer\n**Final answer:** Increasing temperature generally increases reaction rate because particles collide more often and with more energy.\n\n### 6. Why This Works\nReaction rate depends on successful collisions, not just any collision.\n\n### 7. Common Mistakes\nDo not say temperature creates more particles; it mainly increases kinetic energy.\n\n### 8. Practice Question\nWhy does powdered zinc react faster than a large piece of zinc?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "How does a catalyst affect a chemical reaction?",
+      "expectedTerms": [
+        "catalyst",
+        "activation energy",
+        "faster",
+        "not consumed"
+      ],
+      "requiredTerms": [
+        "activation energy"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to explain how a catalyst changes a reaction.\n\n### 2. Identify Given Information\n- A chemical reaction is happening.\n- A catalyst is added.\n\n### 3. Concept or Rule\nA catalyst provides an alternative pathway with lower activation energy and is not consumed in the reaction.\n\n### 4. Step-by-Step Solution\n1. The catalyst lowers activation energy.\n2. More particles can react successfully at the same temperature.\n3. The reaction becomes faster.\n4. The catalyst remains chemically unchanged at the end.\n\n### 5. Final Answer\n**Final answer:** A catalyst speeds up a chemical reaction by lowering activation energy and is not consumed.\n\n### 6. Why This Works\nLower activation energy means more collisions become successful.\n\n### 7. Common Mistakes\nDo not say a catalyst increases the amount of product; it increases the rate of reaching product.\n\n### 8. Practice Question\nHow does an enzyme act like a catalyst in digestion?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "What is the difference between an acid and a base?",
+      "expectedTerms": [
+        "acid",
+        "base",
+        "pH",
+        "hydrogen",
+        "hydroxide"
+      ],
+      "requiredTerms": [
+        "acid",
+        "base"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to compare acids and bases.\n\n### 2. Identify Given Information\n- Acids and bases are chemical substances.\n- The question asks for their difference.\n\n### 3. Concept or Rule\nAcids usually release hydrogen ions in water and have pH less than 7. Bases usually produce hydroxide ions or accept hydrogen ions and have pH greater than 7.\n\n### 4. Step-by-Step Solution\n1. Acid example: hydrochloric acid.\n2. Base example: sodium hydroxide.\n3. Acids turn blue litmus red.\n4. Bases turn red litmus blue.\n\n### 5. Final Answer\n**Final answer:** Acids have pH below 7 and bases have pH above 7.\n\n### 6. Why This Works\nThe pH scale helps compare how acidic or basic a solution is.\n\n### 7. Common Mistakes\nDo not identify acids and bases only by taste or touch; use indicators and pH.\n\n### 8. Practice Question\nClassify lemon juice and soap solution as acid or base.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "Explain photosynthesis.",
+      "expectedTerms": [
+        "sunlight",
+        "carbon dioxide",
+        "water",
+        "glucose",
+        "oxygen",
+        "chlorophyll"
+      ],
+      "requiredTerms": [
+        "glucose",
+        "oxygen"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nWe need to explain the process of photosynthesis.\n\n### 2. Identify Given Information\n- Plants contain chlorophyll.\n- Inputs: sunlight, carbon dioxide, and water.\n- Outputs: glucose and oxygen.\n\n### 3. Concept or Rule\nPhotosynthesis converts light energy into chemical energy stored in glucose.\n\n### 4. Step-by-Step Solution\n1. Chlorophyll absorbs sunlight.\n2. Leaves take in carbon dioxide from air.\n3. Roots absorb water from soil.\n4. The plant makes glucose for food and releases oxygen.\n\n### 5. Final Answer\n**Final answer:** Photosynthesis is the process by which plants make glucose and oxygen using sunlight, carbon dioxide, and water.\n\n### 6. Why This Works\nGlucose stores energy that plants use for growth, repair, and survival.\n\n### 7. Common Mistakes\nDo not say plants get food from soil; soil gives minerals and water, but glucose is made in leaves.\n\n### 8. Practice Question\nWhy is chlorophyll important for photosynthesis?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    }
+  ],
+  "results": [
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve 2x + 5 = 17.",
+      "expectedTerms": [
+        "2x = 12",
+        "x = 6",
+        "subtract",
+        "divide"
+      ],
+      "requiredTerms": [
+        "x = 6"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to solve the linear equation and find the value of x.\n\n### 2. Identify Given Information\n- Equation: 2x + 5 = 17\n- Unknown: x\n\n### 3. Concept or Rule\nUse inverse operations: subtract first, then divide.\n\n### 4. Step-by-Step Solution\n1. Subtract 5 from both sides: 2x + 5 - 5 = 17 - 5.\n2. So, 2x = 12.\n3. Divide both sides by 2: x = 12 / 2 = 6.\n\n### 5. Final Answer\n**Final answer:** x = 6\n\n### 6. Why This Works\nThe same operation is done on both sides, so the equation stays balanced.\n\n### 7. Common Mistakes\nDo not divide before removing +5; isolate the term with x first.\n\n### 8. Practice Question\nSolve 3x + 4 = 19.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Solve x^2 - 5x + 6 = 0.",
+      "expectedTerms": [
+        "factor",
+        "(x - 2)",
+        "(x - 3)",
+        "x = 2",
+        "x = 3"
+      ],
+      "requiredTerms": [
+        "x = 2",
+        "x = 3"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to solve a quadratic equation by finding the values of x that make it equal to zero.\n\n### 2. Identify Given Information\n- Equation: x^2 - 5x + 6 = 0\n- We need two numbers that multiply to 6 and add to -5.\n\n### 3. Concept or Rule\nFactoring rewrites a quadratic as a product of two brackets.\n\n### 4. Step-by-Step Solution\n1. x^2 - 5x + 6 = 0.\n2. Factor: (x - 2)(x - 3) = 0.\n3. Set each factor to zero: x - 2 = 0 or x - 3 = 0.\n4. So, x = 2 or x = 3.\n\n### 5. Final Answer\n**Final answer:** x = 2 or x = 3\n\n### 6. Why This Works\nIf either factor is zero, the whole product becomes zero.\n\n### 7. Common Mistakes\nDo not stop after factoring; set each bracket equal to zero.\n\n### 8. Practice Question\nSolve x^2 - 7x + 12 = 0.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "What is 64 + 88?",
+      "expectedTerms": [
+        "64",
+        "88",
+        "152",
+        "carry"
+      ],
+      "requiredTerms": [
+        "152"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to add 64 and 88 using place value.\n\n### 2. Identify Given Information\n- 64 has 6 tens and 4 ones.\n- 88 has 8 tens and 8 ones.\n\n### 3. Concept or Rule\nAdd ones first, carry if needed, then add tens.\n\n### 4. Step-by-Step Solution\n1. Ones: 4 + 8 = 12, write 2 and carry 1.\n2. Tens: 6 + 8 + 1 = 15.\n3. So, 64 + 88 = 152.\n\n### 5. Final Answer\n**Final answer:** 152\n\n### 6. Why This Works\nThe carry moves one ten into the tens column, which keeps place value correct.\n\n### 7. Common Mistakes\nDo not write 12 fully in the ones column; carry the 1 to the tens column.\n\n### 8. Practice Question\nAdd 57 + 69.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find 20 percent of 150.",
+      "expectedTerms": [
+        "20%",
+        "150",
+        "30"
+      ],
+      "requiredTerms": [
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find 20% of 150.\n\n### 2. Identify Given Information\n- Percentage: 20%\n- Whole amount: 150\n\n### 3. Concept or Rule\nA percentage means out of 100, so 20% = 20/100 = 0.2.\n\n### 4. Step-by-Step Solution\n1. 20% of 150 = (20/100) x 150.\n2. 0.2 x 150 = 30.\n\n### 5. Final Answer\n**Final answer:** 30\n\n### 6. Why This Works\nPercent means parts per hundred, so multiplying by 20/100 gives the required part.\n\n### 7. Common Mistakes\nDo not add 20 to 150; percentage questions usually need multiplication.\n\n### 8. Practice Question\nFind 15 percent of 200.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the mean of 12, 15, 18, 20, and 25.",
+      "expectedTerms": [
+        "12 + 15 + 18 + 20 + 25",
+        "90",
+        "5",
+        "18"
+      ],
+      "requiredTerms": [
+        "18"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the average of the five numbers.\n\n### 2. Identify Given Information\n- Numbers: 12, 15, 18, 20, 25\n- Count: 5 numbers\n\n### 3. Concept or Rule\nMean = sum of values / number of values.\n\n### 4. Step-by-Step Solution\n1. Add the values: 12 + 15 + 18 + 20 + 25 = 90.\n2. Divide by the count: 90 / 5 = 18.\n\n### 5. Final Answer\n**Final answer:** Mean = 18\n\n### 6. Why This Works\nThe mean shares the total equally among all values.\n\n### 7. Common Mistakes\nDo not forget to divide by the number of values after adding.\n\n### 8. Practice Question\nFind the mean of 8, 10, 12, and 14.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the area of a triangle with base 10 cm and height 8 cm.",
+      "expectedTerms": [
+        "1/2",
+        "base",
+        "height",
+        "40",
+        "cm"
+      ],
+      "requiredTerms": [
+        "40"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the area of a triangle from its base and height.\n\n### 2. Identify Given Information\n- Base = 10 cm\n- Height = 8 cm\n\n### 3. Concept or Rule\nArea of triangle = 1/2 x base x height.\n\n### 4. Step-by-Step Solution\n1. Area = 1/2 x 10 x 8.\n2. Area = 5 x 8 = 40 cm^2.\n\n### 5. Final Answer\n**Final answer:** 40 cm^2\n\n### 6. Why This Works\nA triangle is half of a rectangle with the same base and height.\n\n### 7. Common Mistakes\nDo not forget the 1/2 in the triangle area formula.\n\n### 8. Practice Question\nFind the area of a triangle with base 12 cm and height 5 cm.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Use Pythagoras theorem to find the hypotenuse if the sides are 3 and 4.",
+      "expectedTerms": [
+        "3^2",
+        "4^2",
+        "25",
+        "5"
+      ],
+      "requiredTerms": [
+        "5"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the hypotenuse of a right triangle.\n\n### 2. Identify Given Information\n- Short sides: 3 and 4\n- Unknown: hypotenuse\n\n### 3. Concept or Rule\nPythagoras theorem: a^2 + b^2 = c^2.\n\n### 4. Step-by-Step Solution\n1. 3^2 + 4^2 = c^2.\n2. 9 + 16 = 25.\n3. c = square root of 25 = 5.\n\n### 5. Final Answer\n**Final answer:** Hypotenuse = 5\n\n### 6. Why This Works\nIn a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides.\n\n### 7. Common Mistakes\nDo not add 3 + 4 directly; use squares for right triangles.\n\n### 8. Practice Question\nFind the hypotenuse when the other sides are 5 and 12.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Simplify the fraction 18/24.",
+      "expectedTerms": [
+        "divide",
+        "6",
+        "3/4"
+      ],
+      "requiredTerms": [
+        "3/4"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to simplify the fraction 18/24.\n\n### 2. Identify Given Information\n- Numerator = 18\n- Denominator = 24\n- Greatest common factor = 6\n\n### 3. Concept or Rule\nDivide the numerator and denominator by the same non-zero number.\n\n### 4. Step-by-Step Solution\n1. 18 / 6 = 3.\n2. 24 / 6 = 4.\n3. So, 18/24 = 3/4.\n\n### 5. Final Answer\n**Final answer:** 3/4\n\n### 6. Why This Works\nDividing both parts by 6 keeps the fraction's value the same but makes it simpler.\n\n### 7. Common Mistakes\nDo not divide only the numerator or only the denominator.\n\n### 8. Practice Question\nSimplify 20/30.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "A train travels 120 km in 2 hours. Find its speed.",
+      "expectedTerms": [
+        "speed",
+        "distance",
+        "time",
+        "120/2",
+        "60 km/h"
+      ],
+      "requiredTerms": [
+        "60"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find speed from distance and time.\n\n### 2. Identify Given Information\n- Distance = 120 km\n- Time = 2 hours\n\n### 3. Concept or Rule\nSpeed = distance / time.\n\n### 4. Step-by-Step Solution\n1. Speed = 120 / 2.\n2. Speed = 60 km/h.\n\n### 5. Final Answer\n**Final answer:** 60 km/h\n\n### 6. Why This Works\nSpeed tells how much distance is covered in one unit of time.\n\n### 7. Common Mistakes\nDo not write only 60; include the unit km/h.\n\n### 8. Practice Question\nA car travels 180 km in 3 hours. Find its speed.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mathematics",
+      "subject": "mathematics",
+      "question": "Find the square root of 144.",
+      "expectedTerms": [
+        "12",
+        "12 x 12",
+        "144"
+      ],
+      "requiredTerms": [
+        "12"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need the number that gives 144 when multiplied by itself.\n\n### 2. Identify Given Information\n- Number: 144\n\n### 3. Concept or Rule\nSquare root means the opposite of squaring.\n\n### 4. Step-by-Step Solution\n1. 12 x 12 = 144.\n2. Therefore, square root of 144 = 12.\n\n### 5. Final Answer\n**Final answer:** 12\n\n### 6. Why This Works\nSince 12 squared equals 144, 12 is the principal square root.\n\n### 7. Common Mistakes\nDo not confuse square root with dividing by 2.\n\n### 8. Practice Question\nFind the square root of 169.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Why do astronauts appear weightless inside a spacecraft orbiting Earth?",
+      "expectedTerms": [
+        "gravity",
+        "free fall",
+        "orbit",
+        "normal force",
+        "microgravity"
+      ],
+      "requiredTerms": [
+        "free fall",
+        "gravity"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to explain why astronauts float in orbit even though gravity is still acting on them.\n\n### 2. Identify Given Information\n- The spacecraft is orbiting Earth.\n- Gravity still pulls on the spacecraft and astronauts.\n- Astronauts float inside the spacecraft.\n\n### 3. Concept or Rule\nApparent weight depends on the normal force. In orbit, astronauts and the spacecraft are in continuous free fall together, creating microgravity.\n\n### 4. Step-by-Step Solution\n1. Gravity pulls both the astronaut and spacecraft toward Earth.\n2. Their sideways speed makes them keep missing Earth, so they orbit.\n3. Both fall together at almost the same acceleration.\n4. Because the floor does not push strongly on the astronaut, the normal force is almost zero.\n5. With almost no support force, the astronaut feels weightless.\n\n### 5. Final Answer\n**Final answer:** Astronauts appear weightless because they and the spacecraft are in free fall around Earth together; gravity is present, but the normal force is almost zero.\n\n### 6. Why This Works\nYou feel weight from the support force of the ground. In orbit, the astronaut and spacecraft accelerate together, so there is little support force.\n\n### 7. Common Mistakes\nDo not say there is no gravity in space; gravity keeps the spacecraft in orbit.\n\n### 8. Practice Question\nWhy does a person in a falling elevator feel lighter for a short time?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "Explain Newton's first law of motion.",
+      "expectedTerms": [
+        "object",
+        "rest",
+        "uniform motion",
+        "external force",
+        "inertia"
+      ],
+      "requiredTerms": [
+        "inertia"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to explain Newton's first law of motion.\n\n### 2. Identify Given Information\n- The question asks about motion.\n- It focuses on what happens when no external force changes motion.\n\n### 3. Concept or Rule\nNewton's first law says an object remains at rest or in uniform motion in a straight line unless acted on by an external force. This property is called inertia.\n\n### 4. Step-by-Step Solution\n1. If an object is at rest, it stays at rest unless a force acts.\n2. If it is moving uniformly, it keeps moving with the same velocity unless a force acts.\n3. Inertia is the tendency to resist changes in motion.\n\n### 5. Final Answer\n**Final answer:** Newton's first law is the law of inertia: motion changes only when an external force acts.\n\n### 6. Why This Works\nForces are needed to change motion, not to keep ideal uniform motion going.\n\n### 7. Common Mistakes\nDo not think force is always needed to keep an object moving; force is needed to change motion.\n\n### 8. Practice Question\nWhy does a passenger move forward when a bus suddenly stops?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 9.2
+      },
+      "average": 9.87,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "A force of 10 N acts on a 2 kg body. Find acceleration.",
+      "expectedTerms": [
+        "F = ma",
+        "a = F/m",
+        "10/2",
+        "5 m/s"
+      ],
+      "requiredTerms": [
+        "5"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to calculate acceleration from force and mass.\n\n### 2. Identify Given Information\n- Force = 10 N\n- Mass = 2 kg\n\n### 3. Concept or Rule\nNewton's second law: F = ma, so a = F/m.\n\n### 4. Step-by-Step Solution\n1. a = F/m.\n2. a = 10/2.\n3. a = 5 m/s^2.\n\n### 5. Final Answer\n**Final answer:** Acceleration = 5 m/s^2\n\n### 6. Why This Works\nFor the same mass, a larger force creates a larger acceleration.\n\n### 7. Common Mistakes\nDo not forget the unit m/s^2 for acceleration.\n\n### 8. Practice Question\nA force of 20 N acts on a 4 kg object. Find acceleration.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "physics",
+      "question": "What is Ohm's law?",
+      "expectedTerms": [
+        "V = IR",
+        "voltage",
+        "current",
+        "resistance"
+      ],
+      "requiredTerms": [
+        "V = IR"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to define Ohm's law and connect voltage, current, and resistance.\n\n### 2. Identify Given Information\n- Voltage is the push.\n- Current is the flow of charge.\n- Resistance opposes current.\n\n### 3. Concept or Rule\nOhm's law: V = IR, where V is voltage, I is current, and R is resistance.\n\n### 4. Step-by-Step Solution\n1. If resistance stays constant, current increases when voltage increases.\n2. If voltage stays constant, current decreases when resistance increases.\n\n### 5. Final Answer\n**Final answer:** Ohm's law is V = IR.\n\n### 6. Why This Works\nThe formula shows the direct relationship between voltage and current and the opposing effect of resistance.\n\n### 7. Common Mistakes\nDo not mix up current and resistance; current is I, resistance is R.\n\n### 8. Practice Question\nFind current when V = 10 V and R = 5 ohms.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "Why does increasing temperature increase reaction rate?",
+      "expectedTerms": [
+        "particles",
+        "kinetic energy",
+        "collision",
+        "activation energy",
+        "reaction rate"
+      ],
+      "requiredTerms": [
+        "collision"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to explain why higher temperature usually makes a chemical reaction faster.\n\n### 2. Identify Given Information\n- Temperature increases.\n- Reaction rate changes.\n\n### 3. Concept or Rule\nCollision theory: reactions happen when particles collide with enough energy and correct orientation. Higher temperature increases kinetic energy.\n\n### 4. Step-by-Step Solution\n1. Particles move faster at higher temperature.\n2. Faster particles collide more often.\n3. More particles have enough energy to overcome activation energy.\n4. So, successful collisions increase and the reaction rate rises.\n\n### 5. Final Answer\n**Final answer:** Increasing temperature generally increases reaction rate because particles collide more often and with more energy.\n\n### 6. Why This Works\nReaction rate depends on successful collisions, not just any collision.\n\n### 7. Common Mistakes\nDo not say temperature creates more particles; it mainly increases kinetic energy.\n\n### 8. Practice Question\nWhy does powdered zinc react faster than a large piece of zinc?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "How does a catalyst affect a chemical reaction?",
+      "expectedTerms": [
+        "catalyst",
+        "activation energy",
+        "faster",
+        "not consumed"
+      ],
+      "requiredTerms": [
+        "activation energy"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to explain how a catalyst changes a reaction.\n\n### 2. Identify Given Information\n- A chemical reaction is happening.\n- A catalyst is added.\n\n### 3. Concept or Rule\nA catalyst provides an alternative pathway with lower activation energy and is not consumed in the reaction.\n\n### 4. Step-by-Step Solution\n1. The catalyst lowers activation energy.\n2. More particles can react successfully at the same temperature.\n3. The reaction becomes faster.\n4. The catalyst remains chemically unchanged at the end.\n\n### 5. Final Answer\n**Final answer:** A catalyst speeds up a chemical reaction by lowering activation energy and is not consumed.\n\n### 6. Why This Works\nLower activation energy means more collisions become successful.\n\n### 7. Common Mistakes\nDo not say a catalyst increases the amount of product; it increases the rate of reaching product.\n\n### 8. Practice Question\nHow does an enzyme act like a catalyst in digestion?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "chemistry",
+      "question": "What is the difference between an acid and a base?",
+      "expectedTerms": [
+        "acid",
+        "base",
+        "pH",
+        "hydrogen",
+        "hydroxide"
+      ],
+      "requiredTerms": [
+        "acid",
+        "base"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to compare acids and bases.\n\n### 2. Identify Given Information\n- Acids and bases are chemical substances.\n- The question asks for their difference.\n\n### 3. Concept or Rule\nAcids usually release hydrogen ions in water and have pH less than 7. Bases usually produce hydroxide ions or accept hydrogen ions and have pH greater than 7.\n\n### 4. Step-by-Step Solution\n1. Acid example: hydrochloric acid.\n2. Base example: sodium hydroxide.\n3. Acids turn blue litmus red.\n4. Bases turn red litmus blue.\n\n### 5. Final Answer\n**Final answer:** Acids have pH below 7 and bases have pH above 7.\n\n### 6. Why This Works\nThe pH scale helps compare how acidic or basic a solution is.\n\n### 7. Common Mistakes\nDo not identify acids and bases only by taste or touch; use indicators and pH.\n\n### 8. Practice Question\nClassify lemon juice and soap solution as acid or base.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "Explain photosynthesis.",
+      "expectedTerms": [
+        "sunlight",
+        "carbon dioxide",
+        "water",
+        "glucose",
+        "oxygen",
+        "chlorophyll"
+      ],
+      "requiredTerms": [
+        "glucose",
+        "oxygen"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nWe need to explain the process of photosynthesis.\n\n### 2. Identify Given Information\n- Plants contain chlorophyll.\n- Inputs: sunlight, carbon dioxide, and water.\n- Outputs: glucose and oxygen.\n\n### 3. Concept or Rule\nPhotosynthesis converts light energy into chemical energy stored in glucose.\n\n### 4. Step-by-Step Solution\n1. Chlorophyll absorbs sunlight.\n2. Leaves take in carbon dioxide from air.\n3. Roots absorb water from soil.\n4. The plant makes glucose for food and releases oxygen.\n\n### 5. Final Answer\n**Final answer:** Photosynthesis is the process by which plants make glucose and oxygen using sunlight, carbon dioxide, and water.\n\n### 6. Why This Works\nGlucose stores energy that plants use for growth, repair, and survival.\n\n### 7. Common Mistakes\nDo not say plants get food from soil; soil gives minerals and water, but glucose is made in leaves.\n\n### 8. Practice Question\nWhy is chlorophyll important for photosynthesis?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "What is cellular respiration?",
+      "expectedTerms": [
+        "glucose",
+        "oxygen",
+        "energy",
+        "ATP",
+        "carbon dioxide"
+      ],
+      "requiredTerms": [
+        "energy"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nWe need to explain how cells release energy from food.\n\n### 2. Identify Given Information\n- Cells need energy.\n- Glucose and oxygen are used.\n\n### 3. Concept or Rule\nCellular respiration breaks down glucose using oxygen to release energy as ATP.\n\n### 4. Step-by-Step Solution\n1. Glucose enters the cell.\n2. Oxygen helps break down glucose.\n3. Energy is released and stored as ATP.\n4. Carbon dioxide and water are produced as waste products.\n\n### 5. Final Answer\n**Final answer:** Cellular respiration releases ATP energy from glucose.\n\n### 6. Why This Works\nATP is the usable energy currency of the cell.\n\n### 7. Common Mistakes\nDo not confuse respiration with only breathing; cellular respiration happens inside cells.\n\n### 8. Practice Question\nWhy do muscle cells need more respiration during exercise?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Science",
+      "subject": "biology",
+      "question": "What are chromosomes?",
+      "expectedTerms": [
+        "DNA",
+        "genes",
+        "cell",
+        "nucleus",
+        "hereditary"
+      ],
+      "requiredTerms": [
+        "DNA"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nWe need to define chromosomes and explain their role.\n\n### 2. Identify Given Information\n- Cells contain genetic material.\n- Chromosomes are found mainly in the nucleus.\n\n### 3. Concept or Rule\nChromosomes are thread-like structures made of DNA and proteins. They carry genes, which control hereditary traits.\n\n### 4. Step-by-Step Solution\n1. DNA stores genetic instructions.\n2. Genes are sections of DNA.\n3. Chromosomes organize DNA inside the cell nucleus.\n4. They pass hereditary information from parents to offspring.\n\n### 5. Final Answer\n**Final answer:** Chromosomes are DNA-containing structures that carry genes.\n\n### 6. Why This Works\nOrganizing DNA into chromosomes helps cells copy and pass genetic information accurately.\n\n### 7. Common Mistakes\nDo not say chromosomes and genes are exactly the same; genes are parts of DNA found on chromosomes.\n\n### 8. Practice Question\nWhat is the relationship between DNA, genes, and chromosomes?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "What is the difference between affect and effect?",
+      "expectedTerms": [
+        "affect",
+        "verb",
+        "effect",
+        "noun",
+        "example"
+      ],
+      "requiredTerms": [
+        "affect",
+        "effect"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to distinguish two commonly confused words.\n\n### 2. Identify Given Information\n- Affect and effect sound similar.\n- They usually have different grammar roles.\n\n### 3. Concept or Rule\nAffect is usually a verb meaning to influence. Effect is usually a noun meaning a result.\n\n### 4. Step-by-Step Solution\n1. Example: Use affect for an action: The rain can affect the match.\n2. Example: Use effect for a result: The effect of rain was a delay.\n\n### 5. Final Answer\n**Final answer:** Affect = verb/influence; effect = noun/result.\n\n### 6. Why This Works\nThe word's job in the sentence tells you which one to choose.\n\n### 7. Common Mistakes\nDo not choose by sound; check whether the sentence needs an action or a result.\n\n### 8. Practice Question\nChoose affect or effect: Sleep can ___ your memory.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Identify the noun in this sentence: The cat slept on the mat.",
+      "expectedTerms": [
+        "cat",
+        "mat",
+        "noun",
+        "person, place, thing"
+      ],
+      "requiredTerms": [
+        "cat",
+        "mat"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to identify nouns in the sentence.\n\n### 2. Identify Given Information\n- Sentence: The cat slept on the mat.\n\n### 3. Concept or Rule\nA noun names a person, place, thing, or idea.\n\n### 4. Step-by-Step Solution\n1. Cat is a thing/animal, so it is a noun.\n2. Mat is a thing, so it is also a noun.\n\n### 5. Final Answer\n**Final answer:** The nouns are cat and mat.\n\n### 6. Why This Works\nBoth words name things in the sentence.\n\n### 7. Common Mistakes\nDo not mark slept as a noun; slept is a verb/action.\n\n### 8. Practice Question\nIdentify the nouns: The girl opened the book.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Identify the tense: She has finished her homework.",
+      "expectedTerms": [
+        "present perfect",
+        "has",
+        "past participle",
+        "finished"
+      ],
+      "requiredTerms": [
+        "present perfect"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to identify the tense of the sentence.\n\n### 2. Identify Given Information\n- Sentence: She has finished her homework.\n- Verb phrase: has finished\n\n### 3. Concept or Rule\nHas/have + past participle forms the present perfect tense.\n\n### 4. Step-by-Step Solution\n1. Has is the helping verb.\n2. Finished is the past participle.\n3. Therefore, the tense is present perfect.\n\n### 5. Final Answer\n**Final answer:** The tense is present perfect tense.\n\n### 6. Why This Works\nPresent perfect connects a completed action to the present.\n\n### 7. Common Mistakes\nDo not call it simple past just because finished looks past.\n\n### 8. Practice Question\nIdentify the tense: They have eaten lunch.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Change this sentence into passive voice: The boy kicked the ball.",
+      "expectedTerms": [
+        "The ball was kicked by the boy",
+        "object",
+        "passive"
+      ],
+      "requiredTerms": [
+        "ball was kicked"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to change an active sentence into passive voice.\n\n### 2. Identify Given Information\n- Active: The boy kicked the ball.\n- Object: the ball\n- Verb: kicked\n\n### 3. Concept or Rule\nIn passive voice, the object becomes the subject, and we use was/were + past participle.\n\n### 4. Step-by-Step Solution\n1. Move the object to the front: The ball.\n2. Use was + past participle: was kicked.\n3. Add the doer: by the boy.\n\n### 5. Final Answer\n**Final answer:** The ball was kicked by the boy.\n\n### 6. Why This Works\nThe action remains the same, but focus moves from the doer to the receiver.\n\n### 7. Common Mistakes\nDo not forget the helping verb was/were in passive voice.\n\n### 8. Practice Question\nChange to passive: The girl painted the picture.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Use a or an before the word apple.",
+      "expectedTerms": [
+        "an apple",
+        "vowel sound",
+        "article"
+      ],
+      "requiredTerms": [
+        "an apple"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to choose the correct article before apple.\n\n### 2. Identify Given Information\n- Word: apple\n- Starting sound: vowel sound /a/\n\n### 3. Concept or Rule\nUse an before vowel sounds and a before consonant sounds.\n\n### 4. Step-by-Step Solution\n1. Apple begins with a vowel sound.\n2. So we write an apple.\n\n### 5. Final Answer\n**Final answer:** an apple\n\n### 6. Why This Works\nThe choice depends on sound, not just spelling.\n\n### 7. Common Mistakes\nDo not write a apple because apple starts with a vowel sound.\n\n### 8. Practice Question\nChoose a or an: ___ orange.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Give a synonym for happy.",
+      "expectedTerms": [
+        "joyful",
+        "glad",
+        "pleased",
+        "synonym"
+      ],
+      "requiredTerms": [
+        "synonym"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need a word with a similar meaning to happy.\n\n### 2. Identify Given Information\n- Word: happy\n\n### 3. Concept or Rule\nA synonym is a word with the same or nearly the same meaning.\n\n### 4. Step-by-Step Solution\n1. Happy means feeling good or pleased.\n2. Good synonyms include joyful, glad, and pleased.\n\n### 5. Final Answer\n**Final answer:** A synonym for happy is joyful.\n\n### 6. Why This Works\nJoyful keeps the positive meaning of happy.\n\n### 7. Common Mistakes\nDo not give an antonym like sad.\n\n### 8. Practice Question\nGive a synonym for quick.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "What is a metaphor?",
+      "expectedTerms": [
+        "comparison",
+        "without like or as",
+        "example"
+      ],
+      "requiredTerms": [
+        "without like or as"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to define metaphor.\n\n### 2. Identify Given Information\n- Term: metaphor\n\n### 3. Concept or Rule\nA metaphor is a direct comparison between two unlike things without using like or as.\n\n### 4. Step-by-Step Solution\n1. Example: Time is a thief.\n2. It does not mean time is literally a thief.\n3. It means time takes moments away quickly.\n\n### 5. Final Answer\n**Final answer:** A metaphor is a direct comparison without like or as.\n\n### 6. Why This Works\nMetaphors make writing stronger by creating a clear image.\n\n### 7. Common Mistakes\nDo not confuse metaphor with simile; simile uses like or as.\n\n### 8. Practice Question\nIs 'Her smile is sunshine' a metaphor? Explain.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Explain the theme of honesty in a story.",
+      "expectedTerms": [
+        "theme",
+        "honesty",
+        "truth",
+        "message",
+        "evidence"
+      ],
+      "requiredTerms": [
+        "honesty"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to explain the theme or message of honesty in a story.\n\n### 2. Identify Given Information\n- Theme: honesty\n- Text type: story\n\n### 3. Concept or Rule\nA theme is the central message or lesson a story teaches.\n\n### 4. Step-by-Step Solution\n1. Honest characters tell the truth even when it is difficult.\n2. The story may show trust improving because of honesty.\n3. Evidence should come from the character's choices and results.\n\n### 5. Final Answer\n**Final answer:** The theme is that honesty builds trust and helps people do the right thing.\n\n### 6. Why This Works\nA theme is proven by events and character decisions, not just by naming a moral.\n\n### 7. Common Mistakes\nDo not write only 'honesty is good'; explain how the story shows it.\n\n### 8. Practice Question\nExplain the theme of courage in a story.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Correct the punctuation in this sentence: wow that is amazing",
+      "expectedTerms": [
+        "Wow, that is amazing!",
+        "capital",
+        "comma",
+        "exclamation"
+      ],
+      "requiredTerms": [
+        "Wow"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to correct capitalization and punctuation.\n\n### 2. Identify Given Information\n- Sentence: wow that is amazing\n\n### 3. Concept or Rule\nStart a sentence with a capital letter and use punctuation to show tone or pause.\n\n### 4. Step-by-Step Solution\n1. Capitalize the first word: Wow.\n2. Add a comma after Wow because it is an exclamation word.\n3. End with an exclamation mark for strong feeling.\n\n### 5. Final Answer\n**Final answer:** Wow, that is amazing!\n\n### 6. Why This Works\nThe comma separates the introductory exclamation from the rest of the sentence.\n\n### 7. Common Mistakes\nDo not leave the first word lowercase at the start of a sentence.\n\n### 8. Practice Question\nCorrect: oh that was close",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "English",
+      "subject": "english",
+      "question": "Explain the idiom once in a blue moon.",
+      "expectedTerms": [
+        "rarely",
+        "not often",
+        "idiom",
+        "example"
+      ],
+      "requiredTerms": [
+        "rarely"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to explain the idiom once in a blue moon.\n\n### 2. Identify Given Information\n- Idiom: once in a blue moon\n\n### 3. Concept or Rule\nAn idiom is a phrase whose meaning is different from the literal words.\n\n### 4. Step-by-Step Solution\n1. Once in a blue moon means rarely or not often.\n2. Example: I visit that town once in a blue moon.\n\n### 5. Final Answer\n**Final answer:** Once in a blue moon means rarely.\n\n### 6. Why This Works\nThe phrase is not about the actual color of the moon; it expresses frequency.\n\n### 7. Common Mistakes\nDo not explain idioms literally word by word.\n\n### 8. Practice Question\nUse 'once in a blue moon' in your own sentence.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What caused World War I?",
+      "expectedTerms": [
+        "militarism",
+        "alliances",
+        "imperialism",
+        "nationalism",
+        "assassination"
+      ],
+      "requiredTerms": [
+        "assassination"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nWe need to explain the main causes of World War I.\n\n### 2. Identify Given Information\n- War began in 1914.\n- Europe had tense rivalries before the war.\n\n### 3. Concept or Rule\nThe main causes are often remembered as MAIN: Militarism, Alliances, Imperialism, and Nationalism. The assassination of Archduke Franz Ferdinand triggered the crisis.\n\n### 4. Step-by-Step Solution\n1. Militarism increased arms competition.\n2. Alliances pulled countries into conflict.\n3. Imperialism created rivalry over colonies.\n4. Nationalism increased aggressive pride.\n5. The assassination turned tension into war.\n\n### 5. Final Answer\n**Final answer:** World War I was caused by militarism, alliances, imperialism, nationalism, and the assassination trigger.\n\n### 6. Why This Works\nLong-term tensions made Europe unstable, and the assassination started the chain reaction.\n\n### 7. Common Mistakes\nDo not write only assassination; it was the trigger, not the only cause.\n\n### 8. Practice Question\nWhy did alliances make World War I spread quickly?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "Explain the main causes of the French Revolution.",
+      "expectedTerms": [
+        "tax",
+        "inequality",
+        "estates",
+        "enlightenment",
+        "financial crisis"
+      ],
+      "requiredTerms": [
+        "inequality"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nWe need to explain why the French Revolution happened.\n\n### 2. Identify Given Information\n- France had social inequality.\n- The government faced financial crisis.\n- Common people paid heavy taxes.\n\n### 3. Concept or Rule\nThe revolution grew from inequality, unfair taxes, Enlightenment ideas, food shortage, and weak monarchy.\n\n### 4. Step-by-Step Solution\n1. The Third Estate carried most taxes.\n2. The First and Second Estates had privileges.\n3. Financial crisis weakened the king.\n4. Enlightenment ideas encouraged liberty and equality.\n5. Food shortages increased anger.\n\n### 5. Final Answer\n**Final answer:** The French Revolution was caused by social inequality, financial crisis, Enlightenment ideas, and hardship among common people.\n\n### 6. Why This Works\nPolitical change becomes likely when unfair systems combine with economic suffering.\n\n### 7. Common Mistakes\nDo not mention only one cause; revolutions usually have multiple causes.\n\n### 8. Practice Question\nExplain how the Estates system created inequality in France.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "Who was Ashoka and why is he important?",
+      "expectedTerms": [
+        "Mauryan",
+        "emperor",
+        "Kalinga",
+        "Buddhism",
+        "edicts"
+      ],
+      "requiredTerms": [
+        "Ashoka"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nWe need to identify Ashoka and explain his importance.\n\n### 2. Identify Given Information\n- Ashoka was a Mauryan emperor.\n- The Kalinga war changed his life.\n\n### 3. Concept or Rule\nAshoka is important because after the Kalinga war he promoted Buddhism, dhamma, non-violence, and public welfare through edicts.\n\n### 4. Step-by-Step Solution\n1. Ashoka ruled the Mauryan Empire.\n2. The Kalinga war caused great suffering.\n3. He turned toward Buddhism and dhamma.\n4. His edicts spread moral teachings and good governance.\n\n### 5. Final Answer\n**Final answer:** Ashoka was an important Mauryan emperor known for promoting Buddhism and dhamma after the Kalinga war.\n\n### 6. Why This Works\nHis rule is remembered because he changed from conquest to moral governance.\n\n### 7. Common Mistakes\nDo not describe him only as a warrior; his importance is also moral and administrative.\n\n### 8. Practice Question\nWhy are Ashoka's edicts useful for historians?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What was the Industrial Revolution?",
+      "expectedTerms": [
+        "machines",
+        "factories",
+        "industry",
+        "Britain",
+        "production"
+      ],
+      "requiredTerms": [
+        "machines"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nWe need to define the Industrial Revolution.\n\n### 2. Identify Given Information\n- It began first in Britain.\n- It involved machines and factories.\n\n### 3. Concept or Rule\nThe Industrial Revolution was the shift from hand production to machine-based factory production.\n\n### 4. Step-by-Step Solution\n1. New machines increased production.\n2. Factories grew in towns.\n3. Transport and industry expanded.\n4. Work and society changed.\n\n### 5. Final Answer\n**Final answer:** The Industrial Revolution was the rise of machine production and factories, beginning in Britain.\n\n### 6. Why This Works\nMachines made production faster and changed how people worked and lived.\n\n### 7. Common Mistakes\nDo not treat it as only one invention; it was a broad economic and social change.\n\n### 8. Practice Question\nName two effects of the Industrial Revolution.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "history",
+      "question": "What were the effects of colonialism?",
+      "expectedTerms": [
+        "resources",
+        "trade",
+        "exploitation",
+        "culture",
+        "economy"
+      ],
+      "requiredTerms": [
+        "exploitation"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nWe need to explain the effects of colonialism.\n\n### 2. Identify Given Information\n- Colonial powers controlled other regions.\n- Colonies supplied resources and markets.\n\n### 3. Concept or Rule\nColonialism affected economies, culture, politics, trade, education, and local industries.\n\n### 4. Step-by-Step Solution\n1. Resources were extracted for colonial powers.\n2. Local economies were reshaped for trade.\n3. Many societies faced exploitation.\n4. New education, railways, or administration sometimes appeared, but mainly served colonial interests.\n5. Cultural and political resistance grew.\n\n### 5. Final Answer\n**Final answer:** Colonialism caused exploitation, economy changes, cultural effects, and political resistance.\n\n### 6. Why This Works\nColonial rule changed both the colonizer and the colonized society, but benefits were unequal.\n\n### 7. Common Mistakes\nDo not describe colonialism as fully positive; power and exploitation were central.\n\n### 8. Practice Question\nHow did colonialism affect local industries?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Where is India located?",
+      "expectedTerms": [
+        "South Asia",
+        "Asia",
+        "Indian Ocean",
+        "Northern Hemisphere"
+      ],
+      "requiredTerms": [
+        "South Asia"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nWe need to locate India geographically.\n\n### 2. Identify Given Information\n- Place: India\n- Scale: world and continent\n\n### 3. Concept or Rule\nLocation can be described using continent, region, hemispheres, and nearby water bodies.\n\n### 4. Step-by-Step Solution\n1. India is in Asia.\n2. More specifically, it is in South Asia.\n3. It lies mostly in the Northern Hemisphere.\n4. The Indian Ocean is to its south.\n\n### 5. Final Answer\n**Final answer:** India is located in South Asia, in the continent of Asia.\n\n### 6. Why This Works\nUsing region plus continent gives a clear location quickly.\n\n### 7. Common Mistakes\nDo not answer only Asia if the question asks for a more exact location; South Asia is better.\n\n### 8. Practice Question\nWhere is Brazil located?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Why do earthquakes occur near tectonic plate boundaries?",
+      "expectedTerms": [
+        "tectonic plates",
+        "boundary",
+        "stress",
+        "fault",
+        "seismic waves"
+      ],
+      "requiredTerms": [
+        "tectonic"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nWe need to explain why earthquakes are common near plate boundaries.\n\n### 2. Identify Given Information\n- Earth's crust is divided into tectonic plates.\n- Plate boundaries are where plates meet.\n\n### 3. Concept or Rule\nEarthquakes occur when stress builds along faults at tectonic plate boundaries and is suddenly released as seismic waves.\n\n### 4. Step-by-Step Solution\n1. Plates move slowly.\n2. At boundaries, plates can collide, separate, or slide past each other.\n3. Friction can lock rocks in place.\n4. Stress builds until rocks break or slip.\n5. Energy is released as seismic waves, causing an earthquake.\n\n### 5. Final Answer\n**Final answer:** Earthquakes occur near a tectonic plate boundary or plate boundaries because moving plates build and release stress along faults.\n\n### 6. Why This Works\nPlate boundaries are weak zones where movement and stress are concentrated.\n\n### 7. Common Mistakes\nDo not say earthquakes happen randomly everywhere; many occur where plates interact.\n\n### 8. Practice Question\nWhy are volcanoes common near some plate boundaries?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "What causes monsoon rainfall in India?",
+      "expectedTerms": [
+        "land",
+        "sea",
+        "pressure",
+        "moist winds",
+        "Indian Ocean"
+      ],
+      "requiredTerms": [
+        "monsoon"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nWe need to explain the cause of monsoon rainfall in India.\n\n### 2. Identify Given Information\n- India heats strongly in summer.\n- The Indian Ocean supplies moist air.\n\n### 3. Concept or Rule\nMonsoon rainfall is caused by seasonal wind reversal due to pressure differences between land and sea.\n\n### 4. Step-by-Step Solution\n1. In summer, land heats faster than the sea.\n2. Low pressure forms over land.\n3. Moist winds blow from the Indian Ocean toward land.\n4. The winds rise, cool, and condense to form rainfall.\n\n### 5. Final Answer\n**Final answer:** Monsoon rainfall in India is mainly caused by pressure differences that pull moist ocean winds over land.\n\n### 6. Why This Works\nWarm land and cooler sea create wind movement that brings moisture.\n\n### 7. Common Mistakes\nDo not say clouds come by chance; monsoon winds have a seasonal pattern.\n\n### 8. Practice Question\nWhy does the western coast of India receive heavy monsoon rain?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "Explain the water cycle.",
+      "expectedTerms": [
+        "evaporation",
+        "condensation",
+        "precipitation",
+        "collection"
+      ],
+      "requiredTerms": [
+        "evaporation"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nWe need to explain how water moves through nature.\n\n### 2. Identify Given Information\n- Water changes form and location.\n- Sunlight drives much of the process.\n\n### 3. Concept or Rule\nThe water cycle is the continuous movement of water through evaporation, condensation, precipitation, and collection.\n\n### 4. Step-by-Step Solution\n1. Evaporation: water changes into vapor.\n2. Condensation: vapor cools to form clouds.\n3. Precipitation: water falls as rain, snow, or hail.\n4. Collection: water gathers in rivers, lakes, oceans, and groundwater.\n\n### 5. Final Answer\n**Final answer:** The water cycle is evaporation, condensation, precipitation, and collection.\n\n### 6. Why This Works\nIt recycles water between land, air, and oceans.\n\n### 7. Common Mistakes\nDo not forget groundwater and collection after rainfall.\n\n### 8. Practice Question\nExplain how clouds form in the water cycle.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "History/Geography",
+      "subject": "geography",
+      "question": "What is erosion?",
+      "expectedTerms": [
+        "wearing away",
+        "soil",
+        "rock",
+        "water",
+        "wind"
+      ],
+      "requiredTerms": [
+        "erosion"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nWe need to define erosion.\n\n### 2. Identify Given Information\n- Soil and rock can move from one place to another.\n- Agents include water, wind, ice, and waves.\n\n### 3. Concept or Rule\nErosion is the wearing away and transport of soil or rock by natural forces.\n\n### 4. Step-by-Step Solution\n1. Water can carry soil away.\n2. Wind can move fine particles.\n3. Ice can scrape rocks.\n4. Waves can wear down coasts.\n\n### 5. Final Answer\n**Final answer:** Erosion is the wearing away and movement of soil or rock.\n\n### 6. Why This Works\nIt changes landforms over time by removing material.\n\n### 7. Common Mistakes\nDo not confuse weathering with erosion; weathering breaks material, erosion moves it.\n\n### 8. Practice Question\nGive one example of river erosion.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "A rectangular garden has area 84 square meters and length 5 meters longer than width. Find both dimensions.",
+      "expectedTerms": [
+        "w(w + 5)",
+        "84",
+        "w = 7",
+        "length = 12",
+        "width = 7"
+      ],
+      "requiredTerms": [
+        "12",
+        "7"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to find the width and length of a rectangle using area.\n\n### 2. Identify Given Information\n- Area = 84 square meters\n- Length is 5 meters longer than width\n- Let width = w, so length = w + 5\n\n### 3. Concept or Rule\nArea of rectangle = length x width.\n\n### 4. Step-by-Step Solution\n1. w(w + 5) = 84.\n2. w^2 + 5w - 84 = 0.\n3. Factor: (w + 12)(w - 7) = 0.\n4. Width cannot be negative, so w = 7.\n5. Length = w + 5 = 12.\n\n### 5. Final Answer\n**Final answer:** Width = 7 m and length = 12 m\n\n### 6. Why This Works\nThe area relationship creates a quadratic equation, and the positive solution gives the real garden dimensions.\n\n### 7. Common Mistakes\nDo not accept the negative width because lengths cannot be negative in this context.\n\n### 8. Practice Question\nA rectangle has area 54 m^2 and length 3 m longer than width. Find both dimensions.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "mathematics",
+      "question": "Riya and Aman share chocolates in the ratio 2:3. If total chocolates are 50, how many does each get?",
+      "expectedTerms": [
+        "2 + 3",
+        "5 parts",
+        "20",
+        "30"
+      ],
+      "requiredTerms": [
+        "20",
+        "30"
+      ],
+      "answer": "# Math Solution\n\n### 1. Understand the Question\nWe need to share 50 chocolates in the ratio 2:3.\n\n### 2. Identify Given Information\n- Ratio = 2:3\n- Total chocolates = 50\n- Total parts = 2 + 3 = 5 parts\n\n### 3. Concept or Rule\nOne part = total amount / total ratio parts.\n\n### 4. Step-by-Step Solution\n1. One part = 50 / 5 = 10.\n2. Riya gets 2 parts = 2 x 10 = 20.\n3. Aman gets 3 parts = 3 x 10 = 30.\n\n### 5. Final Answer\n**Final answer:** Riya gets 20 chocolates and Aman gets 30 chocolates\n\n### 6. Why This Works\nRatios split a total into equal parts first, then assign the parts.\n\n### 7. Common Mistakes\nDo not split 50 directly into 2 and 3; first find the value of one part.\n\n### 8. Practice Question\nShare 60 candies in the ratio 1:2.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 9.5,
+        "hallucination_safety": 10.0
+      },
+      "average": 9.92,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "physics",
+      "question": "Explain the difference between mass and weight.",
+      "expectedTerms": [
+        "mass",
+        "weight",
+        "gravity",
+        "kg",
+        "newton"
+      ],
+      "requiredTerms": [
+        "mass",
+        "weight"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to compare mass and weight.\n\n### 2. Identify Given Information\n- Mass measures matter.\n- Weight depends on gravity.\n\n### 3. Concept or Rule\nMass is the amount of matter in an object, measured in kg. Weight is the gravitational force on that mass, measured in newtons.\n\n### 4. Step-by-Step Solution\n1. Mass stays the same from place to place.\n2. Weight changes when gravity changes.\n3. Formula: weight = mass x gravitational acceleration.\n\n### 5. Final Answer\n**Final answer:** Mass is measured in kg; weight is a force measured in newtons.\n\n### 6. Why This Works\nWeight changes on the Moon because gravity is weaker, but mass stays the same.\n\n### 7. Common Mistakes\nDo not use kg as the unit of weight in physics calculations.\n\n### 8. Practice Question\nWhy is your weight smaller on the Moon but your mass the same?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "chemistry",
+      "question": "Balance the equation H2 + O2 -> H2O.",
+      "expectedTerms": [
+        "2H2",
+        "O2",
+        "2H2O",
+        "atoms",
+        "balanced"
+      ],
+      "requiredTerms": [
+        "2H2",
+        "2H2O"
+      ],
+      "answer": "# Chemistry Note\n\n### 1. Understand the Question\nWe need to balance the chemical equation so atoms are equal on both sides.\n\n### 2. Identify Given Information\n- Unbalanced equation: H2 + O2 -> H2O\n- Atoms must be conserved.\n\n### 3. Concept or Rule\nA balanced equation has the same number of each type of atom on reactant and product sides.\n\n### 4. Step-by-Step Solution\n1. Start: H2 + O2 -> H2O.\n2. Oxygen has 2 atoms on the left but 1 on the right, so write 2H2O.\n3. Now hydrogen is 4 on the right, so write 2H2 on the left.\n4. Balanced equation: 2H2 + O2 -> 2H2O.\n\n### 5. Final Answer\n**Final answer:** 2H2 + O2 -> 2H2O\n\n### 6. Why This Works\nThe coefficients make hydrogen and oxygen atom counts equal on both sides.\n\n### 7. Common Mistakes\nDo not change chemical formulas like H2O; change only coefficients.\n\n### 8. Practice Question\nBalance: N2 + H2 -> NH3.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "biology",
+      "question": "How does photosynthesis help plants survive?",
+      "expectedTerms": [
+        "glucose",
+        "food",
+        "energy",
+        "oxygen",
+        "sunlight"
+      ],
+      "requiredTerms": [
+        "food",
+        "glucose"
+      ],
+      "answer": "# Biology Note\n\n### 1. Understand the Question\nWe need to explain how photosynthesis helps plants stay alive.\n\n### 2. Identify Given Information\n- Plants contain chlorophyll.\n- Inputs: sunlight, carbon dioxide, and water.\n- Outputs: glucose and oxygen.\n\n### 3. Concept or Rule\nPhotosynthesis converts light energy into chemical energy stored in glucose.\n\n### 4. Step-by-Step Solution\n1. Chlorophyll absorbs sunlight.\n2. Leaves take in carbon dioxide from air.\n3. Roots absorb water from soil.\n4. The plant makes glucose for food and releases oxygen.\n\n### 5. Final Answer\n**Final answer:** Photosynthesis helps plants survive by making glucose, their food, using sunlight, carbon dioxide, and water.\n\n### 6. Why This Works\nGlucose stores energy that plants use for growth, repair, and survival.\n\n### 7. Common Mistakes\nDo not say plants get food from soil; soil gives minerals and water, but glucose is made in leaves.\n\n### 8. Practice Question\nWhy is chlorophyll important for photosynthesis?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "english",
+      "question": "Write a character sketch of a brave student.",
+      "expectedTerms": [
+        "brave",
+        "qualities",
+        "evidence",
+        "conclusion",
+        "student"
+      ],
+      "requiredTerms": [
+        "brave"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to write a short character sketch of a brave student.\n\n### 2. Identify Given Information\n- Character: a student\n- Main trait: brave\n\n### 3. Concept or Rule\nA character sketch describes personality, qualities, actions, and evidence.\n\n### 4. Step-by-Step Solution\n1. Start with the student's main quality: brave.\n2. Show actions: helps others, speaks the truth, faces problems calmly.\n3. Add evidence: does the right thing even when afraid.\n4. End with a conclusion about the character.\n\n### 5. Final Answer\n**Final answer:** A brave student is confident, helpful, honest, and ready to face challenges for the right reason.\n\n### 6. Why This Works\nA good sketch proves qualities through actions, not just adjectives.\n\n### 7. Common Mistakes\nDo not list traits only; support each trait with behavior.\n\n### 8. Practice Question\nWrite a character sketch of a kind friend.",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "history",
+      "question": "Explain nationalism in Europe.",
+      "expectedTerms": [
+        "nationalism",
+        "nation",
+        "identity",
+        "Europe",
+        "unification"
+      ],
+      "requiredTerms": [
+        "nationalism"
+      ],
+      "answer": "# History Note\n\n### 1. Understand the Question\nWe need to explain nationalism in Europe.\n\n### 2. Identify Given Information\n- Nationalism means loyalty to a nation.\n- Europe had many kingdoms and empires.\n\n### 3. Concept or Rule\nNationalism in Europe encouraged people with shared language, culture, and identity to demand nation-states.\n\n### 4. Step-by-Step Solution\n1. People began identifying as members of a nation.\n2. Nationalist ideas challenged old empires.\n3. Movements for unification grew in places like Italy and Germany.\n4. National identity also increased rivalry between states.\n\n### 5. Final Answer\n**Final answer:** Nationalism in Europe promoted national identity, unification movements, and political change.\n\n### 6. Why This Works\nShared identity can unite people, but aggressive nationalism can also create conflict.\n\n### 7. Common Mistakes\nDo not confuse nationalism with patriotism only; it also shaped political movements.\n\n### 8. Practice Question\nHow did nationalism help unify Germany or Italy?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "geography",
+      "question": "Why are rivers important for settlements?",
+      "expectedTerms": [
+        "water",
+        "farming",
+        "transport",
+        "trade",
+        "settlements"
+      ],
+      "requiredTerms": [
+        "water"
+      ],
+      "answer": "# Geography Note\n\n### 1. Understand the Question\nWe need to explain why people settle near rivers.\n\n### 2. Identify Given Information\n- Rivers provide water.\n- Settlements need resources and transport.\n\n### 3. Concept or Rule\nRivers support settlements by providing water, fertile soil, farming, transport, trade, and sometimes defense.\n\n### 4. Step-by-Step Solution\n1. People use river water for drinking and irrigation.\n2. Floodplains often have fertile soil for farming.\n3. Rivers help transport goods and people.\n4. Trade grows along river routes.\n\n### 5. Final Answer\n**Final answer:** Rivers are important for settlements because they support water supply, farming, transport, and trade.\n\n### 6. Why This Works\nSettlements grow where basic needs and movement are easier.\n\n### 7. Common Mistakes\nDo not mention only drinking water; rivers also shape economy and farming.\n\n### 8. Practice Question\nWhy did many ancient civilizations grow near rivers?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "physics",
+      "question": "Why do metals conduct heat well?",
+      "expectedTerms": [
+        "free electrons",
+        "particles",
+        "thermal energy",
+        "conduction"
+      ],
+      "requiredTerms": [
+        "conduct"
+      ],
+      "answer": "# Physics Explanation\n\n### 1. Understand the Question\nWe need to explain why metals are good heat conductors.\n\n### 2. Identify Given Information\n- Metals conduct heat well.\n- Heat is thermal energy transfer.\n\n### 3. Concept or Rule\nMetals have free electrons that move through the metal and transfer thermal energy quickly.\n\n### 4. Step-by-Step Solution\n1. Heating one part gives particles more kinetic energy.\n2. Free electrons carry energy through the metal.\n3. Vibrating particles also pass energy to neighbors.\n4. This makes conduction fast.\n\n### 5. Final Answer\n**Final answer:** Metals conduct heat well mainly because free electrons transfer thermal energy efficiently.\n\n### 6. Why This Works\nMobile electrons spread energy faster than vibration alone.\n\n### 7. Common Mistakes\nDo not say heat travels only because the metal is shiny; the internal particle structure matters.\n\n### 8. Practice Question\nWhy is a metal spoon hotter than a wooden spoon in hot soup?",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    },
+    {
+      "group": "Mixed",
+      "subject": "english",
+      "question": "What are homophones? Give examples.",
+      "expectedTerms": [
+        "same sound",
+        "different meaning",
+        "different spelling",
+        "example"
+      ],
+      "requiredTerms": [
+        "same sound"
+      ],
+      "answer": "# English Note\n\n### 1. Understand the Question\nWe need to explain homophones and give examples.\n\n### 2. Identify Given Information\n- Term: homophones\n\n### 3. Concept or Rule\nHomophones are words with the same sound but different meanings and often different spelling.\n\n### 4. Step-by-Step Solution\n1. Example: to, too, two.\n2. Example: pair and pear.\n3. The sound is similar, but meaning changes.\n\n### 5. Final Answer\n**Final answer:** Homophones have the same sound but different meaning.\n\n### 6. Why This Works\nContext tells us which homophone is correct in a sentence.\n\n### 7. Common Mistakes\nDo not use homophones only by sound; check meaning and spelling.\n\n### 8. Practice Question\nChoose the correct word: I have ___ books. (to/too/two)",
+      "scores": {
+        "accuracy": 10.0,
+        "educational_value": 10.0,
+        "clarity": 10.0,
+        "completeness": 10.0,
+        "relevance": 10.0,
+        "hallucination_safety": 10.0
+      },
+      "average": 10.0,
+      "failures": [],
+      "missingTerms": [],
+      "whyItFailed": [],
+      "suggestedImprovement": "Include the specific expected concepts, show the method or rule, then give a clear final answer and one practice question."
+    }
+  ]
+}
