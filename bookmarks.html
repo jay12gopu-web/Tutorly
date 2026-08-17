@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/bookmarks.css" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body class="bookmarks-page">
+  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <div class="brand"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></div>
+      <nav class="nav-links">
+        <a href="home.html">Chat</a>
+        <a href="maths_gpt.html">AI Tutor</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="bookmarks-shell">
+    <section class="bookmarks-hero fade-up d2">
+      <div>
+        <span class="bookmarks-kicker">Saved learning desk</span>
+        <h1 class="bookmarks-title">Your important study stuff, one click away.</h1>
+        <p class="bookmarks-sub">Save doubts, notes, tests, tutor pages, and useful links. Search them quickly, pin the important ones, and mark items done when you finish revising.</p>
+        <div class="hero-actions">
+          <a class="bookmark-btn" href="#bookmarkFormPanel">Add bookmark</a>
+          <a class="bookmark-btn secondary" href="maths_gpt.html">Open AI Tutor</a>
+        </div>
+      </div>
+      <aside class="hero-visual" aria-hidden="true">
+        <div class="floating-bookmark one"><strong>Saved doubt</strong><span>Germination concept explained clearly.</span></div>
+        <div class="floating-bookmark two"><strong>Test set</strong><span>Algebra equations practice.</span></div>
+        <div class="floating-bookmark three"><strong>Tutor page</strong><span>Online maths session options.</span></div>
+      </aside>
+    </section>
+
+    <section class="bookmarks-panel fade-up d3" aria-label="Bookmark controls">
+      <div class="bookmark-toolbar">
+        <input class="bookmark-search" id="bookmarkSearch" type="search" placeholder="Search bookmarks, subjects, tags..." aria-label="Search bookmarks" />
+        <select class="bookmark-select" id="bookmarkSort" aria-label="Sort bookmarks">
+          <option value="recent">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="title">Title A-Z</option>
+        </select>
+      </div>
+      <div class="filter-row" aria-label="Bookmark filters">
+        <button class="filter-chip active" type="button" data-bookmark-filter="all">All</button>
+        <button class="filter-chip" type="button" data-bookmark-filter="doubt">Doubts</button>
+        <button class="filter-chip" type="button" data-bookmark-filter="note">Notes</button>
+        <button class="filter-chip" type="button" data-bookmark-filter="test">Tests</button>
+        <button class="filter-chip" type="button" data-bookmark-filter="tutor">Tutors</button>
+      </div>
+      <div class="stats-grid" aria-label="Bookmark stats">
+        <div class="bookmark-stat"><strong id="bookmarkTotal">0</strong><span>Total saved</span></div>
+        <div class="bookmark-stat"><strong id="bookmarkPinned">0</strong><span>Pinned</span></div>
+        <div class="bookmark-stat"><strong id="bookmarkCompleted">0</strong><span>Completed</span></div>
+        <div class="bookmark-stat"><strong id="bookmarkActiveType">0</strong><span>Current view</span></div>
+      </div>
+    </section>
+
+    <section class="bookmark-layout">
+      <section class="bookmarks-panel fade-up d4" aria-label="Saved bookmarks">
+        <div class="bookmark-list" id="bookmarkList"></div>
+        <div class="empty-state" id="bookmarkEmpty" hidden>No bookmarks found. Try another filter or add a new bookmark.</div>
+      </section>
+
+      <aside class="bookmark-form-card fade-up d4" id="bookmarkFormPanel">
+        <h2>Add Bookmark</h2>
+        <p>Save a useful page, doubt, note, test, or tutor search. Everything is stored on this device for now.</p>
+        <form class="bookmark-form" id="bookmarkForm">
+          <input class="bookmark-input" id="bookmarkTitle" type="text" placeholder="Title, e.g. Photosynthesis note" required />
+          <select class="bookmark-select" id="bookmarkType" aria-label="Bookmark type">
+            <option value="doubt">AI Doubt</option>
+            <option value="note">Study Note</option>
+            <option value="test">Test</option>
+            <option value="tutor">Tutor</option>
+          </select>
+          <input class="bookmark-input" id="bookmarkUrl" type="text" placeholder="Page link, e.g. maths_gpt.html" />
+          <textarea class="bookmark-textarea" id="bookmarkNote" placeholder="Short note about why this is useful"></textarea>
+          <input class="bookmark-input" id="bookmarkTags" type="text" placeholder="Tags separated by commas, e.g. maths, algebra" />
+          <button class="bookmark-btn" type="submit">Save Bookmark</button>
+          <button class="bookmark-btn danger" id="clearDoneBtn" type="button">Clear Completed</button>
+        </form>
+      </aside>
+    </section>
+  </main>
+
+  <div class="bookmark-toast" id="bookmarkToast" role="status" aria-live="polite"></div>
+  <script src="js/bookmarks.js"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

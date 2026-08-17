@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="frontend/subscription/subscription.css" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+  <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <a class="brand" href="home.html" aria-label="Tutorly Home"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></a>
+      <nav class="nav-links">
+        <a href="home.html">Chat</a>
+        <a href="payment-history.html">Payment history</a>
+        <a href="contact.html">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="payment-shell">
+    <section class="payment-hero fade-up">
+      <div>
+        <span class="payment-kicker">Secure Razorpay payments</span>
+        <h1 class="payment-title">Choose your Tutorly plan.</h1>
+        <p class="payment-sub">Upgrade for premium AI tools, image and voice doubts, and smoother learning support. You can switch plans anytime.</p>
+      </div>
+
+    
+    </section>
+
+    <section class="plans-grid fade-up d2" aria-label="Subscription plans">
+      <article class="plan-card">
+        <div class="plan-top">
+          <div>
+            <h2 class="plan-name">Casual</h2>
+            <div class="plan-price">Free</div>
+          </div>
+          <span class="current-pill" data-current-for="casual">Current</span>
+        </div>
+        <ul class="plan-features">
+          <li>Basic workspace access</li>
+          <li>Limited AI learning help</li>
+          <li>Free tests and quests</li>
+        </ul>
+        <button class="plan-button secondary" type="button" data-plan-button="casual">Use Casual</button>
+      </article>
+
+      <article class="plan-card featured">
+        <span class="plan-ribbon">Recommended</span>
+        <div class="plan-top">
+          <div>
+            <h2 class="plan-name">Plus</h2>
+            <div class="plan-price">â‚¹499<small>/month</small></div>
+          </div>
+          <span class="current-pill" data-current-for="plus">Current</span>
+        </div>
+        <ul class="plan-features">
+          <li>Premium AI doubt support</li>
+          <li>Image and voice doubt tools</li>
+          <li>Priority learning help</li>
+        </ul>
+        <button class="plan-button" type="button" data-plan-button="plus">Subscribe Plus</button>
+      </article>
+
+      <article class="plan-card">
+        <div class="plan-top">
+          <div>
+            <h2 class="plan-name">Pro</h2>
+            <div class="plan-price">â‚¹999<small>/month</small></div>
+          </div>
+          <span class="current-pill" data-current-for="pro">Current</span>
+        </div>
+        <ul class="plan-features">
+          <li>Everything in Plus</li>
+          <li>Advanced AI learning help</li>
+          <li>Best for regular study</li>
+        </ul>
+        <button class="plan-button" type="button" data-plan-button="pro">Subscribe Pro</button>
+      </article>
+    </section>
+
+    <section class="payment-panel fade-up d4">
+      <div class="session-card">
+        <div>
+          <h2>Manage Subscription</h2>
+          <p>Cancel your active paid plan locally and return to Casual. Razorpay order payments remain in your payment history.</p>
+        </div>
+        <div class="panel-actions">
+          <button class="pay-action secondary" id="cancelSubscriptionBtn" type="button">Cancel Subscription</button>
+          <a class="pay-action secondary" href="payment-history.html">View History</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="payment-toast" id="paymentToast" role="status" aria-live="polite"></div>
+  <script src="frontend/subscription/subscription.js"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/campus.js?v=campus-20260629"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
+

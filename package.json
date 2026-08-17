@@ -1,0 +1,27 @@
+{
+  "name": "tutorly-payments",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tutorly Razorpay payment and subscription backend",
+  "main": "backend/server.js",
+  "scripts": {
+    "payments:start": "node backend/server.js",
+    "payments:dev": "nodemon backend/server.js",
+    "check:payments": "node --check backend/server.js",
+    "check:chatbot": "node tests/chatbot-static-check.js",
+    "check:chatbot:backend": "python tests/chatbot_backend_smoke.py"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.3",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.2.1",
+    "morgan": "^1.10.0",
+    "razorpay": "^2.9.4",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

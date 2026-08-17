@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <style>
+    :root {
+      --exam-ink: #172033;
+      --exam-muted: #60708d;
+      --exam-line: #dfe8f8;
+      --exam-surface: rgba(255,255,255,.92);
+      --exam-soft: #f5f8ff;
+      --exam-blue: #1a73e8;
+      --exam-green: #0f9d58;
+      --exam-amber: #b7791f;
+      --exam-rose: #d93075;
+      --exam-violet: #7e57c2;
+    }
+
+    body.exam-page {
+      color: var(--exam-ink);
+      background:
+        linear-gradient(90deg, rgba(26,115,232,.05) 1px, transparent 1px),
+        linear-gradient(rgba(26,115,232,.05) 1px, transparent 1px),
+        radial-gradient(circle at 10% 10%, rgba(138,180,248,.25), transparent 30%),
+        radial-gradient(circle at 88% 8%, rgba(126,87,194,.16), transparent 28%),
+        #f8fbff;
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+    }
+
+    .exam-shell { margin-top: 14px; padding-bottom: 80px; }
+    .exam-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      border: 1px solid var(--exam-line);
+      border-radius: 22px;
+      padding: 18px;
+      background: var(--exam-surface);
+      box-shadow: 0 18px 44px rgba(42, 71, 134, .12);
+    }
+
+    .section-kicker,
+    .exam-kicker {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 6px 11px;
+      color: #174ea6;
+      background: #e8f0fe;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .exam-title {
+      margin: 8px 0 6px;
+      font-family: "Baloo 2", "Nunito", sans-serif;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: .96;
+    }
+
+    .exam-subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: var(--exam-muted);
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .profile-pill {
+      justify-self: end;
+      border: 1px solid #cfe0ff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: #fff;
+      color: #24488d;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .recommendation {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      border: 1px solid #cfe0ff;
+      border-radius: 18px;
+      padding: 15px;
+      background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(239,246,255,.95));
+      box-shadow: 0 14px 30px rgba(42, 71, 134, .1);
+    }
+
+    .recommendation h2 { margin: 6px 0 4px; font-size: 26px; }
+    .recommendation p { margin: 0; color: var(--exam-muted); font-weight: 800; }
+    .recommendation-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .recommendation-meta span {
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: #1b4f46;
+      background: #e7f8ef;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .setup-panel,
+    .exam-view,
+    .report-view,
+    .history-panel {
+      margin-top: 16px;
+      border: 1px solid var(--exam-line);
+      border-radius: 22px;
+      padding: 18px;
+      background: var(--exam-surface);
+      box-shadow: 0 18px 44px rgba(42, 71, 134, .1);
+    }
+
+    .stepper {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .stepper span {
+      border: 1px solid #dbe7fb;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #4a5f83;
+      background: #fff;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .stepper span.active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(120deg, var(--exam-blue), var(--exam-violet));
+    }
+
+    .step-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .step-head h2 {
+      margin: 0;
+      font-family: "Baloo 2", "Nunito", sans-serif;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+    }
+
+    .step-head p { margin: 5px 0 0; color: var(--exam-muted); font-weight: 800; }
+
+    .subject-grid,
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .exam-card {
+      border: 1px solid #dce7fb;
+      border-radius: 16px;
+      min-height: 142px;
+      padding: 14px;
+      background: #fff;
+      color: var(--exam-ink);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease;
+    }
+
+    .exam-card:hover,
+    .exam-card.selected {
+      transform: translateY(-3px);
+      border-color: #8ab4f8;
+      box-shadow: 0 18px 34px rgba(26, 115, 232, .16);
+    }
+
+    .card-icon {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--exam-blue), var(--exam-violet));
+      font-weight: 900;
+    }
+
+    .accent-green .card-icon { background: linear-gradient(135deg, var(--exam-green), #24c6a3); }
+    .accent-amber .card-icon { background: linear-gradient(135deg, var(--exam-amber), #f4b740); }
+    .accent-rose .card-icon { background: linear-gradient(135deg, var(--exam-rose), #ff7aa2); }
+    .accent-violet .card-icon { background: linear-gradient(135deg, var(--exam-violet), #5f7cff); }
+    .exam-card strong { display: block; font-size: 18px; font-weight: 900; }
+    .exam-card small { display: block; margin-top: 6px; color: var(--exam-muted); font-weight: 800; line-height: 1.4; }
+
+    .chapter-tools {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .check-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--exam-line);
+      border-radius: 999px;
+      padding: 10px 13px;
+      background: #fff;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-height: 460px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .chapter-option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+      border: 1px solid #dce7fb;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .chapter-option:hover,
+    .chapter-option.selected {
+      border-color: #8ab4f8;
+      background: #f2f7ff;
+      transform: translateY(-1px);
+    }
+
+    .chapter-option input { margin-top: 4px; width: 18px; height: 18px; }
+    .chapter-option strong { display: block; font-size: 15px; }
+    .chapter-option small { display: block; margin-top: 4px; color: var(--exam-muted); font-size: 12px; font-weight: 800; line-height: 1.4; }
+    .setup-actions { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+    .mode-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .mode-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mode-options label,
+    .setup-note {
+      display: grid;
+      gap: 6px;
+      color: #31508d;
+      font-weight: 900;
+    }
+
+    .setup-note {
+      grid-column: 1 / -1;
+      margin: 0;
+      border: 1px solid #cfe0ff;
+      border-radius: 14px;
+      padding: 12px;
+      background: #f4f8ff;
+      color: var(--exam-muted);
+    }
+
+    .exam-top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .exam-top h2,
+    .report-head h2 { margin: 0; font-family: "Baloo 2", "Nunito", sans-serif; font-size: 38px; line-height: 1; }
+    .exam-top p,
+    .report-head p { margin: 6px 0 0; color: var(--exam-muted); font-weight: 800; }
+    .timer-badge {
+      border-radius: 999px;
+      padding: 11px 14px;
+      color: #fff;
+      background: linear-gradient(120deg, #172033, #31508d);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      height: 12px;
+      border-radius: 999px;
+      background: #e6eefc;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .progress-track span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--exam-blue), var(--exam-green));
+      transition: width 260ms ease;
+    }
+
+    .question-card {
+      border: 1px solid var(--exam-line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .question-meta { margin: 0 0 8px; color: #31508d; font-weight: 900; }
+    .question-text { margin: 0 0 16px; font-size: clamp(22px, 3vw, 34px); font-weight: 900; line-height: 1.25; }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .answer-option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      min-height: 82px;
+      border: 1px solid #d9e4f7;
+      border-radius: 14px;
+      padding: 14px;
+      background: #f8fbff;
+      color: var(--exam-ink);
+      font: inherit;
+      font-weight: 900;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    .answer-option:hover,
+    .answer-option.selected {
+      transform: translateY(-2px);
+      border-color: #8ab4f8;
+      background: #edf4ff;
+    }
+
+    .answer-option b {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      color: #fff;
+      background: var(--exam-blue);
+    }
+
+    .hint-box {
+      margin: 12px 0 0;
+      border: 1px solid #b8d3ff;
+      border-radius: 14px;
+      padding: 12px;
+      background: #edf5ff;
+      color: #24488d;
+      font-weight: 900;
+    }
+
+    .exam-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .report-head {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .score-pill {
+      display: grid;
+      place-items: center;
+      min-width: 90px;
+      min-height: 72px;
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--exam-blue), var(--exam-violet));
+      font-weight: 900;
+      font-size: 24px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .metric-card {
+      border: 1px solid var(--exam-line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .metric-card span { display: block; color: var(--exam-muted); font-weight: 900; }
+    .metric-card strong { display: block; margin-top: 6px; font-size: 28px; }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: minmax(250px, .8fr) minmax(0, 1.2fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .score-ring {
+      --correct: 0;
+      --incorrect: 0;
+      --unattempted: 0;
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      border: 1px solid var(--exam-line);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at center, #fff 0 45%, transparent 46%),
+        conic-gradient(#34a853 0 calc((var(--correct) / max(1, (var(--correct) + var(--incorrect) + var(--unattempted)))) * 1turn), #ea4335 0 calc(((var(--correct) + var(--incorrect)) / max(1, (var(--correct) + var(--incorrect) + var(--unattempted)))) * 1turn), #aeb8c8 0);
+    }
+
+    .score-ring strong { font-size: 42px; }
+    .analytics-panel {
+      border: 1px solid var(--exam-line);
+      border-radius: 18px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .analytics-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .analytics-list span,
+    .time-stats span {
+      border: 1px solid #e1e9f7;
+      border-radius: 14px;
+      padding: 11px;
+      background: #f8fbff;
+      color: var(--exam-muted);
+      font-weight: 900;
+    }
+
+    .analytics-list b,
+    .time-stats b { color: var(--exam-ink); }
+
+    .time-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .topic-bars { display: grid; gap: 10px; margin-top: 12px; }
+    .topic-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+      font-weight: 900;
+    }
+
+    .topic-track {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e6eefc;
+    }
+
+    .topic-track i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--exam-green), var(--exam-blue));
+    }
+
+    .feedback-box,
+    .review-panel {
+      border: 1px solid var(--exam-line);
+      border-radius: 18px;
+      margin-top: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .feedback-box p { margin: 0 0 10px; color: var(--exam-muted); font-weight: 800; line-height: 1.6; }
+    .next-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid #cfe0ff;
+      border-radius: 16px;
+      padding: 12px;
+      background: #f3f8ff;
+      flex-wrap: wrap;
+    }
+
+    .review-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-row button {
+      border: 1px solid var(--exam-line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #31508d;
+      background: #fff;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .filter-row button.active {
+      color: #fff;
+      border-color: transparent;
+      background: var(--exam-blue);
+    }
+
+    .question-review { display: grid; gap: 10px; }
+    .review-item {
+      border: 1px solid var(--exam-line);
+      border-radius: 14px;
+      padding: 4px 12px;
+      background: #fbfdff;
+    }
+
+    .review-item summary {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 0;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .review-item.correct summary b { color: #137333; }
+    .review-item.incorrect summary b { color: #b3261e; }
+    .review-item.unattempted summary b { color: #667085; }
+    .review-item p { color: var(--exam-muted); font-weight: 800; line-height: 1.55; }
+    .review-item dl {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 8px 12px;
+      margin: 10px 0;
+    }
+
+    .review-item dt { color: #31508d; font-weight: 900; }
+    .review-item dd { margin: 0; font-weight: 800; }
+    .explanation {
+      border-radius: 14px;
+      padding: 12px;
+      background: #f4f8ff;
+    }
+
+    .history-head {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .history-list { display: grid; gap: 10px; }
+    .history-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--exam-line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .history-row span { display: block; color: var(--exam-muted); font-weight: 800; }
+    .empty-note { margin: 0; color: var(--exam-muted); font-weight: 900; }
+
+    [hidden] { display: none !important; }
+
+    @media (prefers-color-scheme: dark) {
+      body.exam-page {
+        --exam-ink: #eef4ff;
+        --exam-muted: #b7c5df;
+        --exam-line: rgba(255,255,255,.12);
+        --exam-surface: rgba(15,23,42,.9);
+        --exam-soft: #111827;
+        background:
+          linear-gradient(90deg, rgba(138,180,248,.06) 1px, transparent 1px),
+          linear-gradient(rgba(138,180,248,.06) 1px, transparent 1px),
+          #07111f;
+      }
+      .exam-card,
+      .chapter-option,
+      .question-card,
+      .metric-card,
+      .analytics-panel,
+      .feedback-box,
+      .review-panel,
+      .history-row,
+      .check-row,
+      .input,
+      .select { background: rgba(17,24,39,.88); color: var(--exam-ink); }
+      .answer-option,
+      .analytics-list span,
+      .time-stats span,
+      .review-item,
+      .explanation,
+      .next-card { background: rgba(30,41,59,.72); }
+      .profile-pill { background: rgba(17,24,39,.9); color: #d8e6ff; }
+    }
+
+    @media (max-width: 1100px) {
+      .subject-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .mode-grid, .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .chapter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .time-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 780px) {
+      .exam-hero,
+      .recommendation,
+      .exam-top,
+      .report-head,
+      .analytics-grid,
+      .history-head {
+        grid-template-columns: 1fr;
+      }
+      .profile-pill { justify-self: start; }
+      .subject-grid,
+      .mode-grid,
+      .chapter-grid,
+      .mode-options,
+      .answer-grid,
+      .report-grid,
+      .analytics-list,
+      .time-stats {
+        grid-template-columns: 1fr;
+      }
+      .chapter-tools { grid-template-columns: 1fr; }
+      .history-row { grid-template-columns: 1fr; }
+      .topic-row { grid-template-columns: 1fr; }
+      .exam-actions .btn,
+      .setup-actions .btn { width: 100%; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body class="exam-page">
+  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <a class="brand" href="home.html" aria-label="Go to Tutorly home">
+        <img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" />
+      </a>
+      <nav class="nav-links">
+        <a href="home.html">Chat</a>
+        <a href="profile.html">Profile</a>
+        <a href="maths_gpt.html">AI Tutor</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell exam-shell">
+    <section class="exam-hero fade-up d2">
+      <div>
+        <span class="exam-kicker">Personalized Exams</span>
+        <h1 class="exam-title">Syllabus-aware testing</h1>
+        <p class="exam-subtitle">Tutorly uses your saved academic profile, selected subject, and selected chapters before building a test.</p>
+      </div>
+      <span class="profile-pill" id="profilePill">Grade 9 | CBSE</span>
+    </section>
+
+    <section class="recommendation fade-up d3" id="recommendationBox" aria-label="Recommended test"></section>
+
+    <section class="setup-panel fade-up d3" id="setupPanel">
+      <div class="stepper" aria-label="Exam setup steps">
+        <span data-step="subject" class="active">1. Subject</span>
+        <span data-step="chapter">2. Chapter</span>
+        <span data-step="mode">3. Test Type</span>
+      </div>
+
+      <div id="subjectStep">
+        <div class="step-head">
+          <div>
+            <h2>Select Subject</h2>
+            <p>Loaded automatically from your grade and board.</p>
+          </div>
+        </div>
+        <div class="subject-grid" id="subjectGrid"></div>
+      </div>
+
+      <div id="chapterStep" hidden>
+        <div class="step-head">
+          <div>
+            <h2>Select Chapter</h2>
+            <p id="subjectSummary">CBSE Grade 9 | Mathematics</p>
+          </div>
+          <span class="profile-pill" id="chapterCount">0 selected</span>
+        </div>
+        <div class="chapter-tools">
+          <input class="input" id="chapterSearch" type="search" placeholder="Search chapters" />
+          <label class="check-row"><input id="selectAllChapters" type="checkbox" /> Select All</label>
+          <button class="btn btn-soft" id="backToSubjects" type="button">Back</button>
+        </div>
+        <div class="chapter-grid" id="chapterGrid"></div>
+        <div class="setup-actions">
+          <span class="empty-note">Single or multiple chapter selection is supported.</span>
+          <button class="btn btn-primary" id="continueToModes" type="button" disabled>Continue</button>
+        </div>
+      </div>
+
+      <div id="modeStep" hidden>
+        <div class="step-head">
+          <div>
+            <h2>Choose Test Type</h2>
+            <p id="modeSummary">Mathematics | Number Systems</p>
+          </div>
+          <button class="btn btn-soft" id="backToChapters" type="button">Back</button>
+        </div>
+        <div class="mode-grid" id="modeGrid"></div>
+        <div class="mode-options" id="modeOptions"></div>
+        <div class="setup-actions">
+          <span class="empty-note">Questions are generated only from selected chapters.</span>
+          <button class="btn btn-primary" id="startExamBtn" type="button">Start Test</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="exam-view fade-up" id="examView" hidden>
+      <div class="exam-top">
+        <div>
+          <h2 id="examTitle">Practice Quiz</h2>
+          <p id="examSubtitle">Mathematics | Number Systems</p>
+        </div>
+        <span class="timer-badge">Time: <b id="timerText">No limit</b></span>
+      </div>
+      <p class="question-meta" id="progressText">Question 1 of 10</p>
+      <div class="progress-track" aria-label="Exam progress"><span id="progressFill"></span></div>
+      <article class="question-card">
+        <p class="question-meta" id="questionMeta">Chapter | Concept</p>
+        <h3 class="question-text" id="questionText">Question text</h3>
+        <div class="answer-grid" id="answerGrid"></div>
+        <p class="hint-box" id="hintBox" hidden></p>
+        <div class="exam-actions">
+          <button class="btn btn-soft" id="hintBtn" type="button">Hint</button>
+          <button class="btn btn-soft" id="skipQuestionBtn" type="button">Skip</button>
+          <button class="btn btn-primary" id="submitAnswerBtn" type="button">Submit Answer</button>
+          <button class="btn btn-soft" id="finishExamBtn" type="button">Finish Test</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="report-view fade-up" id="reportView" hidden>
+      <div class="report-head">
+        <div>
+          <span class="section-kicker">Test Completed</span>
+          <h2 id="reportTitle">Excellent: 18/20</h2>
+          <p id="reportSubtitle">Chapter Test | Mathematics | Number Systems</p>
+        </div>
+        <div class="score-pill" id="reportScore">90%</div>
+        <div class="metric-card"><span>Grade</span><strong id="reportGrade">A</strong></div>
+        <div class="metric-card"><span>Time</span><strong id="reportTime">16m</strong></div>
+      </div>
+
+      <div class="report-grid">
+        <article class="metric-card"><span>Correct</span><strong id="correctCount">0</strong></article>
+        <article class="metric-card"><span>Incorrect</span><strong id="incorrectCount">0</strong></article>
+        <article class="metric-card"><span>Unattempted</span><strong id="unattemptedCount">0</strong></article>
+        <article class="metric-card"><span>Average Time</span><strong id="avgTimeCount">0s</strong></article>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="score-ring" id="scoreRing"><strong id="reportAverage">0s</strong></div>
+        <div class="analytics-panel">
+          <div class="analytics-list">
+            <span>Accuracy: <b id="accuracyValue">0%</b></span>
+            <span>Completion Rate: <b id="completionValue">0%</b></span>
+            <span>Speed Rating: <b id="speedValue">Fast</b></span>
+            <span>Difficulty Rating: <b id="difficultyValue">Medium</b></span>
+          </div>
+          <div class="time-stats" id="timeStats"></div>
+        </div>
+      </div>
+
+      <section class="analytics-panel" style="margin-top:14px;">
+        <div class="step-head">
+          <div>
+            <h2>Topic Performance</h2>
+            <p>Concept-level mastery from this test.</p>
+          </div>
+        </div>
+        <div class="topic-bars" id="topicBars"></div>
+      </section>
+
+      <section class="feedback-box" id="aiFeedback" aria-label="AI tutor feedback"></section>
+
+      <section class="review-panel">
+        <div class="review-head">
+          <div>
+            <span class="section-kicker">Question Review</span>
+            <h2 style="margin:8px 0 0;">Review every answer</h2>
+          </div>
+          <div class="filter-row" aria-label="Question filters">
+            <button class="active" type="button" data-review-filter="all">All Questions</button>
+            <button type="button" data-review-filter="correct">Correct</button>
+            <button type="button" data-review-filter="incorrect">Incorrect</button>
+            <button type="button" data-review-filter="unattempted">Unattempted</button>
+          </div>
+        </div>
+        <div class="question-review" id="questionReview"></div>
+      </section>
+
+      <div class="setup-actions">
+        <button class="btn btn-soft" id="newExamBtn" type="button">Create New Test</button>
+        <button class="btn btn-primary" id="retakeBtn" type="button">Retake Test</button>
+      </div>
+    </section>
+
+    <section class="history-panel fade-up d4">
+      <div class="history-head">
+        <div>
+          <span class="section-kicker">Test History</span>
+          <h2 style="margin:8px 0 0;">Previous attempts</h2>
+        </div>
+        <input class="input" id="historySearch" type="search" placeholder="Search history" />
+        <select class="select" id="historySort">
+          <option value="newest">Newest</option>
+          <option value="score">Best Score</option>
+        </select>
+        <select class="select" id="historyFilter">
+          <option value="all">All Types</option>
+          <option value="practice">Practice Quiz</option>
+          <option value="chapter">Chapter Test</option>
+          <option value="mock">Mock Exam</option>
+          <option value="rapid">Rapid Fire</option>
+        </select>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </section>
+  </main>
+
+  <script src="js/exams/syllabus-config.js?v=exam-redesign-20260616"></script>
+  <script src="js/exams/exam-system.js?v=exam-redesign-20260616"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

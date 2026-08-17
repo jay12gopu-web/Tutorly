@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tutorly-foundation.css" />
+</head>
+<body data-foundation-page="mistakes">
+  <header class="foundation-header"><div class="foundation-header-inner">
+    <a class="foundation-brand" href="maths_gpt.html"><span class="foundation-brand-mark">&#10022;</span>Tutorly</a>
+    <div class="foundation-actions"><button id="foundationTheme" class="foundation-icon" type="button" aria-label="Switch color theme">☾</button><a class="foundation-button-secondary" href="maths_gpt.html">Back to chat</a></div>
+  </div></header>
+  <main class="foundation-main">
+    <section class="foundation-hero"><p class="foundation-eyebrow">Mistake Book</p><h1>Turn every mistake into a future strength.</h1><p>Save concepts you missed, add a short correction, and mark them mastered after revision.</p></section>
+    <section class="foundation-grid two">
+      <article class="foundation-card"><h2>Add a mistake</h2><form id="mistakeForm" class="foundation-form">
+        <div class="foundation-form-row"><select class="foundation-input" name="subject"><option>Mathematics</option><option>Science</option><option>English</option><option>Social Studies</option><option>General</option></select><input class="foundation-input" name="lesson" placeholder="Concept or question" required /></div>
+        <textarea class="foundation-input" name="note" placeholder="What went wrong, and what is the correct idea?"></textarea><button class="foundation-button" type="submit">Save mistake</button>
+      </form></article>
+      <article class="foundation-card"><h2>Review queue</h2><div id="mistakeList" class="foundation-list"></div><p id="mistakeEmpty" class="foundation-empty">No saved mistakes yet.</p></article>
+    </section>
+  </main>
+  <script src="js/tutorly-foundation.js"></script>
+</body>
+</html>

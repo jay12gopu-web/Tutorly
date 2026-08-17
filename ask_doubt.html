@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/tutor-pages.css" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body class="tutor-page" data-tutor-page="ask-doubt">
+  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <div class="brand"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></div>
+      <nav class="nav-links">
+        <a href="home.html">Chat</a>
+        <a href="maths_gpt.html">AI Tutor</a>
+        <a href="contact.html">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tutor-shell">
+    <section class="tutor-hero fade-up d2">
+      <div>
+        <span class="tutor-kicker">Instant doubt support</span>
+        <h1 class="tutor-title">Ask a doubt without overthinking it.</h1>
+        <p class="tutor-sub">Type your question, add the subject and level, or attach a worksheet screenshot. Tutorly will open the AI tutor with your doubt ready to solve.</p>
+        <div class="tutor-actions">
+          <a class="tutor-btn" href="#askFormPanel">Ask now</a>
+          <a class="tutor-btn secondary" href="maths_gpt.html">Open AI chat</a>
+        </div>
+      </div>
+      <aside class="tutor-visual">
+        <div class="doubt-note">
+          <div class="doubt-toolbar">
+            <span>Study note builder</span>
+            <span class="live-dot" aria-hidden="true"></span>
+          </div>
+          <div class="booking-item"><strong>Question</strong><br />Why do seeds need water for germination?</div>
+          <div class="booking-item"><strong>Tutorly flow</strong><br />Read the doubt, identify the concept, then explain it clearly with steps.</div>
+          <div class="booking-item"><strong>Result</strong><br />Clean explanation, key terms, and final summary.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="tutor-grid">
+      <article class="doubt-composer fade-up d3" id="askFormPanel">
+        <h2>Send your doubt</h2>
+        <form class="doubt-form" id="askDoubtForm">
+          <div class="field-grid">
+            <select class="tutor-select" id="doubtSubject" aria-label="Subject">
+              <option value="">Select subject</option>
+              <option>Maths</option>
+              <option>Science</option>
+              <option>English</option>
+              <option>History</option>
+              <option>Geography</option>
+              <option>General Study</option>
+            </select>
+            <select class="tutor-select" id="doubtLevel" aria-label="Class level">
+              <option value="">Class / level</option>
+              <option>Class 6-8</option>
+              <option>Class 9-10</option>
+              <option>Class 11-12</option>
+              <option>Beginner</option>
+              <option>Advanced</option>
+            </select>
+          </div>
+          <textarea class="tutor-textarea" id="doubtQuestion" placeholder="Write your doubt here. Example: explain germination concept in simple words" required></textarea>
+          <div class="upload-zone" id="uploadZone">
+            Click or drop an image of your question here
+            <input id="doubtFile" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" hidden />
+          </div>
+          <div class="upload-preview" id="uploadPreview">
+            <span id="uploadPreviewName"></span>
+            <button class="tutor-btn secondary" id="removeDoubtFile" type="button">Remove</button>
+          </div>
+          <button class="tutor-btn" type="submit">Ask Tutorly</button>
+        </form>
+      </article>
+
+      <aside class="tutor-panel fade-up d4">
+        <h3>What happens next?</h3>
+        <div class="booking-list">
+          <div class="booking-item"><strong>1. Your doubt is saved as a draft</strong><br />The chatbot opens with your question ready.</div>
+          <div class="booking-item"><strong>2. You can edit before sending</strong><br />Add missing words or fix spelling before asking.</div>
+          <div class="booking-item"><strong>3. Tutorly explains it cleanly</strong><br />Study-note style answers with paragraphs and final answer.</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="js/tutor-pages.js"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

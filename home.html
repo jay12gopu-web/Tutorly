@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <meta name="robots" content="noindex" />
+</head>
+<body>
+  <p>Opening Tutorly… <a href="maths_gpt.html">Continue to chat</a></p>
+  <script>
+    (function () {
+      const signedIn = localStorage.getItem('tutorly_logged_in') === 'true';
+      window.location.replace(signedIn ? 'maths_gpt.html' : 'welcome.html');
+    })();
+  </script>
+</body>
+</html>

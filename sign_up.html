@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <style>
+    .role-switch {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid #cfe0ff;
+      border-radius: 999px;
+      padding: 4px;
+      margin: 16px 0 14px;
+      background: rgba(244, 248, 255, 0.88);
+      box-shadow: 0 12px 26px rgba(26, 115, 232, 0.12);
+    }
+
+    .role-btn {
+      min-width: 112px;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      color: #31508d;
+      background: transparent;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .role-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .role-btn.active {
+      color: #fff;
+      background: linear-gradient(120deg, var(--primary), var(--violet));
+      box-shadow: 0 10px 20px rgba(26, 115, 232, 0.26);
+    }
+
+    .student-only-warning {
+      display: none;
+      border: 1px solid rgba(255, 122, 89, 0.24);
+      border-radius: 16px;
+      margin: 12px 0 0;
+      padding: 12px 14px;
+      color: #9f341f;
+      background: rgba(255, 122, 89, 0.1);
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .student-only-warning.show {
+      display: block;
+    }
+
+    .password-field {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-field .input {
+      width: 100%;
+      padding-right: 86px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      border: 1px solid rgba(79, 124, 255, 0.22);
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: rgba(255, 255, 255, 0.76);
+      color: #31508d;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .password-toggle:hover {
+      transform: translateY(-50%) scale(1.03);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(79, 124, 255, 0.18);
+    }
+
+    .dob-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .dob-field span {
+      color: #31508d;
+      font-size: 13px;
+      font-weight: 900;
+      padding-left: 4px;
+    }
+
+    @media (max-width: 520px) {
+      .role-switch {
+        width: 100%;
+      }
+
+      .role-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding-inline: 12px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <a class="back-home-btn" href="welcome.html" aria-label="Back to Tutorly welcome">Tutorly</a>
+  <div class="auth-wrap">
+    <form class="panel panel-soft auth-card fade-up" id="signupForm" novalidate>
+      <span class="auth-brand">&#10022; Tutorly</span>
+      <span class="pill pill-green">Student Account</span>
+      <h1 class="page-title" style="font-size:36px; margin-top:8px;">Create your Tutorly account</h1>
+      <p class="page-sub" style="margin-bottom:16px;">Learn smarter with Tutorly.</p>
+
+      <input id="accountRole" type="hidden" value="student" />
+
+      <div class="grid" style="gap:10px;">
+        <input class="input" id="fullName" type="text" placeholder="Full Name" required />
+        <input class="input" id="signupEmail" type="email" placeholder="Email Address" required />
+        <input class="input" id="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="tel" placeholder="Phone Number (10 digits)" title="Enter exactly 10 digits" required />
+        <label class="dob-field" for="dateOfBirth">
+          <span>Date of Birth</span>
+          <input class="input" id="dateOfBirth" type="date" required />
+        </label>
+        <div class="password-field">
+          <input class="input" id="signupPassword" type="password" placeholder="Password" autocomplete="new-password" required />
+          <button class="password-toggle" type="button" data-password-toggle="signupPassword" aria-label="Show password">Show</button>
+        </div>
+      </div>
+
+      <p class="muted" style="margin:12px 0 14px;">By signing up, you agree to <a href="Terms_Conditions.html" style="font-weight:800; color:var(--primary-dark);">Terms and Conditions</a>.</p>
+      <button class="btn btn-primary" type="submit" style="width:100%;">SIGN UP</button>
+      <p class="muted" style="margin:14px 0 0;">Already registered? <a href="login.html" style="font-weight:800; color:var(--primary-dark);">Login</a></p>
+    </form>
+  </div>
+
+  <script>
+    const signupParams = new URLSearchParams(window.location.search);
+    const chatbotSignupOnly = signupParams.get('intent') === 'chatbot';
+    const accountRole = document.getElementById('accountRole');
+    const phoneInput = document.getElementById('phone');
+    const dobInput = document.getElementById('dateOfBirth');
+
+    dobInput.max = new Date().toISOString().split('T')[0];
+
+    function calculateAge(dobValue) {
+      const dob = new Date(dobValue);
+      if (!dobValue || Number.isNaN(dob.getTime())) return null;
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age -= 1;
+      }
+      return age;
+    }
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      button.addEventListener('click', function () {
+        const shouldShow = input.type === 'password';
+        input.type = shouldShow ? 'text' : 'password';
+        button.textContent = shouldShow ? 'Hide' : 'Show';
+        button.setAttribute('aria-label', shouldShow ? 'Hide password' : 'Show password');
+      });
+    });
+
+    phoneInput.addEventListener('input', function () {
+      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const ids = ['fullName', 'signupEmail', 'phone', 'dateOfBirth', 'signupPassword'];
+      const ok = ids.every((id) => document.getElementById(id).value.trim().length > 0);
+      if (!ok) {
+        alert('Please fill all fields.');
+        return;
+      }
+
+      if (!/^\d{10}$/.test(phoneInput.value)) {
+        alert('Please enter a valid 10-digit phone number using digits only.');
+        phoneInput.focus();
+        return;
+      }
+
+      const age = calculateAge(dobInput.value);
+      if (age === null || age < 0 || age > 120) {
+        alert('Please enter a valid date of birth.');
+        dobInput.focus();
+        return;
+      }
+
+      localStorage.setItem('tutorly_signed_up', 'true');
+      localStorage.setItem('tutorly_logged_in', 'true');
+      localStorage.setItem('tutorly_account_role', 'student');
+      localStorage.setItem('tutorly_signup_full_name', document.getElementById('fullName').value.trim());
+      localStorage.setItem('tutorly_signup_email', document.getElementById('signupEmail').value.trim());
+      localStorage.setItem('tutorly_signup_phone', document.getElementById('phone').value.trim());
+      localStorage.setItem('tutorly_signup_dob', dobInput.value);
+      localStorage.setItem('tutorly_signup_age', String(age));
+      localStorage.setItem('tutorly_student_dob', dobInput.value);
+      localStorage.setItem('tutorly_student_age', String(age));
+      if (chatbotSignupOnly) {
+        localStorage.setItem('tutorly_bot_try_count', '0');
+      }
+      window.location.href = 'info.html';
+    });
+  </script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/campus.js?v=campus-20260629"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
+
+
+
+
+

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/tutor-pages.css" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body class="tutor-page" data-tutor-page="online">
+  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <div class="brand"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></div>
+      <nav class="nav-links">
+        <a href="home.html">Chat</a>
+        <a href="offline_tutor.html">Offline Tutor</a>
+        <a href="contact.html">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tutor-shell">
+    <section class="tutor-hero fade-up d2">
+      <div>
+        <span class="tutor-kicker">Live online learning</span>
+        <h1 class="tutor-title">Book a tutor from anywhere.</h1>
+        <p class="tutor-sub">Find live online classes and 1-on-1 sessions for doubts, exam prep, and concept revision. Requests are saved locally for now.</p>
+        <div class="tutor-actions">
+          <a class="tutor-btn" href="#onlineFinderPanel">Find online tutors</a>
+          <a class="tutor-btn secondary" href="offline_tutor.html">Find nearby tutors</a>
+        </div>
+      </div>
+      <aside class="tutor-visual">
+        <div class="online-stage">
+          <div class="online-toolbar">
+            <span>Live session preview</span>
+            <span class="tutor-chip green"><span class="live-dot" aria-hidden="true"></span> Online</span>
+          </div>
+          <div class="video-frame">1:1</div>
+          <div class="tutor-meta" style="margin-top:14px;">
+            <span class="tutor-chip">Shared notes</span>
+            <span class="tutor-chip">Doubt chat</span>
+            <span class="tutor-chip gold">Session timer</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="tutor-grid">
+      <aside class="tutor-panel fade-up d3" id="onlineFinderPanel">
+        <h2>Search filters</h2>
+        <form class="filter-form" id="finderForm">
+          <select class="tutor-select" id="subjectFilter" aria-label="Subject">
+            <option value="">Any subject</option>
+            <option>Maths</option>
+            <option>Science</option>
+            <option>Physics</option>
+            <option>Chemistry</option>
+            <option>Biology</option>
+            <option>English</option>
+            <option>History</option>
+            <option>Geography</option>
+          </select>
+          <select class="tutor-select" id="modeFilter" aria-label="Session mode">
+            <option value="">Any mode</option>
+            <option>1-on-1</option>
+            <option>Live class</option>
+          </select>
+          <button class="tutor-btn" type="submit">Apply filters</button>
+        </form>
+        <div class="booking-list" id="bookingList" aria-live="polite"></div>
+      </aside>
+
+      <section class="tutor-panel fade-up d4">
+        <h2>Available online tutors</h2>
+        <div class="result-list" id="tutorResults" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/tutor-pages.js"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

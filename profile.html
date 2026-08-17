@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <style>
+    :root {
+      --profile-bg: #f5f8fd;
+      --profile-surface: #ffffff;
+      --profile-surface-2: #f8fbff;
+      --profile-ink: #172033;
+      --profile-muted: #667085;
+      --profile-soft: #8a94a6;
+      --profile-line: #e4eaf5;
+      --profile-blue: #2563eb;
+      --profile-blue-2: #1d4ed8;
+      --profile-purple: #7c3aed;
+      --profile-green: #12b76a;
+      --profile-amber: #f59e0b;
+      --profile-red: #ef4444;
+      --profile-shadow: 0 18px 48px rgba(16, 24, 40, 0.08);
+      --profile-shadow-soft: 0 10px 28px rgba(16, 24, 40, 0.06);
+      --profile-radius: 22px;
+      --profile-radius-sm: 16px;
+      --profile-sidebar: 238px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body.profile-page {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--profile-ink);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(245, 248, 253, 0) 320px),
+        var(--profile-bg);
+      overflow-x: hidden;
+    }
+
+    body.profile-page.profile-dark {
+      --profile-bg: #0b1120;
+      --profile-surface: #111827;
+      --profile-surface-2: #151f32;
+      --profile-ink: #f8fafc;
+      --profile-muted: #b7c0cf;
+      --profile-soft: #8491a7;
+      --profile-line: rgba(226, 232, 240, 0.13);
+      --profile-shadow: 0 18px 48px rgba(0, 0, 0, 0.26);
+      --profile-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.18);
+      background:
+        linear-gradient(180deg, rgba(37, 99, 235, 0.16), rgba(11, 17, 32, 0) 320px),
+        var(--profile-bg);
+    }
+
+    .profile-page svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .profile-page a { color: inherit; text-decoration: none; }
+
+    .shell.profile-shell {
+      width: min(1480px, calc(100% - 32px));
+      margin: 12px auto 40px;
+    }
+
+    .profile-page .header-wrap {
+      position: sticky;
+      top: 12px;
+      z-index: 40;
+      border: 1px solid rgba(228, 234, 245, 0.92);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 14px 38px rgba(16, 24, 40, 0.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .profile-dark .header-wrap {
+      border-color: var(--profile-line);
+      background: rgba(17, 24, 39, 0.86);
+    }
+
+    .profile-page .topbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 18px;
+    }
+
+    .brand-title-logo {
+      display: block;
+      width: clamp(144px, 15vw, 190px);
+      height: 48px;
+      border-radius: 14px;
+      object-fit: cover;
+      object-position: center;
+      filter: drop-shadow(0 10px 20px rgba(37, 99, 235, 0.14));
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .profile-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-nav a {
+      border-radius: 999px;
+      padding: 9px 12px;
+      color: var(--profile-muted);
+      font-size: 13px;
+      font-weight: 800;
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .profile-nav a:hover {
+      color: var(--profile-blue);
+      background: rgba(37, 99, 235, 0.09);
+      transform: translateY(-1px);
+    }
+
+    .profile-wrap {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .profile-card {
+      position: relative;
+      border: 1px solid var(--profile-line);
+      border-radius: var(--profile-radius);
+      background: var(--profile-surface);
+      box-shadow: var(--profile-shadow-soft);
+      overflow: hidden;
+      animation: fadeInUp 520ms cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .profile-card:hover {
+      box-shadow: var(--profile-shadow);
+    }
+
+    .profile-card.pad { padding: clamp(18px, 2vw, 24px); }
+
+    .profile-hero {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr) minmax(330px, 0.72fr);
+      gap: 24px;
+      padding: clamp(20px, 2.4vw, 30px);
+      background:
+        linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.08) 46%, rgba(255,255,255,0) 70%),
+        var(--profile-surface);
+    }
+
+    .avatar-zone {
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .avatar-shell {
+      position: relative;
+      width: 148px;
+      height: 148px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--profile-blue), var(--profile-purple));
+      box-shadow: 0 18px 36px rgba(37, 99, 235, 0.24);
+    }
+
+    .avatar-shell::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: inherit;
+      background: var(--profile-surface);
+    }
+
+    .avatar {
+      position: relative;
+      z-index: 1;
+      width: 128px;
+      height: 128px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
+        linear-gradient(135deg, var(--profile-blue), var(--profile-purple));
+      font-family: "Poppins", "Inter", sans-serif;
+      font-size: 54px;
+      font-weight: 800;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .avatar.has-image img { display: block; }
+    .avatar.has-image span { display: none; }
+
+    .online-dot {
+      position: absolute;
+      right: 17px;
+      bottom: 18px;
+      z-index: 2;
+      width: 20px;
+      height: 20px;
+      border: 4px solid var(--profile-surface);
+      border-radius: 50%;
+      background: var(--profile-green);
+      box-shadow: 0 0 0 6px rgba(18, 183, 106, 0.14);
+    }
+
+    .upload-label {
+      width: 100%;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--profile-line);
+      border-radius: 999px;
+      padding: 0 14px;
+      color: var(--profile-blue);
+      background: rgba(37, 99, 235, 0.06);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .upload-label:hover {
+      transform: translateY(-1px);
+      border-color: rgba(37, 99, 235, 0.3);
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    .upload-label input { display: none; }
+
+    .hero-info {
+      min-width: 0;
+      display: grid;
+      align-content: center;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(37, 99, 235, 0.16);
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: var(--profile-blue);
+      background: rgba(37, 99, 235, 0.07);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .profile-name {
+      margin: 0;
+      color: var(--profile-ink);
+      font-family: "Poppins", "Inter", sans-serif;
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .profile-subline {
+      margin: -3px 0 0;
+      color: var(--profile-muted);
+      font-size: 15px;
+      line-height: 1.6;
+      font-weight: 650;
+    }
+
+    .meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--profile-line);
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: var(--profile-muted);
+      background: rgba(255,255,255,0.55);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .profile-dark .meta-pill { background: rgba(255,255,255,0.04); }
+
+    .hero-progress {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) minmax(150px, 0.7fr);
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .progress-panel {
+      border: 1px solid var(--profile-line);
+      border-radius: var(--profile-radius-sm);
+      padding: 14px;
+      background: rgba(255,255,255,0.58);
+    }
+
+    .profile-dark .progress-panel { background: rgba(255,255,255,0.04); }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .linear-track {
+      position: relative;
+      height: 10px;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.11);
+    }
+
+    .linear-track span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--value, 0%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--profile-blue), var(--profile-purple));
+      transform-origin: left;
+      animation: growX 900ms cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .quick-stat {
+      min-height: 112px;
+      border: 1px solid var(--profile-line);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.7);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .profile-dark .quick-stat { background: rgba(255,255,255,0.04); }
+
+    .quick-stat:hover {
+      transform: translateY(-3px);
+      border-color: rgba(37, 99, 235, 0.28);
+      box-shadow: var(--profile-shadow-soft);
+    }
+
+    .quick-stat .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .quick-stat strong {
+      display: block;
+      margin-top: 10px;
+      color: var(--profile-ink);
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .quick-stat small {
+      display: block;
+      margin-top: 7px;
+      color: var(--profile-green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .icon-box {
+      width: 40px;
+      height: 40px;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      color: var(--profile-blue);
+      background: rgba(37, 99, 235, 0.09);
+    }
+
+    .icon-box.purple { color: var(--profile-purple); background: rgba(124, 58, 237, 0.1); }
+    .icon-box.green { color: var(--profile-green); background: rgba(18, 183, 106, 0.11); }
+    .icon-box.amber { color: var(--profile-amber); background: rgba(245, 158, 11, 0.12); }
+    .icon-box.red { color: var(--profile-red); background: rgba(239, 68, 68, 0.1); }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+      gap: 18px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+      min-width: 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--profile-ink);
+      font-family: "Poppins", "Inter", sans-serif;
+      font-size: clamp(20px, 2vw, 26px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 5px 0 0;
+      color: var(--profile-muted);
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .circle-wrap {
+      display: grid;
+      place-items: center;
+      gap: 12px;
+    }
+
+    .progress-ring {
+      width: 166px;
+      height: 166px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--profile-blue) calc(var(--value) * 1%), rgba(37, 99, 235, 0.11) 0);
+      animation: ringIn 900ms cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .progress-ring::before {
+      content: "";
+      position: absolute;
+      width: 122px;
+      height: 122px;
+      border-radius: inherit;
+      background: var(--profile-surface);
+    }
+
+    .ring-label {
+      position: relative;
+      display: grid;
+      place-items: center;
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .ring-label strong {
+      color: var(--profile-ink);
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .subject-bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .subject-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 48px;
+      align-items: center;
+      gap: 12px;
+      color: var(--profile-muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .subject-row b { color: var(--profile-ink); font-weight: 850; }
+
+    .insight-grid,
+    .activity-grid,
+    .report-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .insight-card,
+    .activity-card,
+    .badge-card,
+    .pref-row,
+    .timeline-item,
+    .report-card,
+    .exam-card {
+      border: 1px solid var(--profile-line);
+      border-radius: 18px;
+      background: var(--profile-surface-2);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .insight-card:hover,
+    .activity-card:hover,
+    .badge-card:hover,
+    .report-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(37, 99, 235, 0.28);
+      box-shadow: var(--profile-shadow-soft);
+    }
+
+    .insight-card {
+      padding: 14px;
+    }
+
+    .insight-card span {
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .insight-card strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--profile-ink);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .activity-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .activity-card {
+      min-height: 146px;
+      display: grid;
+      align-content: space-between;
+      gap: 16px;
+      padding: 15px;
+    }
+
+    .activity-card strong {
+      display: block;
+      margin-top: 12px;
+      color: var(--profile-ink);
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .activity-card span {
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .trend {
+      width: fit-content;
+      border-radius: 999px;
+      padding: 5px 8px;
+      color: #067647;
+      background: rgba(18, 183, 106, 0.11);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .chart-card {
+      min-height: 238px;
+      border: 1px solid var(--profile-line);
+      border-radius: 18px;
+      padding: 16px;
+      background: var(--profile-surface-2);
+    }
+
+    .chart-card h3 {
+      margin: 0 0 12px;
+      color: var(--profile-ink);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    canvas {
+      width: 100%;
+      height: 166px;
+      display: block;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .badge-card {
+      min-height: 154px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+      padding: 15px;
+    }
+
+    .badge-card.locked {
+      opacity: 0.48;
+      filter: grayscale(0.35);
+    }
+
+    .badge-card h3 {
+      margin: 0;
+      color: var(--profile-ink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .badge-card p {
+      margin: 4px 0 0;
+      color: var(--profile-muted);
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .streak-layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .streak-summary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .streak-number {
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(245, 158, 11, 0.09);
+    }
+
+    .streak-number strong {
+      display: block;
+      color: var(--profile-ink);
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .streak-number span {
+      display: block;
+      margin-top: 6px;
+      color: var(--profile-muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(31, 1fr);
+      gap: 4px;
+      align-content: start;
+      padding: 14px;
+      border: 1px solid var(--profile-line);
+      border-radius: 18px;
+      background: var(--profile-surface-2);
+    }
+
+    .heat-cell {
+      aspect-ratio: 1;
+      border-radius: 5px;
+      background: rgba(37, 99, 235, calc(0.08 + (var(--level) * 0.13)));
+      transform: scale(0.86);
+      animation: cellIn 420ms cubic-bezier(.2,.8,.2,1) both;
+      animation-delay: calc(var(--i) * 10ms);
+    }
+
+    .heat-cell[data-level="0"] { background: rgba(148, 163, 184, 0.16); }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--profile-line);
+      border-radius: 14px;
+      padding: 0 13px;
+      color: var(--profile-ink);
+      background: var(--profile-surface-2);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(37, 99, 235, 0.48);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .pref-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .pref-row {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+    }
+
+    .pref-row b {
+      display: block;
+      color: var(--profile-ink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .pref-row span {
+      display: block;
+      margin-top: 3px;
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .switch {
+      position: relative;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 28px;
+      border-radius: 999px;
+      background: #d0d8e8;
+      cursor: pointer;
+      transition: background 160ms ease;
+    }
+
+    .switch input { display: none; }
+
+    .switch i {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(16, 24, 40, 0.18);
+      transition: transform 160ms ease;
+    }
+
+    .switch input:checked + i {
+      transform: translateX(20px);
+    }
+
+    .switch:has(input:checked) {
+      background: linear-gradient(90deg, var(--profile-blue), var(--profile-purple));
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .subject-chip {
+      border: 1px solid var(--profile-line);
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: var(--profile-muted);
+      background: var(--profile-surface-2);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .subject-chip.active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(90deg, var(--profile-blue), var(--profile-purple));
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 11px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      left: 19px;
+      width: 2px;
+      background: var(--profile-line);
+    }
+
+    .timeline-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .timeline-item .dot {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: var(--profile-blue);
+      background: var(--profile-surface);
+      border: 1px solid var(--profile-line);
+      z-index: 1;
+    }
+
+    .timeline-item h3 {
+      margin: 0;
+      color: var(--profile-ink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .timeline-item p {
+      margin: 4px 0 0;
+      color: var(--profile-muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .timeline-time {
+      color: var(--profile-soft);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .report-card,
+    .exam-card {
+      padding: 16px;
+    }
+
+    .report-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 14px;
+    }
+
+    .button {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 0 15px;
+      color: #fff;
+      background: linear-gradient(90deg, var(--profile-blue), var(--profile-purple));
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.24);
+      filter: saturate(1.04);
+    }
+
+    .button.soft {
+      color: var(--profile-blue);
+      border-color: var(--profile-line);
+      background: var(--profile-surface);
+      box-shadow: none;
+    }
+
+    .button.ghost {
+      color: var(--profile-muted);
+      border-color: var(--profile-line);
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 8000;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      border: 1px solid rgba(18, 183, 106, 0.24);
+      border-radius: 14px;
+      padding: 13px 15px;
+      color: #067647;
+      background: #ecfdf3;
+      box-shadow: var(--profile-shadow);
+      font-size: 13px;
+      font-weight: 850;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes growX {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @keyframes ringIn {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes cellIn {
+      to { transform: scale(1); }
+    }
+
+    @media (max-width: 1280px) {
+      .profile-hero { grid-template-columns: 210px minmax(0, 1fr); }
+      .hero-stats { grid-column: 1 / -1; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .activity-grid, .badge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .chart-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 980px) {
+      .workspace-grid,
+      .analytics-grid,
+      .streak-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .avatar-zone {
+        justify-items: start;
+        grid-template-columns: auto minmax(160px, 240px);
+      }
+
+      .hero-stats,
+      .activity-grid,
+      .badge-grid,
+      .insight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell.profile-shell {
+        width: min(100% - 20px, 680px);
+        margin-top: 10px;
+      }
+
+      .profile-page .topbar {
+        align-items: stretch;
+      }
+
+      .profile-nav {
+        display: none;
+      }
+
+      .top-actions {
+        margin-left: auto;
+      }
+
+      .profile-hero,
+      .profile-card.pad {
+        padding: 16px;
+      }
+
+      .avatar-zone {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+
+      .hero-progress,
+      .hero-stats,
+      .activity-grid,
+      .badge-grid,
+      .insight-grid,
+      .settings-grid,
+      .report-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .subject-row {
+        grid-template-columns: 78px 1fr 44px;
+        gap: 8px;
+      }
+
+      .heatmap {
+        grid-template-columns: repeat(14, 1fr);
+      }
+
+      .timeline-item {
+        grid-template-columns: 40px 1fr;
+      }
+
+      .timeline-time {
+        grid-column: 2;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body class="profile-page">
+  <header class="shell profile-shell header-wrap mt-offset-target mt-mobile-header">
+    <div class="topbar">
+      <a class="brand" href="home.html" aria-label="Tutorly home">
+        <img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" />
+      </a>
+      <nav class="profile-nav" aria-label="Profile sections">
+        <a href="#performance">Performance</a>
+        <a href="#activity">Activity</a>
+        <a href="#streak">Streak</a>
+        <a href="#settings">Settings</a>
+        <a href="#reports">Reports</a>
+      </nav>
+      <div class="top-actions">
+        <button class="button soft" type="button" id="themeToggle">
+          <span data-icon="moon"></span>
+          <span id="themeLabel">Dark</span>
+        </button>
+        <button class="button ghost" type="button" id="logoutBtn">
+          <span data-icon="logout"></span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell profile-shell profile-wrap mt-offset-target">
+    <section class="profile-card profile-hero" aria-label="Student profile overview">
+      <div class="avatar-zone">
+        <div class="avatar-shell">
+          <div class="avatar" id="avatar">
+            <span id="avatarText">S</span>
+            <img id="avatarImage" alt="Student avatar" />
+          </div>
+          <span class="online-dot" aria-label="Online"></span>
+        </div>
+        <label class="upload-label">
+          <span data-icon="upload"></span>
+          <span>Change Avatar</span>
+          <input id="avatarInput" type="file" accept="image/*" />
+        </label>
+      </div>
+
+      <div class="hero-info">
+        <span class="eyebrow"><span data-icon="sparkles"></span> Student Profile</span>
+        <div>
+          <h1 class="profile-name" id="studentName">Student</h1>
+          <p class="profile-subline" id="studentHeadline">Grade not set student at School not set</p>
+        </div>
+        <div class="meta-grid">
+          <span class="meta-pill"><span data-icon="mail"></span><span id="studentEmail">student@email.com</span></span>
+          <span class="meta-pill"><span data-icon="school"></span><span id="schoolMeta">School not set</span></span>
+          <span class="meta-pill"><span data-icon="calendar"></span><span id="joinDate">Joined May 2026</span></span>
+          <span class="meta-pill"><span data-icon="flame"></span><span id="streakMeta">5 day streak</span></span>
+        </div>
+        <div class="hero-progress">
+          <div class="progress-panel">
+            <div class="progress-head">
+              <span>Profile Completion</span>
+              <b id="profileCompletionText">82%</b>
+            </div>
+            <div class="linear-track"><span id="profileCompletionBar"></span></div>
+          </div>
+          <div class="progress-panel">
+            <div class="progress-head">
+              <span>Study Goal</span>
+              <b id="studyGoalText">68%</b>
+            </div>
+            <div class="linear-track"><span style="--value: 68%"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="quick-stat">
+          <div class="stat-top"><span>XP Earned</span><span class="icon-box"><span data-icon="zap"></span></span></div>
+          <strong class="count" data-count="12480" id="xpEarned">0</strong>
+          <small>+840 this month</small>
+        </div>
+        <div class="quick-stat">
+          <div class="stat-top"><span>Tests</span><span class="icon-box purple"><span data-icon="clipboard"></span></span></div>
+          <strong class="count" data-count="46">0</strong>
+          <small>+6 this week</small>
+        </div>
+        <div class="quick-stat">
+          <div class="stat-top"><span>Average</span><span class="icon-box green"><span data-icon="target"></span></span></div>
+          <strong class="count" data-count="86" data-suffix="%">0%</strong>
+          <small>+4.2% improved</small>
+        </div>
+        <div class="quick-stat">
+          <div class="stat-top"><span>Study Hours</span><span class="icon-box amber"><span data-icon="clock"></span></span></div>
+          <strong id="studyHoursStat">42h</strong>
+          <small>12h this week</small>
+        </div>
+        <div class="quick-stat">
+          <div class="stat-top"><span>Current Rank</span><span class="icon-box purple"><span data-icon="trophy"></span></span></div>
+          <strong>#18</strong>
+          <small>Top 8% of class</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace-grid">
+      <div class="stack">
+        <article class="profile-card pad" id="performance">
+          <div class="section-head">
+            <div>
+              <h2>Academic Performance</h2>
+              <p>Clear analytics across scores, accuracy, strengths, and improvement areas.</p>
+            </div>
+            <span class="icon-box"><span data-icon="chart"></span></span>
+          </div>
+          <div class="analytics-grid">
+            <div class="circle-wrap">
+              <div class="progress-ring" style="--value: 86">
+                <div class="ring-label"><strong>86%</strong><span>Overall Average</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="subject-bars">
+                <div class="subject-row"><b>Maths</b><div class="linear-track"><span style="--value: 92%"></span></div><b>92%</b></div>
+                <div class="subject-row"><b>Science</b><div class="linear-track"><span style="--value: 88%"></span></div><b>88%</b></div>
+                <div class="subject-row"><b>English</b><div class="linear-track"><span style="--value: 81%"></span></div><b>81%</b></div>
+                <div class="subject-row"><b>Social</b><div class="linear-track"><span style="--value: 74%"></span></div><b>74%</b></div>
+              </div>
+              <div class="insight-grid" style="margin-top: 16px;">
+                <div class="insight-card"><span>Strongest Subject</span><strong>Maths</strong></div>
+                <div class="insight-card"><span>Needs Focus</span><strong>Social</strong></div>
+                <div class="insight-card"><span>Accuracy</span><strong>89%</strong></div>
+                <div class="insight-card"><span>Questions Attempted</span><strong>1,284</strong></div>
+                <div class="insight-card"><span>Correct Answers</span><strong>1,143</strong></div>
+                <div class="insight-card"><span>Avg. Test Time</span><strong>31m</strong></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="profile-card pad" id="activity">
+          <div class="section-head">
+            <div>
+              <h2>Learning Activity Chat</h2>
+              <p>Weekly learning volume with small trend indicators for fast scanning.</p>
+            </div>
+            <span class="icon-box purple"><span data-icon="activity"></span></span>
+          </div>
+          <div class="activity-grid">
+            <div class="activity-card"><div><span class="icon-box"><span data-icon="book"></span></span><strong>128</strong><span>Lessons Completed</span></div><div class="trend">up 12% this week</div></div>
+            <div class="activity-card"><div><span class="icon-box purple"><span data-icon="clipboard"></span></span><strong>74</strong><span>Quizzes Completed</span></div><div class="trend">up 9% this week</div></div>
+            <div class="activity-card"><div><span class="icon-box green"><span data-icon="graduation"></span></span><strong>18</strong><span>Mock Exams Taken</span></div><div class="trend">up 3 this month</div></div>
+            <div class="activity-card"><div><span class="icon-box amber"><span data-icon="layers"></span></span><strong>342</strong><span>Flashcards Reviewed</span></div><div class="trend">up 18% this week</div></div>
+            <div class="activity-card"><div><span class="icon-box purple"><span data-icon="bot"></span></span><strong>56</strong><span>AI Tutor Sessions</span></div><div class="trend">up 7 sessions</div></div>
+          </div>
+        </article>
+
+        <article class="profile-card pad">
+          <div class="section-head">
+            <div>
+              <h2>Achievements & Badges</h2>
+              <p>Premium milestones that recognize consistency, mastery, and exam growth.</p>
+            </div>
+            <span class="icon-box amber"><span data-icon="award"></span></span>
+          </div>
+          <div class="badge-grid">
+            <div class="badge-card"><span class="icon-box green"><span data-icon="check"></span></span><div><h3>First Quiz Completed</h3><p>Completed the first practice quiz.</p></div></div>
+            <div class="badge-card"><span class="icon-box"><span data-icon="target"></span></span><div><h3>Maths Master</h3><p>Scored above 90% in Maths.</p></div></div>
+            <div class="badge-card"><span class="icon-box purple"><span data-icon="sparkles"></span></span><div><h3>Science Explorer</h3><p>Finished 20 science lessons.</p></div></div>
+            <div class="badge-card"><span class="icon-box amber"><span data-icon="flame"></span></span><div><h3>7-Day Streak</h3><p>Studied for a full week.</p></div></div>
+            <div class="badge-card locked"><span class="icon-box"><span data-icon="lock"></span></span><div><h3>Top Performer</h3><p>Reach top 5 in class rank.</p></div></div>
+          </div>
+        </article>
+
+        <article class="profile-card pad" id="streak">
+          <div class="section-head">
+            <div>
+              <h2>Study Streak</h2>
+              <p>Monthly consistency map based on recent learning activity.</p>
+            </div>
+            <span class="icon-box amber"><span data-icon="flame"></span></span>
+          </div>
+          <div class="streak-layout">
+            <div class="streak-summary">
+              <div class="streak-number"><strong id="currentStreak">5</strong><span>Current Streak</span></div>
+              <div class="insight-card"><span>Longest Streak</span><strong>21 days</strong></div>
+              <div class="insight-card"><span>Monthly Consistency</span><strong>78%</strong></div>
+            </div>
+            <div class="heatmap" id="heatmap" aria-label="Monthly study activity heatmap"></div>
+          </div>
+        </article>
+
+        <article class="profile-card pad">
+          <div class="section-head">
+            <div>
+              <h2>Performance Trends</h2>
+              <p>Score trend, subject improvement, and weekly study time visualized together.</p>
+            </div>
+            <span class="icon-box green"><span data-icon="trending"></span></span>
+          </div>
+          <div class="chart-grid">
+            <div class="chart-card"><h3>Score Trend</h3><canvas id="scoreChart" width="360" height="170"></canvas></div>
+            <div class="chart-card"><h3>Subject Improvement</h3><canvas id="subjectChart" width="360" height="170"></canvas></div>
+            <div class="chart-card"><h3>Weekly Study Time</h3><canvas id="studyChart" width="360" height="170"></canvas></div>
+          </div>
+        </article>
+      </div>
+
+      <aside class="stack">
+        <article class="profile-card pad">
+          <div class="section-head">
+            <div>
+              <h2>Progress Widgets</h2>
+              <p>Important account and learning signals.</p>
+            </div>
+            <span class="icon-box"><span data-icon="shield"></span></span>
+          </div>
+          <div class="insight-grid" style="grid-template-columns: 1fr;">
+            <div class="insight-card"><span>Account Security</span><strong>Protected</strong></div>
+            <div class="insight-card"><span>Upcoming Exam</span><strong>Maths Mock - Jun 22</strong></div>
+            <div class="insight-card"><span>Motivation</span><strong>One focused lesson today keeps your rank moving.</strong></div>
+          </div>
+        </article>
+
+        <article class="profile-card pad" id="settings">
+          <div class="section-head">
+            <div>
+              <h2>Personal Information</h2>
+              <p>Editable student details saved locally for the existing app flow.</p>
+            </div>
+            <button class="button soft" type="button" id="editProfileBtn"><span data-icon="edit"></span><span>Edit</span></button>
+          </div>
+          <form class="settings-grid" id="profileForm">
+            <div class="field"><label for="nameInput">Name</label><input id="nameInput" type="text" /></div>
+            <div class="field"><label for="emailInput">Email</label><input id="emailInput" type="email" /></div>
+            <div class="field"><label for="gradeInput">Class</label><input id="gradeInput" type="text" /></div>
+            <div class="field"><label for="schoolInput">School</label><input id="schoolInput" type="text" /></div>
+            <div class="field"><label for="languageInput">Preferred Language</label><select id="languageInput"><option>English</option><option>Hindi</option><option>Telugu</option></select></div>
+            <div class="field"><label for="timezoneInput">Time Zone</label><select id="timezoneInput"><option>Asia/Calcutta</option><option>UTC</option><option>Asia/Dubai</option></select></div>
+            <div class="field"><label for="boardInput">Board</label><input id="boardInput" type="text" /></div>
+            <div class="field"><label for="phoneInput">Contact</label><input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" /></div>
+            <button class="button" type="submit"><span data-icon="check"></span><span>Save Changes</span></button>
+          </form>
+        </article>
+
+        <article class="profile-card pad">
+          <div class="section-head">
+            <div>
+              <h2>Learning Preferences</h2>
+              <p>Customize study behavior and notifications.</p>
+            </div>
+            <span class="icon-box purple"><span data-icon="settings"></span></span>
+          </div>
+          <div class="pref-list">
+            <label class="pref-row"><span><b>Dark Mode</b><span>Use a calmer study interface at night.</span></span><span class="switch"><input id="darkModeSwitch" type="checkbox" /><i></i></span></label>
+            <label class="pref-row"><span><b>Adaptive Difficulty</b><span>Raise question difficulty as accuracy improves.</span></span><span class="switch"><input checked type="checkbox" /><i></i></span></label>
+            <label class="pref-row"><span><b>AI Tutor Voice</b><span>Enable spoken explanations for practice review.</span></span><span class="switch"><input checked type="checkbox" /><i></i></span></label>
+            <label class="pref-row"><span><b>Notifications</b><span>Study reminders, exam alerts, and weekly reports.</span></span><span class="switch"><input checked type="checkbox" /><i></i></span></label>
+          </div>
+          <div class="chip-row" aria-label="Preferred subjects">
+            <button class="subject-chip active" type="button">Maths</button>
+            <button class="subject-chip active" type="button">Science</button>
+            <button class="subject-chip" type="button">English</button>
+            <button class="subject-chip" type="button">Social</button>
+            <button class="subject-chip active" type="button">AI Practice</button>
+          </div>
+        </article>
+
+        <article class="profile-card pad">
+          <div class="section-head">
+            <div>
+              <h2>Recent Activity</h2>
+              <p>Latest learning actions in timeline format.</p>
+            </div>
+            <span class="icon-box green"><span data-icon="activity"></span></span>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item"><span class="dot"><span data-icon="clipboard"></span></span><div><h3>Completed Chapter Test</h3><p>Algebra practice test scored 91%.</p></div><span class="timeline-time">Today</span></div>
+            <div class="timeline-item"><span class="dot"><span data-icon="book"></span></span><div><h3>Finished Lesson</h3><p>Human eye and colourful world.</p></div><span class="timeline-time">Yesterday</span></div>
+            <div class="timeline-item"><span class="dot"><span data-icon="target"></span></span><div><h3>Practiced Quiz</h3><p>25 mixed questions attempted.</p></div><span class="timeline-time">2d ago</span></div>
+            <div class="timeline-item"><span class="dot"><span data-icon="award"></span></span><div><h3>Earned Badge</h3><p>Unlocked 7-Day Streak.</p></div><span class="timeline-time">3d ago</span></div>
+            <div class="timeline-item"><span class="dot"><span data-icon="bot"></span></span><div><h3>AI Tutor Session</h3><p>Cleared doubts about trigonometry.</p></div><span class="timeline-time">4d ago</span></div>
+          </div>
+        </article>
+
+        <article class="profile-card pad" id="reports">
+          <div class="section-head">
+            <div>
+              <h2>Academic Report Center</h2>
+              <p>Quick actions for report cards and sharing.</p>
+            </div>
+            <span class="icon-box purple"><span data-icon="file"></span></span>
+          </div>
+          <div class="report-card">
+            <strong>Latest Report: June Performance Review</strong>
+            <p class="profile-subline" style="font-size: 13px; margin-top: 8px;">Includes score trend, attendance, subject strengths, and recommended next steps.</p>
+            <div class="report-actions">
+              <button class="button" type="button">View Latest</button>
+              <button class="button soft" type="button">Download PDF</button>
+              <button class="button soft" type="button">All Reports</button>
+              <button class="button ghost" type="button">Share Report</button>
+            </div>
+          </div>
+        </article>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="profileToast" role="status" aria-live="polite">Profile saved successfully.</div>
+
+  <script>
+    const icons = {
+      activity: '<svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 8-6-16-3 8H2"></path></svg>',
+      award: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"></circle><path d="M15.5 13.2 17 22l-5-3-5 3 1.5-8.8"></path></svg>',
+      book: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M4 4v15.5"></path><path d="M20 22V4H7a3 3 0 0 0-3 3"></path></svg>',
+      bot: '<svg viewBox="0 0 24 24"><path d="M12 3v4"></path><path d="M8 7h8a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-5a4 4 0 0 1 4-4Z"></path><path d="M9 13h.01"></path><path d="M15 13h.01"></path></svg>',
+      calendar: '<svg viewBox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path></svg>',
+      chart: '<svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16v-5"></path><path d="M12 16V8"></path><path d="M16 16v-7"></path></svg>',
+      check: '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>',
+      clipboard: '<svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M8 12h8"></path><path d="M8 16h6"></path></svg>',
+      clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>',
+      edit: '<svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path></svg>',
+      file: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h5"></path></svg>',
+      flame: '<svg viewBox="0 0 24 24"><path d="M8.5 14.5A4.5 4.5 0 1 0 17 12c0-4-4-6-4-10-2 2-4 4-4 7 0 1.5.6 2.8 1.5 3.7"></path><path d="M12 22a5 5 0 0 1-5-5c0-1.7.7-3.4 2-4.6"></path></svg>',
+      graduation: '<svg viewBox="0 0 24 24"><path d="m22 10-10-5-10 5 10 5 10-5Z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>',
+      layers: '<svg viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7l10-5Z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path></svg>',
+      lock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>',
+      logout: '<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>',
+      mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>',
+      moon: '<svg viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a9 9 0 1 0 11 11Z"></path></svg>',
+      school: '<svg viewBox="0 0 24 24"><path d="M3 22V9l9-5 9 5v13"></path><path d="M9 22v-6h6v6"></path><path d="M8 12h.01"></path><path d="M16 12h.01"></path></svg>',
+      settings: '<svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path><path d="M19.4 15a1.8 1.8 0 0 0 .4 2l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.8 1.8 0 0 0-2-.4 1.8 1.8 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-2 .4l-.1.1A2 2 0 1 1 4.1 17l.1-.1a1.8 1.8 0 0 0 .4-2 1.8 1.8 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.4-2l-.1-.1A2 2 0 1 1 7 4.1l.1.1a1.8 1.8 0 0 0 2 .4 1.8 1.8 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 2-.4l.1-.1A2 2 0 1 1 19.9 7l-.1.1a1.8 1.8 0 0 0-.4 2 1.8 1.8 0 0 0 1.6 1h.1a2 2 0 1 1 0 4H21a1.8 1.8 0 0 0-1.6 1Z"></path></svg>',
+      shield: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>',
+      sparkles: '<svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3Z"></path><path d="M19 15l.7 2.3L22 18l-2.3.7L19 22l-.7-3.3L15 18l3.3-.7L19 15Z"></path></svg>',
+      sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.9 4.9 1.4 1.4"></path><path d="m17.7 17.7 1.4 1.4"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m4.9 19.1 1.4-1.4"></path><path d="m17.7 6.3 1.4-1.4"></path></svg>',
+      target: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>',
+      trending: '<svg viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"></path><path d="M14 7h7v7"></path></svg>',
+      trophy: '<svg viewBox="0 0 24 24"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M5 6H3a3 3 0 0 0 3 3h1"></path><path d="M19 6h2a3 3 0 0 1-3 3h-1"></path></svg>',
+      upload: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m17 8-5-5-5 5"></path><path d="M12 3v12"></path></svg>',
+      zap: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 10-13h-7l1-7Z"></path></svg>'
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const fallbackName = 'Student';
+    const profile = {
+      name: localStorage.getItem('tutorly_name') || localStorage.getItem('math-bot-name') || fallbackName,
+      email: localStorage.getItem('tutorly_email') || 'student@email.com',
+      grade: localStorage.getItem('tutorly_grade') || '',
+      board: localStorage.getItem('tutorly_board') || '',
+      school: localStorage.getItem('tutorly_school') || '',
+      phone: localStorage.getItem('tutorly_phone') || '',
+      language: localStorage.getItem('tutorly_language') || 'English',
+      timezone: localStorage.getItem('tutorly_timezone') || 'Asia/Calcutta',
+      coins: Number(localStorage.getItem('tutorly_coins') || 12480),
+      streak: Number(localStorage.getItem('tutorly_streak') || 5),
+      hours: Number(localStorage.getItem('tutorly_study_hours') || 42),
+      joinDate: localStorage.getItem('tutorly_join_date') || 'May 2026',
+      avatar: localStorage.getItem('tutorly_avatar') || ''
+    };
+
+    function renderIcons() {
+      document.querySelectorAll('[data-icon]').forEach((node) => {
+        node.innerHTML = icons[node.dataset.icon] || '';
+      });
+    }
+
+    function showToast(text) {
+      const toast = $('profileToast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function completionScore() {
+      const fields = [profile.name, profile.email, profile.grade, profile.school, profile.board, profile.phone, profile.language, profile.timezone, profile.avatar];
+      return Math.round((fields.filter(Boolean).length / fields.length) * 100);
+    }
+
+    function syncTheme() {
+      const isDark = (localStorage.getItem('tutorly_profile_theme') || 'light') === 'dark';
+      document.body.classList.toggle('profile-dark', isDark);
+      $('darkModeSwitch').checked = isDark;
+      $('themeLabel').textContent = isDark ? 'Light' : 'Dark';
+      const icon = $('themeToggle').querySelector('[data-icon]');
+      icon.dataset.icon = isDark ? 'sun' : 'moon';
+      icon.innerHTML = icons[icon.dataset.icon];
+      drawCharts();
+    }
+
+    function paintProfile() {
+      const completion = completionScore();
+      $('studentName').textContent = profile.name;
+      $('studentEmail').textContent = profile.email;
+      $('studentHeadline').textContent = `${profile.grade || 'Grade not set'} student at ${profile.school || 'School not set'}`;
+      $('schoolMeta').textContent = profile.school || 'School not set';
+      $('joinDate').textContent = `Joined ${profile.joinDate}`;
+      $('streakMeta').textContent = `${profile.streak} day streak`;
+      $('currentStreak').textContent = profile.streak;
+      $('studyHoursStat').textContent = `${profile.hours}h`;
+      $('xpEarned').dataset.count = String(profile.coins);
+      $('profileCompletionText').textContent = `${completion}%`;
+      $('profileCompletionBar').style.setProperty('--value', `${completion}%`);
+      $('avatarText').textContent = (profile.name || fallbackName).trim().charAt(0).toUpperCase();
+
+      $('nameInput').value = profile.name;
+      $('emailInput').value = profile.email;
+      $('gradeInput').value = profile.grade;
+      $('schoolInput').value = profile.school;
+      $('boardInput').value = profile.board;
+      $('phoneInput').value = profile.phone;
+      $('languageInput').value = profile.language;
+      $('timezoneInput').value = profile.timezone;
+
+      if (profile.avatar) {
+        $('avatarImage').src = profile.avatar;
+        $('avatar').classList.add('has-image');
+      } else {
+        $('avatar').classList.remove('has-image');
+      }
+
+      animateCounters();
+    }
+
+    function animateCounters() {
+      document.querySelectorAll('.count').forEach((node) => {
+        const target = Number(node.dataset.count || 0);
+        const suffix = node.dataset.suffix || '';
+        const start = performance.now();
+        const duration = 900;
+        function tick(now) {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          node.textContent = Math.round(target * eased).toLocaleString('en-US') + suffix;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    function renderHeatmap() {
+      const levels = [1,2,0,3,4,2,1,0,2,3,4,1,2,0,3,2,4,4,1,0,2,3,1,2,4,3,2,1,0,3,4];
+      $('heatmap').innerHTML = levels.map((level, index) =>
+        `<span class="heat-cell" data-level="${level}" style="--level:${level};--i:${index}" title="Day ${index + 1}: ${level} study sessions"></span>`
+      ).join('');
+    }
+
+    function getCssColor(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function chartColors() {
+      return {
+        ink: getComputedStyle(document.body).getPropertyValue('--profile-ink').trim(),
+        muted: getComputedStyle(document.body).getPropertyValue('--profile-muted').trim(),
+        line: getComputedStyle(document.body).getPropertyValue('--profile-line').trim(),
+        blue: getCssColor('--profile-blue'),
+        purple: getCssColor('--profile-purple'),
+        green: getCssColor('--profile-green'),
+        amber: getCssColor('--profile-amber')
+      };
+    }
+
+    function setupCanvas(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function drawGrid(ctx, width, height, colors) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = colors.line;
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 4; i++) {
+        const y = (height / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawLineChart(canvas, values) {
+      const { ctx, width, height } = setupCanvas(canvas);
+      const colors = chartColors();
+      drawGrid(ctx, width, height, colors);
+      const pad = 10;
+      const max = 100;
+      const min = 60;
+      const points = values.map((value, index) => ({
+        x: pad + index * ((width - pad * 2) / (values.length - 1)),
+        y: height - pad - ((value - min) / (max - min)) * (height - pad * 2)
+      }));
+      const area = ctx.createLinearGradient(0, 0, 0, height);
+      area.addColorStop(0, 'rgba(37, 99, 235, 0.24)');
+      area.addColorStop(1, 'rgba(37, 99, 235, 0)');
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, height - pad);
+      points.forEach((point) => ctx.lineTo(point.x, point.y));
+      ctx.lineTo(points[points.length - 1].x, height - pad);
+      ctx.closePath();
+      ctx.fillStyle = area;
+      ctx.fill();
+      ctx.beginPath();
+      points.forEach((point, index) => index ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y));
+      ctx.strokeStyle = colors.blue;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      points.forEach((point) => {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = colors.blue;
+        ctx.fill();
+      });
+    }
+
+    function drawBarChart(canvas, values, palette) {
+      const { ctx, width, height } = setupCanvas(canvas);
+      const colors = chartColors();
+      drawGrid(ctx, width, height, colors);
+      const gap = 12;
+      const barWidth = (width - gap * (values.length + 1)) / values.length;
+      values.forEach((value, index) => {
+        const x = gap + index * (barWidth + gap);
+        const h = (value / 100) * (height - 16);
+        const y = height - h;
+        ctx.fillStyle = palette[index % palette.length];
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, h, 8);
+        ctx.fill();
+      });
+    }
+
+    function drawCharts() {
+      const colors = chartColors();
+      const score = $('scoreChart');
+      const subjects = $('subjectChart');
+      const study = $('studyChart');
+      if (!score || !subjects || !study) return;
+      drawLineChart(score, [74, 78, 82, 80, 85, 88, 91]);
+      drawBarChart(subjects, [92, 88, 81, 74], [colors.blue, colors.purple, colors.green, colors.amber]);
+      drawBarChart(study, [48, 64, 52, 72, 86, 66, 78], [colors.blue, colors.blue, colors.blue, colors.purple]);
+    }
+
+    function saveProfile(event) {
+      event.preventDefault();
+      profile.name = $('nameInput').value.trim() || fallbackName;
+      profile.email = $('emailInput').value.trim() || 'student@email.com';
+      profile.grade = $('gradeInput').value.trim();
+      profile.school = $('schoolInput').value.trim();
+      profile.board = $('boardInput').value.trim();
+      profile.phone = $('phoneInput').value.replace(/[^0-9]/g, '').slice(0, 10);
+      profile.language = $('languageInput').value;
+      profile.timezone = $('timezoneInput').value;
+
+      localStorage.setItem('tutorly_name', profile.name);
+      localStorage.setItem('math-bot-name', profile.name);
+      localStorage.setItem('tutorly_email', profile.email);
+      localStorage.setItem('tutorly_grade', profile.grade);
+      localStorage.setItem('tutorly_school', profile.school);
+      localStorage.setItem('tutorly_board', profile.board);
+      localStorage.setItem('tutorly_phone', profile.phone);
+      localStorage.setItem('tutorly_language', profile.language);
+      localStorage.setItem('tutorly_timezone', profile.timezone);
+
+      paintProfile();
+      showToast('Profile saved successfully.');
+    }
+
+    renderIcons();
+    renderHeatmap();
+    paintProfile();
+    syncTheme();
+
+    $('profileForm').addEventListener('submit', saveProfile);
+    $('editProfileBtn').addEventListener('click', () => $('nameInput').focus());
+    $('phoneInput').addEventListener('input', () => {
+      $('phoneInput').value = $('phoneInput').value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
+
+    $('avatarInput').addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        profile.avatar = reader.result;
+        localStorage.setItem('tutorly_avatar', profile.avatar);
+        paintProfile();
+        showToast('Avatar updated.');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    $('themeToggle').addEventListener('click', () => {
+      const next = document.body.classList.contains('profile-dark') ? 'light' : 'dark';
+      localStorage.setItem('tutorly_profile_theme', next);
+      syncTheme();
+    });
+
+    $('darkModeSwitch').addEventListener('change', (event) => {
+      localStorage.setItem('tutorly_profile_theme', event.target.checked ? 'dark' : 'light');
+      syncTheme();
+    });
+
+    document.querySelectorAll('.subject-chip').forEach((chip) => {
+      chip.addEventListener('click', () => chip.classList.toggle('active'));
+    });
+
+    $('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('tutorly_logged_in');
+      localStorage.removeItem('tutorly_signed_up');
+      localStorage.removeItem('tutorly_account_role');
+      localStorage.removeItem('tutorly_bot_try_count');
+      window.location.href = 'welcome.html';
+    });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(drawCharts.timer);
+      drawCharts.timer = setTimeout(drawCharts, 120);
+    });
+  </script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/campus.js?v=campus-20260629"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
+

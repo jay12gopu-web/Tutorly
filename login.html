@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <style>
+    .login-mode {
+      display: inline-flex;
+      border: 1px solid #cfe0ff;
+      border-radius: 999px;
+      padding: 4px;
+      background: #f4f8ff;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-weight: 800;
+      color: #31508d;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: #1a73e8;
+      color: #fff;
+    }
+
+    .pwd-only { display: block; }
+    .otp-only { display: none; }
+
+    .password-field {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-field .input {
+      width: 100%;
+      padding-right: 86px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      border: 1px solid rgba(79, 124, 255, 0.22);
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: rgba(255, 255, 255, 0.76);
+      color: #31508d;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .password-toggle:hover {
+      transform: translateY(-50%) scale(1.03);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(79, 124, 255, 0.18);
+    }
+
+    .otp-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 24, 40, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 7000;
+      padding: 14px;
+    }
+
+    .otp-modal.show { display: flex; }
+
+    .otp-card {
+      width: min(460px, 96vw);
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: var(--shadow-2);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .otp-title { margin: 0; font-family: "Baloo 2", sans-serif; font-size: 34px; color: #2f4a81; }
+    .otp-sub { margin: 4px 0 12px; color: var(--muted); }
+
+    .otp-inputs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .otp-digit {
+      width: 100%;
+      min-width: 0;
+      height: 56px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      border-radius: 10px;
+      border: 1px solid #cfe0ff;
+      color: #2f4a81;
+      outline: none;
+      padding: 0;
+      background: #fdfefe;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .otp-digit:focus {
+      border-color: #86a5f2;
+      box-shadow: 0 0 0 4px rgba(79, 124, 255, 0.16);
+    }
+
+    @media (max-width: 560px) {
+      .otp-card {
+        padding: 14px;
+      }
+
+      .otp-title {
+        font-size: 30px;
+      }
+
+      .otp-inputs {
+        gap: 8px;
+      }
+
+      .otp-digit {
+        height: 50px;
+        font-size: 23px;
+      }
+    }
+
+    .otp-actions {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #verifyOtpBtn {
+      width: min(280px, 100%);
+      padding: 13px 18px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      box-shadow: 0 12px 24px rgba(79, 124, 255, 0.35);
+    }
+
+    #verifyOtpBtn:hover {
+      transform: translateY(-1px) scale(1.01);
+      filter: brightness(1.04);
+    }
+
+    #resendOtpBtn {
+      padding: 8px 16px;
+      font-size: 16px;
+      font-weight: 800;
+      border-width: 1px;
+      opacity: 0.92;
+    }
+
+    .otp-status { margin-top: 8px; font-size: 13px; font-weight: 700; color: #58709a; }
+  </style>
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <a class="back-home-btn" href="welcome.html" aria-label="Back to Tutorly welcome">Tutorly</a>
+  <div class="auth-wrap">
+    <form class="panel panel-soft auth-card fade-up" id="loginForm" novalidate>
+      <span class="auth-brand">&#10022; Tutorly</span>
+      <span class="pill pill-blue">Welcome Back</span>
+      <h1 class="page-title" style="font-size:36px; margin-top:8px;">Continue with Tutorly</h1>
+      <p class="page-sub" style="margin-bottom:16px;">Your learning space is ready.</p>
+
+      <div class="login-mode">
+        <button class="mode-btn active" type="button" data-mode="password">Password</button>
+        <button class="mode-btn" type="button" data-mode="otp">OTP</button>
+      </div>
+
+      <div class="grid" style="gap:10px;">
+        <input class="input" id="email" type="email" placeholder="Email Address" required />
+        <div class="password-field pwd-only" id="passwordField">
+          <input class="input" id="password" type="password" placeholder="Password" autocomplete="current-password" required />
+          <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password">Show</button>
+        </div>
+      </div>
+
+      <p class="muted" style="margin:12px 0 14px;">Sign in uses a 6-digit OTP verification popup.</p>
+      <button class="btn btn-primary" type="submit" style="width:100%;">LOGIN</button>
+      <p class="muted" style="margin:14px 0 0;">New here? <a href="sign_up.html" style="font-weight:800; color:var(--primary-dark);">Create account</a></p>
+    </form>
+  </div>
+
+  <div class="otp-modal" id="otpModal">
+    <div class="otp-card">
+      <h2 class="otp-title">Enter OTP</h2>
+      <p class="otp-sub">We sent a 6-digit verification code.</p>
+
+      <div class="otp-inputs" id="otpInputs">
+        <input class="otp-digit" maxlength="1" inputmode="numeric" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" />
+      </div>
+
+      <div class="otp-actions">
+        <button class="btn btn-primary" id="verifyOtpBtn" type="button">Verify OTP</button>
+        <button class="btn btn-soft" id="resendOtpBtn" type="button">Resend OTP</button>
+      </div>
+
+      <p class="otp-status" id="otpStatus">Enter the code to continue.</p>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const otpModal = document.getElementById('otpModal');
+    const otpInputs = [...document.querySelectorAll('.otp-digit')];
+    const otpStatus = document.getElementById('otpStatus');
+    const modeButtons = [...document.querySelectorAll('[data-mode]')];
+    const passwordField = document.getElementById('passwordField');
+    const loginParams = new URLSearchParams(window.location.search);
+    const chatbotLoginOnly = loginParams.get('intent') === 'chatbot';
+
+    let generatedOtp = '';
+    let loginMode = 'password';
+
+    if (chatbotLoginOnly) {
+      const createAccountLink = document.querySelector('a[href="sign_up.html"]');
+      if (createAccountLink) createAccountLink.href = 'sign_up.html?intent=chatbot';
+    }
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      button.addEventListener('click', function () {
+        const shouldShow = input.type === 'password';
+        input.type = shouldShow ? 'text' : 'password';
+        button.textContent = shouldShow ? 'Hide' : 'Show';
+        button.setAttribute('aria-label', shouldShow ? 'Hide password' : 'Show password');
+      });
+    });
+
+    function makeOtp() {
+      return String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    function sendOtp() {
+      generatedOtp = makeOtp();
+      alert(`Demo OTP code: ${generatedOtp}`);
+      otpStatus.textContent = 'OTP sent. Please enter the 6-digit code.';
+    }
+
+    function openOtpModal() {
+      otpModal.classList.add('show');
+      otpInputs.forEach((i) => i.value = '');
+      otpInputs[0].focus();
+      sendOtp();
+    }
+
+    function closeOtpModal() {
+      otpModal.classList.remove('show');
+    }
+
+    function collectOtp() {
+      return otpInputs.map((i) => i.value).join('');
+    }
+
+    modeButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        modeButtons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        loginMode = btn.getAttribute('data-mode');
+        const pwd = document.getElementById('password');
+        if (loginMode === 'otp') {
+          passwordField.style.display = 'none';
+          pwd.required = false;
+        } else {
+          passwordField.style.display = 'block';
+          pwd.required = true;
+        }
+      });
+    });
+
+    otpInputs.forEach((input, idx) => {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        if (input.value && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && idx > 0) otpInputs[idx - 1].focus();
+      });
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email) {
+        alert('Please enter email.');
+        return;
+      }
+
+      if (loginMode === 'password' && !password) {
+        alert('Please enter password.');
+        return;
+      }
+
+      openOtpModal();
+    });
+
+    document.getElementById('resendOtpBtn').addEventListener('click', sendOtp);
+
+    document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+      const userOtp = collectOtp();
+      if (userOtp.length !== 6) {
+        otpStatus.textContent = 'Please enter all 6 digits.';
+        return;
+      }
+
+      if (userOtp !== generatedOtp) {
+        otpStatus.textContent = 'Incorrect OTP. Please try again.';
+        return;
+      }
+
+      otpStatus.textContent = 'OTP verified successfully.';
+      localStorage.setItem('tutorly_logged_in', 'true');
+      if (chatbotLoginOnly) {
+        localStorage.setItem('tutorly_signed_up', 'true');
+        localStorage.setItem('tutorly_account_role', 'student');
+        localStorage.setItem('tutorly_bot_try_count', '0');
+      }
+      setTimeout(() => {
+        closeOtpModal();
+        window.location.href = 'maths_gpt.html';
+      }, 350);
+    });
+
+    otpModal.addEventListener('click', (e) => {
+      if (e.target === otpModal) closeOtpModal();
+    });
+  </script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

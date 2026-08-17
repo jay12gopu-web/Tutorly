@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <style>
+    .profile-shell { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+    .profile-card { width: min(680px, 96vw); }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+    .step-pill { background: #eef3ff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; font-weight: 800; color: var(--primary-dark); }
+    .step-pill.active { background: linear-gradient(120deg, rgba(79,124,255,0.16), rgba(139,125,255,0.16)); }
+    .profile-card .input, .profile-card .select { margin-bottom: 10px; }
+    @media (max-width: 680px) { .steps { grid-template-columns: 1fr; } }
+  </style>
+  <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <a class="back-home-btn" href="sign_up.html" aria-label="Back to Tutorly signup">Tutorly</a>
+  <main class="profile-shell">
+    <form class="panel panel-soft profile-card fade-up" id="profileForm" novalidate>
+      <span class="auth-brand">&#10022; Tutorly</span>
+      <span class="pill pill-blue">Student setup</span>
+      <h1 class="page-title" style="font-size: 42px; margin-top: 8px;">Tell us about your class</h1>
+      <p class="page-sub" style="margin-bottom: 14px;">This helps us set the right level and create better practice plans.</p>
+
+      <div class="steps">
+        <div class="step-pill active">1. Class</div>
+        <div class="step-pill">2. Board</div>
+        <div class="step-pill">3. School</div>
+      </div>
+
+      <select class="select" id="grade" required>
+        <option value="">Select Grade</option>
+        <option>1</option><option>2</option><option>3</option><option>4</option>
+        <option>5</option><option>6</option><option>7</option><option>8</option>
+        <option>9</option><option>10</option><option>11</option><option>12</option>
+      </select>
+
+      <select class="select" id="board" required>
+        <option value="">Select Board</option>
+        <option>CBSE</option>
+        <option>ICSE</option>
+        <option>State Board</option>
+        <option>IB</option>
+        <option>Cambridge</option>
+      </select>
+
+      <input class="input" id="school" type="text" placeholder="School Name" required />
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
+        <a class="btn btn-soft" href="sign_up.html">Back</a>
+        <button class="btn btn-primary" type="submit" style="flex: 1; min-width: 200px;">Continue to Tutorly</button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById('profileForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const grade = document.getElementById('grade').value;
+      const board = document.getElementById('board').value;
+      const school = document.getElementById('school').value.trim();
+
+      if (!grade || !board || !school) {
+        alert('Please complete all profile details before continuing.');
+        return;
+      }
+
+      localStorage.setItem('tutorly_grade', grade);
+      localStorage.setItem('tutorly_board', board);
+      localStorage.setItem('tutorly_school', school);
+      window.location.href = 'maths_gpt.html';
+    });
+  </script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/campus.js?v=campus-20260629"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
+
+
+
+

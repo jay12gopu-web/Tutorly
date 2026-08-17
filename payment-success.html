@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="frontend/subscription/subscription.css" />
+  <link rel="stylesheet" href="css/page-transitions.css" />
+</head>
+<body>
+  <main class="success-page">
+    <section class="success-card">
+      <div class="success-check" id="successBadge" aria-hidden="true">✓</div>
+      <h1 id="successTitle">Payment successful</h1>
+      <p id="successCopy">Your Tutorly subscription is active.</p>
+      <div class="success-actions">
+        <a class="pay-action" href="home.html">Go to Chat</a>
+        <a class="pay-action secondary" href="payment-history.html">Payment History</a>
+        <a class="pay-action secondary" id="retryPayment" href="subscriptions.html" hidden>Retry Payment</a>
+      </div>
+    </section>
+  </main>
+  <script src="frontend/payment-success/payment-success.js"></script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+</body>
+</html>

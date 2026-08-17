@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    (function () {
+      var signedIn = localStorage.getItem('tutorly_logged_in') === 'true';
+      var preview = new URLSearchParams(window.location.search).get('preview') === '1';
+      if (!signedIn && !preview) window.location.replace('welcome.html');
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/chatbot.css?v=mobile-premium-20260531" />
+  <link rel="stylesheet" href="css/page-transitions.css" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+
+<body>
+  <div id="chatShell" class="chat-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Tutorly navigation">
+      <div class="side-top">
+        <a class="sidebar-brand" href="maths_gpt.html" aria-label="Tutorly chat home">
+          <span class="sidebar-brand-mark" aria-hidden="true">&#10022;</span>
+          <span class="side-label">Tutorly</span>
+        </a>
+        <button id="sidebarToggle" class="icon-btn" type="button" aria-label="Collapse sidebar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16" />
+            <path d="M4 12h16" />
+            <path d="M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <button id="newChatBtn" class="side-link new-chat-link" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14" />
+          <path d="M5 12h14" />
+        </svg>
+        <span class="side-label">New Chat</span>
+      </button>
+
+      <button id="chatHistoryBtn" class="side-link" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-4-4" />
+        </svg>
+        <span class="side-label">Search Chats</span>
+      </button>
+
+      <div class="side-section-label side-label">Study</div>
+
+      <a class="side-link" href="lessons.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H7a3 3 0 0 0-3 3V5.5Z" />
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        </svg>
+        <span class="side-label">Learn</span>
+      </a>
+
+      <a class="side-link" href="practice.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 12l2 2 4-5" />
+          <path d="M4 4h16v16H4z" />
+        </svg>
+        <span class="side-label">Practice</span>
+      </a>
+
+      <a class="side-link" href="tests.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 3h10v4H7z" />
+          <path d="M5 5v16h14V5" />
+          <path d="M8 11h8M8 15h6" />
+        </svg>
+        <span class="side-label">Tests</span>
+      </a>
+
+      <a class="side-link" href="progress.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+        </svg>
+        <span class="side-label">Progress</span>
+      </a>
+
+      <a class="side-link" href="mistake_book.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12v18l-6-4-6 4z" />
+          <path d="m9 9 2 2 4-4" />
+        </svg>
+        <span class="side-label">Mistake Book</span>
+      </a>
+
+      <a class="side-link" href="study_planner.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 4h14v17H5z" />
+          <path d="M8 2v4M16 2v4M8 10h8M8 14h5" />
+        </svg>
+        <span class="side-label">Study Planner</span>
+      </a>
+
+      <div class="side-spacer"></div>
+
+      <div class="side-section-label side-label">Recent Chats</div>
+      <button class="side-link recent-chat-link" type="button" data-open-history>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+          <path d="M3 3v5h5M12 7v5l3 2" />
+        </svg>
+        <span class="side-label">View all conversations</span>
+      </button>
+
+      <a class="side-link" href="profile.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 21a8 8 0 0 0-16 0" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        <span class="side-label">Profile</span>
+      </a>
+
+      <button id="settingsBtn" class="side-link settings-link" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z" />
+          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 16 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.3.37.7.57 1.2.6h.4a2 2 0 1 1 0 4h-.4c-.5.03-.9.23-1.2.6z" />
+        </svg>
+        <span class="side-label">Settings</span>
+      </button>
+    </aside>
+
+    <main class="main-area">
+      <header class="main-header">
+        <div class="brand-area">
+          <a class="header-wordmark" href="maths_gpt.html" aria-label="Tutorly chat home"><span aria-hidden="true">&#10022;</span>Tutorly</a>
+        </div>
+
+        <div id="chatTitle" class="chat-title">New chat</div>
+
+        <div class="top-actions">
+          <button id="themeToggle" class="profile-dot chat-header-icon" type="button" aria-label="Switch color theme" title="Switch color theme">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.1A8 8 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1z" /></svg>
+          </button>
+          <button id="chatNotificationBtn" class="profile-dot chat-header-icon" type="button" aria-label="Notifications" title="Notifications">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+          </button>
+          <a class="profile-dot" href="profile.html" aria-label="Profile">J</a>
+          <button id="mobileMenu" class="icon-btn mobile-menu" type="button" aria-label="Open sidebar">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6h16" />
+              <path d="M4 12h16" />
+              <path d="M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="work-area">
+        <section id="hero" class="hero">
+          <h1>What would you like to learn today?</h1>
+          <p class="hero-sub">Learn smarter with Tutorly.</p>
+        </section>
+
+        <section id="chatWindow" class="chat-window" aria-live="polite">
+          <div id="messages" class="messages"></div>
+        </section>
+
+        <section class="composer-wrap" aria-label="Chat composer">
+          <div class="composer-panel">
+            <div id="modelSelector" class="model-selector">
+              <button id="modelSelectorBtn" class="model-selector-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span id="selectedModelIcon" class="model-glyph" aria-hidden="true">&#10022;</span>
+                <span class="model-selected-copy">
+                  <strong id="selectedModelName">Prime</strong>
+                  <small id="selectedModelDesc">Best for most students</small>
+                </span>
+                <svg class="model-chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              <div id="modelMenu" class="model-menu" role="listbox" aria-label="Choose Tutorly model">
+                <button class="model-option" type="button" role="option" data-model="spark">
+                  <span class="model-glyph model-glyph-spark" aria-hidden="true">&#9889;</span>
+                  <span><strong>Spark</strong><small>Fast homework help</small></span>
+                </button>
+                <button class="model-option" type="button" role="option" data-model="prime">
+                  <span class="model-glyph model-glyph-prime" aria-hidden="true">&#10022;</span>
+                  <span><strong>Prime</strong><small>Best for most students</small></span>
+                </button>
+                <button class="model-option" type="button" role="option" data-model="lens">
+                  <span class="model-glyph model-glyph-lens" aria-hidden="true">&#9673;</span>
+                  <span><strong>Lens</strong><small>Solve from photos</small></span>
+                </button>
+                <button class="model-option" type="button" role="option" data-model="deep">
+                  <span class="model-glyph" aria-hidden="true">&#8756;</span>
+                  <span><strong>Deep Think</strong><small>Careful reasoning</small></span>
+                </button>
+                <button class="model-option" type="button" role="option" data-model="research">
+                  <span class="model-glyph" aria-hidden="true">&#8981;</span>
+                  <span><strong>Research</strong><small>Facts and citations</small></span>
+                </button>
+                <button class="model-option" type="button" role="option" data-model="creative">
+                  <span class="model-glyph" aria-hidden="true">&#10023;</span>
+                  <span><strong>Creative</strong><small>Ideas and writing</small></span>
+                </button>
+                <button class="model-option" type="button" role="option" data-model="study">
+                  <span class="model-glyph" aria-hidden="true">&#9635;</span>
+                  <span><strong>Study</strong><small>Quiz and revision</small></span>
+                </button>
+              </div>
+            </div>
+            <div class="composer">
+              <input id="uploadInput" class="file-input" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Upload image" />
+              <button id="uploadBtn" class="tool-btn" type="button" aria-label="Upload image" title="Upload image">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+              </button>
+              <textarea id="input" rows="1" placeholder="Ask Tutorly anything..." aria-label="Ask Tutorly"></textarea>
+              <div id="voiceWave" class="voice-wave" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <button id="cameraBtn" class="tool-btn camera-btn" type="button" aria-label="Take photo" title="Take photo">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </button>
+              <button id="speechTextBtn" class="tool-btn speech-text-btn live-hidden-control" type="button" aria-label="Speech to text" title="Speech to text" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" />
+                  <path d="M5 10v1a7 7 0 0 0 14 0v-1" />
+                  <path d="M12 18v3" />
+                  <path d="M8 21h8" />
+                </svg>
+              </button>
+              <button id="voiceBtn" class="tool-btn voice-chat-btn" type="button" aria-label="Open Tutorly Live" title="Open Tutorly Live">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" />
+                  <path d="M5 10v1a7 7 0 0 0 14 0v-1" />
+                  <path d="M12 18v3" />
+                  <path d="M8 21h8" />
+                </svg>
+              </button>
+              <button id="sendBtn" class="send-btn" type="button" aria-label="Send message">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M22 2L11 13" />
+                  <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <p class="disclaimer">Tutorly can make mistakes. Check important answers.</p>
+        </section>
+      </section>
+    </main>
+
+  </div>
+
+  <script src="frontend/subscription/premium-guard.js"></script>
+  <script src="js/chatbot/chatbot-core.js"></script>
+  <script src="js/chatbot/mode-registry.js"></script>
+  <script src="js/chatbot/chat-history-store.js"></script>
+  <script src="js/chatbot/chat-memory.js"></script>
+  <script src="js/chatbot/learning-tools.js"></script>
+  <script src="js/chatbot/math-renderer.js"></script>
+  <script src="js/chatbot/advanced-math-engine.js"></script>
+  <script src="js/chatbot/geography-visuals.js"></script>
+  <script src="js/chatbot/english-engine.js"></script>
+  <script src="js/chatbot/adaptive-intelligence.js"></script>
+  <script src="js/response-engine.js"></script>
+  <script src="js/gpt.js"></script>
+  <script src="js/chatbot/response-contract.js"></script>
+  <script src="js/chatbot/math-response-contract.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/tutorly-shell.js"></script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
+

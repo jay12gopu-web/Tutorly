@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <style>
+    .contact-wrap { margin-top: 14px; }
+    .contact-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 12px; margin-top: 12px; }
+    .contact-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: var(--muted); }
+    .contact-item span { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #eef3ff; }
+    .contact-form textarea { min-height: 140px; resize: vertical; }
+    @media (max-width: 900px) { .contact-layout { grid-template-columns: 1fr; } }
+  </style>
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+  <header class="shell header-wrap fade-up">
+  <div class="topbar">
+    <div class="brand"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></div>
+    <nav class="nav-links">
+      <a href="welcome.html">Welcome</a>
+      <a href="home.html">Chat</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+  <main class="shell contact-wrap">
+    <section class="panel panel-soft fade-up d2">
+      <span class="pill pill-blue">Need help? We are here.</span>
+      <h1 class="page-title" style="font-size: 42px; margin-top: 8px;">Contact Tutorly Team</h1>
+      <p class="page-sub">Questions about learning plans, account setup, referrals, or subscriptions? Reach us anytime.</p>
+    </section>
+
+    <section class="contact-layout fade-up d3">
+      <article class="panel">
+        <h3 style="margin-top: 0; font-family: 'Baloo 2', sans-serif;">Support details</h3>
+        <div class="contact-item"><span>??</span><div><strong>Email</strong><br />jay12.gopu@gmail.com</div></div>
+        <div class="contact-item"><span>??</span><div><strong>Phone</strong><br />+91 12345 67890</div></div>
+        <div class="contact-item"><span>??</span><div><strong>Hours</strong><br />Mon-Sat, 9:00 AM - 7:00 PM</div></div>
+        <div class="contact-item"><span>??</span><div><strong>Location</strong><br />Hyderabad, Telangana, India</div></div>
+      </article>
+
+      <article class="panel contact-form">
+        <h3 style="margin-top: 0; font-family: 'Baloo 2', sans-serif;">Send us a message</h3>
+        <form id="contactForm" class="grid" style="gap: 10px;">
+          <input class="input" type="text" id="name" placeholder="Your Name" required />
+          <input class="input" type="email" id="email" placeholder="Your Email" required />
+          <select class="select" id="topic" required>
+            <option value="">Select Topic</option>
+            <option>Account Help</option>
+            <option>Subscriptions</option>
+            <option>Tutor Support</option>
+            <option>Feedback</option>
+          </select>
+          <textarea class="input" id="message" placeholder="Write your message here..." required></textarea>
+          <button class="btn btn-primary" type="submit">Submit Message</button>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Thanks! Your message has been submitted successfully.');
+      e.target.reset();
+    });
+  </script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

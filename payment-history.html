@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="frontend/subscription/subscription.css" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <a class="back-home-btn" href="subscriptions.html" aria-label="Back to subscriptions">Back</a>
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <a class="brand" href="home.html" aria-label="Tutorly Home"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></a>
+      <nav class="nav-links">
+        <a href="home.html">Chat</a>
+        <a href="subscriptions.html">Subscriptions</a>
+        <a href="contact.html">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="payment-shell">
+    <section class="payment-hero fade-up">
+      <div>
+        <span class="payment-kicker">Billing workspace</span>
+        <h1 class="payment-title">Payment history.</h1>
+        <p class="payment-sub">Review Razorpay orders, subscription purchases, and pay-per-session credits saved for your Tutorly account.</p>
+      </div>
+      <a class="pay-action" href="subscriptions.html">Manage Plan</a>
+    </section>
+
+    <section class="payment-panel history-card fade-up d2">
+      <h2>Recent payments</h2>
+      <p>Secure payment records from the Tutorly backend will appear below.</p>
+      <div class="history-list" id="historyList">
+        <article class="history-item">
+          <div>
+            <h3>Loading payments...</h3>
+            <p>Please wait while Tutorly checks your billing history.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="frontend/subscription/payment-history.js"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

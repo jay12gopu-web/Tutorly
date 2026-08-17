@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/page-transitions.css" />
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+            display: ["Poppins", "Inter", "sans-serif"]
+          },
+          boxShadow: {
+            premium: "0 28px 90px rgba(64, 82, 180, 0.20)",
+            glow: "0 0 42px rgba(99, 102, 241, 0.28)"
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.3.1",
+        "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+        "react-dom": "https://esm.sh/react-dom@18.3.1",
+        "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?external=react",
+        "framer-motion": "https://esm.sh/framer-motion@11.18.2?external=react,react-dom",
+        "lucide-react": "https://esm.sh/lucide-react@0.468.0?external=react"
+      }
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --page-a: #eef6ff;
+      --page-b: #f6f1ff;
+      --ink: #10182f;
+    }
+
+    html.dark {
+      color-scheme: dark;
+      --page-a: #070b18;
+      --page-b: #111327;
+      --ink: #f7f9ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 8%, rgba(80, 149, 255, 0.26), transparent 34%),
+        radial-gradient(circle at 88% 10%, rgba(139, 92, 246, 0.24), transparent 30%),
+        radial-gradient(circle at 72% 78%, rgba(34, 211, 238, 0.13), transparent 32%),
+        linear-gradient(135deg, var(--page-a), var(--page-b));
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(79, 124, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 124, 255, 0.08) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 78%);
+    }
+
+    .glass {
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      background: linear-gradient(145deg, rgba(255,255,255,0.86), rgba(240,246,255,0.62));
+      box-shadow: 0 24px 70px rgba(64, 82, 180, 0.16);
+      backdrop-filter: blur(24px);
+    }
+
+    .dark .glass {
+      border-color: rgba(255, 255, 255, 0.10);
+      background: linear-gradient(145deg, rgba(19, 27, 55, 0.82), rgba(20, 18, 42, 0.62));
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-border {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-border::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #60a5fa, #8b5cf6, #22d3ee, transparent);
+      animation: shineLine 4s linear infinite;
+    }
+
+    .blob {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      filter: blur(54px);
+      opacity: 0.38;
+      pointer-events: none;
+      animation: floatBlob 13s ease-in-out infinite alternate;
+    }
+
+    .blob.one {
+      top: 90px;
+      left: -150px;
+      background: #60a5fa;
+    }
+
+    .blob.two {
+      right: -160px;
+      top: 190px;
+      background: #8b5cf6;
+      animation-delay: -4s;
+    }
+
+    .blob.three {
+      left: 40%;
+      bottom: -230px;
+      background: #22d3ee;
+      animation-delay: -8s;
+    }
+
+    .spark {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.52);
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.62);
+      animation: sparkleDrift 7s ease-in-out infinite;
+    }
+
+    .dark .spark {
+      background: rgba(125, 211, 252, 0.62);
+    }
+
+    .reward-orb {
+      position: absolute;
+      border-radius: 999px;
+      background: radial-gradient(circle at 32% 24%, #fff7b8, #f7bd38 58%, #d78318);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 18px 34px rgba(217, 132, 24, 0.22);
+      animation: coinFloat 4s ease-in-out infinite;
+    }
+
+    .skeleton {
+      overflow: hidden;
+      position: relative;
+      background: rgba(148, 163, 184, 0.18);
+    }
+
+    .skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent);
+      animation: skeleton 1.35s infinite;
+    }
+
+    @keyframes shineLine {
+      0% { transform: translateX(-36%); }
+      100% { transform: translateX(36%); }
+    }
+
+    @keyframes floatBlob {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(36px, 28px, 0) scale(1.08); }
+    }
+
+    @keyframes sparkleDrift {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.38; }
+      50% { transform: translateY(-24px) scale(1.35); opacity: 0.86; }
+    }
+
+    @keyframes coinFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-16px) rotate(8deg); }
+    }
+
+    @keyframes skeleton {
+      100% { transform: translateX(100%); }
+    }
+
+    .fallback-workspace {
+      min-height: 100vh;
+      padding: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fallback-shell {
+      width: min(1180px, calc(100% - 24px));
+      margin: 0 auto;
+    }
+
+    .fallback-nav,
+    .fallback-card {
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      background: linear-gradient(145deg, rgba(255,255,255,0.86), rgba(240,246,255,0.62));
+      box-shadow: 0 24px 70px rgba(64, 82, 180, 0.16);
+      backdrop-filter: blur(24px);
+    }
+
+    .fallback-nav {
+      min-height: 76px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      position: sticky;
+      top: 16px;
+      z-index: 5;
+    }
+
+    .fallback-logo {
+      width: 178px;
+      height: 50px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow: 0 0 42px rgba(99, 102, 241, 0.24);
+    }
+
+    .fallback-main {
+      display: grid;
+      grid-template-columns: 1.16fr 0.84fr;
+      gap: 20px;
+      margin-top: 22px;
+    }
+
+    .fallback-card {
+      border-radius: 34px;
+      padding: clamp(22px, 4vw, 34px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .fallback-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: 999px;
+      padding: 8px 14px;
+      color: #047857;
+      background: rgba(236, 253, 245, 0.84);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .fallback-title {
+      margin: 22px 0 12px;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: clamp(46px, 8vw, 76px);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+    }
+
+    .fallback-sub {
+      max-width: 680px;
+      color: #5b6780;
+      font-size: 18px;
+      font-weight: 650;
+      line-height: 1.7;
+    }
+
+    .fallback-code {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: min(560px, 100%);
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      border-radius: 26px;
+      margin-top: 26px;
+      padding: 14px;
+      background: linear-gradient(120deg, rgba(239,246,255,0.88), rgba(245,243,255,0.9));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.76);
+    }
+
+    .fallback-code strong {
+      min-width: 0;
+      color: #162d65;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: clamp(18px, 4vw, 26px);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      overflow-wrap: anywhere;
+    }
+
+    .fallback-btn {
+      border: 0;
+      border-radius: 18px;
+      padding: 13px 18px;
+      color: #fff;
+      background: linear-gradient(120deg, #2563eb, #7c3aed);
+      box-shadow: 0 16px 34px rgba(99, 102, 241, 0.28);
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .fallback-stats,
+    .fallback-timeline,
+    .fallback-badges {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .fallback-stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .fallback-mini {
+      border: 1px solid rgba(255,255,255,0.62);
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255,255,255,0.58);
+    }
+
+    .fallback-mini span {
+      display: block;
+      color: #637089;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .fallback-mini b {
+      display: block;
+      margin-top: 8px;
+      color: #0f172a;
+      font-size: 28px;
+      font-weight: 950;
+    }
+
+    .fallback-reward {
+      min-height: 100%;
+      display: grid;
+      align-content: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .fallback-gift {
+      width: min(220px, 62vw);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 48px;
+      color: #fff;
+      background: linear-gradient(145deg, #2563eb, #7c3aed 58%, #22d3ee);
+      box-shadow: 0 28px 70px rgba(99, 102, 241, 0.28);
+      font-size: 84px;
+      animation: coinFloat 4s ease-in-out infinite;
+    }
+
+    .fallback-timeline {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .fallback-section-title {
+      margin: 26px 0 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    @media (max-width: 850px) {
+      .fallback-main,
+      .fallback-stats,
+      .fallback-timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .fallback-code {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .fallback-btn {
+        width: 100%;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <div id="root">
+    <div class="fallback-workspace">
+      <div class="blob one"></div>
+      <div class="blob two"></div>
+      <div class="fallback-shell">
+        <header class="fallback-nav">
+          <a href="home.html" aria-label="Back to Tutorly home">
+            <img class="fallback-logo" src="assets/title-logo.png" alt="Tutorly" />
+          </a>
+          <a class="fallback-btn" href="profile.html">Profile</a>
+        </header>
+
+        <main class="fallback-main">
+          <section class="fallback-card">
+            <span class="fallback-pill">Invite friends, unlock rewards</span>
+            <h1 class="fallback-title">Refer & Earn</h1>
+            <p class="fallback-sub">Share Tutorly with classmates. Every successful invite earns coins, unlocks badges, and pushes you up the referral leaderboard.</p>
+
+            <div class="fallback-code">
+              <strong id="refCode">TUTORLY-XXXXXX</strong>
+              <button class="fallback-btn" id="copyCodeBtn" type="button">Copy Code</button>
+            </div>
+
+            <p class="fallback-sub" style="font-size:14px;margin-top:14px;">Code resets in: <b id="countdown">12:00:00</b></p>
+            <p class="fallback-sub" id="rewardStatus" style="font-size:14px;margin-top:4px;">Reward status: Pending eligibility completion.</p>
+
+            <div class="fallback-stats">
+              <article class="fallback-mini"><span>Total Referrals</span><b>12</b></article>
+              <article class="fallback-mini"><span>Coins Earned</span><b>3,000</b></article>
+              <article class="fallback-mini"><span>Pending</span><b>3</b></article>
+            </div>
+          </section>
+
+          <aside class="fallback-card fallback-reward">
+            <div class="fallback-gift">ðŸŽ</div>
+            <div>
+              <span class="fallback-pill">Reward engine</span>
+              <h2 class="fallback-section-title">Earn 250 Coins Per Friend</h2>
+              <p class="fallback-sub">1 Friend â†’ 250 Coins Â· 5 Friends â†’ Bonus Badge Â· 10 Friends â†’ Free Pro Week</p>
+            </div>
+          </aside>
+        </main>
+
+        <section class="fallback-card" style="margin-top:20px;">
+          <span class="fallback-pill">How referral works</span>
+          <h2 class="fallback-section-title">A cleaner path from share to reward</h2>
+          <div class="fallback-timeline">
+            <article class="fallback-mini"><span>01</span><b>Share Code</b><p class="fallback-sub" style="font-size:14px;">Send your referral link.</p></article>
+            <article class="fallback-mini"><span>02</span><b>Friend Joins</b><p class="fallback-sub" style="font-size:14px;">They create an account.</p></article>
+            <article class="fallback-mini"><span>03</span><b>They Learn</b><p class="fallback-sub" style="font-size:14px;">They use Tutorly tools.</p></article>
+            <article class="fallback-mini"><span>04</span><b>You Earn</b><p class="fallback-sub" style="font-size:14px;">Coins land automatically.</p></article>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function initReferralFallback() {
+      const codeEl = document.getElementById("refCode");
+      const copyBtn = document.getElementById("copyCodeBtn");
+      const countdownEl = document.getElementById("countdown");
+      if (!codeEl || !copyBtn || !countdownEl) return;
+
+      const codeKey = "tutorly_ref_code";
+      const expKey = "tutorly_ref_expires_at";
+      const legacyCodeKey = "tutorly_ref_code";
+      const legacyExpKey = "tutorly_ref_expires_at";
+      const prefix = "TUTORLY-";
+
+      function randomCode() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let suffix = "";
+        for (let i = 0; i < 6; i += 1) suffix += chars[Math.floor(Math.random() * chars.length)];
+        return `${prefix}${suffix}`;
+      }
+
+      function ensureCode() {
+        const now = Date.now();
+        let code = localStorage.getItem(codeKey) || localStorage.getItem(legacyCodeKey);
+        let exp = Number(localStorage.getItem(expKey) || localStorage.getItem(legacyExpKey) || "0");
+        if (code && /^TUTORLY-/i.test(code)) code = code.replace(/^TUTORLY-/i, prefix);
+        if (!code || !code.startsWith(prefix) || !exp || now >= exp) {
+          code = randomCode();
+          exp = now + 12 * 60 * 60 * 1000;
+        }
+        localStorage.setItem(codeKey, code);
+        localStorage.setItem(expKey, String(exp));
+        localStorage.removeItem(legacyCodeKey);
+        localStorage.removeItem(legacyExpKey);
+        codeEl.textContent = code;
+        return { code, exp };
+      }
+
+      function formatMs(ms) {
+        const total = Math.max(0, Math.floor(ms / 1000));
+        const h = String(Math.floor(total / 3600)).padStart(2, "0");
+        const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+        const s = String(total % 60).padStart(2, "0");
+        return `${h}:${m}:${s}`;
+      }
+
+      function tick() {
+        const state = ensureCode();
+        countdownEl.textContent = formatMs(state.exp - Date.now());
+      }
+
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(codeEl.textContent);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => { copyBtn.textContent = "Copy Code"; }, 1500);
+        } catch (error) {
+          window.prompt("Copy this manually:", codeEl.textContent);
+        }
+      });
+
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+
+  <script type="module">
+    import React, { useEffect, useMemo, useState } from "react";
+    import { createRoot } from "react-dom/client";
+    import { motion } from "framer-motion";
+    import {
+      BadgeCheck,
+      CheckCircle2,
+      Coins,
+      Copy,
+      Crown,
+      Flame,
+      Gift,
+      Home,
+      Link as LinkIcon,
+      MessageCircle,
+      Moon,
+      Rocket,
+      Send,
+      Share2,
+      Sparkles,
+      Star,
+      Sun,
+      Target,
+      Trophy,
+      User,
+      Users,
+      Zap
+    } from "lucide-react";
+
+    const h = React.createElement;
+    const CODE_KEY = "tutorly_ref_code";
+    const EXP_KEY = "tutorly_ref_expires_at";
+    const LEGACY_CODE_KEY = "tutorly_ref_code";
+    const LEGACY_EXP_KEY = "tutorly_ref_expires_at";
+    const CODE_PREFIX = "TUTORLY-";
+    const inviteStats = {
+      referrals: 12,
+      coinsEarned: 3000,
+      pendingRewards: 3,
+      streak: 6,
+      progress: 68,
+      leaderboard: [
+        { name: "Maya", score: 28 },
+        { name: "Arjun", score: 21 },
+        { name: "You", score: 12 }
+      ]
+    };
+
+    function randomCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let suffix = "";
+      for (let i = 0; i < 6; i += 1) {
+        suffix += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return `${CODE_PREFIX}${suffix}`;
+    }
+
+    function ensureCode() {
+      const now = Date.now();
+      let code = localStorage.getItem(CODE_KEY) || localStorage.getItem(LEGACY_CODE_KEY);
+      let exp = Number(localStorage.getItem(EXP_KEY) || localStorage.getItem(LEGACY_EXP_KEY) || "0");
+
+      if (code && /^TUTORLY-/i.test(code)) {
+        code = code.replace(/^TUTORLY-/i, CODE_PREFIX);
+      }
+
+      if (!code || !code.startsWith(CODE_PREFIX) || !exp || now >= exp) {
+        code = randomCode();
+        exp = now + 12 * 60 * 60 * 1000;
+      }
+
+      localStorage.setItem(CODE_KEY, code);
+      localStorage.setItem(EXP_KEY, String(exp));
+      localStorage.removeItem(LEGACY_CODE_KEY);
+      localStorage.removeItem(LEGACY_EXP_KEY);
+      return { code, exp };
+    }
+
+    function formatMs(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const hValue = String(Math.floor(total / 3600)).padStart(2, "0");
+      const mValue = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+      const sValue = String(total % 60).padStart(2, "0");
+      return `${hValue}:${mValue}:${sValue}`;
+    }
+
+    function formatCoins(value) {
+      return new Intl.NumberFormat("en-US").format(value);
+    }
+
+    function getCoinBalance() {
+      const saved = Number(localStorage.getItem("tutorly_coins"));
+      return Number.isFinite(saved) ? saved : 1250;
+    }
+
+    function getReferralLink(code) {
+      const base = `${window.location.origin}${window.location.pathname.replace(/refer_earn\.html$/i, "sign_up.html")}`;
+      return `${base}?ref=${encodeURIComponent(code)}`;
+    }
+
+    function MotionCard({ children, className = "", delay = 0 }) {
+      return h(motion.section, {
+        className: `glass rounded-[34px] ${className}`,
+        initial: { opacity: 0, y: 24 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, amount: 0.18 },
+        transition: { duration: 0.55, delay, ease: "easeOut" },
+        whileHover: { y: -4, scale: 1.005 }
+      }, children);
+    }
+
+    function IconBubble({ icon, tone = "blue" }) {
+      const colors = {
+        blue: "from-blue-500 to-indigo-500 shadow-blue-500/25",
+        violet: "from-violet-500 to-fuchsia-500 shadow-violet-500/25",
+        cyan: "from-cyan-400 to-blue-500 shadow-cyan-500/25",
+        gold: "from-amber-300 to-orange-500 shadow-amber-500/25",
+        green: "from-emerald-400 to-teal-500 shadow-emerald-500/25"
+      };
+      return h("span", {
+        className: `grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br ${colors[tone]} text-white shadow-lg`
+      }, h(icon, { size: 22, strokeWidth: 2.5 }));
+    }
+
+    function Skeleton({ className = "" }) {
+      return h("span", { className: `skeleton block rounded-xl ${className}` });
+    }
+
+    function Navbar({ balance, darkMode, setDarkMode }) {
+      return h("header", {
+        className: "sticky top-4 z-30 mx-auto",
+        style: { width: "min(1180px, calc(100% - 24px))" }
+      },
+        h("nav", { className: "glass nav-border flex min-h-[76px] items-center justify-between gap-3 rounded-[28px] px-4 py-3 sm:px-5" },
+          h("a", { href: "home.html", className: "flex min-w-0 items-center gap-3", "aria-label": "Back to Tutorly home" },
+            h("img", { src: "assets/title-logo.png", alt: "Tutorly", className: "h-12 w-[150px] rounded-2xl object-cover object-center shadow-glow sm:w-[180px]" })
+          ),
+          h("div", { className: "flex items-center gap-2 sm:gap-3" },
+            h("div", { className: "hidden items-center gap-2 rounded-full border border-amber-300/50 bg-white/70 px-3 py-2 text-sm font-black text-amber-800 shadow-lg shadow-amber-500/10 dark:bg-white/10 dark:text-amber-200 sm:flex" },
+              h("span", { className: "grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-amber-200 to-amber-500 text-amber-900" }, "$"),
+              h("span", null, formatCoins(balance))
+            ),
+            h(motion.button, {
+              type: "button",
+              className: "grid h-11 w-11 place-items-center rounded-full border border-white/60 bg-white/70 text-slate-700 shadow-lg shadow-blue-900/10 dark:border-white/10 dark:bg-white/10 dark:text-slate-100",
+              "aria-label": "Toggle dark mode",
+              onClick: () => setDarkMode((value) => !value),
+              whileTap: { scale: 0.92 }
+            }, h(darkMode ? Sun : Moon, { size: 19 })),
+            h("a", {
+              href: "profile.html",
+              className: "grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-blue-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25",
+              "aria-label": "Open profile"
+            }, h(User, { size: 20 }))
+          )
+        )
+      );
+    }
+
+    function StatCard({ label, value, icon, loading, tone }) {
+      return h("div", { className: "rounded-3xl border border-white/60 bg-white/58 p-4 shadow-lg shadow-blue-900/5 dark:border-white/10 dark:bg-white/8" },
+        h("div", { className: "mb-3 flex items-center justify-between" },
+          h("span", { className: "text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400" }, label),
+          h(IconBubble, { icon, tone })
+        ),
+        loading
+          ? h(Skeleton, { className: "h-8 w-24" })
+          : h(motion.strong, {
+              className: "block font-display text-3xl font-black text-slate-950 dark:text-white",
+              initial: { opacity: 0, y: 8 },
+              animate: { opacity: 1, y: 0 }
+            }, value)
+      );
+    }
+
+    function ReferralHero({ code, countdown, rewardStatus, loading, copied, onCopy, onCopyLink }) {
+      const link = useMemo(() => getReferralLink(code), [code]);
+      const shareMessage = encodeURIComponent(`Join me on Tutorly with my referral code ${code}: ${link}`);
+
+      return h(MotionCard, { className: "relative overflow-hidden p-5 sm:p-7 lg:p-8" },
+        h("span", { className: "spark left-[9%] top-[16%]" }),
+        h("span", { className: "spark right-[12%] top-[22%] [animation-delay:-2s]" }),
+        h("span", { className: "spark bottom-[20%] left-[42%] [animation-delay:-4s]" }),
+        h("div", { className: "relative z-10" },
+          h("div", { className: "mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/50 bg-emerald-50/80 px-4 py-2 text-sm font-black text-emerald-800 shadow-lg shadow-emerald-500/10 dark:border-emerald-300/20 dark:bg-emerald-400/10 dark:text-emerald-200" },
+            h(Sparkles, { size: 17 }),
+            "Invite friends, unlock rewards"
+          ),
+          h("div", { className: "max-w-2xl" },
+            h(motion.h1, {
+              className: "font-display text-5xl font-black tracking-tight text-slate-950 dark:text-white sm:text-6xl lg:text-7xl",
+              initial: { opacity: 0, y: 16 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.65 }
+            }, "Refer & Earn"),
+            h("p", { className: "mt-4 text-lg font-semibold leading-8 text-slate-600 dark:text-slate-300" },
+              "Share Tutorly with classmates. Every successful invite earns coins, unlocks badges, and pushes you up the referral leaderboard."
+            )
+          ),
+          h("div", { className: "mt-7 w-full max-w-xl rounded-[28px] border border-white/70 bg-white/70 p-4 shadow-premium dark:border-white/10 dark:bg-white/8" },
+            h("p", { className: "mb-2 text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400" }, "Your referral code"),
+            h("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-center" },
+              loading
+                ? h(Skeleton, { className: "h-12 flex-1" })
+                : h("strong", {
+                    id: "refCode",
+                    className: "min-w-0 flex-1 rounded-2xl border border-blue-300/60 bg-gradient-to-r from-blue-50 to-violet-50 px-4 py-3 font-display text-xl font-black tracking-[0.12em] text-blue-950 shadow-inner dark:border-blue-300/20 dark:from-blue-400/10 dark:to-violet-400/10 dark:text-blue-100"
+                  }, code),
+              h(motion.button, {
+                id: "copyCodeBtn",
+                type: "button",
+                className: "group relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-500/30",
+                onClick: onCopy,
+                whileTap: { scale: 0.94 }
+              },
+                h("span", { className: "absolute inset-y-0 -left-10 w-8 rotate-12 bg-white/35 blur-sm transition-transform duration-700 group-hover:translate-x-44" }),
+                h("span", { className: "relative inline-flex items-center gap-2" }, h(copied ? CheckCircle2 : Copy, { size: 17 }), copied ? "Copied" : "Copy")
+              )
+            ),
+            h("div", { className: "mt-3 grid gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 sm:grid-cols-2" },
+              h("p", { className: "m-0" }, "Code resets in: ", h("span", { id: "countdown", className: "text-slate-900 dark:text-white" }, countdown)),
+              h("p", { id: "rewardStatus", className: "m-0" }, rewardStatus)
+              )
+            )
+          ,
+          h("div", { className: "mt-6 grid gap-3 sm:grid-cols-3" },
+            h(StatCard, { label: "Total referrals", value: inviteStats.referrals, icon: Users, tone: "blue", loading }),
+            h(StatCard, { label: "Coins earned", value: formatCoins(inviteStats.coinsEarned), icon: Coins, tone: "gold", loading }),
+            h(StatCard, { label: "Pending rewards", value: inviteStats.pendingRewards, icon: Zap, tone: "violet", loading })
+          ),
+          h("div", { className: "mt-6 rounded-3xl border border-white/60 bg-white/58 p-4 dark:border-white/10 dark:bg-white/8" },
+            h("div", { className: "mb-3 flex items-center justify-between gap-3" },
+              h("div", null,
+                h("p", { className: "m-0 text-sm font-black text-slate-900 dark:text-white" }, "Next unlock: Bonus Badge"),
+                h("p", { className: "m-0 text-xs font-bold text-slate-500 dark:text-slate-400" }, "Invite 5 friends to complete this tier.")
+              ),
+              h("span", { className: "rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-700 dark:bg-blue-400/10 dark:text-blue-200" }, `${inviteStats.progress}%`)
+            ),
+            h("div", { className: "h-3 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10" },
+              h(motion.span, {
+                className: "block h-full rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-400 shadow-glow",
+                initial: { width: 0 },
+                animate: { width: `${inviteStats.progress}%` },
+                transition: { duration: 1.1, delay: 0.25, ease: "easeOut" }
+              })
+            )
+          ),
+          h("div", { className: "mt-6 flex flex-wrap gap-3" },
+            h(ShareButton, { icon: MessageCircle, label: "WhatsApp", href: `https://wa.me/?text=${shareMessage}`, tone: "green" }),
+            h(ShareButton, { icon: Send, label: "Telegram", href: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(`Use my Tutorly code ${code}`)}`, tone: "blue" }),
+            h(ShareButton, { icon: LinkIcon, label: "Copy Link", onClick: onCopyLink, tone: "violet" })
+          )
+        )
+      );
+    }
+
+    function ShareButton({ icon, label, href, onClick, tone }) {
+      const colors = {
+        green: "from-emerald-500 to-teal-500 shadow-emerald-500/20",
+        blue: "from-sky-500 to-blue-600 shadow-blue-500/20",
+        violet: "from-violet-500 to-fuchsia-500 shadow-violet-500/20"
+      };
+      const Component = href ? motion.a : motion.button;
+      const props = href
+        ? { href, target: "_blank", rel: "noopener noreferrer" }
+        : { type: "button", onClick };
+
+      return h(Component, {
+        ...props,
+        className: `inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-r ${colors[tone]} px-5 py-3 text-sm font-black text-white shadow-lg transition-transform`,
+        whileHover: { y: -2, scale: 1.025 },
+        whileTap: { scale: 0.96 }
+      }, h(icon, { size: 18 }), label);
+    }
+
+    function RewardCard() {
+      const milestones = [
+        ["1 Friend", "250 Coins", Coins],
+        ["5 Friends", "Bonus Badge", BadgeCheck],
+        ["10 Friends", "Free Pro Week", Crown]
+      ];
+
+      return h(MotionCard, { className: "relative min-h-full overflow-hidden p-5 sm:p-7 lg:p-8", delay: 0.08 },
+        h("div", { className: "reward-orb right-12 top-20 h-12 w-12" }),
+        h("div", { className: "reward-orb bottom-28 left-8 h-8 w-8 [animation-delay:-2s]" }),
+        h("div", { className: "reward-orb bottom-12 right-24 h-10 w-10 [animation-delay:-3.5s]" }),
+        h("div", { className: "relative z-10" },
+          h("div", { className: "mb-5 flex items-center justify-between gap-3" },
+            h("div", { className: "inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-amber-50/90 px-4 py-2 text-sm font-black text-amber-800 dark:border-amber-300/20 dark:bg-amber-400/10 dark:text-amber-200" },
+              h(Gift, { size: 17 }),
+              "Reward engine"
+            ),
+            h("span", { className: "rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-3 py-1 text-xs font-black text-white shadow-lg shadow-indigo-500/25" }, "Live")
+          ),
+          h(motion.div, {
+            className: "relative mx-auto mb-7 grid h-48 w-48 place-items-center rounded-[46px] bg-gradient-to-br from-blue-500 via-violet-500 to-cyan-400 shadow-premium sm:h-56 sm:w-56",
+            animate: { y: [0, -10, 0], rotate: [0, 1.5, 0] },
+            transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          },
+            h("div", { className: "absolute inset-4 rounded-[38px] border border-white/40 bg-white/12" }),
+            h(Gift, { size: 82, className: "relative text-white drop-shadow-xl" }),
+            h(Sparkles, { size: 34, className: "absolute right-8 top-8 text-white/85" })
+          ),
+          h("h2", { className: "font-display text-3xl font-black text-slate-950 dark:text-white sm:text-4xl" }, "Earn 250 Coins Per Friend"),
+          h("p", { className: "mt-3 text-base font-semibold leading-7 text-slate-600 dark:text-slate-300" },
+            "Each successful invite brings your friend into Tutorly and pushes you toward bigger reward tiers."
+          ),
+          h("div", { className: "mt-6 grid gap-3" },
+            milestones.map(([label, reward, icon], index) =>
+              h(motion.div, {
+                key: label,
+                className: "flex items-center gap-3 rounded-3xl border border-white/60 bg-white/58 p-4 dark:border-white/10 dark:bg-white/8",
+                whileHover: { x: 4, scale: 1.01 },
+                transition: { type: "spring", stiffness: 260, damping: 20 }
+              },
+                h(IconBubble, { icon, tone: index === 0 ? "gold" : index === 1 ? "violet" : "cyan" }),
+                h("div", { className: "min-w-0 flex-1" },
+                  h("p", { className: "m-0 font-black text-slate-900 dark:text-white" }, label),
+                  h("p", { className: "m-0 text-sm font-bold text-slate-500 dark:text-slate-400" }, reward)
+                ),
+                h("span", { className: "text-xs font-black text-blue-600 dark:text-blue-300" }, "Unlock")
+              )
+            )
+          )
+        )
+      );
+    }
+
+    function Timeline() {
+      const steps = [
+        { title: "Share your code", copy: "Send your referral link to friends.", icon: Share2 },
+        { title: "Friend joins", copy: "They create their Tutorly account.", icon: Users },
+        { title: "They learn", copy: "They use study tools and AI help.", icon: Rocket },
+        { title: "You earn", copy: "Coins land in your wallet automatically.", icon: Trophy }
+      ];
+
+      return h(MotionCard, { className: "p-5 sm:p-7 lg:p-8", delay: 0.12 },
+        h("div", { className: "mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end" },
+          h("div", null,
+            h("p", { className: "m-0 text-sm font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300" }, "How it works"),
+            h("h2", { className: "mt-2 font-display text-3xl font-black text-slate-950 dark:text-white sm:text-4xl" }, "A cleaner path from share to reward")
+          ),
+          h("p", { className: "m-0 max-w-md text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300" },
+            "Track the full referral journey with clear milestones and automatic reward status updates."
+          )
+        ),
+        h("div", { className: "relative grid gap-4 lg:grid-cols-4" },
+          h("div", { className: "absolute left-[8%] right-[8%] top-8 hidden h-1 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-400 opacity-60 lg:block" }),
+          steps.map((step, index) =>
+            h(motion.article, {
+              key: step.title,
+              className: "relative rounded-3xl border border-white/60 bg-white/62 p-5 shadow-lg shadow-blue-900/5 dark:border-white/10 dark:bg-white/8",
+              whileHover: { y: -6 },
+              initial: { opacity: 0, y: 20 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.45, delay: index * 0.07 }
+            },
+              h(IconBubble, { icon: step.icon, tone: index % 2 ? "violet" : "blue" }),
+              h("span", { className: "mt-5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-950 text-xs font-black text-white dark:bg-white dark:text-slate-950" }, index + 1),
+              h("h3", { className: "mt-4 text-lg font-black text-slate-950 dark:text-white" }, step.title),
+              h("p", { className: "mt-2 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300" }, step.copy)
+            )
+          )
+        )
+      );
+    }
+
+    function Gamification() {
+      const badges = [
+        { title: "Spark Starter", icon: Star, active: true },
+        { title: "Streak Builder", icon: Flame, active: true },
+        { title: "Campus Hero", icon: Crown, active: false }
+      ];
+
+      return h("section", { className: "grid gap-5 lg:grid-cols-[1fr_.9fr]" },
+        h(MotionCard, { className: "p-5 sm:p-7 lg:p-8", delay: 0.16 },
+          h("div", { className: "flex items-center justify-between gap-3" },
+            h("div", null,
+              h("p", { className: "m-0 text-sm font-black uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300" }, "Gamification"),
+              h("h2", { className: "mt-2 font-display text-3xl font-black text-slate-950 dark:text-white" }, "Referral streak tracker")
+            ),
+            h(IconBubble, { icon: Target, tone: "violet" })
+          ),
+          h("div", { className: "mt-6 rounded-[30px] border border-white/60 bg-white/60 p-5 dark:border-white/10 dark:bg-white/8" },
+            h("div", { className: "flex items-center justify-between gap-3" },
+              h("div", null,
+                h("p", { className: "m-0 text-sm font-bold text-slate-500 dark:text-slate-400" }, "Current streak"),
+                h("strong", { className: "font-display text-5xl font-black text-slate-950 dark:text-white" }, inviteStats.streak, h("span", { className: "text-xl" }, " days"))
+              ),
+              h("div", { className: "rounded-3xl bg-gradient-to-br from-orange-400 to-pink-500 p-4 text-white shadow-lg shadow-orange-500/20" }, h(Flame, { size: 34 }))
+            ),
+            h("div", { className: "mt-5 grid grid-cols-7 gap-2" },
+              Array.from({ length: 7 }).map((_, index) =>
+                h(motion.span, {
+                  key: index,
+                  className: `h-12 rounded-2xl ${index < inviteStats.streak ? "bg-gradient-to-br from-blue-500 to-violet-500 shadow-lg shadow-indigo-500/20" : "bg-slate-200/70 dark:bg-white/10"}`,
+                  initial: { scaleY: 0.4, opacity: 0 },
+                  whileInView: { scaleY: 1, opacity: 1 },
+                  viewport: { once: true },
+                  transition: { delay: index * 0.05 }
+                })
+              )
+            )
+          ),
+          h("div", { className: "mt-5 grid gap-3 sm:grid-cols-3" },
+            badges.map((badge) =>
+              h("article", {
+                key: badge.title,
+                className: `rounded-3xl border p-4 ${badge.active ? "border-blue-300/50 bg-blue-50/70 text-blue-950 dark:border-blue-300/20 dark:bg-blue-400/10 dark:text-blue-100" : "border-white/60 bg-white/45 text-slate-500 dark:border-white/10 dark:bg-white/6 dark:text-slate-400"}`
+              },
+                h(badge.icon, { size: 24 }),
+                h("p", { className: "mt-3 text-sm font-black" }, badge.title),
+                h("span", { className: "text-xs font-bold" }, badge.active ? "Unlocked" : "Locked")
+              )
+            )
+          )
+        ),
+        h(MotionCard, { className: "p-5 sm:p-7 lg:p-8", delay: 0.2 },
+          h("div", { className: "flex items-center justify-between gap-3" },
+            h("div", null,
+              h("p", { className: "m-0 text-sm font-black uppercase tracking-[0.18em] text-amber-600 dark:text-amber-300" }, "Leaderboard"),
+              h("h2", { className: "mt-2 font-display text-3xl font-black text-slate-950 dark:text-white" }, "Top referrer preview")
+            ),
+            h(IconBubble, { icon: Trophy, tone: "gold" })
+          ),
+          h("div", { className: "mt-6 rounded-[30px] border border-amber-300/40 bg-gradient-to-br from-amber-50 to-white p-5 dark:border-amber-300/20 dark:from-amber-400/10 dark:to-white/5" },
+            h("div", { className: "flex items-center gap-4" },
+              h("div", { className: "grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-amber-300 to-orange-500 text-xl font-black text-white shadow-lg shadow-amber-500/25" }, "M"),
+              h("div", null,
+                h("p", { className: "m-0 text-sm font-bold text-slate-500 dark:text-slate-400" }, "This week's leader"),
+                h("h3", { className: "m-0 text-2xl font-black text-slate-950 dark:text-white" }, "Maya S."),
+                h("p", { className: "m-0 text-sm font-bold text-amber-700 dark:text-amber-200" }, "28 successful referrals")
+              )
+            )
+          ),
+          h("div", { className: "mt-5 space-y-3" },
+            inviteStats.leaderboard.map((entry, index) =>
+              h("div", { key: entry.name, className: "flex items-center gap-3 rounded-2xl border border-white/60 bg-white/58 p-3 dark:border-white/10 dark:bg-white/8" },
+                h("span", { className: "grid h-9 w-9 place-items-center rounded-xl bg-slate-950 text-sm font-black text-white dark:bg-white dark:text-slate-950" }, index + 1),
+                h("span", { className: "flex-1 font-black text-slate-900 dark:text-white" }, entry.name),
+                h("span", { className: "text-sm font-black text-blue-600 dark:text-blue-300" }, entry.score)
+              )
+            )
+          )
+        )
+      );
+    }
+
+    function StickyMobileShare({ code, onCopyLink }) {
+      return h("div", { className: "fixed inset-x-0 bottom-0 z-40 block border-t border-white/40 bg-white/78 p-3 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/78 sm:hidden" },
+        h(motion.button, {
+          type: "button",
+          className: "flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 text-sm font-black text-white shadow-lg shadow-indigo-500/25",
+          onClick: onCopyLink,
+          whileTap: { scale: 0.97 }
+        }, h(LinkIcon, { size: 18 }), "Copy referral link")
+      );
+    }
+
+    function App() {
+      const initial = useMemo(() => ensureCode(), []);
+      const [code, setCode] = useState(initial.code);
+      const [expiresAt, setExpiresAt] = useState(initial.exp);
+      const [countdown, setCountdown] = useState(formatMs(initial.exp - Date.now()));
+      const [copied, setCopied] = useState(false);
+      const [loading, setLoading] = useState(true);
+      const [balance, setBalance] = useState(getCoinBalance());
+      const [darkMode, setDarkMode] = useState(() => localStorage.getItem("tutorly_ref_dark") === "true");
+      const rewardStatus = "Reward status: Pending eligibility completion.";
+
+      useEffect(() => {
+        document.documentElement.classList.toggle("dark", darkMode);
+        localStorage.setItem("tutorly_ref_dark", String(darkMode));
+      }, [darkMode]);
+
+      useEffect(() => {
+        const loadingTimer = window.setTimeout(() => setLoading(false), 520);
+        const interval = window.setInterval(() => {
+          const next = ensureCode();
+          setCode(next.code);
+          setExpiresAt(next.exp);
+          setCountdown(formatMs(next.exp - Date.now()));
+          setBalance(getCoinBalance());
+        }, 1000);
+        return () => {
+          window.clearTimeout(loadingTimer);
+          window.clearInterval(interval);
+        };
+      }, []);
+
+      async function copyText(value, message = "Referral code copied.") {
+        try {
+          await navigator.clipboard.writeText(value);
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 1800);
+        } catch (error) {
+          window.prompt("Copy this manually:", value);
+        }
+      }
+
+      const copyCode = () => copyText(code);
+      const copyLink = () => copyText(getReferralLink(code), "Referral link copied.");
+
+      return h(React.Fragment, null,
+        h("div", { className: "blob one" }),
+        h("div", { className: "blob two" }),
+        h("div", { className: "blob three" }),
+        h(Navbar, { balance, darkMode, setDarkMode }),
+        h("main", {
+          className: "relative z-10 mx-auto mb-24 mt-6 space-y-5 pb-10 sm:mb-8",
+          style: { width: "min(1180px, calc(100% - 24px))" }
+        },
+          h("section", { className: "grid gap-5 lg:grid-cols-[1.18fr_.82fr]" },
+            h(ReferralHero, { code, countdown, rewardStatus, loading, copied, onCopy: copyCode, onCopyLink: copyLink }),
+            h(RewardCard)
+          ),
+          h(Timeline),
+          h(Gamification)
+        ),
+        h(StickyMobileShare, { code, onCopyLink: copyLink })
+      );
+    }
+
+    createRoot(document.getElementById("root")).render(h(App));
+  </script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+

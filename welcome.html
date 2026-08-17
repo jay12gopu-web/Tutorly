@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="stylesheet" href="css/page-transitions.css" />
+  <style>
+    :root {
+      --bg: #040816;
+      --bg-soft: #071226;
+      --panel: rgba(255, 255, 255, 0.075);
+      --panel-strong: rgba(255, 255, 255, 0.12);
+      --line: rgba(255, 255, 255, 0.16);
+      --line-soft: rgba(148, 163, 255, 0.18);
+      --text: #f7fbff;
+      --muted: #a9b6d8;
+      --blue: #39a7ff;
+      --cyan: #45f0ff;
+      --purple: #976dff;
+      --violet: #6536ff;
+      --pink: #e56cff;
+      --green: #54f5c4;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+      --glow: 0 0 34px rgba(77, 166, 255, 0.34);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --nav-height: 78px;
+      --container: min(1180px, calc(100% - 36px));
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 4%, rgba(57, 167, 255, 0.28), transparent 32%),
+        radial-gradient(circle at 85% 12%, rgba(151, 109, 255, 0.26), transparent 31%),
+        linear-gradient(135deg, #020617 0%, #071226 48%, #170b36 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body.menu-open,
+    body.auth-modal-open { overflow: hidden; }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .cursor-glow {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 9999;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(69, 240, 255, 0.18), rgba(151, 109, 255, 0.09) 42%, transparent 70%);
+      pointer-events: none;
+      transform: translate3d(var(--cursor-x, -999px), var(--cursor-y, -999px), 0) translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 140ms ease;
+      mix-blend-mode: screen;
+      will-change: transform, opacity;
+    }
+
+    .page-bg,
+    .particles,
+    .aurora {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .page-bg {
+      z-index: -4;
+      background:
+        linear-gradient(120deg, rgba(57, 167, 255, 0.14), transparent 34%),
+        linear-gradient(300deg, rgba(229, 108, 255, 0.14), transparent 36%);
+    }
+
+    .aurora {
+      z-index: -3;
+      overflow: hidden;
+      filter: blur(2px);
+    }
+
+    .orb {
+      position: absolute;
+      width: 34vw;
+      max-width: 520px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      opacity: 0.38;
+      filter: blur(42px);
+      animation: driftOrb 16s ease-in-out infinite alternate;
+    }
+
+    .orb-one {
+      left: -9vw;
+      top: 16vh;
+      background: rgba(57, 167, 255, 0.46);
+    }
+
+    .orb-two {
+      right: -12vw;
+      top: 6vh;
+      background: rgba(151, 109, 255, 0.42);
+      animation-delay: -4s;
+    }
+
+    .orb-three {
+      right: 18vw;
+      bottom: -18vh;
+      background: rgba(69, 240, 255, 0.24);
+      animation-delay: -8s;
+    }
+
+    .particles {
+      z-index: -2;
+    }
+
+    .particle {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      background: rgba(215, 236, 255, 0.75);
+      box-shadow: 0 0 18px rgba(69, 240, 255, 0.72);
+      opacity: var(--alpha);
+      animation: floatParticle var(--speed) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .site-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 90;
+      width: 100%;
+      transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, backdrop-filter 180ms ease;
+    }
+
+    .site-nav.scrolled,
+    .site-nav.menu-visible {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(5, 11, 27, 0.72);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(22px);
+    }
+
+    .nav-inner {
+      width: var(--container);
+      min-height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .brand-logo-img {
+      width: clamp(142px, 17vw, 190px);
+      height: 48px;
+      display: block;
+      border-radius: 16px;
+      object-fit: cover;
+      object-position: center;
+      filter: drop-shadow(0 0 18px rgba(69, 240, 255, 0.34));
+    }
+
+    .footer .brand-logo-img {
+      width: 170px;
+      height: 46px;
+    }
+
+    .logo-star {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 26px rgba(69, 240, 255, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+    }
+
+    .logo-star::before {
+      content: "";
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #ffffff, #9edaff 32%, #6d7cff 68%, #e5a4ff);
+      clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+      filter: drop-shadow(0 0 12px rgba(69, 240, 255, 0.8));
+      animation: starPulse 3.6s ease-in-out infinite;
+    }
+
+    .logo-star::after {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.42), transparent 58%);
+      transform: translateX(-70%) rotate(22deg);
+      animation: starShine 5.5s ease-in-out infinite;
+    }
+
+    .brand-text {
+      background: linear-gradient(120deg, #ffffff, #cfe6ff 42%, #d9c5ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 28px rgba(90, 176, 255, 0.22);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 6px;
+    }
+
+    .nav-link {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 0 14px;
+      color: rgba(235, 243, 255, 0.78);
+      font-size: 14px;
+      font-weight: 760;
+      transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 22px rgba(69, 240, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .hamburger {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 15px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      margin: 4px auto;
+      border-radius: 999px;
+      background: currentColor;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .menu-open .hamburger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .menu-open .hamburger span:nth-child(2) { opacity: 0; }
+    .menu-open .hamburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .btn {
+      position: relative;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 20px;
+      cursor: pointer;
+      font-weight: 850;
+      color: #fff;
+      isolation: isolate;
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px) scale(1.015);
+      filter: brightness(1.06);
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, var(--blue), var(--violet), var(--pink));
+      box-shadow: 0 18px 46px rgba(86, 110, 255, 0.32);
+    }
+
+    .btn-secondary {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-actions .btn {
+      min-height: 42px;
+      padding: 0 16px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .ripple {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.58);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      animation: rippleOut 620ms ease-out forwards;
+      z-index: -1;
+    }
+
+    .section {
+      position: relative;
+      width: var(--container);
+      margin: 0 auto;
+      padding: 104px 0;
+    }
+
+    .hero {
+      min-height: 100svh;
+      width: var(--container);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.78fr);
+      align-items: center;
+      gap: clamp(34px, 6vw, 76px);
+      margin: 0 auto;
+      padding: calc(var(--nav-height) + 62px) 0 72px;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 34px;
+      border: 1px solid rgba(69, 240, 255, 0.22);
+      border-radius: 999px;
+      padding: 0 13px;
+      color: #dff9ff;
+      background: rgba(69, 240, 255, 0.08);
+      box-shadow: 0 0 28px rgba(69, 240, 255, 0.08);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 18px rgba(84, 245, 196, 0.9);
+    }
+
+    .hero-title {
+      max-width: 760px;
+      margin: 22px 0 0;
+      font-size: clamp(58px, 9vw, 106px);
+      line-height: 0.92;
+      letter-spacing: -0.07em;
+      font-weight: 920;
+    }
+
+    .gradient-text {
+      display: inline-block;
+      color: transparent;
+      background: linear-gradient(120deg, #ffffff 0%, #a9dcff 32%, #9d8cff 68%, #ffb5fb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 28px rgba(84, 154, 255, 0.16));
+    }
+
+    .hero-sub {
+      max-width: 620px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height: 1.7;
+      font-weight: 560;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .hero-trust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+      color: rgba(230, 239, 255, 0.78);
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .trust-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .trust-chip::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    .hero-mockup-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .hero-mockup-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 10% 5% 0;
+      border-radius: 38px;
+      background: linear-gradient(120deg, rgba(57, 167, 255, 0.42), rgba(151, 109, 255, 0.4));
+      filter: blur(44px);
+      opacity: 0.68;
+      animation: breathe 5.2s ease-in-out infinite;
+    }
+
+    .chat-mockup {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 32px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05)),
+        rgba(9, 16, 38, 0.82);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.16);
+      backdrop-filter: blur(24px);
+      animation: floatCard 6s ease-in-out infinite;
+    }
+
+    .chat-topbar {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0 18px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .window-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.28);
+    }
+
+    .window-dots span:nth-child(1) { background: #ff7b7b; }
+    .window-dots span:nth-child(2) { background: #ffd36a; }
+    .window-dots span:nth-child(3) { background: #5dffba; }
+
+    .mockup-status {
+      color: #dff8ff;
+      font-size: 13px;
+      font-weight: 840;
+    }
+
+    .chat-stream {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .message {
+      display: grid;
+      gap: 8px;
+      max-width: 88%;
+      animation: messageIn 520ms ease both;
+    }
+
+    .message.student {
+      justify-self: end;
+    }
+
+    .message.ai {
+      justify-self: start;
+    }
+
+    .bubble {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 13px 15px;
+      color: #eff8ff;
+      background: rgba(255,255,255,0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      line-height: 1.55;
+    }
+
+    .student .bubble {
+      border-color: rgba(80, 174, 255, 0.32);
+      background: linear-gradient(120deg, rgba(57, 167, 255, 0.28), rgba(101, 54, 255, 0.26));
+    }
+
+    .ai .bubble {
+      background: rgba(255,255,255,0.075);
+    }
+
+    .message-label {
+      color: rgba(230, 239, 255, 0.52);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .typing-line {
+      min-height: 28px;
+      color: #ddf5ff;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 1.2em;
+      margin-left: 3px;
+      vertical-align: -0.18em;
+      border-radius: 999px;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+      animation: cursorBlink 850ms steps(2, start) infinite;
+    }
+
+    .mock-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 18px 18px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 18px;
+      padding: 10px 12px;
+      color: rgba(232, 241, 255, 0.58);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .send-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      box-shadow: 0 0 22px rgba(57, 167, 255, 0.3);
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 34px;
+    }
+
+    .section-kicker {
+      margin: 0 0 12px;
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(36px, 5.4vw, 64px);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+    }
+
+    .section-copy {
+      max-width: 680px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .glass-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .glass-card {
+      position: relative;
+      min-height: 220px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.11), rgba(255,255,255,0.045));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 18px 50px rgba(0,0,0,0.22);
+      backdrop-filter: blur(18px);
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(69, 240, 255, 0.56), rgba(151, 109, 255, 0.18), rgba(229, 108, 255, 0.44));
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events: none;
+    }
+
+    .glass-card::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -56px;
+      top: -58px;
+      border-radius: 50%;
+      background: rgba(69, 240, 255, 0.12);
+      filter: blur(8px);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(69, 240, 255, 0.34);
+      background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+      box-shadow: 0 24px 70px rgba(27, 88, 255, 0.18), inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .glass-card:hover::before {
+      opacity: 1;
+    }
+
+    .icon-tile {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 17px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(57, 167, 255, 0.95), rgba(101, 54, 255, 0.9));
+      box-shadow: 0 0 28px rgba(57, 167, 255, 0.22);
+      font-size: 18px;
+      font-weight: 920;
+    }
+
+    .glass-card h3 {
+      position: relative;
+      z-index: 1;
+      margin: 22px 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.025em;
+    }
+
+    .glass-card p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 520;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(116px, auto));
+      grid-auto-flow: column;
+      gap: 14px;
+    }
+
+    .subject-card {
+      min-height: 116px;
+      display: grid;
+      align-content: space-between;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 18% 16%, var(--subject-glow), transparent 38%),
+        linear-gradient(145deg, rgba(255,255,255,0.105), rgba(255,255,255,0.04));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.13);
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-7px) scale(1.025);
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.22), 0 0 26px var(--subject-glow);
+    }
+
+    .subject-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.11);
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .subject-card h3 {
+      margin: 18px 0 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .demo-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(380px, 1.14fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .demo-copy-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      padding: clamp(24px, 4vw, 34px);
+      background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.045));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .demo-chat {
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-xl);
+      background: rgba(3, 9, 24, 0.86);
+      box-shadow: var(--shadow), 0 0 64px rgba(101, 54, 255, 0.14);
+    }
+
+    .demo-chat-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.045);
+    }
+
+    .demo-title {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+    }
+
+    .tiny-star {
+      width: 28px;
+      height: 28px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(57,167,255,0.26), rgba(151,109,255,0.22));
+      display: grid;
+      place-items: center;
+    }
+
+    .tiny-star::before {
+      content: "";
+      display: none;
+      width: 17px;
+      height: 17px;
+      clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+      background: linear-gradient(135deg, #fff, #73d9ff 44%, #a984ff);
+      filter: drop-shadow(0 0 8px rgba(69, 240, 255, 0.75));
+    }
+
+    .tiny-star img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid rgba(84,245,196,0.18);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: #c8ffef;
+      background: rgba(84,245,196,0.07);
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .live-pill::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .demo-chat-body {
+      display: grid;
+      gap: 16px;
+      max-height: 720px;
+      overflow-y: auto;
+      padding: clamp(18px, 3vw, 26px);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(69, 240, 255, 0.42) transparent;
+    }
+
+    .demo-chat-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .demo-chat-body::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(69, 240, 255, 0.34);
+    }
+
+    .demo-message {
+      max-width: 88%;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .demo-message.visible {
+      animation: messageIn 520ms ease forwards;
+    }
+
+    .demo-message.student {
+      justify-self: end;
+    }
+
+    .demo-message.ai {
+      justify-self: start;
+      max-width: min(92%, 620px);
+    }
+
+    .study-note {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.055));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.11);
+    }
+
+    .study-note h3 {
+      margin: 0 0 12px;
+      font-size: 26px;
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+    }
+
+    .study-note p {
+      margin: 0 0 14px;
+      color: #c6d5ef;
+      line-height: 1.72;
+    }
+
+    .study-note p:last-child {
+      margin-bottom: 0;
+    }
+
+    .study-note em {
+      color: #e7fbff;
+      font-style: italic;
+    }
+
+    .typing-dots {
+      width: fit-content;
+      display: inline-flex;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: dotBounce 950ms ease-in-out infinite;
+    }
+
+    .typing-dots span:nth-child(2) { animation-delay: 120ms; }
+    .typing-dots span:nth-child(3) { animation-delay: 240ms; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      min-height: 168px;
+      display: grid;
+      align-content: center;
+      gap: 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.045));
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.13);
+      backdrop-filter: blur(18px);
+    }
+
+    .stat-value {
+      display: block;
+      color: #fff;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1;
+      font-weight: 930;
+      letter-spacing: -0.055em;
+    }
+
+    .stat-card span:last-child {
+      color: var(--muted);
+      font-weight: 780;
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+      gap: 30px;
+      align-items: center;
+    }
+
+    .why-points {
+      display: grid;
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .why-point {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.055);
+    }
+
+    .point-dot {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      font-weight: 900;
+    }
+
+    .why-point h3 {
+      margin: 0 0 4px;
+      font-size: 17px;
+    }
+
+    .why-point p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .floating-stack {
+      position: relative;
+      min-height: 450px;
+    }
+
+    .float-card {
+      position: absolute;
+      width: min(330px, 78vw);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      animation: floatCard 6.5s ease-in-out infinite;
+    }
+
+    .float-card h3 {
+      margin: 0 0 9px;
+      font-size: 22px;
+    }
+
+    .float-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+
+    .float-card.primary {
+      right: 10%;
+      top: 0;
+    }
+
+    .float-card.secondary {
+      left: 2%;
+      top: 144px;
+      animation-delay: -2s;
+    }
+
+    .float-card.tertiary {
+      right: 0;
+      bottom: 0;
+      animation-delay: -4s;
+    }
+
+    .mini-meter {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      margin-top: 16px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .mini-meter span {
+      display: block;
+      width: var(--meter);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      box-shadow: 0 0 20px rgba(69, 240, 255, 0.28);
+    }
+
+    .footer {
+      position: relative;
+      border-top: 1px solid rgba(255,255,255,0.11);
+      margin-top: 60px;
+      padding: 42px 0;
+      background: rgba(0,0,0,0.22);
+    }
+
+    .footer::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -1px;
+      width: min(520px, 70vw);
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, rgba(69, 240, 255, 0.76), rgba(151, 109, 255, 0.62), transparent);
+    }
+
+    .footer-inner {
+      width: var(--container);
+      display: grid;
+      grid-template-columns: 1.1fr repeat(3, minmax(150px, 0.42fr));
+      gap: 26px;
+      margin: 0 auto;
+    }
+
+    .footer p {
+      max-width: 380px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .footer h3 {
+      margin: 0 0 13px;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .footer a {
+      display: block;
+      width: fit-content;
+      margin-top: 10px;
+      color: var(--muted);
+      transition: color 160ms ease, transform 160ms ease, text-shadow 160ms ease;
+    }
+
+    .footer a:hover {
+      color: #fff;
+      transform: translateX(3px);
+      text-shadow: 0 0 18px rgba(69, 240, 255, 0.28);
+    }
+
+    .footer-bottom {
+      width: var(--container);
+      margin: 28px auto 0;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      color: rgba(221, 232, 255, 0.58);
+      font-size: 14px;
+    }
+
+    .auth-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 140;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(3, 8, 24, 0.72);
+      backdrop-filter: blur(18px);
+    }
+
+    .auth-modal-backdrop.open {
+      display: flex;
+    }
+
+    .auth-modal {
+      position: relative;
+      width: min(460px, 100%);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 26px;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(57, 167, 255, 0.18), transparent 38%),
+        linear-gradient(145deg, rgba(13, 24, 52, 0.94), rgba(18, 14, 46, 0.94));
+      box-shadow: 0 28px 82px rgba(0, 0, 0, 0.42);
+      animation: modalIn 190ms ease;
+    }
+
+    .auth-modal h2 {
+      margin: 14px 0 0;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+    }
+
+    .auth-modal p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 650;
+    }
+
+    .auth-modal-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(84, 245, 196, 0.22);
+      border-radius: 999px;
+      padding: 7px 11px;
+      color: var(--green);
+      background: rgba(84, 245, 196, 0.08);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .auth-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .auth-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 50%;
+      color: #dce8ff;
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes driftOrb {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(5vw, -4vh, 0) scale(1.08); }
+    }
+
+    @keyframes floatParticle {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(18px, -110vh, 0); }
+    }
+
+    @keyframes starPulse {
+      0%, 100% { transform: scale(0.96) rotate(0deg); opacity: 0.9; }
+      50% { transform: scale(1.08) rotate(4deg); opacity: 1; }
+    }
+
+    @keyframes starShine {
+      0%, 62% { transform: translateX(-76%) rotate(22deg); }
+      78%, 100% { transform: translateX(72%) rotate(22deg); }
+    }
+
+    @keyframes rippleOut {
+      to { transform: translate(-50%, -50%) scale(32); opacity: 0; }
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.5; transform: scale(0.96); }
+      50% { opacity: 0.8; transform: scale(1.04); }
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes cursorBlink {
+      50% { opacity: 0; }
+    }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    @media (max-width: 1020px) {
+      .hero,
+      .demo-shell,
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: calc(var(--nav-height) + 76px);
+      }
+
+      .hero-mockup-wrap {
+        width: min(620px, 100%);
+        margin: 0 auto;
+      }
+
+      .feature-grid,
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      :root {
+        --nav-height: 70px;
+        --container: min(100% - 26px, 1180px);
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .nav-links {
+        position: fixed;
+        left: 13px;
+        right: 13px;
+        top: calc(var(--nav-height) + 12px);
+        display: grid;
+        gap: 8px;
+        border: 1px solid rgba(255,255,255,0.13);
+        border-radius: 24px;
+        padding: 14px;
+        background: rgba(5, 11, 27, 0.92);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(22px);
+        transform: translateY(-12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease, transform 180ms ease;
+      }
+
+      .nav-links.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .nav-link {
+        min-height: 48px;
+        justify-content: flex-start;
+        padding: 0 14px;
+      }
+
+      .nav-links .btn {
+        width: 100%;
+        margin-top: 4px;
+      }
+
+      .nav-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-left: 0;
+      }
+
+      .nav-actions .btn {
+        margin-top: 0;
+      }
+
+      .nav-actions .nav-start {
+        grid-column: 1 / -1;
+      }
+
+      .section {
+        padding: 78px 0;
+      }
+
+      .glass-grid,
+      .feature-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-shell {
+        gap: 18px;
+      }
+
+      .floating-stack {
+        min-height: 640px;
+      }
+
+      .float-card,
+      .float-card.primary,
+      .float-card.secondary,
+      .float-card.tertiary {
+        position: relative;
+        left: auto;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: 100%;
+        margin-bottom: 14px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .cursor-glow {
+        display: none;
+      }
+
+      .hero {
+        padding-top: calc(var(--nav-height) + 52px);
+      }
+
+      .hero-title {
+        font-size: clamp(48px, 17vw, 68px);
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .chat-stream,
+      .demo-chat-body {
+        padding: 14px;
+      }
+
+      .subject-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        grid-auto-flow: row;
+      }
+
+      .message,
+      .demo-message {
+        max-width: 100%;
+      }
+
+      .study-note h3 {
+        font-size: 22px;
+      }
+
+      .section-title {
+        font-size: clamp(34px, 13vw, 48px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .cursor-glow,
+      .particles {
+        display: none;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="page-bg" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true">
+    <span class="orb orb-one"></span>
+    <span class="orb orb-two"></span>
+    <span class="orb orb-three"></span>
+  </div>
+  <div class="particles" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a class="brand" href="#home" aria-label="Tutorly home">
+        <img class="brand-logo-img" src="assets/tutorly-logo.png" alt="Tutorly" />
+      </a>
+
+      <button class="hamburger" type="button" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a class="nav-link active" href="#home">Home</a>
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#subjects">Subjects</a>
+        <a class="nav-link" href="#demo">Demo</a>
+        <a class="nav-link" href="#about">About</a>
+        <div class="nav-actions">
+          <a class="btn btn-secondary nav-start chatbot-entry" href="sign_up.html?intent=chatbot">Start Learning</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy reveal">
+        <div class="eyebrow">AI learning system for students</div>
+        <h1 class="hero-title"><span class="gradient-text">Your Personal AI Tutor</span></h1>
+        <p class="hero-sub">Learn faster with AI-powered explanations, step-by-step solutions, and smart tutoring that adapts to the way you ask questions.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary chatbot-entry" href="sign_up.html?intent=chatbot">Start Learning</a>
+          <a class="btn btn-secondary" href="sign_up.html">Sign Up</a>
+          <a class="btn btn-secondary" href="#demo">Watch Demo</a>
+        </div>
+        <div class="hero-trust" aria-label="Product highlights">
+          <span class="trust-chip">Study notes</span>
+          <span class="trust-chip">Fast answers</span>
+          <span class="trust-chip">Beginner friendly</span>
+        </div>
+      </div>
+
+      <div class="hero-mockup-wrap reveal">
+        <div class="chat-mockup" aria-label="Animated Tutorly chatbot preview">
+          <div class="chat-topbar">
+            <div class="window-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="mockup-status">Tutorly AI online</div>
+          </div>
+          <div class="chat-stream">
+            <div class="message student">
+              <div class="message-label">Student</div>
+              <div class="bubble">explain algebra in simple words</div>
+            </div>
+            <div class="message ai">
+              <div class="message-label">Tutorly</div>
+              <div class="bubble">Algebra uses letters to stand for unknown numbers. If x + 5 = 10, then x is the number that makes the sentence true.</div>
+            </div>
+            <div class="message ai">
+              <div class="message-label">Typing now</div>
+              <div class="bubble typing-line"><span id="heroTyped"></span><span class="typing-cursor" aria-hidden="true"></span></div>
+            </div>
+          </div>
+          <div class="mock-input">
+            <span>Ask anything about homework...</span>
+            <span class="send-dot" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="features">
+      <div class="section-head">
+        <p class="section-kicker">Features</p>
+        <h2 class="section-title">Built for clear, confident learning.</h2>
+        <p class="section-copy">Tutorly gives students a calm place to ask rough questions, get structured answers, and turn confusion into clean study notes.</p>
+      </div>
+
+      <div class="glass-grid feature-grid">
+        <article class="glass-card">
+          <div class="icon-tile">SE</div>
+          <h3>Smart Explanations</h3>
+          <p>Breaks difficult concepts into readable explanations with headings, examples, and useful spacing.</p>
+        </article>
+        <article class="glass-card">
+          <div class="icon-tile">IA</div>
+          <h3>Instant Answers</h3>
+          <p>Turns homework questions into fast, friendly help without making the page feel heavy or crowded.</p>
+        </article>
+        <article class="glass-card">
+          <div class="icon-tile">CM</div>
+          <h3>Context Memory</h3>
+          <p>Keeps the learning flow natural so follow-up questions feel connected instead of starting over.</p>
+        </article>
+        <article class="glass-card">
+          <div class="icon-tile">SF</div>
+          <h3>Student Friendly</h3>
+          <p>Understands casual language and beginner phrasing, then answers in a polished tutor style.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section reveal" id="subjects">
+      <div class="section-head">
+        <p class="section-kicker">Subjects</p>
+        <h2 class="section-title">One tutor for every study lane.</h2>
+        <p class="section-copy">Explore core subjects with interactive cards designed to feel sharp, simple, and quick to use on any screen.</p>
+      </div>
+
+      <div class="subject-grid">
+        <article class="subject-card" style="--subject-glow: rgba(57, 167, 255, 0.34);"><span class="subject-mark">M</span><h3>Maths</h3></article>
+        <article class="subject-card" style="--subject-glow: rgba(255, 145, 77, 0.3);"><span class="subject-mark">P</span><h3>Physics</h3></article>
+        <article class="subject-card" style="--subject-glow: rgba(229, 108, 255, 0.32);"><span class="subject-mark">C</span><h3>Chemistry</h3></article>
+        <article class="subject-card" style="--subject-glow: rgba(84, 245, 196, 0.28);"><span class="subject-mark">B</span><h3>Biology</h3></article>
+        <article class="subject-card" style="--subject-glow: rgba(255, 210, 109, 0.28);"><span class="subject-mark">H</span><h3>History</h3></article>
+        <article class="subject-card" style="--subject-glow: rgba(139, 125, 255, 0.32);"><span class="subject-mark">G</span><h3>Geography</h3></article>
+      </div>
+    </section>
+
+    <section class="section reveal" id="demo">
+      <div class="demo-shell">
+        <div class="demo-copy-card">
+          <p class="section-kicker">Demo chat</p>
+          <h2 class="section-title">Study-note answers, not messy blocks.</h2>
+          <p class="section-copy">The chat experience is designed to feel like a modern learning app: clean headings, helpful paragraphs, and important ideas highlighted with subtle emphasis.</p>
+        </div>
+
+        <div class="demo-chat" aria-label="Tutorly AI chat demo">
+          <div class="demo-chat-head">
+            <div class="demo-title"><span class="tiny-star" aria-hidden="true"><img src="assets/chatbot-star.png" alt="" /></span>Tutorly AI</div>
+            <span class="live-pill">Live demo</span>
+          </div>
+          <div class="demo-chat-body" id="demoChat">
+            <div class="demo-message student">
+              <div class="bubble">Maths: solve x + 5 = 10</div>
+            </div>
+            <div class="demo-message ai typing-demo" aria-label="Tutorly is typing">
+              <div class="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="demo-message ai">
+              <div class="study-note">
+                <h3>Solving x + 5 = 10</h3>
+                <p><em>To solve an equation, keep the balance the same on both sides.</em></p>
+                <p>Subtract 5 from both sides: x + 5 - 5 = 10 - 5.</p>
+                <p><em>Final answer: x = 5.</em></p>
+              </div>
+            </div>
+
+            <div class="demo-message student">
+              <div class="bubble">Physics: why do objects fall down?</div>
+            </div>
+            <div class="demo-message ai">
+              <div class="study-note">
+                <h3>Gravity</h3>
+                <p><em>Objects fall because Earth pulls them with gravity.</em></p>
+                <p>This pull acts toward the center of Earth, so dropped objects move downward unless another force stops them.</p>
+              </div>
+            </div>
+
+            <div class="demo-message student">
+              <div class="bubble">Chemistry: what is a chemical reaction?</div>
+            </div>
+            <div class="demo-message ai">
+              <div class="study-note">
+                <h3>Chemical Reactions</h3>
+                <p><em>A chemical reaction happens when substances change into new substances.</em></p>
+                <p>Reactants are the starting materials. Products are the new materials formed after bonds break and rearrange.</p>
+              </div>
+            </div>
+
+            <div class="demo-message student">
+              <div class="bubble">Biology: how does photosynthesis work?</div>
+            </div>
+            <div class="demo-message ai">
+              <div class="study-note">
+                <h3>Photosynthesis</h3>
+                <p><em>Photosynthesis is the process plants use to make food using sunlight.</em> The plant takes in carbon dioxide from the air and water from the soil.</p>
+                <p>Inside the leaves, chlorophyll captures light energy. That energy helps turn carbon dioxide and water into glucose, which is the plant's food.</p>
+                <p><em>The main result is glucose for energy and oxygen released back into the air.</em></p>
+              </div>
+            </div>
+
+            <div class="demo-message student">
+              <div class="bubble">History: why was the Indus Valley important?</div>
+            </div>
+            <div class="demo-message ai">
+              <div class="study-note">
+                <h3>Indus Valley Civilization</h3>
+                <p><em>The Indus Valley was one of the world's earliest urban civilizations.</em></p>
+                <p>It is important because cities like Harappa and Mohenjo-daro had planned streets, drainage systems, trade, and organized town life.</p>
+              </div>
+            </div>
+
+            <div class="demo-message student">
+              <div class="bubble">Geography: why do monsoons happen?</div>
+            </div>
+            <div class="demo-message ai">
+              <div class="study-note">
+                <h3>Monsoons</h3>
+                <p><em>Monsoons happen because land and sea heat up at different speeds.</em></p>
+                <p>In summer, warm land pulls moist air from the ocean. That moist air rises, cools, and brings heavy rainfall.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="stats">
+      <div class="section-head">
+        <p class="section-kicker">Impact</p>
+        <h2 class="section-title">Learning support that stays available.</h2>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card"><span class="stat-value" data-count="12000">0</span><span>Questions Solved</span></article>
+        <article class="stat-card"><span class="stat-value" data-count="8500">0</span><span>Students Helped</span></article>
+        <article class="stat-card"><span class="stat-value" data-count="6">0</span><span>Subjects Covered</span></article>
+        <article class="stat-card"><span class="stat-value" data-count="24">0</span><span>Availability</span></article>
+      </div>
+    </section>
+
+    <section class="section reveal" id="about">
+      <div class="why-grid">
+        <div>
+          <p class="section-kicker">Why Tutorly</p>
+          <h2 class="section-title">AI help that feels calm, clear, and personal.</h2>
+          <p class="section-copy">Students do not always ask perfect questions. Tutorly is made for real study moments: half-formed doubts, quick revision, exam stress, and late-night homework confusion.</p>
+
+          <div class="why-points">
+            <article class="why-point">
+              <span class="point-dot">1</span>
+              <div><h3>Understands rough questions</h3><p>Students can use simple words, casual phrasing, or incomplete sentences and still get useful help.</p></div>
+            </article>
+            <article class="why-point">
+              <span class="point-dot">2</span>
+              <div><h3>Answers like a tutor</h3><p>Explanations stay readable with headings, paragraphs, examples, and highlighted key ideas.</p></div>
+            </article>
+            <article class="why-point">
+              <span class="point-dot">3</span>
+              <div><h3>Works across subjects</h3><p>From equations to biology concepts, Tutorly keeps the same clean study rhythm.</p></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="floating-stack" aria-label="Floating product cards">
+          <article class="float-card primary">
+            <h3>Concept Clarity</h3>
+            <p>Turns confusing topics into simple explanations students can actually revise.</p>
+            <div class="mini-meter" aria-hidden="true" style="--meter: 86%;"><span></span></div>
+          </article>
+          <article class="float-card secondary">
+            <h3>Focus Mode</h3>
+            <p>Clean screens, readable spacing, and less noise while studying.</p>
+            <div class="mini-meter" aria-hidden="true" style="--meter: 72%;"><span></span></div>
+          </article>
+          <article class="float-card tertiary">
+            <h3>Faster Revision</h3>
+            <p>Students get quick summaries, examples, and answers that are easy to scan.</p>
+            <div class="mini-meter" aria-hidden="true" style="--meter: 91%;"><span></span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <a class="brand" href="#home" aria-label="Tutorly home">
+          <img class="brand-logo-img" src="assets/tutorly-logo.png" alt="Tutorly" />
+        </a>
+        <p>A premium AI learning platform for students who want faster explanations, clearer revision, and a tutor that stays available.</p>
+      </div>
+      <div>
+        <h3>Quick Links</h3>
+        <a href="#features">Features</a>
+        <a href="#subjects">Subjects</a>
+        <a href="#demo">Demo</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <a href="contact.html">Contact page</a>
+        <a href="profile.html">Student profile</a>
+        <a href="tests.html">Tests</a>
+      </div>
+      <div>
+        <h3>Social</h3>
+        <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="chatbot-entry" href="sign_up.html?intent=chatbot">Open chatbot</a>
+        <a href="subscriptions.html">Plans</a>
+      </div>
+    </div>
+    <div class="footer-bottom">Copyright 2026 Tutorly AI. All rights reserved.</div>
+  </footer>
+
+  <div class="auth-modal-backdrop" id="chatbotAuthModal" aria-hidden="true">
+    <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="chatbotAuthTitle">
+      <button class="auth-modal-close" id="chatbotAuthClose" type="button" aria-label="Close">Ã—</button>
+      <span class="auth-modal-note">Start learning</span>
+      <h2 id="chatbotAuthTitle">Start with Tutorly</h2>
+      <p id="chatbotAuthCopy">Create your student account or log in to open your Tutorly chat.</p>
+      <div class="auth-modal-actions">
+        <a class="btn btn-primary" href="sign_up.html">Create student account</a>
+        <a class="btn btn-secondary" href="login.html">Login</a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nav = document.querySelector('.site-nav');
+      const navLinks = document.getElementById('navLinks');
+      const menuButton = document.querySelector('.hamburger');
+      const cursorGlow = document.querySelector('.cursor-glow');
+      const particleLayer = document.querySelector('.particles');
+      const revealItems = document.querySelectorAll('.reveal');
+      const sectionLinks = document.querySelectorAll('.nav-link');
+      const counters = document.querySelectorAll('[data-count]');
+      const demoChat = document.getElementById('demoChat');
+      const heroTyped = document.getElementById('heroTyped');
+      const chatbotAuthModal = document.getElementById('chatbotAuthModal');
+      const chatbotAuthClose = document.getElementById('chatbotAuthClose');
+      const chatbotAuthTitle = document.getElementById('chatbotAuthTitle');
+      const chatbotAuthCopy = document.getElementById('chatbotAuthCopy');
+      const chatbotEntryLinks = document.querySelectorAll('.chatbot-entry');
+
+      function setNavState() {
+        nav.classList.toggle('scrolled', window.scrollY > 18);
+      }
+
+      setNavState();
+      window.addEventListener('scroll', setNavState, { passive: true });
+
+      menuButton.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        document.body.classList.toggle('menu-open', isOpen);
+        nav.classList.toggle('menu-visible', isOpen);
+        menuButton.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      sectionLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          document.body.classList.remove('menu-open');
+          nav.classList.remove('menu-visible');
+          menuButton.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      function openChatbotAuthModal() {
+        if (!chatbotAuthModal) return;
+
+        chatbotAuthTitle.textContent = 'Start with Tutorly';
+        chatbotAuthCopy.textContent = 'Create your student account or log in to open your Tutorly chat.';
+
+        chatbotAuthModal.classList.add('open');
+        chatbotAuthModal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('auth-modal-open');
+      }
+
+      function closeChatbotAuthModal() {
+        if (!chatbotAuthModal) return;
+        chatbotAuthModal.classList.remove('open');
+        chatbotAuthModal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('auth-modal-open');
+      }
+
+      chatbotEntryLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+          const isSignedUp = localStorage.getItem('tutorly_signed_up') === 'true' || localStorage.getItem('tutorly_logged_in') === 'true';
+          if (isSignedUp) {
+            event.preventDefault();
+            if (localStorage.getItem('tutorly_bot_try_count') === null) {
+              localStorage.setItem('tutorly_bot_try_count', '0');
+            }
+            window.location.href = 'maths_gpt.html?entry=welcome';
+            return;
+          }
+
+          event.preventDefault();
+          openChatbotAuthModal();
+        });
+      });
+
+      if (chatbotAuthClose) {
+        chatbotAuthClose.addEventListener('click', closeChatbotAuthModal);
+      }
+
+      if (chatbotAuthModal) {
+        chatbotAuthModal.addEventListener('click', (event) => {
+          if (event.target === chatbotAuthModal) closeChatbotAuthModal();
+        });
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeChatbotAuthModal();
+      });
+
+      document.querySelectorAll('.btn').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          const rect = button.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          ripple.style.left = `${event.clientX - rect.left}px`;
+          ripple.style.top = `${event.clientY - rect.top}px`;
+          button.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 650);
+        });
+      });
+
+      if (window.matchMedia('(pointer: fine)').matches && cursorGlow) {
+        let cursorX = -999;
+        let cursorY = -999;
+        let cursorFrame = 0;
+
+        const paintCursorGlow = () => {
+          cursorFrame = 0;
+          cursorGlow.style.opacity = '1';
+          cursorGlow.style.setProperty('--cursor-x', `${cursorX}px`);
+          cursorGlow.style.setProperty('--cursor-y', `${cursorY}px`);
+        };
+
+        window.addEventListener('pointermove', (event) => {
+          cursorX = event.clientX;
+          cursorY = event.clientY;
+          if (!cursorFrame) cursorFrame = requestAnimationFrame(paintCursorGlow);
+        }, { passive: true });
+
+        window.addEventListener('pointerleave', () => {
+          cursorGlow.style.opacity = '0';
+        }, { passive: true });
+      }
+
+      const particleCount = window.matchMedia('(max-width: 640px)').matches ? 18 : 34;
+      for (let index = 0; index < particleCount; index += 1) {
+        const particle = document.createElement('span');
+        particle.className = 'particle';
+        particle.style.setProperty('--x', `${Math.random() * 100}%`);
+        particle.style.setProperty('--y', `${Math.random() * 100 + 10}%`);
+        particle.style.setProperty('--size', `${Math.random() * 3 + 2}px`);
+        particle.style.setProperty('--alpha', `${Math.random() * 0.48 + 0.18}`);
+        particle.style.setProperty('--speed', `${Math.random() * 12 + 13}s`);
+        particle.style.setProperty('--delay', `${Math.random() * -18}s`);
+        particleLayer.appendChild(particle);
+      }
+
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.18 });
+
+      revealItems.forEach((item) => revealObserver.observe(item));
+
+      const navObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const activeLink = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+          if (!activeLink) return;
+          sectionLinks.forEach((link) => link.classList.remove('active'));
+          activeLink.classList.add('active');
+        });
+      }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
+
+      document.querySelectorAll('section[id]').forEach((section) => navObserver.observe(section));
+
+      function animateCounter(counter) {
+        const target = Number(counter.dataset.count || 0);
+        const duration = 1300;
+        const start = performance.now();
+        const suffix = target === 24 ? '/7' : '+';
+
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.round(target * eased);
+          counter.textContent = `${value.toLocaleString()}${suffix}`;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      const statsObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          animateCounter(entry.target);
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.4 });
+
+      counters.forEach((counter) => statsObserver.observe(counter));
+
+      if (demoChat) {
+        const demoMessages = Array.from(demoChat.querySelectorAll('.demo-message'));
+        const demoObserver = new IntersectionObserver((entries, observer) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          let delay = 0;
+          demoMessages.forEach((message) => {
+            setTimeout(() => {
+              message.classList.add('visible');
+              if (message.classList.contains('typing-demo')) {
+                setTimeout(() => {
+                  message.style.display = 'none';
+                }, 760);
+              }
+            }, delay);
+            delay += message.classList.contains('typing-demo') ? 920 : 520;
+          });
+          observer.disconnect();
+        }, { threshold: 0.32 });
+
+        demoObserver.observe(demoChat);
+      }
+
+      const phrases = [
+        'Let me turn that into a clean study note.',
+        'First, we will keep the idea simple.',
+        'Then we will solve it step by step.'
+      ];
+      let phraseIndex = 0;
+      let charIndex = 0;
+      let deleting = false;
+
+      function typeHeroLine() {
+        const phrase = phrases[phraseIndex];
+        heroTyped.textContent = phrase.slice(0, charIndex);
+
+        if (!deleting && charIndex < phrase.length) {
+          charIndex += 1;
+          setTimeout(typeHeroLine, 42);
+          return;
+        }
+
+        if (!deleting && charIndex === phrase.length) {
+          deleting = true;
+          setTimeout(typeHeroLine, 1200);
+          return;
+        }
+
+        if (deleting && charIndex > 0) {
+          charIndex -= 1;
+          setTimeout(typeHeroLine, 22);
+          return;
+        }
+
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setTimeout(typeHeroLine, 260);
+      }
+
+      typeHeroLine();
+    });
+  </script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>
+
