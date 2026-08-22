@@ -7,15 +7,16 @@
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <link rel="stylesheet" href="frontend/subscription/subscription.css" />
   <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
   <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body>
+<body data-tutorly-surface="workspace">
   <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
   <header class="shell header-wrap fade-up">
     <div class="topbar">
@@ -46,7 +47,7 @@
             <h2 class="plan-name">Casual</h2>
             <div class="plan-price">Free</div>
           </div>
-          <span class="current-pill" data-current-for="casual">Current</span>
+          <span class="current-pill" data-current-for="casual" hidden>Current</span>
         </div>
         <ul class="plan-features">
           <li>Basic workspace access</li>
@@ -61,9 +62,9 @@
         <div class="plan-top">
           <div>
             <h2 class="plan-name">Plus</h2>
-            <div class="plan-price">â‚¹499<small>/month</small></div>
+            <div class="plan-price">₹499<small>/month</small></div>
           </div>
-          <span class="current-pill" data-current-for="plus">Current</span>
+          <span class="current-pill" data-current-for="plus" hidden>Current</span>
         </div>
         <ul class="plan-features">
           <li>Premium AI doubt support</li>
@@ -77,9 +78,9 @@
         <div class="plan-top">
           <div>
             <h2 class="plan-name">Pro</h2>
-            <div class="plan-price">â‚¹999<small>/month</small></div>
+            <div class="plan-price">₹999<small>/month</small></div>
           </div>
-          <span class="current-pill" data-current-for="pro">Current</span>
+          <span class="current-pill" data-current-for="pro" hidden>Current</span>
         </div>
         <ul class="plan-features">
           <li>Everything in Plus</li>

@@ -5,7 +5,8 @@ import operator
 import re
 from typing import Any, Dict, List
 
-from .schemas import ChatMode, SubjectArea, ToolCall
+from .knowledge_router import QuestionClassification, SmartKnowledgeRouter
+from .schemas import ToolCall
 
 
 class SafeCalculator(ast.NodeVisitor):
@@ -43,20 +44,21 @@ class SafeCalculator(ast.NodeVisitor):
 
 
 class ToolEngine:
-    def choose_tools(self, message: str, subject: SubjectArea, mode: ChatMode, has_attachments: bool) -> List[str]:
-        text = message.lower()
-        tools: List[str] = []
-        if subject == SubjectArea.mathematics or re.search(r"\d+\s*[-+*/]\s*\d+", text):
-            tools.append("calculator")
-        if "quiz" in text or mode == ChatMode.study:
-            tools.append("quiz")
-        if "flashcard" in text or mode == ChatMode.study:
-            tools.append("flashcard")
-        if mode == ChatMode.research or "source" in text or "citation" in text:
-            tools.append("research")
-        if subject == SubjectArea.computer_science or mode == ChatMode.coding:
-            tools.append("code")
-        if has_attachments or mode == ChatMode.lens:
+    def __init__(self) -> None:
+        self.knowledge_router = SmartKnowledgeRouter()
+
+    def choose_tools_from_semantic(self, decision: Dict[str, Any], has_attachments: bool) -> List[str]:
+        """Select tools only from the validated semantic-router decision."""
+        mapping = (
+            ("calculator", "calculator"),
+            ("graph_engine", "graph_engine"),
+            ("geometry_renderer", "geometry_renderer"),
+            ("diagram_renderer", "diagram_renderer"),
+            ("web_search", "research"),
+            ("code_runner", "code"),
+        )
+        tools = [tool for field, tool in mapping if decision.get(field) is True]
+        if has_attachments:
             tools.append("ocr")
         return list(dict.fromkeys(tools))
 
@@ -73,6 +75,14 @@ class ToolEngine:
                 calls.append(self._research_tool(message))
             elif name == "code":
                 calls.append(self._code_tool(message))
+            elif name in {"graph_engine", "geometry_renderer", "diagram_renderer"}:
+                calls.append(ToolCall(
+                    name=name,
+                    reason="Selected by the semantic router because the visual materially supports understanding.",
+                    input={"question": message[:500]},
+                    output={"status": "frontend_renderer_selected"},
+                    confidence=0.9,
+                ))
             elif name == "ocr":
                 calls.append(ToolCall(name="ocr", reason="Image or Lens mode is active.", input={}, output={"status": "client_ocr_context_expected"}, confidence=0.65))
         return calls
@@ -88,7 +98,7 @@ class ToolEngine:
                 confidence = 0.86
             except Exception as error:
                 output["error"] = str(error)
-        return ToolCall(name="calculator", reason="Numerical or algebra-like expression detected.", input={"message": message}, output=output, confidence=confidence)
+        return ToolCall(name="calculator", reason="Selected by the validated semantic tool decision.", input={"message": message}, output=output, confidence=confidence)
 
     def _quiz_tool(self, message: str) -> ToolCall:
         return ToolCall(
@@ -112,20 +122,45 @@ class ToolEngine:
         )
 
     def _research_tool(self, message: str) -> ToolCall:
+        summary = self.knowledge_router.search(
+            message,
+            QuestionClassification(
+                requires_search=True,
+                category="semantic_router",
+                confidence=0.9,
+                reason="The validated semantic route requested current external knowledge.",
+            ),
+            max_results=5,
+        )
+        results = [
+            {
+                "title": item.title,
+                "url": item.url,
+                "snippet": item.snippet,
+                "source": item.source,
+                "published_at": item.published_at,
+            }
+            for item in summary.results[:5]
+        ]
         return ToolCall(
             name="research",
-            reason="Research mode or citation intent detected.",
+            reason="Selected by the validated semantic tool decision.",
             input={"query": message[:240]},
-            output={"note": "Local knowledge retrieval is available; external web retrieval should be added server-side with trusted sources."},
-            confidence=0.66,
+            output={
+                "status": "completed" if results else "unavailable",
+                "provider": summary.provider,
+                "summary": summary.summary if results else "",
+                "results": results,
+            },
+            confidence=0.86 if results else 0.35,
         )
 
     def _code_tool(self, message: str) -> ToolCall:
         return ToolCall(
             name="code",
-            reason="Coding intent detected.",
+            reason="Selected by the validated semantic tool decision.",
             input={"prompt": message[:240]},
-            output={"checks": ["syntax", "data flow", "edge cases", "tests"]},
+            output={"status": "static_analysis_selected", "checks": ["syntax", "data flow", "edge cases", "tests"]},
             confidence=0.72,
         )
 

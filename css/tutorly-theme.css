@@ -1,0 +1,546 @@
+:root {
+  --tutorly-blue: #2563eb;
+  --tutorly-blue-dark: #1d4ed8;
+  --tutorly-violet: #7c3aed;
+  --tutorly-cyan: #22d3ee;
+  --tutorly-bg-dark: #050816;
+  --tutorly-bg-light: #f3f5ff;
+  --tutorly-surface: rgba(255, 255, 255, 0.92);
+  --tutorly-text: #172033;
+  --tutorly-muted: #66728a;
+  --tutorly-border: #dce3f4;
+  --tutorly-success: #16855b;
+  --tutorly-warning: #b56812;
+  --tutorly-danger: #c2414d;
+  --tutorly-gradient: linear-gradient(135deg, var(--tutorly-blue), var(--tutorly-violet));
+  --tutorly-radius-sm: 12px;
+  --tutorly-radius-md: 16px;
+  --tutorly-radius-lg: 20px;
+  --tutorly-radius-xl: 24px;
+  --tutorly-shadow-sm: 0 8px 24px rgba(48, 62, 108, 0.08);
+  --tutorly-shadow: 0 18px 48px rgba(48, 62, 108, 0.11);
+  --tutorly-ease: cubic-bezier(.2, .8, .2, 1);
+  --tutorly-page-duration: 270ms;
+  --tutorly-panel-duration: 200ms;
+  --tutorly-button-duration: 170ms;
+  --tutorly-sidebar-duration: 220ms;
+
+  /* Compatibility aliases for the existing pages. */
+  --primary: var(--tutorly-blue);
+  --primary-dark: var(--tutorly-blue-dark);
+  --violet: var(--tutorly-violet);
+  --gemini-blue: var(--tutorly-blue);
+  --gemini-violet: var(--tutorly-violet);
+  --gemini-sky: #93b4ff;
+  --gemini-green: var(--tutorly-cyan);
+  --bg: var(--tutorly-bg-light);
+  --surface: #ffffff;
+  --surface-soft: #f6f7ff;
+  --text: var(--tutorly-text);
+  --muted: var(--tutorly-muted);
+  --line: var(--tutorly-border);
+  --mt-blue: var(--tutorly-blue);
+  --mt-purple: var(--tutorly-violet);
+  --mt-ink: var(--tutorly-text);
+  --mt-muted: var(--tutorly-muted);
+  --mt-border: var(--tutorly-border);
+  --mt-surface: var(--tutorly-surface);
+  --mt-grad: var(--tutorly-gradient);
+  --foundation-bg: var(--tutorly-bg-light);
+  --foundation-surface: #ffffff;
+  --foundation-soft: #eef2ff;
+  --foundation-text: var(--tutorly-text);
+  --foundation-muted: var(--tutorly-muted);
+  --foundation-line: var(--tutorly-border);
+  --foundation-accent: var(--tutorly-blue);
+  --foundation-accent-hover: var(--tutorly-blue-dark);
+  --foundation-shadow: var(--tutorly-shadow);
+  --pay-ink: var(--tutorly-text);
+  --pay-muted: var(--tutorly-muted);
+  --pay-line: var(--tutorly-border);
+  --pay-blue: var(--tutorly-blue);
+  --pay-purple: var(--tutorly-violet);
+  --pay-sky: var(--tutorly-cyan);
+  --pay-gradient: var(--tutorly-gradient);
+  --pay-shadow: var(--tutorly-shadow);
+  --profile-bg: var(--tutorly-bg-light);
+  --profile-surface: #ffffff;
+  --profile-surface-2: #f7f8ff;
+  --profile-ink: var(--tutorly-text);
+  --profile-muted: var(--tutorly-muted);
+  --profile-line: var(--tutorly-border);
+  --profile-blue: var(--tutorly-blue);
+  --profile-blue-2: var(--tutorly-blue-dark);
+  --profile-purple: var(--tutorly-violet);
+  --profile-green: var(--tutorly-cyan);
+  --profile-amber: var(--tutorly-violet);
+  --profile-shadow: var(--tutorly-shadow);
+  --profile-shadow-soft: var(--tutorly-shadow-sm);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  overflow-x: clip;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace !important;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: clip;
+  animation: tutorlyPageEnter var(--tutorly-page-duration) var(--tutorly-ease) both !important;
+}
+
+body[data-tutorly-surface="public"] {
+  --tutorly-text: #f7f9ff;
+  --tutorly-muted: #aab6d4;
+  --tutorly-border: rgba(193, 207, 255, 0.17);
+  color: var(--tutorly-text);
+  background-color: var(--tutorly-bg-dark);
+}
+
+body[data-tutorly-surface="auth"] {
+  color: var(--tutorly-text);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(37, 99, 235, 0.34), transparent 32%),
+    radial-gradient(circle at 84% 16%, rgba(124, 58, 237, 0.3), transparent 34%),
+    linear-gradient(145deg, #040817, #09132d 54%, #160c36);
+}
+
+body[data-tutorly-surface="workspace"] {
+  color: var(--tutorly-text);
+  background:
+    radial-gradient(circle at 5% 8%, rgba(37, 99, 235, 0.11), transparent 30%),
+    radial-gradient(circle at 94% 3%, rgba(124, 58, 237, 0.1), transparent 28%),
+    linear-gradient(145deg, #f7faff, var(--tutorly-bg-light));
+}
+
+body[data-tutorly-surface="workspace"][data-theme="dark"],
+body[data-tutorly-surface="workspace"].profile-dark {
+  --tutorly-bg-light: #0b1020;
+  --tutorly-surface: rgba(17, 24, 45, 0.92);
+  --tutorly-text: #eef2ff;
+  --tutorly-muted: #aab5ce;
+  --tutorly-border: rgba(194, 207, 255, 0.14);
+  --surface: #11182c;
+  --surface-soft: #151e35;
+  --text: var(--tutorly-text);
+  --muted: var(--tutorly-muted);
+  --line: var(--tutorly-border);
+  --foundation-bg: #0b1020;
+  --foundation-surface: #11182c;
+  --foundation-soft: #151e35;
+  --foundation-text: var(--tutorly-text);
+  --foundation-muted: var(--tutorly-muted);
+  --foundation-line: var(--tutorly-border);
+  --pay-ink: var(--tutorly-text);
+  --pay-muted: var(--tutorly-muted);
+  --pay-line: var(--tutorly-border);
+  --profile-bg: #0b1020;
+  --profile-surface: #11182c;
+  --profile-surface-2: #151e35;
+  --profile-ink: var(--tutorly-text);
+  --profile-muted: var(--tutorly-muted);
+  --profile-line: var(--tutorly-border);
+  --exam-ink: var(--tutorly-text);
+  --exam-muted: var(--tutorly-muted);
+  --exam-line: var(--tutorly-border);
+  --exam-surface: var(--tutorly-surface);
+  --exam-soft: #151e35;
+  color: var(--tutorly-text);
+  background:
+    radial-gradient(circle at 7% 6%, rgba(37, 99, 235, 0.16), transparent 30%),
+    radial-gradient(circle at 96% 2%, rgba(124, 58, 237, 0.15), transparent 30%),
+    #0b1020;
+  color-scheme: dark;
+}
+
+:where(h1, h2, h3, h4, .brand, .page-title, .exam-title, .exam-top h2, .report-head h2,
+  .step-head h2, .profile-name, .payment-title, .plan-name, .foundation-brand,
+  .foundation-hero h1, .auth-brand, .otp-title) {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+  letter-spacing: -0.035em;
+}
+
+:where(.panel, .card, .profile-card, .setup-panel, .exam-view, .report-view,
+  .history-panel, .plan-card, .payment-panel, .foundation-card, .lesson-panel,
+  .bookmark-panel, .contact-layout > article) {
+  border-color: var(--tutorly-border) !important;
+  border-radius: var(--tutorly-radius-lg) !important;
+  box-shadow: var(--tutorly-shadow-sm) !important;
+  transition:
+    transform var(--tutorly-panel-duration) var(--tutorly-ease),
+    border-color var(--tutorly-panel-duration) var(--tutorly-ease),
+    box-shadow var(--tutorly-panel-duration) var(--tutorly-ease),
+    background var(--tutorly-panel-duration) var(--tutorly-ease) !important;
+}
+
+body[data-tutorly-surface="workspace"] :where(.panel, .card, .profile-card, .setup-panel,
+  .exam-view, .report-view, .history-panel, .plan-card, .payment-panel,
+  .foundation-card, .lesson-panel, .bookmark-panel, .contact-layout > article) {
+  background: var(--tutorly-surface) !important;
+  backdrop-filter: blur(16px);
+}
+
+body[data-tutorly-surface="workspace"][data-theme="dark"] :where(
+  .input, .select, input:not([type="checkbox"]):not([type="radio"]), select, textarea,
+  .exam-card, .chapter-option, .question-card, .metric-card, .analytics-panel,
+  .answer-option, .history-row, .chart-card, .activity-card, .insight-card,
+  .subscription-status-card, .history-item, .payment-hero, .campus-section,
+  .campus-plan-card, .campus-option, .campus-mini-card, .campus-tool) {
+  color: var(--tutorly-text) !important;
+  border-color: var(--tutorly-border) !important;
+  background: rgba(17, 24, 44, 0.9) !important;
+}
+
+body[data-tutorly-surface="workspace"][data-theme="dark"] :where(
+  .btn-soft, .button.soft, .foundation-button-secondary, .plan-button.secondary,
+  .pay-action.secondary) {
+  color: #dbe6ff !important;
+  background: rgba(17, 24, 44, 0.88) !important;
+}
+
+:where(.btn, .button, .foundation-button, .foundation-button-secondary, .plan-button,
+  .pay-action, .mode-btn, .role-btn, .subject-chip, button) {
+  transition:
+    transform var(--tutorly-button-duration) var(--tutorly-ease),
+    color var(--tutorly-button-duration) var(--tutorly-ease),
+    background var(--tutorly-button-duration) var(--tutorly-ease),
+    border-color var(--tutorly-button-duration) var(--tutorly-ease),
+    box-shadow var(--tutorly-button-duration) var(--tutorly-ease),
+    filter var(--tutorly-button-duration) var(--tutorly-ease) !important;
+}
+
+:where(.btn, .button, .foundation-button, .foundation-button-secondary, .plan-button, .pay-action) {
+  min-height: 42px;
+  border-radius: var(--tutorly-radius-sm) !important;
+}
+
+:where(.btn-primary, .button:not(.soft):not(.ghost):not(.danger), .foundation-button,
+  .plan-button:not(.secondary), .pay-action:not(.secondary), .mode-btn.active, .role-btn.active) {
+  color: #ffffff !important;
+  border-color: transparent !important;
+  background: var(--tutorly-gradient) !important;
+  box-shadow: 0 10px 24px rgba(61, 77, 204, 0.22) !important;
+}
+
+:where(.btn-soft, .button.soft, .foundation-button-secondary, .plan-button.secondary,
+  .pay-action.secondary) {
+  color: var(--tutorly-blue-dark) !important;
+  border: 1px solid var(--tutorly-border) !important;
+  background: rgba(255, 255, 255, 0.84) !important;
+}
+
+:where(.button.ghost, .btn-ghost) {
+  color: var(--tutorly-text) !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+}
+
+:where(.button.danger, .btn-danger) {
+  color: #ffffff !important;
+  background: var(--tutorly-danger) !important;
+}
+
+:where(.btn, .button, .foundation-button, .foundation-button-secondary, .plan-button,
+  .pay-action):not(:disabled):hover {
+  transform: translateY(-1px) !important;
+  filter: brightness(1.025);
+}
+
+:where(.input, .select, input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-color: var(--tutorly-border) !important;
+  border-radius: var(--tutorly-radius-sm) !important;
+}
+
+:where(.input, .select, input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus {
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.58) !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+}
+
+.header-wrap,
+.foundation-header {
+  border-color: var(--tutorly-border) !important;
+  background: color-mix(in srgb, var(--tutorly-surface) 88%, transparent) !important;
+  box-shadow: var(--tutorly-shadow-sm) !important;
+  backdrop-filter: blur(18px);
+}
+
+.topbar {
+  min-height: 72px;
+  height: auto !important;
+  padding-block: 10px;
+}
+
+.brand-title-logo {
+  width: clamp(132px, 14vw, 164px) !important;
+  height: 46px !important;
+}
+
+.back-home-btn {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--tutorly-radius-sm) !important;
+}
+
+.brand-title-logo {
+  object-fit: contain !important;
+  background: transparent !important;
+}
+
+body[data-tutorly-surface="auth"] .auth-wrap {
+  min-height: 100svh;
+  padding: 72px 20px 28px;
+}
+
+body[data-tutorly-surface="auth"] .auth-card {
+  width: min(500px, 100%);
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  border-radius: var(--tutorly-radius-xl) !important;
+  padding: clamp(24px, 4vw, 36px) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(22px);
+}
+
+body[data-tutorly-surface="auth"] .back-home-btn {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: blur(14px);
+}
+
+body[data-tutorly-surface="auth"] .auth-brand {
+  color: var(--tutorly-blue-dark);
+}
+
+.login-mode,
+.role-switch {
+  border-color: var(--tutorly-border) !important;
+  background: #f3f6ff !important;
+}
+
+.pill-blue,
+.pill-green,
+.payment-kicker,
+.exam-kicker,
+.foundation-eyebrow {
+  color: var(--tutorly-blue-dark) !important;
+  background: #eaf0ff !important;
+}
+
+body.exam-page {
+  --exam-blue: var(--tutorly-blue) !important;
+  --exam-violet: var(--tutorly-violet) !important;
+  --exam-green: var(--tutorly-cyan) !important;
+  --exam-amber: var(--tutorly-violet) !important;
+  --exam-rose: var(--tutorly-blue) !important;
+  --exam-ink: var(--tutorly-text) !important;
+  --exam-muted: var(--tutorly-muted) !important;
+  --exam-line: var(--tutorly-border) !important;
+  --exam-surface: var(--tutorly-surface) !important;
+  --exam-soft: var(--tutorly-bg-light) !important;
+}
+
+body.exam-page :where(.accent-green, .accent-amber, .accent-rose, .accent-violet) .card-icon,
+.icon-box,
+.foundation-brand-mark {
+  background: var(--tutorly-gradient) !important;
+}
+
+.current-pill[hidden] {
+  display: none !important;
+}
+
+.plan-card.featured {
+  border-color: rgba(124, 58, 237, 0.52) !important;
+  box-shadow: 0 20px 54px rgba(76, 61, 190, 0.16) !important;
+}
+
+.contact-item > span {
+  color: var(--tutorly-blue-dark);
+  background: #edf2ff !important;
+}
+
+.subject-more {
+  margin: 18px 0 0;
+  color: var(--tutorly-muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+body[data-tutorly-surface="public"] .subject-card {
+  --subject-glow: rgba(77, 116, 255, 0.28) !important;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(34, 211, 238, 0.16), transparent 38%),
+    linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.09)) !important;
+}
+
+.trust-card {
+  align-content: start !important;
+  gap: 9px;
+  text-align: left;
+}
+
+.trust-card .trust-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(102, 133, 255, 0.28);
+  border-radius: 12px;
+  color: #dbe7ff !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(124, 58, 237, 0.26));
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.trust-card strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.trust-card span:last-child {
+  color: var(--tutorly-muted);
+  line-height: 1.5;
+}
+
+.tutorly-empty-state {
+  grid-column: 1 / -1;
+  border: 1px dashed var(--tutorly-border);
+  border-radius: var(--tutorly-radius-md);
+  padding: clamp(20px, 4vw, 30px);
+  color: var(--tutorly-muted);
+  background: rgba(245, 247, 255, 0.72);
+  text-align: center;
+}
+
+.tutorly-empty-state strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--tutorly-text);
+  font-size: 18px;
+}
+
+.sidebar,
+.chat-shell,
+.mt-global-sidebar,
+.mobile-drawer {
+  transition-duration: var(--tutorly-sidebar-duration) !important;
+  transition-timing-function: var(--tutorly-ease) !important;
+}
+
+@keyframes tutorlyPageEnter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body.mt-page-ready {
+  transition:
+    opacity var(--tutorly-page-duration) var(--tutorly-ease),
+    transform var(--tutorly-page-duration) var(--tutorly-ease) !important;
+}
+
+body.mt-page-ready :where(.shell, .app-shell, main, .panel, .card, .glass-card,
+  .section-card, .hero-panel, .stat-card, .chat-shell, .welcome-page) {
+  animation-duration: var(--tutorly-page-duration) !important;
+  animation-timing-function: var(--tutorly-ease) !important;
+}
+
+.reveal,
+.fade-up {
+  transform: translateY(4px) !important;
+  transition:
+    opacity var(--tutorly-page-duration) var(--tutorly-ease),
+    transform var(--tutorly-page-duration) var(--tutorly-ease) !important;
+}
+
+.reveal.visible,
+.fade-up {
+  transform: translateY(0) !important;
+}
+
+@media (max-width: 1024px) {
+  :where(.shell, .payment-shell, .foundation-main, .foundation-header-inner) {
+    width: min(100% - 28px, 1120px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :where(.panel, .profile-card, .setup-panel, .exam-view, .report-view,
+    .history-panel, .plan-card, .payment-panel, .foundation-card) {
+    border-radius: 18px !important;
+  }
+
+  :where(.plans-grid, .contact-layout, .workspace-grid, .report-grid, .chart-grid,
+    .activity-grid, .analytics-grid, .subject-grid, .mode-grid) {
+    min-width: 0;
+  }
+
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  body.lessons-page.mt-mobile-app .subject-grid,
+  body.lessons-page.mt-mobile-app .chapter-grid,
+  body.lessons-page.mt-mobile-app .revision-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-auto-flow: row !important;
+    grid-auto-columns: auto !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+  }
+
+  body.lessons-page.mt-mobile-app :where(.subject-card, .chapter-card) {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  :where(.shell, .payment-shell, .foundation-main, .foundation-header-inner) {
+    width: calc(100% - 20px) !important;
+  }
+
+  body[data-tutorly-surface="auth"] .auth-wrap {
+    padding-inline: 10px;
+  }
+
+  :where(.btn, .button, .plan-button, .pay-action) {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

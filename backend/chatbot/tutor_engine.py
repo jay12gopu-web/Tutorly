@@ -6,6 +6,7 @@ from fractions import Fraction
 from typing import List
 
 from .modes import ModeStrategy
+from .response_policy import ResponsePlan, ResponsePolicyEngine
 from .schemas import (
     ChatMode,
     DifficultyLevel,
@@ -50,6 +51,7 @@ class TutorEngine:
         analysis: QuestionAnalysis | None = None,
         merged_knowledge: MergedKnowledge | None = None,
         practice_question: str = "",
+        response_plan: ResponsePlan | None = None,
     ) -> str:
         if self._is_casual(message):
             return self._casual_answer(message)
@@ -68,6 +70,7 @@ class TutorEngine:
                 analysis=analysis,
                 merged_knowledge=merged_knowledge,
                 practice_question=practice_question,
+                response_plan=response_plan,
             )
 
         sections = [
@@ -114,12 +117,25 @@ class TutorEngine:
         analysis: QuestionAnalysis,
         merged_knowledge: MergedKnowledge | None,
         practice_question: str,
+        response_plan: ResponsePlan | None = None,
     ) -> str:
         concept = (merged_knowledge.recommended_teaching_strategy if merged_knowledge else "") or self._concept_for(subject)
         steps = self._steps(subject, reasoning_plan, tool_calls)
         final_line = self._final_line(subject, message, tool_calls)
         common_mistake = self._common_mistake(subject, analysis)
         specific_lesson = self._specific_lesson(message, subject, analysis, practice_question)
+
+        if response_plan:
+            return self._format_planned_answer(
+                message=message,
+                subject=subject,
+                response_plan=response_plan,
+                lesson=specific_lesson,
+                concept=concept,
+                steps=steps,
+                final_line=final_line,
+                practice_question=practice_question,
+            )
 
         if specific_lesson:
             if strategy.mode == ChatMode.spark:
@@ -184,6 +200,164 @@ class TutorEngine:
             "### 8. Practice Question\n" + lesson["practice"],
         ])
 
+    def _format_planned_answer(
+        self,
+        *,
+        message: str,
+        subject: SubjectArea,
+        response_plan: ResponsePlan,
+        lesson: dict | None,
+        concept: str,
+        steps: List[str],
+        final_line: str,
+        practice_question: str,
+    ) -> str:
+        kind = response_plan.response_kind
+        final = (lesson or {}).get("final") or final_line
+        final = re.sub(r"^the result is\s+", "", final, flags=re.I).strip().rstrip(".")
+
+        if kind in {"answer_only", "simple_math"}:
+            if kind == "simple_math":
+                final = ResponsePolicyEngine.simple_math_answer(message) or final
+            return f"**{final}**"
+
+        if kind == "teach_progression":
+            if subject == SubjectArea.mathematics and re.search(r"\blinear equations?\b", message, re.I):
+                return "\n\n".join([
+                    "## Concept\nA linear equation is an equation where the highest power of the variable is 1. Solving it means isolating the variable while keeping both sides balanced.",
+                    "## Simple Example\n`x + 3 = 7`\n\nSubtract 3 from both sides:\n\n`x = 4`",
+                    "## Rule\nWhatever operation you perform on one side of an equation, perform the same operation on the other side.",
+                    "## Your turn\nSolve `2x + 5 = 13`. What should you undo first?",
+                ])
+            example = (lesson or {}).get("steps", [])[:2]
+            example_text = "\n".join(f"{index + 1}. {item}" for index, item in enumerate(example))
+            return "\n\n".join([
+                "## Concept\n" + ((lesson or {}).get("concept") or concept),
+                "## Simple Example\n" + (example_text or self._example(subject, message)),
+                "## Rule\n" + ((lesson or {}).get("why") or self._concept_for(subject)),
+                "## Your turn\n" + ((lesson or {}).get("practice") or practice_question or self._example(subject, message)),
+            ])
+
+        if kind == "mistake_feedback":
+            linear_mistake = re.search(
+                r"([+-]?\d*)\s*x\s*([+-])\s*(\d+(?:\.\d+)?)\s*=\s*([+-]?\d+(?:\.\d+)?).*?(?:so|then|therefore)\s*\1\s*x\s*=\s*([+-]?\d+(?:\.\d+)?)",
+                message,
+                re.I,
+            )
+            if linear_mistake:
+                coefficient = float(linear_mistake.group(1) or 1)
+                sign = linear_mistake.group(2)
+                constant = float(linear_mistake.group(3))
+                right_side = float(linear_mistake.group(4))
+                claimed = float(linear_mistake.group(5))
+                corrected = right_side - constant if sign == "+" else right_side + constant
+                if abs(claimed - corrected) > 1e-9 and coefficient:
+                    solution = corrected / coefficient
+                    corrected_text = f"{corrected:g}"
+                    solution_text = f"{solution:g}"
+                    return "\n\n".join([
+                        "**Almost — the mistake is in the step where you move the constant term. Your overall method is reasonable.**",
+                        f"You wrote `{linear_mistake.group(1) or ''}x = {claimed:g}`, but {('subtracting' if sign == '+' else 'adding')} `{constant:g}` gives `{right_side:g} {('-' if sign == '+' else '+')} {constant:g} = {corrected_text}`.",
+                        "## Corrected working\n"
+                        f"`{linear_mistake.group(1) or ''}x = {corrected_text}`\n\n"
+                        f"`x = {corrected_text} ÷ {coefficient:g}`\n\n"
+                        f"`x = {solution_text}`",
+                        f"## Final Answer\n**x = {solution_text}**",
+                    ])
+            correction_steps = (lesson or {}).get("steps") or [re.sub(r"^\d+\.\s*", "", step) for step in steps]
+            return "\n\n".join([
+                "**Almost — your overall approach may be reasonable, but the first incorrect transformation needs fixing.**",
+                "## Where the mistake happens\nCompare each line with the one before it. The first line that changes a sign, value, or operation without doing the same valid operation is the error.",
+                "## Corrected working\n" + "\n".join(f"{index + 1}. {item}" for index, item in enumerate(correction_steps[:5])),
+                "## Final Answer\n**" + final + "**",
+            ])
+
+        if kind == "science":
+            explanation_steps = (lesson or {}).get("steps") or [re.sub(r"^\d+\.\s*", "", step) for step in steps]
+            sections = [
+                "## Direct Answer\n" + ((lesson or {}).get("final") or final_line),
+                "## Simple Explanation\n" + ((lesson or {}).get("concept") or concept),
+            ]
+            if explanation_steps:
+                sections.append("\n".join(f"- {item}" for item in explanation_steps[:4]))
+            real_life = (lesson or {}).get("why")
+            if real_life:
+                sections.append("## Real-Life Example or Use\n" + real_life)
+            sections.append("**Key idea:** " + ((lesson or {}).get("check") or final))
+            return "\n\n".join(sections)
+
+        if kind in {"english_literature", "english_grammar", "english_writing"}:
+            lesson_data = lesson or {}
+            explanation = lesson_data.get("concept") or concept
+            lesson_steps = lesson_data.get("steps") or [re.sub(r"^\d+\.\s*", "", step) for step in steps]
+            if kind == "english_writing":
+                sections = [
+                    "## Suggested response\n" + final,
+                    "## Structure and approach\n" + "\n".join(f"- {item}" for item in lesson_steps[:5]),
+                ]
+            elif kind == "english_grammar":
+                sections = [
+                    "## Direct answer\n**" + final + "**",
+                    "## Why\n" + explanation,
+                ]
+                if lesson_steps:
+                    sections.append("## How to apply the rule\n" + "\n".join(f"- {item}" for item in lesson_steps[:3]))
+            else:
+                sections = [
+                    "## Direct answer\n" + final,
+                    "## Explanation\n" + explanation,
+                ]
+                if lesson_steps:
+                    sections.append("## How to analyse it\n" + "\n".join(f"- {item}" for item in lesson_steps[:5]))
+            takeaway = lesson_data.get("check") or lesson_data.get("why") or final
+            sections.append("**Remember:** " + takeaway)
+            return "\n\n".join(sections)
+
+        if kind == "math_proof":
+            if re.search(r"\bvertically opposite angles?\b", message, re.I):
+                return "\n\n".join([
+                    "## Given\nTwo straight lines intersect, forming vertically opposite angles ∠1 and ∠3.",
+                    "## To Prove\n`∠1 = ∠3`",
+                    "## Proof\n1. Adjacent angles on a straight line add to `180°`, so `∠1 + ∠2 = 180°`.\n2. The other adjacent pair also forms a straight line, so `∠2 + ∠3 = 180°`.\n3. Therefore, `∠1 + ∠2 = ∠2 + ∠3`.\n4. Subtract `∠2` from both sides: `∠1 = ∠3`.",
+                    "## Hence Proved\n**Vertically opposite angles are equal.**",
+                ])
+            proof_steps = (lesson or {}).get("steps") or [re.sub(r"^\d+\.\s*", "", step) for step in steps]
+            return "\n\n".join([
+                "## Given\n" + "\n".join(f"- {item}" for item in ((lesson or {}).get("given") or ["The conditions stated in the question."])),
+                "## To Prove\n" + ((lesson or {}).get("understand") or "Show that the required mathematical statement follows from the given conditions."),
+                "## Proof\n" + "\n".join(f"{index + 1}. {item}" for index, item in enumerate(proof_steps[:7])),
+                "## Hence Proved\n**" + final + "**",
+            ])
+
+        if kind in {"math_standard", "math_complex", "math_word_problem"}:
+            given = (lesson or {}).get("given") or ["Use the values and relationships stated in the question."]
+            working = (lesson or {}).get("steps") or [re.sub(r"^\d+\.\s*", "", step) for step in steps]
+            if kind == "math_standard":
+                sections = [
+                    "## Given\n" + "\n".join(f"- {item}" for item in given[:4]),
+                    "## Working\n" + "\n".join(f"**Step {index + 1}**\n\n`{item}`" for index, item in enumerate(working[:5])),
+                    "## Final Answer\n**" + final + "**",
+                ]
+            else:
+                setup_label = "Translate the words" if kind == "math_word_problem" else "Method / Formula"
+                sections = [
+                    "## What we know\n" + "\n".join(f"- {item}" for item in given[:5]),
+                    "## What we need to find\n" + ((lesson or {}).get("understand") or "The unknown quantity asked for in the question."),
+                    f"## {setup_label}\n" + ((lesson or {}).get("concept") or concept),
+                    "## Working\n" + "\n".join(f"{index + 1}. `{item}`" for index, item in enumerate(working[:7])),
+                    "## Final Answer\n**" + final + "**",
+                ]
+            key_idea = (lesson or {}).get("why")
+            if key_idea:
+                sections.append("**Key idea:** " + key_idea)
+            return "\n\n".join(sections)
+
+        return "\n\n".join([
+            "## Direct Answer\n" + final_line,
+            "## Explanation\n" + concept,
+            "**Remember:** " + final,
+        ])
+
     def _lesson(
         self,
         title: str,
@@ -219,6 +393,29 @@ class TutorEngine:
             return answer_first_lesson
 
         if subject == SubjectArea.mathematics:
+            number_translation = re.search(
+                r"(?:a )?number\s+(increased|decreased)\s+by\s+(\d+(?:\.\d+)?)\s+(?:becomes|is|equals?)\s+(\d+(?:\.\d+)?)",
+                text,
+            )
+            if number_translation:
+                operation = number_translation.group(1)
+                amount = float(number_translation.group(2))
+                total = float(number_translation.group(3))
+                answer = total - amount if operation == "increased" else total + amount
+                sign = "+" if operation == "increased" else "-"
+                inverse = "Subtract" if operation == "increased" else "Add"
+                return self._lesson(
+                    "Math Word Problem",
+                    "We need to translate the words into an equation and find the unknown number.",
+                    [f"Unknown number: x", f"'{operation} by {amount:g}' means x {sign} {amount:g}", f"Result: {total:g}"],
+                    f"The words translate to the equation x {sign} {amount:g} = {total:g}.",
+                    [f"Let the number be x.", f"Write the equation: x {sign} {amount:g} = {total:g}.", f"{inverse} {amount:g} on both sides.", f"x = {answer:g}."],
+                    f"x = {answer:g}",
+                    "Translating the relationship before calculating keeps the story and equation connected.",
+                    "Do not use the inverse operation until after writing the equation.",
+                    f"A number {operation} by {amount + 2:g} becomes {total + 5:g}. Find the number.",
+                    f"Check by substituting x = {answer:g} into the original statement.",
+                )
             if re.search(r"2x\s*\+\s*5\s*=\s*17", text):
                 return self._lesson(
                     "Math Solution",
@@ -1015,6 +1212,24 @@ class TutorEngine:
                 "Do not mix up current and resistance; current is I, resistance is R.",
                 "Find current when V = 10 V and R = 5 ohms.",
             )
+        if "sublimation" in text:
+            return self._lesson(
+                "Chemistry Note",
+                "We need to define sublimation and connect it to useful real-life examples.",
+                ["A substance begins as a solid.", "It changes directly into a gas."],
+                "Sublimation is the change of a solid directly into a gas without passing through the liquid state.",
+                [
+                    "The solid absorbs energy.",
+                    "Its particles escape directly into the gas state.",
+                    "The liquid state is skipped.",
+                    "Dry ice is a familiar example because solid carbon dioxide changes directly into carbon dioxide gas.",
+                ],
+                "Sublimation is the direct change from solid to gas; dry ice and freeze-drying are useful real-life examples.",
+                "Sublimation is used in freeze-drying foods and medicines, dye-sublimation printing, and purification of some solids.",
+                "Do not describe sublimation as evaporation; evaporation starts from a liquid.",
+                "Why does dry ice seem to disappear without leaving a liquid puddle?",
+                "Solid → gas; the liquid state is skipped.",
+            )
         if "increasing temperature" in text or "reaction rate" in text:
             return self._lesson(
                 "Chemistry Note",
@@ -1133,6 +1348,24 @@ class TutorEngine:
         return None
 
     def _english_lesson(self, text: str, practice: str) -> dict | None:
+        if "plot" in text or "climax" in text or "resolution" in text:
+            return self._lesson(
+                "Plot Analysis",
+                "We need to explain how a story's events are organized and why the turning points matter.",
+                ["A plot develops through connected events.", "Conflict creates tension and drives the action."],
+                "Plot analysis examines how the beginning, rising action, climax, and resolution build the story's meaning.",
+                [
+                    "Beginning: identify the setting, characters, and starting situation.",
+                    "Rising action: trace the conflict and events that increase tension.",
+                    "Climax: identify the major turning point or moment of highest tension.",
+                    "Resolution: explain how the conflict ends and what changes.",
+                ],
+                "Plot analysis explains how connected events develop the conflict, reach a climax, and lead to a resolution.",
+                "Analysis explains why events and turning points matter; a summary only retells what happened.",
+                "Do not stop at listing events—connect them to conflict, character change, or theme.",
+                "Choose a familiar story and identify its conflict, climax, and resolution.",
+                "A plot summary tells what happened; plot analysis explains how and why the events shape the story.",
+            )
         if "affect" in text and "effect" in text:
             return self._lesson(
                 "English Note",

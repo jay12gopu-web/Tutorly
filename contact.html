@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/contact.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <style>
@@ -19,8 +20,9 @@
     @media (max-width: 900px) { .contact-layout { grid-template-columns: 1fr; } }
   </style>
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body>
+<body data-tutorly-surface="workspace">
   <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
   <header class="shell header-wrap fade-up">
   <div class="topbar">
@@ -42,15 +44,14 @@
 
     <section class="contact-layout fade-up d3">
       <article class="panel">
-        <h3 style="margin-top: 0; font-family: 'Baloo 2', sans-serif;">Support details</h3>
-        <div class="contact-item"><span>??</span><div><strong>Email</strong><br />jay12.gopu@gmail.com</div></div>
-        <div class="contact-item"><span>??</span><div><strong>Phone</strong><br />+91 12345 67890</div></div>
-        <div class="contact-item"><span>??</span><div><strong>Hours</strong><br />Mon-Sat, 9:00 AM - 7:00 PM</div></div>
-        <div class="contact-item"><span>??</span><div><strong>Location</strong><br />Hyderabad, Telangana, India</div></div>
+        <h3 style="margin-top: 0;">Support details</h3>
+        <div class="contact-item"><span aria-hidden="true">@</span><div><strong>Email</strong><br /><a href="mailto:jay12.gopu@gmail.com">jay12.gopu@gmail.com</a></div></div>
+        <div class="contact-item"><span aria-hidden="true">↗</span><div><strong>Website</strong><br /><a href="https://mytutor.co.in/">mytutor.co.in</a></div></div>
+        <p class="muted">Send the Tutorly team your question and include the page or feature you need help with.</p>
       </article>
 
       <article class="panel contact-form">
-        <h3 style="margin-top: 0; font-family: 'Baloo 2', sans-serif;">Send us a message</h3>
+        <h3 style="margin-top: 0;">Send us a message</h3>
         <form id="contactForm" class="grid" style="gap: 10px;">
           <input class="input" type="text" id="name" placeholder="Your Name" required />
           <input class="input" type="email" id="email" placeholder="Your Email" required />
@@ -71,8 +72,13 @@
   <script>
     document.getElementById('contactForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      alert('Thanks! Your message has been submitted successfully.');
-      e.target.reset();
+      const topic = document.getElementById('topic').value;
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const subject = encodeURIComponent(`Tutorly support: ${topic}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+      window.location.href = `mailto:jay12.gopu@gmail.com?subject=${subject}&body=${body}`;
     });
   </script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>

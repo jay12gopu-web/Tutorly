@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, validator
 
 
 class ChatMode(str, Enum):
@@ -29,7 +29,10 @@ class SubjectArea(str, Enum):
     economics = "economics"
     computer_science = "computer_science"
     english = "english"
+    science = "science"
+    social_science = "social_science"
     general_knowledge = "general_knowledge"
+    interdisciplinary = "interdisciplinary"
     general = "general"
 
 
@@ -103,8 +106,13 @@ class ConversationTurn(BaseModel):
 
 
 class ChatbotRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     user_id: str = "guest"
-    conversation_id: Optional[str] = None
+    conversation_id: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("conversation_id", "conversationId"),
+    )
     message: str
     mode: ChatMode = ChatMode.prime
     subject_hint: Optional[SubjectArea] = None
@@ -175,6 +183,12 @@ class ChatbotResponse(BaseModel):
     conversation_id: str
     mode: ChatMode
     subject: SubjectArea
+    topic: str = ""
+    intent: str = "concept_explanation"
+    response_type: str = "explanation"
+    answer_format: str = "concept_explanation"
+    response_length: str = "short"
+    visual: Dict[str, Any] = Field(default_factory=dict)
     answer: str
     stages: List[ResponseStage] = Field(default_factory=list)
     reasoning_plan: List[ReasoningStep] = Field(default_factory=list)

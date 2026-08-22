@@ -363,12 +363,11 @@ def build_search_provider() -> SearchProvider:
 
 class SmartKnowledgeRouter:
     def __init__(self, provider: Optional[SearchProvider] = None, cache: Optional[SearchCache] = None):
-        self.classifier = QuestionClassifier()
         self.provider = provider or build_search_provider()
         self.cache = cache or SearchCache(ttl_seconds=int(os.getenv("TUTORLY_SEARCH_CACHE_SECONDS", "900")))
 
     def classify(self, question: str) -> QuestionClassification:
-        return self.classifier.classify(question)
+        raise RuntimeError("Keyword freshness classification is disabled; use the validated semantic route.")
 
     def search(self, question: str, classification: QuestionClassification, *, max_results: int = 5) -> SearchSummary:
         if not classification.requires_search:

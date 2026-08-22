@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <style>
     :root {
@@ -795,8 +798,9 @@
     }
   </style>
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body>
+<body data-tutorly-surface="workspace">
   <header class="app-shell topbar fade-up">
     <a class="brand-link" href="welcome.html" aria-label="Tutorly welcome page">
       <img class="brand-logo" src="assets/title-logo.png" alt="Tutorly" />
@@ -833,7 +837,7 @@
             <p class="panel-copy">Your selected helps will appear here before you spend coins.</p>
           </div>
         </div>
-        <button id="cartCloseBtn" class="cart-close" type="button" aria-label="Close cart">Ã—</button>
+        <button id="cartCloseBtn" class="cart-close" type="button" aria-label="Close cart">×</button>
         <span id="cartTotalPill" class="cart-pill"><span class="coin">$</span>0</span>
       </div>
 

@@ -137,7 +137,7 @@ body.mt-layout-active .mt-global-sidebar {
 }
 
 body.mt-layout-active .mt-brand {
-  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 30px;
   font-weight: 800;
   color: transparent;
@@ -213,7 +213,7 @@ body.mt-layout-active .mt-ai-head h3 {
   margin: 0;
   font-size: 20px;
   color: var(--mt-ink);
-  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0;
 }
 

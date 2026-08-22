@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const suggestionChips = document.querySelectorAll(".suggestion-chip");
   const disclaimer = document.querySelector(".disclaimer");
   let speakLiveReply = null;
+  let chatRequestInFlight = false;
 
   if (!input || !sendBtn || !messages || !chatWindow) {
     return;
@@ -42,6 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const GPT = window.TutorlyGPT || null;
   const ResponseContract = window.TutorlyResponseContract || null;
   const MathResponseContract = window.TutorlyMathResponseContract || null;
+  const ResponsePolicy = window.TutorlyResponsePolicy || null;
+  const EducationalVisuals = window.TutorlyEducationalVisuals || null;
+  const ENABLE_LEGACY_LOCAL_ROUTER = false;
   const BOT_AVATAR_SRC = "assets/chatbot-star.png";
   const MODEL_STORAGE_KEY = "tutorly_selected_ai_model";
   const MODEL_CONFIGS = {
@@ -182,6 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
       && window.location.port === "8000";
     if (isFastApiOrigin) return "";
 
+    const isLocalDevelopment = ["127.0.0.1", "localhost"].includes(window.location.hostname);
+    if (!isLocalDevelopment && ["http:", "https:"].includes(window.location.protocol)) {
+      return window.location.origin;
+    }
+
     return "http://127.0.0.1:8000";
   }
 
@@ -191,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getChatEndpoint() {
-    return getBackendEndpoint("/api/chatbot/respond");
+    return getBackendEndpoint("/api/chat");
   }
 
   function getLegacyChatEndpoint() {
@@ -208,10 +217,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createBackendChatRequest(message, context = {}) {
     const model = normalizeModelId(context.model || context.selectedModel || selectedModel);
+    const conversationId = context.conversationId || activeConversationId || null;
+    const conversation = conversationId
+      ? (GPT?.getConversation?.(conversationId) || ChatHistory?.getConversation?.(conversationId))
+      : null;
+    const history = (conversation?.messages || [])
+      .filter((item) => item?.role === "user" || item?.role === "assistant")
+      .slice(-8)
+      .map((item) => ({ role: item.role, content: String(item.content || "").slice(0, 5000) }));
+    const learner = context.memoryContext?.learner || {};
+    let savedGrade = learner.grade || "";
+    try {
+      savedGrade = savedGrade || localStorage.getItem("tutorly_grade") || "";
+    } catch (error) {
+      // Grade is optional; the semantic tutor will infer conservatively when unavailable.
+    }
     return {
       user_id: getChatUserId(),
+      conversation_id: conversationId,
       message,
       mode: model,
+      history,
+      profile: {
+        user_id: getChatUserId(),
+        grade: savedGrade || null,
+        weak_concepts: Array.isArray(learner.weakSubjects) ? learner.weakSubjects : [],
+        strong_concepts: Array.isArray(learner.strongSubjects) ? learner.strongSubjects : []
+      },
       attachments: context.hasImage ? [{
         type: "image",
         url: context.imageSource || null,
@@ -360,7 +392,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (!response.ok) {
-      throw new Error(`Chat backend returned ${response.status} for ${endpoint}`);
+      const error = new Error(`Chat backend returned ${response.status}`);
+      error.status = response.status;
+      throw error;
     }
 
     return response.json();
@@ -375,11 +409,15 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         data = await postChatRequest(getChatEndpoint(), createBackendChatRequest(message, context), controller);
       } catch (primaryError) {
-        console.warn("Tutorly TutorEngine endpoint failed, trying legacy /chat:", primaryError);
+        if (![404, 405].includes(primaryError?.status)) throw primaryError;
+        console.warn("Tutorly semantic endpoint is unavailable; trying the compatibility route.");
         data = await postChatRequest(getLegacyChatEndpoint(), createLegacyChatRequest(message, context), controller);
       }
 
       updateDeveloperDiagnosticsPanel(normalizeBackendDiagnostics(data));
+      context.semanticRoute = data?.metadata?.semantic_route || null;
+      context.quickActions = data?.metadata?.quick_actions || [];
+      context.backendConversationId = data?.conversation_id || context.conversationId || null;
       if (data?.error && data?.message) return data.message;
       const answer = data?.answer || data?.message || data?.response || "";
       if (!answer || /error generating response/i.test(answer)) {
@@ -428,19 +466,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function normalizeReplyForRender(rawReply, modelId = selectedModel, options = {}) {
-    if (!ResponseContract?.createTutorResponseMarkdown) {
-      return String(rawReply || "");
-    }
-
-    const mode = getContractMode(modelId);
-    return ResponseContract.createTutorResponseMarkdown(rawReply, {
-      mode,
-      topic: options.topic || "Study Help",
-      subtopic: options.subtopic || "",
-      difficulty: options.difficulty || "",
-      confidence: options.confidence ?? 0.82,
-      fallbackUsed: !!options.fallbackUsed
-    });
+    return ResponsePolicy?.preserveMarkdown
+      ? ResponsePolicy.preserveMarkdown(rawReply)
+      : String(rawReply || "").trim();
   }
 
   function normalizeMathReplyForRender(rawReply, modelId = selectedModel, options = {}) {
@@ -506,46 +534,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return [
       "# Apparent Weightlessness in Orbit",
       "",
-      "### 1. Understand the Question",
+      "## Direct answer",
       "",
-      "The question asks why astronauts feel weightless even though Earth's gravity is still pulling on them.",
+      "Astronauts appear weightless because they and the spacecraft are in free fall around Earth together. Gravity is still present—it keeps them in orbit.",
       "",
-      "### 2. Identify Given Information",
+      "## Explanation",
       "",
-      "- The spacecraft is orbiting Earth.",
-      "- Earth's gravity is still acting on the spacecraft and astronauts.",
-      "- Astronauts appear to float inside the spacecraft.",
+      "1. Gravity pulls the spacecraft and astronauts toward Earth.",
+      "2. Their forward speed makes them keep missing Earth, creating an orbit.",
+      "3. Because everything falls together, the floor provides almost no upward support force.",
+      "4. With no noticeable support force, the astronauts float relative to the spacecraft.",
       "",
-      "### 3. Concept or Rule",
+      "## Real-life comparison",
       "",
-      "_Apparent weightlessness happens when there is no support force pushing up on your body._",
+      "A person in a falling elevator would briefly feel lighter for the same reason: the person and elevator are accelerating downward together.",
       "",
-      "In orbit, the spacecraft and the astronauts are both in free fall around Earth. Gravity provides the centripetal acceleration needed to keep them moving in a curved orbital path.",
-      "",
-      "### 4. Step-by-Step Explanation",
-      "",
-      "1. Gravity pulls both the spacecraft and astronauts toward Earth.",
-      "2. Their forward speed makes them keep missing Earth, so they orbit instead of falling straight down.",
-      "3. Since the spacecraft and astronauts fall together, the floor does not push up on the astronauts.",
-      "4. Without that support force, they feel weightless and float relative to the spacecraft.",
-      "",
-      "### 5. Final Answer",
-      "",
-      "**Astronauts appear weightless because they and the spacecraft are in free fall around Earth together, so there is almost no normal/support force acting on them. Gravity is still present; it is what keeps them in orbit.**",
-      "",
-      "### 6. Why This Works",
-      "",
-      "Your felt weight comes from a surface pushing on you, not from gravity alone. In orbit, that surface push is missing, so astronauts experience microgravity.",
-      "",
-      "### 7. Common Mistakes",
-      "",
-      "- Thinking there is no gravity in space.",
-      "- Confusing weightlessness with zero mass.",
-      "- Forgetting that orbit is a type of free fall.",
-      "",
-      "### 8. Practice Question",
-      "",
-      "Why does a person in a falling elevator feel lighter for a short time?"
+      "**Remember:** Weightlessness does not mean zero gravity or zero mass; it means there is almost no support force acting on the body."
     ].join("\n");
   }
 
@@ -557,7 +561,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-  function getValidatedLocalTutorReply(text, model, context = {}, subject = SubjectEngine.getSubject(text)) {
+  function getValidatedLocalTutorReply(text, model, context = {}, subject = "general") {
+    if (!ENABLE_LEGACY_LOCAL_ROUTER) return "";
     if (isOrbitalWeightlessnessQuestion(text)) return buildOrbitalWeightlessnessFallback();
 
     const directReply = getModeBaseReply(text, model, context);
@@ -569,18 +574,70 @@ document.addEventListener("DOMContentLoaded", () => {
     return [
       "# Tutorly Help",
       "",
-      "### 1. Understand the Question",
+      "I need the exact question or topic to give you a reliable answer.",
       "",
-      "I need the exact topic and wording to answer this safely.",
-      "",
-      "### 2. Final Answer",
-      "",
-      "**Please send the question again with the subject or chapter name, and I will solve only that question.**",
-      "",
-      "### 3. Practice Question",
-      "",
-      "Try rewriting your question in one full sentence."
+      "**Please send it again in one complete sentence, including the subject or chapter if you know it.**"
     ].join("\n");
+  }
+
+  function renderAdaptiveAdvancedMath(result, responsePlan = {}) {
+    const cleanItems = (items = []) => items.filter(Boolean);
+    const bulletLines = (items, fallback) => {
+      const values = cleanItems(items);
+      return values.length ? values.map((item) => `- ${item}`) : [`- ${fallback}`];
+    };
+    const working = cleanItems(result.steps).flatMap((step, index) => {
+      const lines = [`**Step ${index + 1}**`, "", step.work || String(step)];
+      if (step.why) lines.push("", `_Why: ${step.why}_`);
+      return [...lines, ""];
+    });
+    const finalAnswer = result.finalAnswer || "Please provide one more detail so I can finish the solution.";
+
+    if (responsePlan.answerOnly) return `**${finalAnswer}**`;
+
+    if (result.isWordProblem || responsePlan.responseKind === "math_word_problem") {
+      const lines = [
+        "## What we know",
+        "",
+        ...bulletLines(result.given, "The values and relationships stated in the question."),
+        "",
+        "## What we need to find",
+        "",
+        ...bulletLines(result.unknown, result.goal || "The unknown value."),
+        ""
+      ];
+      if (result.translation?.length) {
+        lines.push("## Translate the words into maths", "", ...bulletLines(result.translation, "Write the relationship as an equation."), "");
+      }
+      if (result.model?.length || result.formulas?.length) {
+        lines.push("## Method / Formula", "", ...bulletLines([...(result.formulas || []), ...(result.model || [])], result.method || "Build and solve the equation."), "");
+      }
+      lines.push("## Working", "", ...working, "### Final Answer", "", `**${finalAnswer}**`);
+      return lines.join("\n");
+    }
+
+    const detailed = responsePlan.detailLevel === "detailed";
+    const lines = [
+      detailed ? "## What we know" : "## Given",
+      "",
+      ...bulletLines(result.given, result.story || "The expression or equation in the question."),
+      ""
+    ];
+    if (detailed) {
+      lines.push(
+        "## What we need to find",
+        "",
+        ...bulletLines(result.unknown, result.goal || "The requested value."),
+        "",
+        "## Method / Formula",
+        "",
+        ...bulletLines(result.formulas, result.method || "Apply the relevant rule, then simplify."),
+        ""
+      );
+    }
+    lines.push(detailed ? "## Working" : "## Steps", "", ...working, "### Final Answer", "", `**${finalAnswer}**`);
+    if (result.method) lines.push("", `**Key idea:** ${result.method}`);
+    return lines.join("\n");
   }
 
   function getConfidentAdvancedMathReply(text, modelId = selectedModel) {
@@ -607,37 +664,8 @@ document.addEventListener("DOMContentLoaded", () => {
       /please send the exact/i.test(result.finalAnswer || "");
 
     if (lowConfidence) return "";
-
-    if ((result.isWordProblem || isMathWordProblem(text)) && MathResponseContract?.fromAdvancedMathResult) {
-      const primeMath = MathResponseContract.fromAdvancedMathResult(result, {
-        subtopic: result.subtopic || "Math Word Problem",
-        confidence: confidenceScore
-      });
-      const response =
-        getContractMode(modelId) === "spark" && MathResponseContract.toSpark
-          ? MathResponseContract.toSpark(primeMath)
-          : primeMath;
-
-      if (!MathResponseContract.isValidMathResponse?.(response)) return "";
-      return MathResponseContract.renderMathResponse(response);
-    }
-
-    if (ResponseContract?.fromAdvancedMathResult && ResponseContract?.isValidTutorResponse && ResponseContract?.renderTutorResponse) {
-      const primeResponse = ResponseContract.fromAdvancedMathResult(result, {
-        mode: "prime",
-        topic: result.topic || "Mathematics",
-        confidence: confidenceScore
-      });
-      const response =
-        getContractMode(modelId) === "spark" && ResponseContract.toSpark
-          ? ResponseContract.toSpark(primeResponse)
-          : primeResponse;
-
-      if (!ResponseContract.isValidTutorResponse(response)) return "";
-      return ResponseContract.renderTutorResponse(response);
-    }
-
-    return engine.render(result);
+    const responsePlan = ResponsePolicy?.analyze?.(text, { subject: "math" }) || {};
+    return renderAdaptiveAdvancedMath(result, responsePlan);
   }
 
   function getConfidentEnglishReply(text, modelId = selectedModel) {
@@ -1267,10 +1295,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderInlineMarkdown(value) {
-    return escapeHtml(value)
-      .replace(/`([^`]+)`/g, "<code>$1</code>")
+    const codeTokens = [];
+    const tokenized = String(value || "").replace(/`([^`]+)`/g, (_, code) => {
+      codeTokens.push(`<code>${escapeHtml(code)}</code>`);
+      return `@@TUTORLY_CODE_${codeTokens.length - 1}@@`;
+    });
+    let html = escapeHtml(tokenized)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/_([^_]+)_/g, "<em>$1</em>");
+      .replace(/_([^_]+)_/g, "<em>$1</em>")
+      .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '<span class="math-fraction"><span>$1</span><span>$2</span></span>')
+      .replace(/\\sqrt\{([^{}]+)\}/g, '<span class="math-root">√<span class="math-radicand">$1</span></span>')
+      .replace(/\\\((.+?)\\\)|\$([^$]+)\$/g, (_, parenMath, dollarMath) => `<span class="math-inline">${parenMath || dollarMath}</span>`);
+    codeTokens.forEach((token, index) => {
+      html = html.replace(`@@TUTORLY_CODE_${index}@@`, token);
+    });
+    return html;
+  }
+
+  function splitMarkdownTableRow(line) {
+    return String(line || "").trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+  }
+
+  function isMarkdownTableDivider(line) {
+    const cells = splitMarkdownTableRow(line);
+    return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
   }
 
   function renderMarkdownNote(markdown) {
@@ -1304,7 +1352,8 @@ document.addEventListener("DOMContentLoaded", () => {
       codeBlock = null;
     }
 
-    lines.forEach((rawLine) => {
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+      const rawLine = lines[lineIndex];
       const fence = rawLine.trim().match(/^```([a-z0-9_-]+)?$/i);
       if (fence) {
         if (codeBlock) {
@@ -1314,12 +1363,12 @@ document.addEventListener("DOMContentLoaded", () => {
           closeList();
           codeBlock = { language: fence[1] || "", lines: [] };
         }
-        return;
+        continue;
       }
 
       if (codeBlock) {
         codeBlock.lines.push(rawLine);
-        return;
+        continue;
       }
 
       const line = rawLine.trim();
@@ -1327,7 +1376,37 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!line) {
         closeParagraph();
         closeList();
-        return;
+        continue;
+      }
+
+      if (line.includes("|") && lines[lineIndex + 1] && isMarkdownTableDivider(lines[lineIndex + 1])) {
+        closeParagraph();
+        closeList();
+        const headers = splitMarkdownTableRow(line);
+        const rows = [];
+        let rowIndex = lineIndex + 2;
+        while (rowIndex < lines.length && lines[rowIndex].trim() && lines[rowIndex].includes("|")) {
+          rows.push(splitMarkdownTableRow(lines[rowIndex]));
+          rowIndex += 1;
+        }
+        html.push(`
+          <div class="markdown-table-wrap">
+            <table>
+              <thead><tr>${headers.map((cell) => `<th>${renderInlineMarkdown(cell)}</th>`).join("")}</tr></thead>
+              <tbody>${rows.map((row) => `<tr>${headers.map((_, index) => `<td>${renderInlineMarkdown(row[index] || "")}</td>`).join("")}</tr>`).join("")}</tbody>
+            </table>
+          </div>
+        `);
+        lineIndex = rowIndex - 1;
+        continue;
+      }
+
+      const displayMath = line.match(/^\$\$(.+)\$\$$|^\\\[(.+)\\\]$/);
+      if (displayMath) {
+        closeParagraph();
+        closeList();
+        html.push(`<div class="math-display">${renderInlineMarkdown(`$${displayMath[1] || displayMath[2]}$`)}</div>`);
+        continue;
       }
 
       const heading = line.match(/^(#{1,3})\s+(.+)$/);
@@ -1336,7 +1415,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeList();
         const level = heading[1].length;
         html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
-        return;
+        continue;
       }
 
       const finalAnswer = line.match(/^>\s+(.+)$/);
@@ -1344,7 +1423,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeParagraph();
         closeList();
         html.push(`<blockquote>${renderInlineMarkdown(finalAnswer[1])}</blockquote>`);
-        return;
+        continue;
       }
 
       const orderedItem = line.match(/^\d+\.\s+(.+)$/);
@@ -1355,7 +1434,7 @@ document.addEventListener("DOMContentLoaded", () => {
           list = { type: "ol", items: [] };
         }
         list.items.push(orderedItem[1]);
-        return;
+        continue;
       }
 
       const unorderedItem = line.match(/^[-*]\s+(.+)$/);
@@ -1366,12 +1445,12 @@ document.addEventListener("DOMContentLoaded", () => {
           list = { type: "ul", items: [] };
         }
         list.items.push(unorderedItem[1]);
-        return;
+        continue;
       }
 
       closeList();
       paragraph.push(line);
-    });
+    }
 
     closeParagraph();
     closeList();
@@ -1583,6 +1662,12 @@ document.addEventListener("DOMContentLoaded", () => {
         explanation = "Atoms have a nucleus in the center with protons and neutrons. Electrons move around the nucleus. The number of protons decides which element the atom is.";
         example = "Hydrogen has one proton, so it is hydrogen. If the proton number changes, the element changes too.";
         finalLine = "Final answer: atoms are tiny building blocks of matter.";
+      } else if (value.includes("sublimation")) {
+        title = "Sublimation";
+        definition = "Sublimation is the change in which a _solid turns directly into a gas_.";
+        explanation = "The liquid state is skipped. The particles gain enough energy to leave the solid directly as gas particles.";
+        example = "Dry ice is a familiar example. Sublimation is also used in freeze-drying and dye-sublimation printing.";
+        finalLine = "Key idea: sublimation is solid → gas without becoming liquid first.";
       } else if (value.includes("germination") || value.includes("seed") || value.includes("sprout")) {
         title = "Germination";
         definition = "Germination is _the process where a seed starts growing into a new plant_.";
@@ -2299,9 +2384,60 @@ document.addEventListener("DOMContentLoaded", () => {
     if (meta.model) message.dataset.model = meta.model;
     content.innerHTML = renderMarkdownNote(markdown);
     hydrateMathLearningCards(message);
+    attachEducationalVisual(message, meta);
     attachMathVisual(message, meta);
     attachGeographyVisual(message, meta);
     attachBotMessageActions(message, markdown, meta);
+  }
+
+  function attachEducationalVisual(message, meta = {}) {
+    if (!EducationalVisuals?.fromSemanticRoute || !EducationalVisuals?.renderPanel) return;
+    const content = message.querySelector(".bot-content");
+    if (!content || content.querySelector(".edu-visual-panel")) return;
+
+    const prompt = meta.prompt || message.dataset.prompt || "";
+    if (!prompt) return;
+    const semanticRoute = meta.semanticRoute || meta.context?.semanticRoute || null;
+    const context = EducationalVisuals.fromSemanticRoute(semanticRoute, prompt);
+    if (!context) return;
+
+    const holder = document.createElement("div");
+    holder.innerHTML = EducationalVisuals.renderPanel(context);
+    const panel = holder.firstElementChild;
+    if (!panel) return;
+    placeSemanticVisual(content, panel, semanticRoute?.visual?.placement || "after_answer");
+    EducationalVisuals.hydrate?.(panel);
+  }
+
+  function placeSemanticVisual(content, panel, placement) {
+    const children = Array.from(content.children);
+    const isHeading = (node) => /^H[1-6]$/.test(node.tagName || "");
+    const findHeading = (pattern) => children.find((node) => isHeading(node) && pattern.test(node.textContent || ""));
+    const insertBefore = (target) => {
+      if (!target) return false;
+      content.insertBefore(panel, target);
+      return true;
+    };
+
+    if (placement === "after_intro") {
+      const intro = children.find((node) => node.tagName === "P");
+      if (intro) {
+        intro.insertAdjacentElement("afterend", panel);
+        return;
+      }
+    }
+
+    if (placement === "before_steps") {
+      const steps = findHeading(/step|solution|working|calculation|what happens|how it works|why this happens/i)
+        || children.find((node) => node.tagName === "OL");
+      if (insertBefore(steps)) return;
+    }
+
+    if (placement === "after_steps" || placement === "before_summary") {
+      if (insertBefore(findHeading(/answer|remember|main idea|key idea|in short|observation|result/i))) return;
+    }
+
+    content.appendChild(panel);
   }
 
   function hydrateMathLearningCards(message) {
@@ -2359,12 +2495,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function attachMathVisual(message, meta = {}) {
+    if (meta.context) return;
     const mathRenderer = window.TutorlyMathRenderer;
     if (!mathRenderer?.analyze || !mathRenderer?.renderPanel) return;
     const content = message.querySelector(".bot-content");
-    if (!content || content.querySelector(".math-solve-panel")) return;
+    if (!content || content.querySelector(".math-solve-panel") || content.querySelector(".edu-visual-panel")) return;
 
     const prompt = meta.prompt || message.dataset.prompt || "";
+    const responsePlan = ResponsePolicy?.analyze?.(prompt, { subject: "mathematics" });
+    if (responsePlan?.kind === "simple_math" || responsePlan?.answerOnly) return;
     const fallbackText = `${prompt} ${message.dataset.rawReply || ""}`;
     const context = mathRenderer.analyze(prompt || fallbackText, {
       model: meta.model || message.dataset.model || selectedModel
@@ -2380,6 +2519,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function attachGeographyVisual(message, meta = {}) {
+    if (meta.context) return;
     const geography = window.TutorlyGeography;
     if (!geography?.analyze || !geography?.renderPanel) return;
     const content = message.querySelector(".bot-content");
@@ -2488,6 +2628,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = message.querySelector(".bot-content");
     if (!content) return;
 
+    const prompt = meta.prompt || message.dataset.prompt || "";
+    const contextualActions = ResponsePolicy?.actionsFor?.(prompt, rawReply, {
+      semanticRoute: meta.semanticRoute || meta.context?.semanticRoute || null,
+      quickActions: meta.quickActions || meta.context?.quickActions || []
+    }) || [];
+    const contextualMarkup = contextualActions.length
+      ? `<div class="learning-feedback contextual-actions" aria-label="Continue learning">${contextualActions
+          .map((item) => `<button type="button" data-action="contextual" data-context-action="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`)
+          .join("")}</div>`
+      : "";
+
     const actions = document.createElement("div");
     actions.className = "message-actions";
     actions.innerHTML = `
@@ -2513,12 +2664,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <path d="M10 14v4.5A2.5 2.5 0 0 0 12.5 21L17 14"></path>
         </svg>
       </button>
-      <div class="learning-feedback" aria-label="Learning feedback">
-        <button type="button" data-action="understood">Understood</button>
-        <button type="button" data-action="simpler">Simpler</button>
-        <button type="button" data-action="examples">More examples</button>
-        <button type="button" data-action="confused">Still confused</button>
-      </div>
+      ${contextualMarkup}
     `;
 
     actions.addEventListener("click", async (event) => {
@@ -2527,6 +2673,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = button.dataset.action;
       const conversationId = meta.conversationId || message.dataset.conversationId;
       const messageId = meta.messageId || message.dataset.messageId;
+
+      if (action === "contextual") {
+        const selected = contextualActions.find((item) => item.id === button.dataset.contextAction);
+        if (!selected?.prompt) return;
+        input.value = selected.prompt;
+        resizeInput();
+        updateSendState();
+        await sendMessage();
+        return;
+      }
 
       if (action === "copy") {
         const copied = await (ChatbotCore?.copyText?.(rawReply) || Promise.resolve(false));
@@ -2572,7 +2728,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const followup = feedbackResult?.followup || GPT?.createFeedbackFollowup?.(action, {
           message: prompt,
           reply: rawReply,
-          subject: SubjectEngine.getSubject(prompt),
+          subject: meta.context?.semanticRoute?.subject || "general",
           adaptiveContext: meta.context?.adaptiveContext || meta.adaptiveContext || null
         });
         showToast(action === "understood" ? "Nice. Tutorly will remember this helped." : "I will adjust the explanation style.");
@@ -2599,7 +2755,7 @@ document.addEventListener("DOMContentLoaded", () => {
         message.classList.add("loading");
         content.innerHTML = `<span class="typing-label">Regenerating...</span><span class="typing-dots" aria-label="Tutorly is thinking"></span>`;
         const freshReply = await getBotReply(prompt, model, context);
-        const subject = SubjectEngine.getSubject(prompt);
+        const subject = context.semanticRoute?.subject || "general";
         const toolkit = createStudyToolkit(subject, prompt, freshReply, model);
         GPT?.updateMessage?.(conversationId, messageId, {
           content: freshReply,
@@ -2705,6 +2861,7 @@ document.addEventListener("DOMContentLoaded", () => {
       message.appendChild(createBotAvatar());
       message.appendChild(content);
       if (!options.loading) {
+        attachEducationalVisual(message, options);
         attachMathVisual(message, options);
         attachGeographyVisual(message, options);
         attachBotMessageActions(message, text, options);
@@ -2737,12 +2894,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateSendState() {
     const locked = isWelcomeTrial && (welcomeTrialLocked || getWelcomeTrialCount() >= WELCOME_TRIAL_LIMIT);
     const hasReadyContent = input.value.trim().length > 0 || !!pendingImage;
-    sendBtn.disabled = locked || !hasReadyContent;
-    sendBtn.classList.toggle("active", !locked && hasReadyContent);
+    sendBtn.disabled = locked || chatRequestInFlight || !hasReadyContent;
+    sendBtn.classList.toggle("active", !locked && !chatRequestInFlight && hasReadyContent);
     if (voiceBtn) {
-      voiceBtn.disabled = locked;
-      voiceBtn.classList.toggle("active", !locked && !hasReadyContent);
-      voiceBtn.setAttribute("aria-hidden", String(!locked && hasReadyContent));
+      voiceBtn.disabled = locked || chatRequestInFlight;
+      voiceBtn.classList.toggle("active", !locked && !chatRequestInFlight && !hasReadyContent);
+      voiceBtn.setAttribute("aria-hidden", String(!locked && !chatRequestInFlight && hasReadyContent));
     }
     if (speechTextBtn) {
       speechTextBtn.hidden = true;
@@ -2794,6 +2951,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getPrimeReply(text) {
+    if (!ENABLE_LEGACY_LOCAL_ROUTER) return "";
     const subject = SubjectEngine.getSubject(text);
 
     switch (subject) {
@@ -2939,14 +3097,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return primeReply;
   }
 
-  GPT?.configure?.({
-    createPrimeReply: getPrimeReply,
-    compactStudyNote,
-    createLensReply: getLensReply,
-    subjectFor: (text) => SubjectEngine.getSubject(text)
-  });
-
   function getLocalBotReply(text, modelId = selectedModel, context = {}) {
+    if (!ENABLE_LEGACY_LOCAL_ROUTER) return "";
     const model = normalizeModelId(modelId);
     const subject = SubjectEngine.getSubject(text);
 
@@ -2983,82 +3135,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function getBotReply(text, modelId = selectedModel, context = {}) {
-    const subject = SubjectEngine.getSubject(text);
     const model = normalizeModelId(modelId);
-    const topic = subject === "math" ? "Mathematics" : subject ? `${subject.charAt(0).toUpperCase()}${subject.slice(1)}` : "Study Help";
-    const mathCategory = getMathCategory(text);
-    const isWordProblem = subject === "math" && /word-problem|geometry-problem|rate-problem|ratio-problem/.test(mathCategory);
-
-    if (subject === "math") {
-      const localMathReply = getConfidentAdvancedMathReply(text, model);
-      if (localMathReply) return localMathReply;
-    }
-
-    if (subject === "english") {
-      const localEnglishReply = getConfidentEnglishReply(text, model);
-      if (localEnglishReply) return localEnglishReply;
-    }
+    context.model = model;
 
     try {
-      const backendReply = await requestBackendChat(text, {
-        ...context,
-        model
-      });
+      const backendReply = await requestBackendChat(text, context);
       if (backendReply) {
-        if (!isTutorReplySafeForQuestion(backendReply, text, subject)) {
-          console.warn("Tutorly rejected unsafe backend reply and used a local safe fallback.");
-          const safeReply = getValidatedLocalTutorReply(text, model, context, subject);
-          if (isWordProblem) {
-            return normalizeMathReplyForRender(safeReply, model, {
-              subtopic: "Math Word Problem",
-              confidence: 0.76,
-              fallbackUsed: true,
-              question: text
-            });
-          }
-          return normalizeReplyForRender(safeReply, model, {
-            topic,
-            confidence: 0.76,
-            fallbackUsed: true
-          });
-        }
-
-        if (isWordProblem) {
-          return normalizeMathReplyForRender(backendReply, model, {
-            subtopic: "Math Word Problem",
-            confidence: 0.88,
-            fallbackUsed: true,
-            question: text
-          });
-        }
-
         return normalizeReplyForRender(backendReply, model, {
-          topic,
-          confidence: 0.88,
-          fallbackUsed: true
+          topic: context.semanticRoute?.topic || "Study Help",
+          subject: context.semanticRoute?.subject || "general",
+          question: text,
+          confidence: context.semanticRoute?.confidence ?? 0.8,
+          semanticRoute: context.semanticRoute
         });
       }
     } catch (error) {
-      console.warn("Tutorly backend chat fallback failed:", error);
+      console.warn("Tutorly semantic chat request failed.");
     }
-
-    if (isWordProblem) {
-      return normalizeMathReplyForRender(getValidatedLocalTutorReply(text, "prime", context, subject), model, {
-        subtopic: "Math Word Problem",
-        confidence: 0.76,
-        fallbackUsed: true,
-        question: text
-      });
-    }
-
-    return normalizeReplyForRender(getValidatedLocalTutorReply(text, "prime", context, subject), model, {
-      topic,
-      confidence: 0.76,
-      fallbackUsed: true
-    });
+    return "I couldn't process that question properly. Please try again.";
   }
 
   async function sendMessage(options = {}) {
+    if (chatRequestInFlight) return;
     const text = input.value.trim();
     const imageToSend = pendingImage;
     const hasImage = !!imageToSend;
@@ -3076,6 +3174,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    chatRequestInFlight = true;
+    updateSendState();
+
     const shouldShowTrialLimitAfterReply = registerWelcomeTrialAttempt();
     const imageDataUrl = hasImage
       ? await imageFileToDataUrl(imageToSend.uploadFile || imageToSend.file).catch(() => "")
@@ -3089,9 +3190,10 @@ document.addEventListener("DOMContentLoaded", () => {
       extractedText: imageToSend?.extractedText || ""
     });
     const modelAtSend = requestPayload.model;
-    const subjectAtSend = SubjectEngine.getSubject(botInputText);
+    const subjectAtSend = "general";
     const conversation = ensureActiveConversation(botInputText);
     const conversationId = conversation?.id || null;
+    requestPayload.conversationId = conversationId;
     if (conversationId) {
       activeConversationId = conversationId;
       GPT?.setActiveConversation?.(conversationId) || ChatHistory?.setActiveConversation?.(conversationId);
@@ -3160,13 +3262,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     window.setTimeout(async () => {
-      const replyText = await getBotReply(botInputText, modelAtSend, requestPayload);
-      const toolkit = createStudyToolkit(subjectAtSend, botInputText, replyText, modelAtSend);
+      let replyText;
+      try {
+        replyText = await getBotReply(botInputText, modelAtSend, requestPayload);
+      } finally {
+        chatRequestInFlight = false;
+        updateSendState();
+      }
+      const routedSubject = requestPayload.semanticRoute?.subject || subjectAtSend;
+      const toolkit = createStudyToolkit(routedSubject, botInputText, replyText, modelAtSend);
+      if (userRecord?.id && conversationId) {
+        GPT?.updateMessage?.(conversationId, userRecord.id, { subject: routedSubject })
+          || ChatHistory?.updateMessage?.(conversationId, userRecord.id, { subject: routedSubject });
+      }
       const assistantRecord = GPT?.recordAssistantMessage?.({
         conversationId,
         content: replyText,
         model: modelAtSend,
-        subject: subjectAtSend,
+        subject: routedSubject,
         parentId: userRecord?.id || null,
         tools: toolkit,
         metadata: {
@@ -3175,13 +3288,14 @@ document.addEventListener("DOMContentLoaded", () => {
           mode: requestPayload.mode,
           directives: requestPayload.responseDirectives,
           adaptiveContext: requestPayload.adaptiveContext || null,
+          semanticRoute: requestPayload.semanticRoute || null,
           hasImage
         }
       }) || ChatHistory?.appendMessage?.(conversationId, {
         role: "assistant",
         content: replyText,
         model: modelAtSend,
-        subject: subjectAtSend,
+        subject: routedSubject,
         parentId: userRecord?.id || null,
         tools: toolkit,
         metadata: {
@@ -3190,10 +3304,11 @@ document.addEventListener("DOMContentLoaded", () => {
           mode: requestPayload.mode,
           directives: requestPayload.responseDirectives,
           adaptiveContext: requestPayload.adaptiveContext || null,
+          semanticRoute: requestPayload.semanticRoute || null,
           hasImage
         }
       });
-      if (!GPT) observeChatMemory(assistantRecord, conversationId, subjectAtSend);
+      if (!GPT) observeChatMemory(assistantRecord, conversationId, routedSubject);
       streamBotReply(loadingMessage, replyText, {
         conversationId,
         messageId: assistantRecord?.id,

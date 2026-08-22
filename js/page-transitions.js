@@ -11,6 +11,15 @@
   }
 
   ready(function () {
+    if (document.body.dataset.tutorlySurface === 'workspace' && !document.body.dataset.theme) {
+      var storedTheme = localStorage.getItem('tutorly_theme');
+      var preferredTheme = storedTheme === 'light' || storedTheme === 'dark'
+        ? storedTheme
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.body.dataset.theme = preferredTheme;
+      document.documentElement.style.colorScheme = preferredTheme;
+    }
+
     var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.body.classList.add('mt-page-motion');
 

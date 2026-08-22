@@ -498,8 +498,8 @@
           analysis: ["Plot usually moves from beginning to conflict, climax, and resolution.", "The climax is the turning point where the main problem reaches its highest tension."],
           steps: ["Beginning: introduce setting and characters.", "Rising action: explain the problem and events.", "Climax: identify the turning point.", "Resolution: explain how the problem ends."]
         },
-        finalAnswer: "Plot analysis explains the order of events and how the conflict is finally resolved.",
-        examTip: "When writing plot, keep events in correct order.",
+        finalAnswer: "Plot analysis examines how events build the conflict, reach a turning point, and shape the ending.",
+        examTip: "A summary tells what happened; plot analysis explains how and why those events matter.",
         practice: "Write the beginning, climax, and ending of a story you recently read.",
         confidence: classification.confidence
       });
@@ -842,84 +842,96 @@
     return asList(items).map((item) => `- ${item}`).join("\n");
   }
 
+  function uniqueItems(items) {
+    const seen = new Set();
+    return asList(items).filter((item) => {
+      const key = normalizeText(item).replace(/[^a-z0-9 ]/g, "");
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function compactList(items, limit = 5) {
+    return uniqueItems(items).slice(0, limit).map((item) => `- ${item}`).join("\n");
+  }
+
   function renderPrime(response) {
     if (!response || response.confidence < MIN_LOCAL_CONFIDENCE) return "";
+    if (response.category === "vocabulary") {
+      const example = uniqueItems(response.analysis).find((item) => /^example:/i.test(item));
+      return [
+        `**${response.finalAnswer}**`,
+        ...(example ? ["", example] : []),
+        "",
+        `**Remember:** ${response.examTip}`
+      ].join("\n");
+    }
+
+    if (response.area === "Writing") {
+      return [
+        "## Suggested response",
+        "",
+        response.finalAnswer,
+        "",
+        "## Structure and approach",
+        "",
+        compactList([...response.analysis, ...response.steps], 5),
+        "",
+        `**Remember:** ${response.examTip}`
+      ].join("\n");
+    }
+
+    if (response.area === "Literature") {
+      const useAnalysis = ["literary_device", "poetry", "extract"].includes(response.category);
+      const guidance = useAnalysis ? response.analysis : response.steps;
+      return [
+        "## Direct answer",
+        "",
+        response.finalAnswer,
+        "",
+        "## Explanation",
+        "",
+        response.conceptRule,
+        "",
+        "## How to analyse it",
+        "",
+        compactList(guidance, 5),
+        "",
+        `**Remember:** ${response.examTip}`
+      ].join("\n");
+    }
+
+    const guidance = response.steps.length ? response.steps : response.analysis;
     return [
-      `# Topic: ${response.topic}`,
-      "",
-      `## Subtopic: ${response.subtopic}`,
-      "",
-      "### 1. Understand the Question",
-      "",
-      response.understanding,
-      "",
-      "### 2. Identify Given Information",
-      "",
-      renderList(response.givenInfo),
-      "",
-      "### 3. Concept or Rule",
-      "",
-      `_${response.conceptRule}_`,
-      "",
-      "### 4. Step-by-Step Solution",
-      "",
-      renderList(response.analysis),
-      "",
-      renderList(response.steps),
-      "",
-      "### 5. Final Answer",
+      "## Direct answer",
       "",
       `**${response.finalAnswer}**`,
       "",
-      "### 6. Why This Works",
+      "## Why",
       "",
-      response.whyThisWorks,
+      response.conceptRule,
+      ...(guidance.length ? ["", "## How to apply the rule", "", compactList(guidance, 3)] : []),
       "",
-      "### 7. Common Mistakes",
-      "",
-      renderList(response.commonMistakes),
-      "",
-      "### 8. Practice Question",
-      "",
-      response.practice,
-      "",
-      "### Exam Tip",
-      "",
-      `_${response.examTip}_`
+      `**Remember:** ${response.examTip}`
     ].join("\n");
   }
 
   function renderSpark(response) {
     if (!response || response.confidence < MIN_LOCAL_CONFIDENCE) return "";
-    const quick = response.analysis[0] || response.understanding;
     return [
-      `# Topic: ${response.topic}`,
-      "",
-      "## 1. Understand the Question",
-      "",
-      response.understanding,
-      "",
-      "## 2. Concept or Rule",
-      "",
-      `_${response.conceptRule}_`,
-      "",
-      "## 3. Quick Steps",
-      "",
-      quick,
-      "",
-      "## 4. Final Answer",
-      "",
       `**${response.finalAnswer}**`,
       "",
-      "## 5. Practice Question",
-      "",
-      response.practice
+      response.conceptRule
     ].join("\n");
   }
 
   function createReply(text, options = {}) {
     const response = solve(text);
     if (!response || response.confidence < MIN_LOCAL_CONFIDENCE) return "";
+    if (/\b(just (?:give me )?(?:the )?answer|answer only|no explanation|only answer|don'?t explain)\b/i.test(text)) {
+      return `**${response.finalAnswer}**`;
+    }
     return options.model === "spark" ? renderSpark(response) : renderPrime(response);
   }
 

@@ -1,8 +1,8 @@
 (function () {
   const PLAN_LABELS = {
     casual: "Casual",
-    plus: "Tutorly",
-    pro: "Tutorly Campus",
+    plus: "Plus",
+    pro: "Pro",
     "session-1": "1 Tutoring Session"
   };
 
@@ -48,7 +48,7 @@
   }
 
   function money(amountPaise) {
-    return `â‚¹${Math.round((Number(amountPaise) || 0) / 100).toLocaleString("en-IN")}`;
+    return `₹${Math.round((Number(amountPaise) || 0) / 100).toLocaleString("en-IN")}`;
   }
 
   function toast(message, type = "info") {
@@ -78,15 +78,16 @@
 
   function setLoading(planId, isLoading) {
     state.loadingPlanId = isLoading ? planId : null;
+    if (!isLoading) {
+      renderCurrentPlan();
+      return;
+    }
     document.querySelectorAll("[data-plan-button]").forEach((button) => {
       const buttonPlan = button.getAttribute("data-plan-button");
       const loading = state.loadingPlanId === buttonPlan;
-      button.disabled = !!state.loadingPlanId;
+      button.disabled = true;
       if (loading) {
-        button.dataset.originalText = button.dataset.originalText || button.textContent;
         button.innerHTML = '<span class="loading-inline">Processing</span>';
-      } else if (button.dataset.originalText) {
-        button.textContent = button.dataset.originalText;
       }
     });
   }
@@ -119,6 +120,20 @@
 
     document.querySelectorAll("[data-current-for]").forEach((pill) => {
       pill.hidden = pill.getAttribute("data-current-for") !== currentPlan;
+    });
+
+    document.querySelectorAll("[data-plan-button]").forEach((button) => {
+      const planId = button.getAttribute("data-plan-button");
+      const isCurrent = planId === currentPlan;
+      button.disabled = isCurrent || !!state.loadingPlanId;
+      button.setAttribute("aria-current", isCurrent ? "true" : "false");
+      if (isCurrent) {
+        button.textContent = "Current plan";
+      } else if (planId === "casual") {
+        button.textContent = "Use Casual";
+      } else {
+        button.textContent = `Subscribe ${PLAN_LABELS[planId] || planId}`;
+      }
     });
   }
 

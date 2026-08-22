@@ -32,10 +32,14 @@
     const scores = history.map(function (item) { return Number(item.score || item.percentage || 0); }).filter(Number.isFinite);
     const average = scores.length ? Math.round(scores.reduce(function (sum, score) { return sum + score; }, 0) / scores.length) : 0;
     const chats = JSON.parse(localStorage.getItem('tutorly_chat_history_v1') || '[]');
+    const chatbotState = JSON.parse(localStorage.getItem('tutorly_chatbot_history_v1') || '{}');
+    const savedChats = Array.isArray(chatbotState.conversations) ? chatbotState.conversations : (Array.isArray(chats) ? chats : []);
+    const streak = Number(localStorage.getItem('tutorly_streak') || 0);
     document.getElementById('progressTests').textContent = String(completed);
-    document.getElementById('progressScore').textContent = average + '%';
-    document.getElementById('progressChats').textContent = String(Array.isArray(chats) ? chats.length : 0);
-    document.getElementById('progressStreak').textContent = localStorage.getItem('tutorly_streak') || '0';
+    document.getElementById('progressScore').textContent = completed ? average + '%' : '—';
+    document.getElementById('progressChats').textContent = String(savedChats.length);
+    document.getElementById('progressStreak').textContent = String(streak);
+    document.getElementById('progressEmpty').hidden = completed + savedChats.length + streak > 0;
   }
 
 })();

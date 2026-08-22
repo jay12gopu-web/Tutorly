@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/sign_up.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <style>
@@ -122,8 +123,9 @@
   </style>
   <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body>
+<body data-tutorly-surface="auth">
   <a class="back-home-btn" href="welcome.html" aria-label="Back to Tutorly welcome">Tutorly</a>
   <div class="auth-wrap">
     <form class="panel panel-soft auth-card fade-up" id="signupForm" novalidate>
@@ -137,11 +139,6 @@
       <div class="grid" style="gap:10px;">
         <input class="input" id="fullName" type="text" placeholder="Full Name" required />
         <input class="input" id="signupEmail" type="email" placeholder="Email Address" required />
-        <input class="input" id="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="tel" placeholder="Phone Number (10 digits)" title="Enter exactly 10 digits" required />
-        <label class="dob-field" for="dateOfBirth">
-          <span>Date of Birth</span>
-          <input class="input" id="dateOfBirth" type="date" required />
-        </label>
         <div class="password-field">
           <input class="input" id="signupPassword" type="password" placeholder="Password" autocomplete="new-password" required />
           <button class="password-toggle" type="button" data-password-toggle="signupPassword" aria-label="Show password">Show</button>
@@ -158,22 +155,6 @@
     const signupParams = new URLSearchParams(window.location.search);
     const chatbotSignupOnly = signupParams.get('intent') === 'chatbot';
     const accountRole = document.getElementById('accountRole');
-    const phoneInput = document.getElementById('phone');
-    const dobInput = document.getElementById('dateOfBirth');
-
-    dobInput.max = new Date().toISOString().split('T')[0];
-
-    function calculateAge(dobValue) {
-      const dob = new Date(dobValue);
-      if (!dobValue || Number.isNaN(dob.getTime())) return null;
-      const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-        age -= 1;
-      }
-      return age;
-    }
 
     document.querySelectorAll('[data-password-toggle]').forEach((button) => {
       const input = document.getElementById(button.dataset.passwordToggle);
@@ -185,30 +166,13 @@
       });
     });
 
-    phoneInput.addEventListener('input', function () {
-      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-    });
-
     document.getElementById('signupForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
-      const ids = ['fullName', 'signupEmail', 'phone', 'dateOfBirth', 'signupPassword'];
+      const ids = ['fullName', 'signupEmail', 'signupPassword'];
       const ok = ids.every((id) => document.getElementById(id).value.trim().length > 0);
       if (!ok) {
         alert('Please fill all fields.');
-        return;
-      }
-
-      if (!/^\d{10}$/.test(phoneInput.value)) {
-        alert('Please enter a valid 10-digit phone number using digits only.');
-        phoneInput.focus();
-        return;
-      }
-
-      const age = calculateAge(dobInput.value);
-      if (age === null || age < 0 || age > 120) {
-        alert('Please enter a valid date of birth.');
-        dobInput.focus();
         return;
       }
 
@@ -217,11 +181,6 @@
       localStorage.setItem('tutorly_account_role', 'student');
       localStorage.setItem('tutorly_signup_full_name', document.getElementById('fullName').value.trim());
       localStorage.setItem('tutorly_signup_email', document.getElementById('signupEmail').value.trim());
-      localStorage.setItem('tutorly_signup_phone', document.getElementById('phone').value.trim());
-      localStorage.setItem('tutorly_signup_dob', dobInput.value);
-      localStorage.setItem('tutorly_signup_age', String(age));
-      localStorage.setItem('tutorly_student_dob', dobInput.value);
-      localStorage.setItem('tutorly_student_age', String(age));
       if (chatbotSignupOnly) {
         localStorage.setItem('tutorly_bot_try_count', '0');
       }

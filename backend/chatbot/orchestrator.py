@@ -3,239 +3,201 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
-from typing import AsyncIterator, List
+from typing import AsyncIterator, Dict, List
 
+from .ai import GroqProvider, SemanticClassification, SemanticTutorService, TutorlyIntent
 from .analytics_engine import AnalyticsEngine
-from .adaptive_teaching_engine import AdaptiveTeachingEngine
-from .knowledge_confidence_engine import KnowledgeConfidenceEngine
-from .knowledge_engine import KnowledgeEngine
-from .knowledge_merge_engine import KnowledgeMergeEngine
+from .conversation_context import ConversationContextStore
 from .memory_engine import MemoryEngine
 from .modes import ModeRegistry
-from .pattern_matching_engine import PatternMatchingEngine
-from .practice_generator import PracticeGenerator
-from .question_analyzer import QuestionAnalyzer
-from .reasoning_engine import ReasoningEngine
-from .schemas import ChatbotRequest, ChatbotResponse, LearnerProfile, ResponseStage, RetrievedKnowledge, StreamEvent
-from .scope_guard import EducationScopeGuard
-from .subject_classifier import SubjectClassifier
+from .response_policy import ResponsePolicyEngine
+from .schemas import (
+    ChatbotRequest,
+    ChatbotResponse,
+    DifficultyLevel,
+    GradeBand,
+    LearnerProfile,
+    QuestionAnalysis,
+    QuestionType,
+    ResponseStage,
+    StreamEvent,
+    SubjectArea,
+)
 from .tool_engine import ToolEngine
-from .groq_tutor import GroqTutor
-from .tutor_engine import TutorEngine
 
 
 class ChatbotOrchestrator:
-    def __init__(self) -> None:
+    """Conversation-aware semantic Tutorly chat pipeline.
+
+    All live subject, topic, intent, tool, and visual routing comes from the
+    validated semantic LLM response.
+    """
+
+    def __init__(self, semantic_tutor: SemanticTutorService | None = None) -> None:
         self.modes = ModeRegistry()
-        self.analyzer = QuestionAnalyzer()
-        self.classifier = SubjectClassifier()
-        self.patterns = PatternMatchingEngine()
-        self.confidence = KnowledgeConfidenceEngine()
         self.memory = MemoryEngine()
-        self.reasoning = ReasoningEngine()
-        self.knowledge = KnowledgeEngine()
-        self.merge = KnowledgeMergeEngine()
         self.tools = ToolEngine()
-        self.tutor = TutorEngine()
-        self.groq_tutor = GroqTutor()
-        self.scope_guard = EducationScopeGuard()
-        self.adaptive_tutor = AdaptiveTeachingEngine()
-        self.practice = PracticeGenerator()
         self.analytics = AnalyticsEngine()
+        self.response_policy = ResponsePolicyEngine()
+        self.conversations = ConversationContextStore(max_turns=12)
+        self.semantic_tutor = semantic_tutor or SemanticTutorService(GroqProvider())
 
     async def respond(self, request: ChatbotRequest) -> ChatbotResponse:
-        result = await self._build_response(request)
-        return result
+        return await self._build_response(request)
 
     async def stream(self, request: ChatbotRequest) -> AsyncIterator[StreamEvent]:
         yield StreamEvent(stage=ResponseStage.received, message="Question received.")
         await asyncio.sleep(0)
-        yield StreamEvent(stage=ResponseStage.understanding, message="Understanding your question...")
-        analysis = self.analyzer.analyze(request.message, request.subject_hint)
+        yield StreamEvent(stage=ResponseStage.understanding, message="Understanding the complete question and context...")
         await asyncio.sleep(0)
-        yield StreamEvent(stage=ResponseStage.retrieving, message="Checking similar solved patterns...")
-        pattern_matches = self.patterns.find_similar(request.message, analysis)
-        memories = self.memory.retrieve(request.user_id, request.message, analysis.subject)
-        await asyncio.sleep(0)
-        knowledge_confidence = self.confidence.assess(analysis, pattern_matches)
-        yield StreamEvent(stage=ResponseStage.planning, message="Planning the best teaching strategy...")
-        strategy = self.modes.get(request.mode)
-        intents = [analysis.question_type.value]
-        reasoning_plan = self.reasoning.plan(request.message, analysis.subject, analysis.difficulty, strategy, intents)
-        await asyncio.sleep(0)
-        yield StreamEvent(stage=ResponseStage.tooling, message="Checking useful tools...")
-        selected_tools = self.tools.choose_tools(request.message, analysis.subject, request.mode, bool(request.attachments))
-        tool_calls = self.tools.run_tools(selected_tools, request.message)
-        await asyncio.sleep(0)
-        yield StreamEvent(stage=ResponseStage.solving, message="Solving and verifying the answer...")
-        response = await self._build_response(
-            request,
-            precomputed={
-                "analysis": analysis,
-                "memories": memories,
-                "pattern_matches": pattern_matches,
-                "knowledge_confidence": knowledge_confidence,
-                "strategy": strategy,
-                "reasoning_plan": reasoning_plan,
-                "tool_calls": tool_calls,
-            },
-        )
+        yield StreamEvent(stage=ResponseStage.planning, message="Choosing the best explanation, tools, and visual...")
+        response = await self._build_response(request)
         for chunk in self._chunk_answer(response.answer):
             yield StreamEvent(stage=ResponseStage.final, message="Writing answer...", delta=chunk)
             await asyncio.sleep(0)
-        yield StreamEvent(stage=ResponseStage.final, message="Done.", done=True, payload=json.loads(response.json()))
+        yield StreamEvent(
+            stage=ResponseStage.final,
+            message="Done.",
+            done=True,
+            payload=json.loads(response.model_dump_json()),
+        )
 
-    async def _build_response(self, request: ChatbotRequest, precomputed: dict | None = None) -> ChatbotResponse:
-        precomputed = precomputed or {}
-        analysis = precomputed.get("analysis") or self.analyzer.analyze(request.message, request.subject_hint)
-        scope = self.scope_guard.assess(request.message)
-        if not scope.allowed:
-            return self._out_of_scope_response(request, analysis, scope.category)
-
-        classification = self.classifier.classify(request.message, analysis.subject)
-        strategy = precomputed.get("strategy") or self.modes.get(request.mode)
+    async def _build_response(self, request: ChatbotRequest) -> ChatbotResponse:
+        conversation_id = request.conversation_id or f"chat_{uuid.uuid4().hex[:16]}"
         profile = request.profile or LearnerProfile(user_id=request.user_id)
-        profile = self.memory.update_profile_from_message(profile, request.message, analysis.subject)
-        memories = precomputed.get("memories") or self.memory.retrieve(request.user_id, request.message, analysis.subject)
-        pattern_matches = precomputed.get("pattern_matches") or self.patterns.find_similar(request.message, analysis)
-        knowledge_confidence = precomputed.get("knowledge_confidence") or self.confidence.assess(analysis, pattern_matches)
-        knowledge_hits = self.knowledge.retrieve(request.message, analysis.subject)
-        reasoning_plan = precomputed.get("reasoning_plan") or self.reasoning.plan(
-            request.message,
-            analysis.subject,
-            analysis.difficulty,
-            strategy,
-            [analysis.question_type.value],
-        )
-        selected_tools = self.tools.choose_tools(request.message, analysis.subject, request.mode, bool(request.attachments))
-        tool_calls = precomputed.get("tool_calls") or self.tools.run_tools(selected_tools, request.message)
-        knowledge_notes: List[str] = [hit.content for hit in knowledge_hits]
-        retrieved = RetrievedKnowledge(
-            internal_notes=knowledge_notes,
-            previous_patterns=pattern_matches,
-            memory_summary=self.memory.summarize_for_prompt(memories),
-        )
-        merged = self.merge.merge(analysis, retrieved, knowledge_confidence)
-        practice_question = self.practice.generate(analysis, request.message)
-
-        fallback_answer = self.tutor.compose_answer(
-            message=request.message,
-            subject=analysis.subject,
-            difficulty=analysis.difficulty,
-            strategy=strategy,
+        recent_context = self.conversations.recent(conversation_id, request.history)
+        semantic_result = await self.semantic_tutor.route_and_answer(
+            student_question=request.message,
+            conversation_context=recent_context,
             profile=profile,
-            reasoning_plan=reasoning_plan,
-            memories=memories,
-            tool_calls=tool_calls,
-            knowledge_notes=knowledge_notes,
-            analysis=analysis,
-            merged_knowledge=merged,
-            practice_question=practice_question,
-        )
-        generated = await self.groq_tutor.compose(
-            message=request.message,
-            analysis=analysis,
-            profile=profile,
-            strategy=strategy,
+            mode=request.mode.value,
             attachments=request.attachments,
-            fallback=fallback_answer,
         )
-        answer = generated.answer
+        classification = semantic_result.output.classification
+        analysis = self._analysis_from_semantic(classification)
+        profile = self.memory.update_profile_from_message(profile, request.message, analysis.subject)
+        response_plan = self.response_policy.from_semantic(classification.model_dump(mode="json"))
 
-        confidence = max(
-            knowledge_confidence.confidence_score,
-            self.reasoning.estimate_confidence(request.message, analysis.subject, len(tool_calls), len(memories)) * 0.85,
+        selected_tools = self.tools.choose_tools_from_semantic(
+            classification.tools.model_dump(),
+            has_attachments=bool(request.attachments),
         )
-        issues = self.reasoning.verify_answer_shape(answer) + self.adaptive_tutor.validate_answer(answer, request.message, analysis)
-        if issues:
-            answer = self.adaptive_tutor.fallback_teaching_answer(request.message, analysis, merged)
-            issues = self.adaptive_tutor.validate_answer(answer, request.message, analysis)
+        tool_calls = self.tools.run_tools(selected_tools, request.message)
+        answer = semantic_result.output.answer
+        confidence = max(0.0, min(1.0, float(classification.confidence)))
+        plan_metadata = response_plan.as_metadata()
+        route_metadata = classification.model_dump(mode="json")
+
         analytics = self.analytics.snapshot(
             subject=analysis.subject,
             difficulty=analysis.difficulty,
             confidence=confidence,
-            intents=[analysis.question_type.value],
-            keywords=analysis.keywords,
+            intents=[classification.intent.value],
+            keywords=[],
             tool_calls=tool_calls,
         )
-        resources = self.tutor.create_study_resources(analysis.subject, request.message, request.mode)
-        citations = self.knowledge.citations_from_hits(knowledge_hits) if request.mode.value == "research" else []
-        conversation_id = request.conversation_id or f"chat_{uuid.uuid4().hex[:16]}"
+        # Student answers stay focused. Practice/quiz content is generated only
+        # when the student explicitly requests it, never as an automatic bundle.
+        resources = []
 
+        self.conversations.append(conversation_id, "user", request.message)
+        self.conversations.append(conversation_id, "assistant", answer)
         self.memory.remember(
             request.user_id,
             f"{analysis.subject.value}: {request.message}",
             kind="conversation",
             tags=[analysis.subject.value, request.mode.value],
         )
-        self.patterns.remember_successful_teaching(request.message, analysis, answer, score=0.62)
 
         return ChatbotResponse(
             conversation_id=conversation_id,
             mode=request.mode,
             subject=analysis.subject,
+            topic=classification.topic,
+            intent=classification.intent.value,
+            response_type=classification.response_type.value,
+            answer_format=classification.answer_format.value,
+            response_length=classification.response_length.value,
+            visual=route_metadata["visual"],
             answer=answer,
             stages=[
                 ResponseStage.received,
                 ResponseStage.understanding,
-                ResponseStage.retrieving,
                 ResponseStage.planning,
                 ResponseStage.tooling,
                 ResponseStage.solving,
                 ResponseStage.resources,
                 ResponseStage.final,
             ],
-            reasoning_plan=reasoning_plan,
-            memories_used=memories,
+            reasoning_plan=[],
+            memories_used=[],
             tool_calls=tool_calls,
-            citations=citations,
+            citations=[],
             study_resources=resources,
             analytics=analytics,
             metadata={
-                "mode_strategy": strategy.title,
-                "verification_issues": issues,
-                "classification_confidence": analysis.confidence,
-                "analysis": analysis.dict(),
-                "knowledge_confidence": knowledge_confidence.dict(),
-                "pattern_matches": [match.dict() for match in pattern_matches],
-                "recommended_teaching_strategy": merged.recommended_teaching_strategy,
-                "scope": {"allowed": True, "category": scope.category},
+                "mode_strategy": self.modes.get(request.mode).title,
+                "classification_confidence": confidence,
+                "analysis": analysis.model_dump(mode="json"),
+                "semantic_route": route_metadata,
+                "router_architecture": "single_call_classification_and_answer",
                 "generation": {
-                    "provider": "groq" if generated.provider_used else "local_tutor",
-                    "status": generated.status,
+                    "provider": semantic_result.provider if semantic_result.provider_used else "none",
+                    "model": semantic_result.model,
+                    "status": semantic_result.status,
                 },
+                "response_policy": plan_metadata,
+                "quick_actions": self.response_policy.action_metadata(response_plan),
+                "visual": route_metadata["visual"],
+                "tools": route_metadata["tools"],
             },
         )
 
-    def _out_of_scope_response(self, request: ChatbotRequest, analysis, category: str) -> ChatbotResponse:
-        strategy = self.modes.get(request.mode)
-        conversation_id = request.conversation_id or f"chat_{uuid.uuid4().hex[:16]}"
-        answer = self.scope_guard.assess(request.message).refusal()
-        return ChatbotResponse(
-            conversation_id=conversation_id,
-            mode=request.mode,
-            subject=analysis.subject,
-            answer=answer,
-            stages=[ResponseStage.received, ResponseStage.understanding, ResponseStage.final],
-            reasoning_plan=[],
-            memories_used=[],
-            tool_calls=[],
-            citations=[],
-            study_resources=[],
-            analytics=self.analytics.snapshot(
-                subject=analysis.subject,
-                difficulty=analysis.difficulty,
-                confidence=analysis.confidence,
-                intents=[analysis.question_type.value],
-                keywords=analysis.keywords,
-                tool_calls=[],
-            ),
-            metadata={
-                "mode_strategy": strategy.title,
-                "scope": {"allowed": False, "category": category},
-                "generation": {"provider": "none", "status": "redirected"},
-            },
+    def _analysis_from_semantic(self, route: SemanticClassification) -> QuestionAnalysis:
+        subject = SubjectArea(route.subject.value)
+        grade_level, difficulty = self._difficulty_mapping(route.difficulty.value)
+        question_type = self._question_type_mapping(route.intent)
+        return QuestionAnalysis(
+            subject=subject,
+            topic=route.topic.strip() or "General explanation",
+            sub_topic=route.response_type.value.replace("_", " ").title(),
+            grade_level=grade_level,
+            difficulty=difficulty,
+            question_type=question_type,
+            confidence=max(0.0, min(1.0, route.confidence)),
+            keywords=[],
+            requires_freshness_check=route.tools.web_search,
+            reasoning_signals=["llm_semantic_router"],
         )
 
-    def _chunk_answer(self, answer: str, size: int = 120) -> List[str]:
+    @staticmethod
+    def _difficulty_mapping(level: str) -> tuple[GradeBand, DifficultyLevel]:
+        if level in {"grade_1", "grade_2", "grade_3", "grade_4", "grade_5"}:
+            return GradeBand.grade_1_5, DifficultyLevel.beginner
+        if level in {"grade_6", "grade_7", "grade_8"}:
+            return GradeBand.grade_6_8, DifficultyLevel.school
+        if level in {"grade_9", "grade_10", "grade_11", "grade_12"}:
+            return GradeBand.grade_9_12, DifficultyLevel.school
+        if level == "college":
+            return GradeBand.college, DifficultyLevel.advanced
+        return GradeBand.unknown, DifficultyLevel.balanced
+
+    @staticmethod
+    def _question_type_mapping(intent: TutorlyIntent) -> QuestionType:
+        mapping: Dict[TutorlyIntent, QuestionType] = {
+            TutorlyIntent.numerical_problem: QuestionType.numerical,
+            TutorlyIntent.solve_equation: QuestionType.problem_solving,
+            TutorlyIntent.proof: QuestionType.problem_solving,
+            TutorlyIntent.writing_help: QuestionType.essay,
+            TutorlyIntent.grammar_help: QuestionType.grammar,
+            TutorlyIntent.literature_explanation: QuestionType.literature,
+            TutorlyIntent.poetry_analysis: QuestionType.literature,
+            TutorlyIntent.reading_comprehension: QuestionType.literature,
+            TutorlyIntent.debugging: QuestionType.coding,
+            TutorlyIntent.analyze: QuestionType.explanation,
+        }
+        return mapping.get(intent, QuestionType.explanation)
+
+    @staticmethod
+    def _chunk_answer(answer: str, size: int = 120) -> List[str]:
         return [answer[index:index + size] for index in range(0, len(answer), size)]

@@ -175,7 +175,7 @@
       if (file?.files && file.files[0]) {
         localStorage.setItem('tutorly_pending_doubt_file', file.files[0].name);
       }
-      showToast('Opening Tutorly AI with your doubt.');
+      showToast('Sending your doubt to Tutorly.');
       window.setTimeout(() => {
         window.location.href = 'maths_gpt.html?from=ask_doubt';
       }, 420);

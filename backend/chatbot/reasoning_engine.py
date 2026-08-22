@@ -55,14 +55,25 @@ class ReasoningEngine:
             confidence -= 0.25
         return max(0.1, min(0.97, confidence))
 
-    def verify_answer_shape(self, answer: str) -> List[str]:
+    def verify_answer_shape(self, answer: str, response_plan: dict | None = None) -> List[str]:
         issues: List[str] = []
-        if "#" not in answer:
-            issues.append("missing_heading")
-        if "Final answer" not in answer and "**Final" not in answer:
-            issues.append("missing_final_answer")
-        if len(answer.split()) < 20:
-            issues.append("too_short")
+        plan = response_plan or {}
+        kind = str(plan.get("response_kind") or "")
+        words = len((answer or "").split())
+        if not (answer or "").strip():
+            issues.append("empty_answer")
+            return issues
+        if kind in {"answer_only", "simple_math"}:
+            if words > 40:
+                issues.append("answer_only_too_long")
+            return issues
+        if kind in {"math_standard", "math_complex", "math_word_problem", "math_proof", "mistake_feedback"}:
+            if "final answer" not in answer.lower() and "hence proved" not in answer.lower():
+                issues.append("missing_final_answer")
+        if words < 8:
+            issues.append("too_short_for_explanation")
+        if words > 900:
+            issues.append("too_long")
         return issues
 
     def _looks_like_math(self, message: str) -> bool:

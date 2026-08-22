@@ -55,10 +55,19 @@ After the final answer, include:
 Use this practice question if suitable: {self.practice.generate(analysis, "")}
 """.strip()
 
-    def validate_answer(self, answer: str, message: str = "", analysis: Optional[QuestionAnalysis] = None) -> List[str]:
+    def validate_answer(
+        self,
+        answer: str,
+        message: str = "",
+        analysis: Optional[QuestionAnalysis] = None,
+        response_plan: Optional[dict] = None,
+    ) -> List[str]:
         issues: List[str] = []
         text = answer or ""
-        if len(text.strip()) < 80:
+        plan = response_plan or {}
+        kind = str(plan.get("response_kind") or "")
+        minimum_length = 1 if kind in {"answer_only", "simple_math"} else 35
+        if len(text.strip()) < minimum_length:
             issues.append("answer_too_short")
         forbidden = [
             "undefined",
@@ -93,11 +102,19 @@ Use this practice question if suitable: {self.practice.generate(analysis, "")}
             issues.append("forbidden_continuation_language")
         if re.search(r"\bwe were in\b", text, re.I):
             issues.append("forbidden_previous_subject_reference")
-        required = ["Final Answer", "Practice Question"]
+        required = []
+        if kind in {"math_standard", "math_complex", "math_word_problem", "mistake_feedback"}:
+            required.append("Final Answer")
+        if kind == "math_proof":
+            required.extend(["Proof", "Hence Proved"])
+        if kind == "teach_progression":
+            required.extend(["Concept", "Your turn"])
         for heading in required:
             if heading.lower() not in text.lower():
                 issues.append(f"missing_{heading.lower().replace(' ', '_')}")
-        issues.extend(self._question_relevance_issues(text, message, analysis))
+        if kind in {"answer_only", "simple_math"} and len(text.split()) > 40:
+            issues.append("concise_request_ignored")
+        issues.extend(self._question_relevance_issues(text, message, analysis, response_plan=plan))
         return issues
 
     def fallback_teaching_answer(self, message: str, analysis: QuestionAnalysis, merged: MergedKnowledge) -> str:
@@ -135,8 +152,15 @@ Original instructions:
 {original_prompt}
 """.strip()
 
-    def _question_relevance_issues(self, answer: str, message: str, analysis: Optional[QuestionAnalysis]) -> List[str]:
+    def _question_relevance_issues(
+        self,
+        answer: str,
+        message: str,
+        analysis: Optional[QuestionAnalysis],
+        response_plan: Optional[dict] = None,
+    ) -> List[str]:
         issues: List[str] = []
+        kind = str((response_plan or {}).get("response_kind") or "")
         if self._is_orbital_weightlessness_question(message) and not self._answers_orbital_weightlessness(answer):
             issues.append("off_topic_orbital_weightlessness")
 
@@ -154,7 +178,7 @@ Original instructions:
                 and re.search(r"\b(solve|find|calculate|add|plus|minus|subtract|multiply|divide|percent|ratio|area|volume|perimeter|mean|median|speed|work|interest)\b|[+\-*/=^]", message, re.I)
             )
             has_working = bool(re.search(r"\d+\s*[+\-*/=^x]\s*\d+|x\s*=|=", answer, re.I))
-            if asks_for_calculation and not has_working:
+            if asks_for_calculation and not has_working and kind not in {"answer_only", "simple_math"}:
                 issues.append("missing_calculation_for_math")
             if re.search(r"\bapply the correct (rule|method)\b|\bcore concept method\b", answer, re.I):
                 issues.append("generic_math_non_answer")

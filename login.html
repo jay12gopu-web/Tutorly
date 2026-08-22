@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/login.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <style>
@@ -97,7 +98,7 @@
       text-align: center;
     }
 
-    .otp-title { margin: 0; font-family: "Baloo 2", sans-serif; font-size: 34px; color: #2f4a81; }
+    .otp-title { margin: 0; font-family: "Inter", sans-serif; font-size: 34px; color: #2f4a81; }
     .otp-sub { margin: 4px 0 12px; color: var(--muted); }
 
     .otp-inputs {
@@ -180,8 +181,9 @@
     .otp-status { margin-top: 8px; font-size: 13px; font-weight: 700; color: #58709a; }
   </style>
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body>
+<body data-tutorly-surface="auth">
   <a class="back-home-btn" href="welcome.html" aria-label="Back to Tutorly welcome">Tutorly</a>
   <div class="auth-wrap">
     <form class="panel panel-soft auth-card fade-up" id="loginForm" novalidate>
@@ -203,8 +205,8 @@
         </div>
       </div>
 
-      <p class="muted" style="margin:12px 0 14px;">Sign in uses a 6-digit OTP verification popup.</p>
-      <button class="btn btn-primary" type="submit" style="width:100%;">LOGIN</button>
+      <p class="muted" id="loginModeHelp" style="margin:12px 0 14px;">Enter your email and password.</p>
+      <button class="btn btn-primary" id="loginSubmit" type="submit" style="width:100%;">Log in</button>
       <p class="muted" style="margin:14px 0 0;">New here? <a href="sign_up.html" style="font-weight:800; color:var(--primary-dark);">Create account</a></p>
     </form>
   </div>
@@ -239,6 +241,8 @@
     const otpStatus = document.getElementById('otpStatus');
     const modeButtons = [...document.querySelectorAll('[data-mode]')];
     const passwordField = document.getElementById('passwordField');
+    const loginModeHelp = document.getElementById('loginModeHelp');
+    const loginSubmit = document.getElementById('loginSubmit');
     const loginParams = new URLSearchParams(window.location.search);
     const chatbotLoginOnly = loginParams.get('intent') === 'chatbot';
 
@@ -285,6 +289,17 @@
       return otpInputs.map((i) => i.value).join('');
     }
 
+    function completeLogin() {
+      localStorage.setItem('tutorly_logged_in', 'true');
+      localStorage.setItem('tutorly_email', document.getElementById('email').value.trim());
+      if (chatbotLoginOnly) {
+        localStorage.setItem('tutorly_signed_up', 'true');
+        localStorage.setItem('tutorly_account_role', 'student');
+        localStorage.setItem('tutorly_bot_try_count', '0');
+      }
+      window.location.href = 'maths_gpt.html';
+    }
+
     modeButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         modeButtons.forEach((b) => b.classList.remove('active'));
@@ -294,9 +309,13 @@
         if (loginMode === 'otp') {
           passwordField.style.display = 'none';
           pwd.required = false;
+          loginModeHelp.textContent = "We'll send a 6-digit code to your email.";
+          loginSubmit.textContent = 'Send code';
         } else {
           passwordField.style.display = 'block';
           pwd.required = true;
+          loginModeHelp.textContent = 'Enter your email and password.';
+          loginSubmit.textContent = 'Log in';
         }
       });
     });
@@ -327,7 +346,12 @@
         return;
       }
 
-      openOtpModal();
+      if (loginMode === 'otp') {
+        openOtpModal();
+        return;
+      }
+
+      completeLogin();
     });
 
     document.getElementById('resendOtpBtn').addEventListener('click', sendOtp);
@@ -345,15 +369,9 @@
       }
 
       otpStatus.textContent = 'OTP verified successfully.';
-      localStorage.setItem('tutorly_logged_in', 'true');
-      if (chatbotLoginOnly) {
-        localStorage.setItem('tutorly_signed_up', 'true');
-        localStorage.setItem('tutorly_account_role', 'student');
-        localStorage.setItem('tutorly_bot_try_count', '0');
-      }
       setTimeout(() => {
         closeOtpModal();
-        window.location.href = 'maths_gpt.html';
+        completeLogin();
       }, 350);
     });
 

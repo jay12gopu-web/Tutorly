@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <style>
@@ -212,7 +212,7 @@
       background:
         linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
         linear-gradient(135deg, var(--profile-blue), var(--profile-purple));
-      font-family: "Poppins", "Inter", sans-serif;
+      font-family: "Inter", sans-serif;
       font-size: 54px;
       font-weight: 800;
       overflow: hidden;
@@ -291,7 +291,7 @@
     .profile-name {
       margin: 0;
       color: var(--profile-ink);
-      font-family: "Poppins", "Inter", sans-serif;
+      font-family: "Inter", sans-serif;
       font-size: clamp(34px, 4vw, 58px);
       line-height: 1.02;
       letter-spacing: 0;
@@ -462,7 +462,7 @@
     .section-head h2 {
       margin: 0;
       color: var(--profile-ink);
-      font-family: "Poppins", "Inter", sans-serif;
+      font-family: "Inter", sans-serif;
       font-size: clamp(20px, 2vw, 26px);
       line-height: 1.18;
       letter-spacing: 0;
@@ -1119,8 +1119,9 @@
   </style>
   <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body class="profile-page">
+<body class="profile-page" data-tutorly-surface="workspace">
   <header class="shell profile-shell header-wrap mt-offset-target mt-mobile-header">
     <div class="topbar">
       <a class="brand" href="home.html" aria-label="Tutorly home">
@@ -1170,10 +1171,10 @@
           <p class="profile-subline" id="studentHeadline">Grade not set student at School not set</p>
         </div>
         <div class="meta-grid">
-          <span class="meta-pill"><span data-icon="mail"></span><span id="studentEmail">student@email.com</span></span>
+          <span class="meta-pill"><span data-icon="mail"></span><span id="studentEmail">Email not set</span></span>
           <span class="meta-pill"><span data-icon="school"></span><span id="schoolMeta">School not set</span></span>
-          <span class="meta-pill"><span data-icon="calendar"></span><span id="joinDate">Joined May 2026</span></span>
-          <span class="meta-pill"><span data-icon="flame"></span><span id="streakMeta">5 day streak</span></span>
+          <span class="meta-pill"><span data-icon="calendar"></span><span id="joinDate">Join date not recorded</span></span>
+          <span class="meta-pill"><span data-icon="flame"></span><span id="streakMeta">No streak yet</span></span>
         </div>
         <div class="hero-progress">
           <div class="progress-panel">
@@ -1185,39 +1186,34 @@
           </div>
           <div class="progress-panel">
             <div class="progress-head">
-              <span>Study Goal</span>
-              <b id="studyGoalText">68%</b>
+              <span>Learning Activity</span>
+              <b id="learningActivityText">Not started</b>
             </div>
-            <div class="linear-track"><span style="--value: 68%"></span></div>
+            <p class="profile-subline" id="learningActivityCopy">Start a lesson, chat, or test to build your activity record.</p>
           </div>
         </div>
       </div>
 
       <div class="hero-stats">
         <div class="quick-stat">
-          <div class="stat-top"><span>XP Earned</span><span class="icon-box"><span data-icon="zap"></span></span></div>
-          <strong class="count" data-count="12480" id="xpEarned">0</strong>
-          <small>+840 this month</small>
+          <div class="stat-top"><span>Tests Completed</span><span class="icon-box"><span data-icon="clipboard"></span></span></div>
+          <strong id="testsCompleted">0</strong>
+          <small id="testsCompletedNote">No test activity yet</small>
         </div>
         <div class="quick-stat">
-          <div class="stat-top"><span>Tests</span><span class="icon-box purple"><span data-icon="clipboard"></span></span></div>
-          <strong class="count" data-count="46">0</strong>
-          <small>+6 this week</small>
+          <div class="stat-top"><span>Average Score</span><span class="icon-box purple"><span data-icon="target"></span></span></div>
+          <strong id="averageScore">—</strong>
+          <small id="averageScoreNote">Complete a test to unlock</small>
         </div>
         <div class="quick-stat">
-          <div class="stat-top"><span>Average</span><span class="icon-box green"><span data-icon="target"></span></span></div>
-          <strong class="count" data-count="86" data-suffix="%">0%</strong>
-          <small>+4.2% improved</small>
+          <div class="stat-top"><span>Lessons Opened</span><span class="icon-box green"><span data-icon="book"></span></span></div>
+          <strong id="lessonsOpened">0</strong>
+          <small id="lessonsOpenedNote">No lesson activity yet</small>
         </div>
         <div class="quick-stat">
-          <div class="stat-top"><span>Study Hours</span><span class="icon-box amber"><span data-icon="clock"></span></span></div>
-          <strong id="studyHoursStat">42h</strong>
-          <small>12h this week</small>
-        </div>
-        <div class="quick-stat">
-          <div class="stat-top"><span>Current Rank</span><span class="icon-box purple"><span data-icon="trophy"></span></span></div>
-          <strong>#18</strong>
-          <small>Top 8% of class</small>
+          <div class="stat-top"><span>Saved Chats</span><span class="icon-box amber"><span data-icon="bot"></span></span></div>
+          <strong id="savedChats">0</strong>
+          <small id="savedChatsNote">Ask Tutorly your first question</small>
         </div>
       </div>
     </section>
@@ -1228,49 +1224,34 @@
           <div class="section-head">
             <div>
               <h2>Academic Performance</h2>
-              <p>Clear analytics across scores, accuracy, strengths, and improvement areas.</p>
+              <p>Insights based only on tests you complete in Tutorly.</p>
             </div>
             <span class="icon-box"><span data-icon="chart"></span></span>
           </div>
-          <div class="analytics-grid">
-            <div class="circle-wrap">
-              <div class="progress-ring" style="--value: 86">
-                <div class="ring-label"><strong>86%</strong><span>Overall Average</span></div>
-              </div>
-            </div>
-            <div>
-              <div class="subject-bars">
-                <div class="subject-row"><b>Maths</b><div class="linear-track"><span style="--value: 92%"></span></div><b>92%</b></div>
-                <div class="subject-row"><b>Science</b><div class="linear-track"><span style="--value: 88%"></span></div><b>88%</b></div>
-                <div class="subject-row"><b>English</b><div class="linear-track"><span style="--value: 81%"></span></div><b>81%</b></div>
-                <div class="subject-row"><b>Social</b><div class="linear-track"><span style="--value: 74%"></span></div><b>74%</b></div>
-              </div>
-              <div class="insight-grid" style="margin-top: 16px;">
-                <div class="insight-card"><span>Strongest Subject</span><strong>Maths</strong></div>
-                <div class="insight-card"><span>Needs Focus</span><strong>Social</strong></div>
-                <div class="insight-card"><span>Accuracy</span><strong>89%</strong></div>
-                <div class="insight-card"><span>Questions Attempted</span><strong>1,284</strong></div>
-                <div class="insight-card"><span>Correct Answers</span><strong>1,143</strong></div>
-                <div class="insight-card"><span>Avg. Test Time</span><strong>31m</strong></div>
-              </div>
-            </div>
+          <div class="tutorly-empty-state" id="performanceEmpty">
+            <strong>Complete your first test to unlock performance insights.</strong>
+            Your scores, strongest subject, and question totals will appear here.
+          </div>
+          <div class="insight-grid" id="performanceSummary" hidden>
+            <div class="insight-card"><span>Overall Average</span><strong id="performanceAverage">—</strong></div>
+            <div class="insight-card"><span>Best Subject</span><strong id="performanceBestSubject">—</strong></div>
+            <div class="insight-card"><span>Questions Answered</span><strong id="performanceQuestions">0</strong></div>
+            <div class="insight-card"><span>Latest Test</span><strong id="performanceLatest">—</strong></div>
           </div>
         </article>
 
         <article class="profile-card pad" id="activity">
           <div class="section-head">
             <div>
-              <h2>Learning Activity Chat</h2>
-              <p>Weekly learning volume with small trend indicators for fast scanning.</p>
+              <h2>Learning Activity</h2>
+              <p>Activity saved by Tutorly’s chat, lessons, and tests.</p>
             </div>
             <span class="icon-box purple"><span data-icon="activity"></span></span>
           </div>
           <div class="activity-grid">
-            <div class="activity-card"><div><span class="icon-box"><span data-icon="book"></span></span><strong>128</strong><span>Lessons Completed</span></div><div class="trend">up 12% this week</div></div>
-            <div class="activity-card"><div><span class="icon-box purple"><span data-icon="clipboard"></span></span><strong>74</strong><span>Quizzes Completed</span></div><div class="trend">up 9% this week</div></div>
-            <div class="activity-card"><div><span class="icon-box green"><span data-icon="graduation"></span></span><strong>18</strong><span>Mock Exams Taken</span></div><div class="trend">up 3 this month</div></div>
-            <div class="activity-card"><div><span class="icon-box amber"><span data-icon="layers"></span></span><strong>342</strong><span>Flashcards Reviewed</span></div><div class="trend">up 18% this week</div></div>
-            <div class="activity-card"><div><span class="icon-box purple"><span data-icon="bot"></span></span><strong>56</strong><span>AI Tutor Sessions</span></div><div class="trend">up 7 sessions</div></div>
+            <div class="activity-card"><div><span class="icon-box"><span data-icon="book"></span></span><strong id="activityLessons">0</strong><span>Lessons Opened</span></div><div class="trend" id="activityLessonsNote">No activity yet</div></div>
+            <div class="activity-card"><div><span class="icon-box purple"><span data-icon="clipboard"></span></span><strong id="activityTests">0</strong><span>Tests Completed</span></div><div class="trend" id="activityTestsNote">No activity yet</div></div>
+            <div class="activity-card"><div><span class="icon-box green"><span data-icon="bot"></span></span><strong id="activityChats">0</strong><span>Saved Chats</span></div><div class="trend" id="activityChatsNote">No activity yet</div></div>
           </div>
         </article>
 
@@ -1278,16 +1259,12 @@
           <div class="section-head">
             <div>
               <h2>Achievements & Badges</h2>
-              <p>Premium milestones that recognize consistency, mastery, and exam growth.</p>
+              <p>Milestones appear only after the related activity is completed.</p>
             </div>
             <span class="icon-box amber"><span data-icon="award"></span></span>
           </div>
-          <div class="badge-grid">
-            <div class="badge-card"><span class="icon-box green"><span data-icon="check"></span></span><div><h3>First Quiz Completed</h3><p>Completed the first practice quiz.</p></div></div>
-            <div class="badge-card"><span class="icon-box"><span data-icon="target"></span></span><div><h3>Maths Master</h3><p>Scored above 90% in Maths.</p></div></div>
-            <div class="badge-card"><span class="icon-box purple"><span data-icon="sparkles"></span></span><div><h3>Science Explorer</h3><p>Finished 20 science lessons.</p></div></div>
-            <div class="badge-card"><span class="icon-box amber"><span data-icon="flame"></span></span><div><h3>7-Day Streak</h3><p>Studied for a full week.</p></div></div>
-            <div class="badge-card locked"><span class="icon-box"><span data-icon="lock"></span></span><div><h3>Top Performer</h3><p>Reach top 5 in class rank.</p></div></div>
+          <div class="badge-grid" id="achievementGrid">
+            <div class="tutorly-empty-state"><strong>No achievements yet.</strong>Complete a test or open a lesson to earn your first milestone.</div>
           </div>
         </article>
 
@@ -1295,17 +1272,16 @@
           <div class="section-head">
             <div>
               <h2>Study Streak</h2>
-              <p>Monthly consistency map based on recent learning activity.</p>
+              <p>Your saved streak appears here when study activity is recorded.</p>
             </div>
             <span class="icon-box amber"><span data-icon="flame"></span></span>
           </div>
           <div class="streak-layout">
             <div class="streak-summary">
-              <div class="streak-number"><strong id="currentStreak">5</strong><span>Current Streak</span></div>
-              <div class="insight-card"><span>Longest Streak</span><strong>21 days</strong></div>
-              <div class="insight-card"><span>Monthly Consistency</span><strong>78%</strong></div>
+              <div class="streak-number"><strong id="currentStreak">0</strong><span>Current Streak</span></div>
+              <div class="insight-card"><span>Status</span><strong id="streakStatus">No streak yet</strong></div>
             </div>
-            <div class="heatmap" id="heatmap" aria-label="Monthly study activity heatmap"></div>
+            <div class="tutorly-empty-state" id="streakEmpty"><strong>Start learning to build a streak.</strong>Your real activity will replace this empty state.</div>
           </div>
         </article>
 
@@ -1313,14 +1289,13 @@
           <div class="section-head">
             <div>
               <h2>Performance Trends</h2>
-              <p>Score trend, subject improvement, and weekly study time visualized together.</p>
+              <p>Your completed test scores over time.</p>
             </div>
             <span class="icon-box green"><span data-icon="trending"></span></span>
           </div>
           <div class="chart-grid">
-            <div class="chart-card"><h3>Score Trend</h3><canvas id="scoreChart" width="360" height="170"></canvas></div>
-            <div class="chart-card"><h3>Subject Improvement</h3><canvas id="subjectChart" width="360" height="170"></canvas></div>
-            <div class="chart-card"><h3>Weekly Study Time</h3><canvas id="studyChart" width="360" height="170"></canvas></div>
+            <div class="tutorly-empty-state" id="trendEmpty"><strong>No score trend yet.</strong>Complete two or more tests to see how your scores change.</div>
+            <div class="chart-card" id="scoreTrendPanel" hidden><h3>Score Trend</h3><canvas id="scoreChart" width="720" height="190"></canvas></div>
           </div>
         </article>
       </div>
@@ -1335,9 +1310,8 @@
             <span class="icon-box"><span data-icon="shield"></span></span>
           </div>
           <div class="insight-grid" style="grid-template-columns: 1fr;">
-            <div class="insight-card"><span>Account Security</span><strong>Protected</strong></div>
-            <div class="insight-card"><span>Upcoming Exam</span><strong>Maths Mock - Jun 22</strong></div>
-            <div class="insight-card"><span>Motivation</span><strong>One focused lesson today keeps your rank moving.</strong></div>
+            <div class="insight-card"><span>Profile Setup</span><strong id="profileSetupState">In progress</strong></div>
+            <div class="insight-card"><span>Next Step</span><strong id="profileNextStep">Complete your profile and start your first activity.</strong></div>
           </div>
         </article>
 
@@ -1394,11 +1368,7 @@
             <span class="icon-box green"><span data-icon="activity"></span></span>
           </div>
           <div class="timeline">
-            <div class="timeline-item"><span class="dot"><span data-icon="clipboard"></span></span><div><h3>Completed Chapter Test</h3><p>Algebra practice test scored 91%.</p></div><span class="timeline-time">Today</span></div>
-            <div class="timeline-item"><span class="dot"><span data-icon="book"></span></span><div><h3>Finished Lesson</h3><p>Human eye and colourful world.</p></div><span class="timeline-time">Yesterday</span></div>
-            <div class="timeline-item"><span class="dot"><span data-icon="target"></span></span><div><h3>Practiced Quiz</h3><p>25 mixed questions attempted.</p></div><span class="timeline-time">2d ago</span></div>
-            <div class="timeline-item"><span class="dot"><span data-icon="award"></span></span><div><h3>Earned Badge</h3><p>Unlocked 7-Day Streak.</p></div><span class="timeline-time">3d ago</span></div>
-            <div class="timeline-item"><span class="dot"><span data-icon="bot"></span></span><div><h3>AI Tutor Session</h3><p>Cleared doubts about trigonometry.</p></div><span class="timeline-time">4d ago</span></div>
+            <div class="tutorly-empty-state" id="recentActivity"><strong>No learning activity yet.</strong>Start practicing to see your progress here.</div>
           </div>
         </article>
 
@@ -1406,18 +1376,15 @@
           <div class="section-head">
             <div>
               <h2>Academic Report Center</h2>
-              <p>Quick actions for report cards and sharing.</p>
+              <p>Reports become available from completed Tutorly tests.</p>
             </div>
             <span class="icon-box purple"><span data-icon="file"></span></span>
           </div>
           <div class="report-card">
-            <strong>Latest Report: June Performance Review</strong>
-            <p class="profile-subline" style="font-size: 13px; margin-top: 8px;">Includes score trend, attendance, subject strengths, and recommended next steps.</p>
+            <strong id="reportStateTitle">No academic reports yet</strong>
+            <p class="profile-subline" id="reportStateCopy" style="font-size: 13px; margin-top: 8px;">Complete a test to create your first report.</p>
             <div class="report-actions">
-              <button class="button" type="button">View Latest</button>
-              <button class="button soft" type="button">Download PDF</button>
-              <button class="button soft" type="button">All Reports</button>
-              <button class="button ghost" type="button">Share Report</button>
+              <a class="button" href="tests.html" id="reportAction">Take a Test</a>
             </div>
           </div>
         </article>
@@ -1463,19 +1430,44 @@
     const fallbackName = 'Student';
     const profile = {
       name: localStorage.getItem('tutorly_name') || localStorage.getItem('math-bot-name') || fallbackName,
-      email: localStorage.getItem('tutorly_email') || 'student@email.com',
+      email: localStorage.getItem('tutorly_email') || localStorage.getItem('tutorly_signup_email') || '',
       grade: localStorage.getItem('tutorly_grade') || '',
       board: localStorage.getItem('tutorly_board') || '',
       school: localStorage.getItem('tutorly_school') || '',
       phone: localStorage.getItem('tutorly_phone') || '',
       language: localStorage.getItem('tutorly_language') || 'English',
       timezone: localStorage.getItem('tutorly_timezone') || 'Asia/Calcutta',
-      coins: Number(localStorage.getItem('tutorly_coins') || 12480),
-      streak: Number(localStorage.getItem('tutorly_streak') || 5),
-      hours: Number(localStorage.getItem('tutorly_study_hours') || 42),
-      joinDate: localStorage.getItem('tutorly_join_date') || 'May 2026',
+      streak: Number(localStorage.getItem('tutorly_streak') || 0),
+      joinDate: localStorage.getItem('tutorly_join_date') || '',
       avatar: localStorage.getItem('tutorly_avatar') || ''
     };
+
+    function readJson(key, fallback) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || 'null');
+        return value === null ? fallback : value;
+      } catch (_error) {
+        return fallback;
+      }
+    }
+
+    function learningData() {
+      const tests = readJson('tutorly_exam_history', []);
+      const lessonProgress = readJson('tutorly_lesson_progress', {});
+      const lessonEntries = Object.entries(lessonProgress || {})
+        .filter(([, entry]) => entry && entry.lastOpened)
+        .map(([key, entry]) => ({ key, ...entry }));
+      const chatState = readJson('tutorly_chatbot_history_v1', {});
+      const legacyChats = readJson('tutorly_chat_history_v1', []);
+      const chats = Array.isArray(chatState?.conversations)
+        ? chatState.conversations
+        : (Array.isArray(legacyChats) ? legacyChats : []);
+      return {
+        tests: Array.isArray(tests) ? tests : [],
+        lessons: lessonEntries,
+        chats
+      };
+    }
 
     function renderIcons() {
       document.querySelectorAll('[data-icon]').forEach((node) => {
@@ -1492,13 +1484,15 @@
     }
 
     function completionScore() {
-      const fields = [profile.name, profile.email, profile.grade, profile.school, profile.board, profile.phone, profile.language, profile.timezone, profile.avatar];
+      const fields = [profile.name, profile.email, profile.grade, profile.school, profile.board, profile.language, profile.timezone, profile.avatar];
       return Math.round((fields.filter(Boolean).length / fields.length) * 100);
     }
 
     function syncTheme() {
-      const isDark = (localStorage.getItem('tutorly_profile_theme') || 'light') === 'dark';
+      const stored = localStorage.getItem('tutorly_theme') || localStorage.getItem('tutorly_profile_theme');
+      const isDark = (stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
       document.body.classList.toggle('profile-dark', isDark);
+      document.body.dataset.theme = isDark ? 'dark' : 'light';
       $('darkModeSwitch').checked = isDark;
       $('themeLabel').textContent = isDark ? 'Light' : 'Dark';
       const icon = $('themeToggle').querySelector('[data-icon]');
@@ -1510,16 +1504,17 @@
     function paintProfile() {
       const completion = completionScore();
       $('studentName').textContent = profile.name;
-      $('studentEmail').textContent = profile.email;
-      $('studentHeadline').textContent = `${profile.grade || 'Grade not set'} student at ${profile.school || 'School not set'}`;
+      $('studentEmail').textContent = profile.email || 'Email not set';
+      $('studentHeadline').textContent = profile.grade || profile.school
+        ? `${profile.grade ? `Grade ${profile.grade}` : 'Grade not set'}${profile.school ? ` · ${profile.school}` : ''}`
+        : 'Add your grade and school to personalize Tutorly.';
       $('schoolMeta').textContent = profile.school || 'School not set';
-      $('joinDate').textContent = `Joined ${profile.joinDate}`;
-      $('streakMeta').textContent = `${profile.streak} day streak`;
+      $('joinDate').textContent = profile.joinDate ? `Joined ${profile.joinDate}` : 'Join date not recorded';
+      $('streakMeta').textContent = profile.streak ? `${profile.streak} day streak` : 'No streak yet';
       $('currentStreak').textContent = profile.streak;
-      $('studyHoursStat').textContent = `${profile.hours}h`;
-      $('xpEarned').dataset.count = String(profile.coins);
       $('profileCompletionText').textContent = `${completion}%`;
       $('profileCompletionBar').style.setProperty('--value', `${completion}%`);
+      $('profileSetupState').textContent = completion === 100 ? 'Complete' : `${completion}% complete`;
       $('avatarText').textContent = (profile.name || fallbackName).trim().charAt(0).toUpperCase();
 
       $('nameInput').value = profile.name;
@@ -1538,30 +1533,6 @@
         $('avatar').classList.remove('has-image');
       }
 
-      animateCounters();
-    }
-
-    function animateCounters() {
-      document.querySelectorAll('.count').forEach((node) => {
-        const target = Number(node.dataset.count || 0);
-        const suffix = node.dataset.suffix || '';
-        const start = performance.now();
-        const duration = 900;
-        function tick(now) {
-          const progress = Math.min(1, (now - start) / duration);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          node.textContent = Math.round(target * eased).toLocaleString('en-US') + suffix;
-          if (progress < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      });
-    }
-
-    function renderHeatmap() {
-      const levels = [1,2,0,3,4,2,1,0,2,3,4,1,2,0,3,2,4,4,1,0,2,3,1,2,4,3,2,1,0,3,4];
-      $('heatmap').innerHTML = levels.map((level, index) =>
-        `<span class="heat-cell" data-level="${level}" style="--level:${level};--i:${index}" title="Day ${index + 1}: ${level} study sessions"></span>`
-      ).join('');
     }
 
     function getCssColor(name) {
@@ -1654,21 +1625,130 @@
       });
     }
 
+    function testPercentage(test) {
+      const direct = Number(test?.percentage);
+      if (Number.isFinite(direct)) return Math.max(0, Math.min(100, direct));
+      const score = Number(test?.score);
+      const total = Number(test?.total);
+      return Number.isFinite(score) && Number.isFinite(total) && total > 0
+        ? Math.round((score / total) * 100)
+        : 0;
+    }
+
+    function renderLearningData() {
+      const data = learningData();
+      const scores = data.tests.map(testPercentage);
+      const average = scores.length
+        ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+        : null;
+      const questionCount = data.tests.reduce((sum, test) => sum + (Number(test.total) || 0), 0);
+      const subjectScores = new Map();
+      data.tests.forEach((test) => {
+        const subject = test?.subject?.name || test?.subject || 'General';
+        const current = subjectScores.get(subject) || [];
+        current.push(testPercentage(test));
+        subjectScores.set(subject, current);
+      });
+      const bestSubject = [...subjectScores.entries()]
+        .map(([subject, values]) => ({ subject, average: values.reduce((sum, value) => sum + value, 0) / values.length }))
+        .sort((a, b) => b.average - a.average)[0]?.subject || '—';
+      const latestTest = data.tests[0];
+      const latestLabel = latestTest
+        ? `${latestTest?.subject?.name || latestTest?.subject || 'Test'} · ${testPercentage(latestTest)}%`
+        : '—';
+
+      $('testsCompleted').textContent = String(data.tests.length);
+      $('averageScore').textContent = average === null ? '—' : `${average}%`;
+      $('lessonsOpened').textContent = String(data.lessons.length);
+      $('savedChats').textContent = String(data.chats.length);
+      $('testsCompletedNote').textContent = data.tests.length ? 'From saved Tutorly test history' : 'No test activity yet';
+      $('averageScoreNote').textContent = average === null ? 'Complete a test to unlock' : 'Based on completed tests';
+      $('lessonsOpenedNote').textContent = data.lessons.length ? 'From saved lesson progress' : 'No lesson activity yet';
+      $('savedChatsNote').textContent = data.chats.length ? 'From saved conversation history' : 'Ask Tutorly your first question';
+      $('activityTests').textContent = String(data.tests.length);
+      $('activityLessons').textContent = String(data.lessons.length);
+      $('activityChats').textContent = String(data.chats.length);
+      $('activityTestsNote').textContent = data.tests.length ? 'Saved test history' : 'No activity yet';
+      $('activityLessonsNote').textContent = data.lessons.length ? 'Saved lesson progress' : 'No activity yet';
+      $('activityChatsNote').textContent = data.chats.length ? 'Saved conversations' : 'No activity yet';
+
+      const totalActivity = data.tests.length + data.lessons.length + data.chats.length;
+      $('learningActivityText').textContent = totalActivity ? `${totalActivity} saved` : 'Not started';
+      $('learningActivityCopy').textContent = totalActivity
+        ? 'Your Tutorly activity is being recorded locally.'
+        : 'Start a lesson, chat, or test to build your activity record.';
+      $('profileNextStep').textContent = !profile.grade || !profile.board
+        ? 'Add your grade and board for more relevant tutoring.'
+        : !totalActivity
+          ? 'Ask Tutorly a question or complete your first test.'
+          : 'Continue learning to build deeper progress insights.';
+
+      $('performanceEmpty').hidden = data.tests.length > 0;
+      $('performanceSummary').hidden = data.tests.length === 0;
+      $('performanceAverage').textContent = average === null ? '—' : `${average}%`;
+      $('performanceBestSubject').textContent = bestSubject;
+      $('performanceQuestions').textContent = String(questionCount);
+      $('performanceLatest').textContent = latestLabel;
+
+      const achievements = [];
+      if (data.tests.length) achievements.push(['check', 'First Test Completed', 'Your first Tutorly test is in the history.']);
+      if (data.lessons.length) achievements.push(['book', 'Lesson Explorer', 'You opened your first Tutorly lesson.']);
+      if (data.chats.length) achievements.push(['bot', 'Asked Tutorly', 'Your first AI tutor conversation is saved.']);
+      $('achievementGrid').innerHTML = achievements.length
+        ? achievements.map(([icon, title, copy]) => `<div class="badge-card"><span class="icon-box"><span data-icon="${icon}"></span></span><div><h3>${title}</h3><p>${copy}</p></div></div>`).join('')
+        : '<div class="tutorly-empty-state"><strong>No achievements yet.</strong>Complete a test or open a lesson to earn your first milestone.</div>';
+      renderIcons();
+
+      $('streakStatus').textContent = profile.streak ? `${profile.streak} active day${profile.streak === 1 ? '' : 's'}` : 'No streak yet';
+      $('streakEmpty').hidden = profile.streak > 0;
+
+      $('trendEmpty').hidden = data.tests.length >= 2;
+      $('scoreTrendPanel').hidden = data.tests.length < 2;
+
+      const activity = [];
+      data.tests.slice(0, 2).forEach((test) => activity.push({
+        date: new Date(test.date || 0).getTime() || 0,
+        icon: 'clipboard',
+        title: 'Completed a Tutorly test',
+        copy: `${test?.subject?.name || test?.subject || 'General'} · ${testPercentage(test)}%`
+      }));
+      data.lessons.slice(0, 2).forEach((lesson) => activity.push({
+        date: new Date(lesson.lastOpened || 0).getTime() || 0,
+        icon: 'book',
+        title: 'Opened a Tutorly lesson',
+        copy: 'Lesson progress saved'
+      }));
+      data.chats.slice(0, 2).forEach((chat) => activity.push({
+        date: new Date(chat.updatedAt || chat.createdAt || 0).getTime() || Number(chat.updatedAt) || 0,
+        icon: 'bot',
+        title: 'Studied with Tutorly AI',
+        copy: 'Conversation saved'
+      }));
+      activity.sort((a, b) => b.date - a.date);
+      $('recentActivity').outerHTML = activity.length
+        ? `<div class="timeline" id="recentActivity">${activity.slice(0, 4).map((item) => `<div class="timeline-item"><span class="dot"><span data-icon="${item.icon}"></span></span><div><h3>${item.title}</h3><p>${item.copy}</p></div><span class="timeline-time">${item.date ? new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Saved'}</span></div>`).join('')}</div>`
+        : '<div class="tutorly-empty-state" id="recentActivity"><strong>No learning activity yet.</strong>Start practicing to see your progress here.</div>';
+      renderIcons();
+
+      $('reportStateTitle').textContent = latestTest ? 'Latest Tutorly test report available' : 'No academic reports yet';
+      $('reportStateCopy').textContent = latestTest
+        ? `${latestLabel}. Open Tests to review the full result and answers.`
+        : 'Complete a test to create your first report.';
+      $('reportAction').textContent = latestTest ? 'View Test History' : 'Take a Test';
+      drawCharts();
+    }
+
     function drawCharts() {
-      const colors = chartColors();
       const score = $('scoreChart');
-      const subjects = $('subjectChart');
-      const study = $('studyChart');
-      if (!score || !subjects || !study) return;
-      drawLineChart(score, [74, 78, 82, 80, 85, 88, 91]);
-      drawBarChart(subjects, [92, 88, 81, 74], [colors.blue, colors.purple, colors.green, colors.amber]);
-      drawBarChart(study, [48, 64, 52, 72, 86, 66, 78], [colors.blue, colors.blue, colors.blue, colors.purple]);
+      const values = learningData().tests.slice().reverse().map(testPercentage);
+      if (!score || values.length < 2 || $('scoreTrendPanel').hidden) return;
+      drawLineChart(score, values);
     }
 
     function saveProfile(event) {
       event.preventDefault();
       profile.name = $('nameInput').value.trim() || fallbackName;
-      profile.email = $('emailInput').value.trim() || 'student@email.com';
+      profile.email = $('emailInput').value.trim();
       profile.grade = $('gradeInput').value.trim();
       profile.school = $('schoolInput').value.trim();
       profile.board = $('boardInput').value.trim();
@@ -1691,8 +1771,8 @@
     }
 
     renderIcons();
-    renderHeatmap();
     paintProfile();
+    renderLearningData();
     syncTheme();
 
     $('profileForm').addEventListener('submit', saveProfile);
@@ -1716,12 +1796,12 @@
 
     $('themeToggle').addEventListener('click', () => {
       const next = document.body.classList.contains('profile-dark') ? 'light' : 'dark';
-      localStorage.setItem('tutorly_profile_theme', next);
+      localStorage.setItem('tutorly_theme', next);
       syncTheme();
     });
 
     $('darkModeSwitch').addEventListener('change', (event) => {
-      localStorage.setItem('tutorly_profile_theme', event.target.checked ? 'dark' : 'light');
+      localStorage.setItem('tutorly_theme', event.target.checked ? 'dark' : 'light');
       syncTheme();
     });
 

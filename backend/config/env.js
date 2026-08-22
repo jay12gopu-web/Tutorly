@@ -20,7 +20,7 @@ function requireEnv(name) {
 module.exports = {
   nodeEnv: getEnv("NODE_ENV", "development"),
   port: Number(getEnv("PORT", "3001")),
-  appOrigin: getEnv("APP_ORIGIN", "http://127.0.0.1:3001"),
+  appOrigin: getEnv("APP_ORIGIN", "https://mytutor.co.in"),
   mongoUri: getEnv("MONGODB_URI", "mongodb://127.0.0.1:27017/tutorly"),
   getEnv,
   requireEnv

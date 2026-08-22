@@ -9,7 +9,7 @@
     subjectId: "",
     chapterId: "",
     zoom: 1,
-    theme: localStorage.getItem("tutorly_lessons_theme") || "light",
+    theme: localStorage.getItem("tutorly_theme") || localStorage.getItem("tutorly_lessons_theme") || "light",
     searchTerm: "",
     quickRevision: false
   };
@@ -461,7 +461,7 @@
 
   function toggleTheme() {
     state.theme = state.theme === "dark" ? "light" : "dark";
-    localStorage.setItem("tutorly_lessons_theme", state.theme);
+    localStorage.setItem("tutorly_theme", state.theme);
     document.body.classList.toggle("lesson-dark", state.theme === "dark");
     syncActionButtons();
   }

@@ -6,14 +6,13 @@
   <title>Tutorly</title>
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <meta name="description" content="Tutorly is a focused AI learning workspace for students." />
-</head>
-<body>
-  <p>Opening Tutorly… <a href="welcome.html">Continue</a></p>
+  <style>html { background: #050816; }</style>
   <script>
     (function () {
       const signedIn = localStorage.getItem('tutorly_logged_in') === 'true';
       window.location.replace(signedIn ? 'maths_gpt.html' : 'welcome.html');
     })();
   </script>
-</body>
+</head>
+<body></body>
 </html>

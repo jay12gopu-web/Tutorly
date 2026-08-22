@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/maths_gpt.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <script>
     (function () {
@@ -21,9 +22,10 @@
   <link rel="stylesheet" href="css/chatbot.css?v=mobile-premium-20260531" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
 
-<body>
+<body data-tutorly-surface="workspace">
   <div id="chatShell" class="chat-shell">
     <aside id="sidebar" class="sidebar" aria-label="Tutorly navigation">
       <div class="side-top">
@@ -264,17 +266,9 @@
   <script src="js/chatbot/chatbot-core.js"></script>
   <script src="js/chatbot/mode-registry.js"></script>
   <script src="js/chatbot/chat-history-store.js"></script>
-  <script src="js/chatbot/chat-memory.js"></script>
   <script src="js/chatbot/learning-tools.js"></script>
-  <script src="js/chatbot/math-renderer.js"></script>
-  <script src="js/chatbot/advanced-math-engine.js"></script>
-  <script src="js/chatbot/geography-visuals.js"></script>
-  <script src="js/chatbot/english-engine.js"></script>
-  <script src="js/chatbot/adaptive-intelligence.js"></script>
-  <script src="js/response-engine.js"></script>
-  <script src="js/gpt.js"></script>
-  <script src="js/chatbot/response-contract.js"></script>
-  <script src="js/chatbot/math-response-contract.js"></script>
+  <script src="js/chatbot/response-policy.js"></script>
+  <script src="js/chatbot/educational-visuals.js"></script>
   <script src="js/app.js"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>

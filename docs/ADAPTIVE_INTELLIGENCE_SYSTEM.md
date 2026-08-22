@@ -1,73 +1,18 @@
-# Tutorly Adaptive Intelligence System
+# Tutorly Adaptive Answer System
 
-Tutorly now routes academic chatbot requests through an adaptive teaching pipeline before the final answer is displayed.
+Tutorly selects answer structure semantically in the same validated LLM response that classifies the question.
 
-## Request Flow
+The structured route includes:
 
-1. The student sends a message from `maths_gpt.html`.
-2. `js/gpt.js` builds an adaptive frontend context from `js/chatbot/adaptive-intelligence.js`.
-3. `js/app.js` sends the message, selected model, and adaptive metadata to `POST /chat`.
-4. `backend/main.py` classifies whether live search is required.
-5. `QuestionAnalyzer` detects subject, topic, sub-topic, grade band, difficulty, question type, confidence, and keywords.
-6. `PatternMatchingEngine` searches persistent pattern memory for similar solved concepts.
-7. `KnowledgeConfidenceEngine` decides whether internal knowledge is enough.
-8. `KnowledgeMergeEngine` merges internal notes, successful patterns, learner memory, and search summaries when search is required.
-9. `AdaptiveTeachingEngine` builds the final teaching prompt and validates the response.
-10. Successful answers are stored back into pattern memory for future strategy reuse.
-11. Student feedback updates teaching strategy success scores through `/chat-feedback` or `/api/chatbot/feedback`.
+- `subject`, `topic`, `intent`, and `difficulty`
+- `response_type`
+- `answer_format` such as `direct_answer`, `why_explanation`, `math_worked_solution`, `english_literature`, or `comparison_table`
+- `response_length`: `very_short`, `short`, `medium`, or `detailed`
+- a validated visual decision and placement
+- explicit tool flags
 
-## Pattern Memory
+The answer generator then writes student-facing Markdown appropriate to those semantic decisions. Short factual questions remain one line. Processes use ordered steps. Maths solutions show the necessary working and final result. Comparisons prefer tables. Literature separates meaning from analysis. Follow-ups use recent turns and answer the requested clarification without restarting the lesson.
 
-Pattern memory is stored in:
+Internal routing metadata is returned for application logic but is never inserted into the student-facing answer.
 
-`backend/chatbot_data/pattern_memory.json`
-
-Each pattern stores:
-
-- Subject
-- Topic
-- Vector-like hashed embedding
-- Solution pattern
-- Teaching pattern
-- Difficulty
-- Success score
-- Example questions
-- Keywords
-
-The system never copies old answers directly. It only reuses the successful method and teaching strategy.
-
-## Search Policy
-
-Tutorly does not search for stable academic questions such as algebra, photosynthesis, grammar, history concepts, or geography basics.
-
-Search is reserved for:
-
-- Current events
-- Live sports/weather/prices
-- Recent discoveries
-- Recently changed policies or rankings
-
-When search is unavailable for a current-information question, Tutorly refuses to guess and asks for search configuration.
-
-## Feedback Loop
-
-Assistant replies expose feedback controls:
-
-- Understood
-- Simpler
-- More examples
-- Still confused
-
-Feedback changes the score of related teaching patterns. Over time, strategies that students understand are ranked higher, and weak strategies lose priority.
-
-## Quality Gate
-
-The backend validates every generated answer for:
-
-- Empty or too-short output
-- Placeholder text
-- `undefined` / `null`
-- Missing final answer
-- Missing practice question
-
-If validation fails, Tutorly attempts one regeneration. If it still fails, it returns a safe structured tutor answer instead of broken output.
+The active system does not use keyword lists to choose a subject, topic, intent, format, or visual. Legacy browser answer engines are not loaded on the live Tutorly chat page.

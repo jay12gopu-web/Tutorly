@@ -32,7 +32,7 @@ Set these values:
 
 ```env
 PORT=3001
-APP_ORIGIN=http://127.0.0.1:3001
+APP_ORIGIN=https://mytutor.co.in
 RAZORPAY_KEY_ID=rzp_test_your_key_id
 RAZORPAY_SECRET=your_test_secret
 RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
@@ -71,7 +71,7 @@ http://127.0.0.1:3001
 4. In Razorpay Chat, create a webhook pointing to:
 
 ```text
-https://your-domain.com/webhook
+https://mytutor.co.in/webhook
 ```
 
 For local testing, expose port `3001` with a tunnel such as ngrok and use:

@@ -115,7 +115,7 @@
   margin: 8px 0 4px;
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1;
-  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
 .campus-metric-grid {

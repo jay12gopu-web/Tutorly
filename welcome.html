@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/" />
+  <meta property="og:url" content="https://mytutor.co.in/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <style>
     :root {
@@ -1497,8 +1502,9 @@
     }
   </style>
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body>
+<body data-tutorly-surface="public">
   <div class="cursor-glow" aria-hidden="true"></div>
   <div class="page-bg" aria-hidden="true"></div>
   <div class="aurora" aria-hidden="true">
@@ -1625,6 +1631,7 @@
         <article class="subject-card" style="--subject-glow: rgba(255, 210, 109, 0.28);"><span class="subject-mark">H</span><h3>History</h3></article>
         <article class="subject-card" style="--subject-glow: rgba(139, 125, 255, 0.32);"><span class="subject-mark">G</span><h3>Geography</h3></article>
       </div>
+      <p class="subject-more">+ English, Civics, Economics, Computer Science and more</p>
     </section>
 
     <section class="section reveal" id="demo">
@@ -1722,11 +1729,11 @@
         <h2 class="section-title">Learning support that stays available.</h2>
       </div>
 
-      <div class="stats-grid">
-        <article class="stat-card"><span class="stat-value" data-count="12000">0</span><span>Questions Solved</span></article>
-        <article class="stat-card"><span class="stat-value" data-count="8500">0</span><span>Students Helped</span></article>
-        <article class="stat-card"><span class="stat-value" data-count="6">0</span><span>Subjects Covered</span></article>
-        <article class="stat-card"><span class="stat-value" data-count="24">0</span><span>Availability</span></article>
+      <div class="stats-grid" aria-label="Tutorly capabilities">
+        <article class="stat-card trust-card"><span class="trust-mark">01</span><strong>Multi-subject support</strong><span>One tutor across core school subjects.</span></article>
+        <article class="stat-card trust-card"><span class="trust-mark">02</span><strong>24/7 AI tutor</strong><span>Study whenever a question comes up.</span></article>
+        <article class="stat-card trust-card"><span class="trust-mark">03</span><strong>Adaptive explanations</strong><span>Answers matched to the question and level.</span></article>
+        <article class="stat-card trust-card"><span class="trust-mark">04</span><strong>Visual learning support</strong><span>Graphs and diagrams when they add clarity.</span></article>
       </div>
     </section>
 
@@ -1796,7 +1803,7 @@
       </div>
       <div>
         <h3>Social</h3>
-        <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://mytutor.co.in/">mytutor.co.in</a>
         <a class="chatbot-entry" href="sign_up.html?intent=chatbot">Open chatbot</a>
         <a href="subscriptions.html">Plans</a>
       </div>
@@ -1806,7 +1813,7 @@
 
   <div class="auth-modal-backdrop" id="chatbotAuthModal" aria-hidden="true">
     <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="chatbotAuthTitle">
-      <button class="auth-modal-close" id="chatbotAuthClose" type="button" aria-label="Close">Ã—</button>
+      <button class="auth-modal-close" id="chatbotAuthClose" type="button" aria-label="Close">×</button>
       <span class="auth-modal-note">Start learning</span>
       <h2 id="chatbotAuthTitle">Start with Tutorly</h2>
       <p id="chatbotAuthCopy">Create your student account or log in to open your Tutorly chat.</p>
@@ -1826,7 +1833,6 @@
       const particleLayer = document.querySelector('.particles');
       const revealItems = document.querySelectorAll('.reveal');
       const sectionLinks = document.querySelectorAll('.nav-link');
-      const counters = document.querySelectorAll('[data-count]');
       const demoChat = document.getElementById('demoChat');
       const heroTyped = document.getElementById('heroTyped');
       const chatbotAuthModal = document.getElementById('chatbotAuthModal');
@@ -1974,33 +1980,6 @@
       }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
 
       document.querySelectorAll('section[id]').forEach((section) => navObserver.observe(section));
-
-      function animateCounter(counter) {
-        const target = Number(counter.dataset.count || 0);
-        const duration = 1300;
-        const start = performance.now();
-        const suffix = target === 24 ? '/7' : '+';
-
-        function tick(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          const value = Math.round(target * eased);
-          counter.textContent = `${value.toLocaleString()}${suffix}`;
-          if (progress < 1) requestAnimationFrame(tick);
-        }
-
-        requestAnimationFrame(tick);
-      }
-
-      const statsObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          animateCounter(entry.target);
-          observer.unobserve(entry.target);
-        });
-      }, { threshold: 0.4 });
-
-      counters.forEach((counter) => statsObserver.observe(counter));
 
       if (demoChat) {
         const demoMessages = Array.from(demoChat.querySelectorAll('.demo-message'));

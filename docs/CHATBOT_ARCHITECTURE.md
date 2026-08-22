@@ -1,37 +1,37 @@
-# Tutorly Chatbot Architecture
+# Tutorly Semantic Chat Architecture
 
-This document tracks the chatbot-only growth path. The goal is to keep `js/app.js` as the page controller while moving the AI tutor system into dedicated chatbot files.
+Tutorly's browser is a renderer and conversation client. Academic understanding and answer generation happen only on the backend.
 
-## Current Split
+## Request Flow
 
-- `js/app.js` handles DOM events, composer state, camera/upload UI, rendering, and page interactions.
-- `js/gpt.js` is the chatbot brain facade used by the UI.
-- `js/chatbot/chatbot-core.js` provides safe storage, events, IDs, text helpers, and module registration.
-- `js/chatbot/mode-registry.js` owns Spark, Prime, Lens, Deep Think, Research, Creative, Coding, and Study modes.
-- `js/chatbot/chat-history-store.js` stores conversations, messages, pinned chats, archived chats, folders, search, ratings, and share metadata.
-- `js/chatbot/chat-memory.js` stores learner memory, recent summaries, subject counts, and profile-like learning hints.
-- `js/chatbot/learning-tools.js` creates flashcards, practice questions, knowledge checks, and learning paths from replies.
-- `js/chatbot/geography-visuals.js` detects geography prompts, resolves places, builds geographic hierarchy/facts, and renders provider-based map panels for chatbot replies.
-- `js/response-engine.js` still formats and varies local tutor replies.
-- `backend/chatbot/*` contains the Python FastAPI-ready tutor service: schemas, mode strategies, subject classification, memory ranking, reasoning, knowledge retrieval, tool routing, tutoring, analytics, orchestration, and streaming routes.
+1. `js/app.js` sends the complete student message, conversation ID, recent turns, attachments, and learner profile to `POST /api/chat`.
+2. `backend/chatbot/orchestrator.py` loads bounded recent conversation context.
+3. `backend/chatbot/ai/semantic_router.py` makes one structured LLM call through the provider-neutral `AIProvider` interface.
+4. `GroqProvider` calls Groq's `openai/gpt-oss-120b` model with a strict JSON Schema.
+5. The validated response contains subject, topic, intent, difficulty, answer format, response length, visual decision, tool decision, and the polished answer.
+6. The orchestrator runs only the tools selected by that semantic decision, saves recent context, and returns the response.
+7. The browser renders the answer as Markdown, places any selected visual, and shows a small set of contextual actions.
 
-## Backend API
+There is no active browser-side subject, topic, intent, or diagram classifier. Legacy local response scripts are not loaded by `maths_gpt.html`, and the old local router in `js/app.js` is explicitly disabled.
 
-- `GET /api/chatbot/health` reports chatbot service status and available modes.
-- `POST /api/chatbot/respond` returns a full `ChatbotResponse`.
-- `POST /api/chatbot/stream` streams server-sent progress events.
-- `WS /api/chatbot/ws` streams WebSocket progress events.
+## Backend Modules
 
-## Development Rule
+- `backend/chatbot/ai/provider.py`: provider interface and safe provider errors.
+- `backend/chatbot/ai/groq.py`: backend-only Groq adapter.
+- `backend/chatbot/ai/semantic_router.py`: strict schema, semantic prompt, validation, and graceful fallback.
+- `backend/chatbot/conversation_context.py`: bounded recent-turn context.
+- `backend/chatbot/rate_limit.py`: per-user/conversation sliding-window limits.
+- `backend/chatbot/orchestrator.py`: provider-neutral chat pipeline.
+- `backend/chatbot/routes.py`: `/api/chat`, compatibility, feedback, SSE, and WebSocket routes.
 
-New chatbot intelligence should go into `js/gpt.js` or `js/chatbot/*`. Keep `app.js` as thin as possible: it can render UI, but it should call the GPT facade for AI decisions, memory, history, and learning features.
+## API
 
-## Next Chatbot Phases
+- `POST /api/chat`: primary browser endpoint.
+- `POST /api/chatbot/respond`: compatibility alias using the same semantic pipeline.
+- `GET /api/chatbot/health`: provider/model configuration status without secrets.
+- `POST /api/chatbot/stream`: server-sent semantic response stream.
+- `WS /api/chatbot/ws`: WebSocket semantic response stream.
 
-1. Add a real backend API adapter without breaking local fallback replies.
-2. Add full message editing and branch/regenerate history.
-3. Add PDF/document analysis and citation extraction.
-4. Add voice output and spoken tutoring mode.
-5. Add chatbot accessibility tests and interaction tests.
-6. Connect `js/gpt.js` to `/api/chatbot/stream` when the FastAPI server is running, while preserving local fallback mode.
-7. Expand map providers from the current OpenStreetMap embed and educational SVG fallback to MapLibre/vector atlas data when the assets are available.
+## Security
+
+`GROQ_API_KEY` is read only by the backend provider from a server environment file. Frontend JavaScript never calls Groq and never receives the key.

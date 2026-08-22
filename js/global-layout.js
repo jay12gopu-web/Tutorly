@@ -2,6 +2,15 @@
   if (window.__tutorlyGlobalLayoutApplied) return;
   window.__tutorlyGlobalLayoutApplied = true;
 
+  if (document.body.dataset.tutorlySurface === 'workspace' && !document.body.dataset.theme) {
+    const storedTheme = localStorage.getItem('tutorly_theme');
+    const preferredTheme = storedTheme === 'light' || storedTheme === 'dark'
+      ? storedTheme
+      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.body.dataset.theme = preferredTheme;
+    document.documentElement.style.colorScheme = preferredTheme;
+  }
+
   function pageName() {
     const parts = window.location.pathname.split('/');
     return (parts[parts.length - 1] || '').toLowerCase();
