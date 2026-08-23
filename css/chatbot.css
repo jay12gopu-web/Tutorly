@@ -1699,6 +1699,21 @@ body.has-chat .chat-window {
   font-size: 13px;
 }
 
+.tutorly-rich-notice {
+  display: block;
+  margin: 12px 0;
+  border: 1px solid rgba(91, 111, 189, 0.22);
+  border-radius: 14px;
+  padding: 11px 13px;
+  color: var(--muted);
+  background: rgba(238, 243, 255, 0.72);
+  font-size: 13px;
+}
+
+.tutorly-rich-notice strong {
+  color: var(--text);
+}
+
 .tutorly-chart-grid {
   stroke: rgba(93, 111, 166, 0.18);
   stroke-width: 1;
@@ -1759,6 +1774,10 @@ body.has-chat .chat-window {
 body[data-theme="dark"] .tutorly-rich-error {
   color: #ffc2cf;
   background: rgba(121, 36, 58, 0.22);
+}
+
+body[data-theme="dark"] .tutorly-rich-notice {
+  background: rgba(52, 66, 121, 0.2);
 }
 
 body[data-theme="dark"] .tutorly-pie-chart {

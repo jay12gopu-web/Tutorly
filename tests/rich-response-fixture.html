@@ -26,7 +26,7 @@
       "",
       "A projectile has constant horizontal velocity and vertical acceleration $-g$.",
       "",
-      String.raw`$$x=u\cos(\theta)t$$`,
+      String.raw`$$x(t)=v_{0x}t$$`,
       String.raw`$$y=u\sin(\theta)t-\frac{1}{2}gt^2$$`,
       "",
       "## Worked example",
@@ -43,7 +43,9 @@
       "A[Launch] --> B[Projectile rises]",
       "B --> C[Maximum height]",
       "C --> D[Projectile falls]",
-      "```"
+      "```",
+      "",
+      "![Projectile Path](attachment://projectile_path.png)"
     ].join("\n");
     target.innerHTML = markdown.render(projectileResponse, { richResponse: renderer });
     renderer.hydrate(target);

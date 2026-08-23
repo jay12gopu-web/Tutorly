@@ -449,6 +449,45 @@ def run_schema_security_and_limit_tests() -> None:
     )
     assert load_structured_response_json(underescaped_inline_json)["answer"] == inline_latex
 
+    delimiter_free_latex = (
+        r"Commands remain literal: \frac{1}{2}, \text{m/s}, \theta, "
+        r"and \boxed{x=2}."
+    )
+    underescaped_delimiter_free_json = (
+        r'{"answer":"Commands remain literal: \frac{1}{2}, \text{m/s}, \theta, '
+        r'and \boxed{x=2}."}'
+    )
+    assert (
+        load_structured_response_json(underescaped_delimiter_free_json)["answer"]
+        == delimiter_free_latex
+    )
+
+    already_decoded_controls_json = (
+        '{"answer":"Decoded controls: '
+        + "\f" + "rac{1}{2}, "
+        + "\t" + "ext{m/s}, and "
+        + "\t" + "heta." + '"}'
+    )
+    assert load_structured_response_json(already_decoded_controls_json)["answer"] == (
+        r"Decoded controls: \frac{1}{2}, \text{m/s}, and \theta."
+    )
+
+    alternate_delimiters = (
+        r"Inline \(\theta=30^\circ\) and display \[\nabla f=0\]."
+    )
+    underescaped_alternate_json = (
+        r'{"answer":"Inline \(\theta=30^\circ\) and display \[\nabla f=0\]."}'
+    )
+    assert load_structured_response_json(underescaped_alternate_json)["answer"] == alternate_delimiters
+
+    ordinary_json_line_break = r'{"answer":"Line one\nNext line."}'
+    assert load_structured_response_json(ordinary_json_line_break)["answer"] == "Line one\nNext line."
+
+    multiplication_spacing = r"$$x(t)=v_{0x}\,t$$"
+    underescaped_spacing_json = r'{"answer":"$$x(t)=v_{0x}\,t$$"}'
+    assert load_structured_response_json(underescaped_spacing_json)["answer"] == multiplication_spacing
+    assert "v_{0x},t" not in multiplication_spacing
+
     display_latex = (
         "$$\\sqrt{16}=4$$\n"
         "$$\\begin{bmatrix}1 & 2 \\\\ 3 & 4\\end{bmatrix}$$"
@@ -468,7 +507,13 @@ def run_schema_security_and_limit_tests() -> None:
     raw_multiline_json = '{"answer":"' + multiline_rich_answer + '"}'
     assert load_structured_response_json(raw_multiline_json)["answer"] == multiline_rich_answer
 
-    streamed_latex = inline_latex + "\n" + display_latex
+    streamed_latex = "\n".join((
+        inline_latex,
+        display_latex,
+        delimiter_free_latex,
+        alternate_delimiters,
+        multiplication_spacing,
+    ))
     chunks = ChatbotOrchestrator._chunk_answer(streamed_latex, size=7)
     assert "".join(chunks) == streamed_latex
     transported_chunks = [
@@ -494,6 +539,8 @@ def run_schema_security_and_limit_tests() -> None:
     assert "smallest useful number of sections" in ANSWER_GENERATION_PROMPT
     assert "Never append a practice problem" in ANSWER_GENERATION_PROMPT
     assert "JSON-escape every literal backslash" in ANSWER_GENERATION_PROMPT
+    assert "Never use a comma as multiplication" in ANSWER_GENERATION_PROMPT
+    assert "Never invent image URLs" in ANSWER_GENERATION_PROMPT
     limiter = SlidingWindowRateLimiter(requests_per_minute=3, requests_per_hour=20)
     assert limiter.check("student:chat").allowed
     assert limiter.check("student:chat").allowed

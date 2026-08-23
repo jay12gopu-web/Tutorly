@@ -1302,6 +1302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const codeTokens = [];
     const mathTokens = [];
     const linkTokens = [];
+    const unavailableImageTokens = [];
     let tokenized = String(value || "").replace(/`([^`]+)`/g, (_, code) => {
       codeTokens.push(`<code>${escapeHtml(code)}</code>`);
       return `@@TUTORLYCODE${codeTokens.length - 1}@@`;
@@ -1319,6 +1320,17 @@ document.addEventListener("DOMContentLoaded", () => {
       linkTokens.push(`<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
       return `@@TUTORLYLINK${linkTokens.length - 1}@@`;
     });
+    tokenized = tokenized.replace(
+      /!\[([^\]]*)\]\(((?:attachment|sandbox|file):[^)\s]+)\)/gi,
+      (_, label) => {
+        unavailableImageTokens.push(
+          RichResponse?.renderUnavailableVisual
+            ? RichResponse.renderUnavailableVisual(label, true)
+            : `<span class="tutorly-rich-notice tutorly-attachment-placeholder" role="status"><strong>${escapeHtml(label || "Requested diagram")} unavailable.</strong></span>`
+        );
+        return `@@TUTORLYUNAVAILABLEIMAGE${unavailableImageTokens.length - 1}@@`;
+      }
+    );
     let html = escapeHtml(tokenized)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/_([^_]+)_/g, "<em>$1</em>");
@@ -1330,6 +1342,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     linkTokens.forEach((token, index) => {
       html = html.replace(`@@TUTORLYLINK${index}@@`, token);
+    });
+    unavailableImageTokens.forEach((token, index) => {
+      html = html.replace(`@@TUTORLYUNAVAILABLEIMAGE${index}@@`, token);
     });
     return html;
   }
@@ -1412,6 +1427,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!line) {
         closeParagraph();
         closeList();
+        continue;
+      }
+
+      const unavailableImage = line.match(
+        /^!\[([^\]]*)\]\(((?:attachment|sandbox|file):[^)\s]+)\)$/i
+      );
+      if (unavailableImage) {
+        closeParagraph();
+        closeList();
+        html.push(
+          RichResponse?.renderUnavailableVisual
+            ? RichResponse.renderUnavailableVisual(unavailableImage[1])
+            : `<div class="tutorly-rich-notice tutorly-attachment-placeholder" role="status"><strong>${escapeHtml(unavailableImage[1] || "Requested diagram")} unavailable.</strong></div>`
+        );
         continue;
       }
 
@@ -2446,9 +2475,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function attachEducationalVisual(message, meta = {}) {
-    if (!EducationalVisuals?.fromSemanticRoute || !EducationalVisuals?.renderPanel) return;
     const content = message.querySelector(".bot-content");
-    if (!content || content.querySelector(".edu-visual-panel, .tutorly-diagram-block, .tutorly-chart-block")) return;
+    if (!content) return;
+    const unavailablePlaceholders = Array.from(content.querySelectorAll(".tutorly-attachment-placeholder"));
+    if (content.querySelector(".edu-visual-panel, .tutorly-diagram-block, .tutorly-chart-block")) {
+      unavailablePlaceholders.forEach((placeholder) => placeholder.remove());
+      return;
+    }
+    if (!EducationalVisuals?.fromSemanticRoute || !EducationalVisuals?.renderPanel) return;
 
     const prompt = meta.prompt || message.dataset.prompt || "";
     if (!prompt) return;
@@ -2460,7 +2494,12 @@ document.addEventListener("DOMContentLoaded", () => {
     holder.innerHTML = EducationalVisuals.renderPanel(context);
     const panel = holder.firstElementChild;
     if (!panel) return;
-    placeSemanticVisual(content, panel, semanticRoute?.visual?.placement || "after_answer");
+    if (unavailablePlaceholders.length) {
+      unavailablePlaceholders[0].replaceWith(panel);
+      unavailablePlaceholders.slice(1).forEach((placeholder) => placeholder.remove());
+    } else {
+      placeSemanticVisual(content, panel, semanticRoute?.visual?.placement || "after_answer");
+    }
     EducationalVisuals.hydrate?.(panel);
   }
 

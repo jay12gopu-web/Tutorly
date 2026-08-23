@@ -188,6 +188,12 @@
     return `<div class="tutorly-rich-error" role="status"><strong>${escapeHtml(kind)} unavailable.</strong> ${escapeHtml(message)}</div>`;
   }
 
+  function renderUnavailableVisual(label, inline = false) {
+    const safeLabel = clampText(label, 120) || "Requested diagram";
+    const tag = inline ? "span" : "div";
+    return `<${tag} class="tutorly-rich-notice tutorly-attachment-placeholder" role="status" data-unavailable-visual="true"><strong>${escapeHtml(safeLabel)} unavailable.</strong> No generated image was attached; the written explanation is still available.</${tag}>`;
+  }
+
   function renderCodeBlock(language, source, customEscape) {
     const escape = typeof customEscape === "function" ? customEscape : escapeHtml;
     const normalized = normalizeLanguage(language);
@@ -367,6 +373,7 @@
     renderChart,
     renderCodeBlock,
     renderMath,
+    renderUnavailableVisual,
     hydrate,
   };
 });

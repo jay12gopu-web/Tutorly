@@ -18,6 +18,7 @@
     const codeTokens = [];
     const mathTokens = [];
     const linkTokens = [];
+    const unavailableImageTokens = [];
     let tokenized = String(value || "").replace(/`([^`]+)`/g, (_, code) => {
       codeTokens.push(`<code>${escapeHtml(code)}</code>`);
       return `@@TUTORLYCODE${codeTokens.length - 1}@@`;
@@ -35,6 +36,17 @@
       linkTokens.push(`<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
       return `@@TUTORLYLINK${linkTokens.length - 1}@@`;
     });
+    tokenized = tokenized.replace(
+      /!\[([^\]]*)\]\(((?:attachment|sandbox|file):[^)\s]+)\)/gi,
+      (_, label) => {
+        unavailableImageTokens.push(
+          richResponse?.renderUnavailableVisual
+            ? richResponse.renderUnavailableVisual(label, true)
+            : `<span class="tutorly-rich-notice tutorly-attachment-placeholder" role="status"><strong>${escapeHtml(label || "Requested diagram")} unavailable.</strong></span>`
+        );
+        return `@@TUTORLYUNAVAILABLEIMAGE${unavailableImageTokens.length - 1}@@`;
+      }
+    );
 
     let html = escapeHtml(tokenized)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
@@ -47,6 +59,9 @@
     });
     linkTokens.forEach((token, index) => {
       html = html.replace(`@@TUTORLYLINK${index}@@`, () => token);
+    });
+    unavailableImageTokens.forEach((token, index) => {
+      html = html.replace(`@@TUTORLYUNAVAILABLEIMAGE${index}@@`, () => token);
     });
     return html;
   }
@@ -123,6 +138,20 @@
       if (!line) {
         closeParagraph();
         closeList();
+        continue;
+      }
+
+      const unavailableImage = line.match(
+        /^!\[([^\]]*)\]\(((?:attachment|sandbox|file):[^)\s]+)\)$/i
+      );
+      if (unavailableImage) {
+        closeParagraph();
+        closeList();
+        html.push(
+          richResponse?.renderUnavailableVisual
+            ? richResponse.renderUnavailableVisual(unavailableImage[1])
+            : `<div class="tutorly-rich-notice tutorly-attachment-placeholder" role="status"><strong>${escapeHtml(unavailableImage[1] || "Requested diagram")} unavailable.</strong></div>`
+        );
         continue;
       }
 
@@ -216,7 +245,16 @@
   }
 
   function render(markdown, options = {}) {
-    const source = String(markdown || "");
+    const originalSource = String(markdown || "");
+    // A model may occasionally emit both a real rich visual fence and a fake
+    // local attachment reference. Keep the renderable visual and discard only
+    // the unavailable synthetic reference before parsing the rest of Markdown.
+    const source = /```(?:mermaid|chart)\b/i.test(originalSource)
+      ? originalSource.replace(
+        /^\s*!\[[^\]]*\]\((?:attachment|sandbox|file):[^)\s]+\)\s*$/gim,
+        ""
+      )
+      : originalSource;
     const richResponse = options.richResponse || root.TutorlyRichResponse || null;
     try {
       return renderUnsafe(source, richResponse);

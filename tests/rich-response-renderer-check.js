@@ -40,8 +40,10 @@ assert.match(renderer.renderMath("x^2 + y^2 = z^2", true), /tutorly-katex/);
 
 const inlineLatex = String.raw`\frac{-8}{2\cdot2} + \boxed{x=2} + \sqrt{16}`;
 const matrixLatex = String.raw`\begin{bmatrix}1 & 2 \\ 3 & 4\end{bmatrix}`;
+const projectileLatex = String.raw`x(t)=v_{0x}t,\quad v_y=v_0\sin(\theta)-gt,\quad \text{units: m/s}`;
 const inlineMarkup = renderer.renderMath(inlineLatex, false);
 const displayMarkup = renderer.renderMath(matrixLatex, true);
+const projectileMarkup = renderer.renderMath(projectileLatex, true);
 assert.match(inlineMarkup, /^<span/);
 assert.match(displayMarkup, /^<div/);
 assert.equal((inlineMarkup.match(/\\/g) || []).length, (inlineLatex.match(/\\/g) || []).length);
@@ -51,7 +53,11 @@ assert.ok(inlineMarkup.includes(String.raw`\boxed{x=2}`));
 assert.ok(inlineMarkup.includes(String.raw`\sqrt{16}`));
 assert.ok(displayMarkup.includes(String.raw`\begin{bmatrix}`));
 assert.ok(displayMarkup.includes(String.raw`\\ 3 &amp; 4\end{bmatrix}`));
-assert.ok(!/[\u0008\u000c]/.test(inlineMarkup + displayMarkup));
+assert.ok(projectileMarkup.includes(String.raw`x(t)=v_{0x}t`));
+assert.ok(projectileMarkup.includes(String.raw`\text{units: m/s}`));
+assert.ok(projectileMarkup.includes(String.raw`\theta`));
+assert.ok(!projectileMarkup.includes("v_{0x},t"));
+assert.ok(!/[\u0008\u0009\u000c]/.test(inlineMarkup + displayMarkup + projectileMarkup));
 
 const mermaidBlock = [
   "```mermaid",
@@ -107,12 +113,28 @@ assert.ok(malformedChart.includes("Valid chart explanation"));
 assert.ok(malformedChart.includes("Valid conclusion"));
 assert.ok(malformedChart.includes("Chart unavailable"));
 
+const unavailableAttachment = markdown.render(
+  "Explanation remains visible.\n\n![Projectile Path](attachment://projectile_path.png)",
+  { richResponse: renderer }
+);
+assert.ok(unavailableAttachment.includes("tutorly-attachment-placeholder"));
+assert.ok(unavailableAttachment.includes("Projectile Path unavailable"));
+assert.ok(!unavailableAttachment.includes("attachment://"));
+
+const mermaidWithFakeAttachment = markdown.render(
+  `${mermaidBlock}\n\n![Projectile Path](attachment://projectile_path.png)`,
+  { richResponse: renderer }
+);
+assert.ok(mermaidWithFakeAttachment.includes("tutorly-diagram-block"));
+assert.ok(!mermaidWithFakeAttachment.includes("tutorly-attachment-placeholder"));
+assert.ok(!mermaidWithFakeAttachment.includes("attachment://"));
+
 const projectilePromptResponse = [
   "# Projectile motion",
   "",
   "A projectile has constant horizontal velocity and vertical acceleration $-g$.",
   "",
-  "$$x = u\\cos(\\theta)t$$",
+  "$$x(t)=v_{0x}t$$",
   "$$y = u\\sin(\\theta)t - \\frac{1}{2}gt^2$$",
   "",
   "## Worked example",

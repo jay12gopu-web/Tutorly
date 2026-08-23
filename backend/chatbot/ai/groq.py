@@ -34,13 +34,57 @@ def _has_closing_math_delimiter(value: str, start: int, delimiter: str) -> bool:
     return False
 
 
+def _has_closing_latex_delimiter(value: str, start: int, closing_character: str) -> bool:
+    r"""Return whether a raw ``\(...\)``/``\[...\]`` span closes later."""
+
+    cursor = start
+    while cursor < len(value) - 1:
+        found = value.find("\\", cursor)
+        if found < 0:
+            return False
+        if _is_unescaped(value, found) and value[found + 1] == closing_character:
+            return True
+        cursor = found + 1
+    return False
+
+
+_DECODED_JSON_CONTROL_ESCAPES = {
+    "\b": "b",
+    "\f": "f",
+    "\t": "t",
+    "\r": "r",
+}
+
+
+def _restore_decoded_latex_control_words(value: str) -> str:
+    """Recover LaTeX control words decoded prematurely as JSON controls.
+
+    JSON and LaTeX share the escape initials b, f, r and t. In a student
+    Markdown answer a control character immediately followed by another ASCII
+    letter is not useful formatting, but it is the exact shape produced when
+    an under-escaped LaTeX control word (for example ``\\frac``) is decoded.
+    This is grammar-based and deliberately leaves line feeds alone because a
+    normal JSON ``\\n`` followed by prose is common and ambiguous.
+    """
+
+    restored: list[str] = []
+    for index, character in enumerate(value):
+        escape_letter = _DECODED_JSON_CONTROL_ESCAPES.get(character)
+        following = value[index + 1] if index + 1 < len(value) else ""
+        if escape_letter and following.isascii() and following.islower():
+            restored.append(f"\\{escape_letter}")
+        else:
+            restored.append(character)
+    return "".join(restored)
+
+
 def _preserve_latex_backslashes(value: str) -> str:
-    """Make under-escaped backslashes JSON-safe inside Markdown math spans.
+    """Make under-escaped LaTeX backslashes safe in a JSON answer string.
 
     Structured model output is JSON containing a Markdown answer. A literal
     LaTeX backslash therefore needs JSON escaping as well. Some model responses
     omit that outer escaping, which either creates JSON control characters or
-    makes the payload invalid. This scanner uses JSON grammar and Markdown math
+    makes the payload invalid. This scanner uses JSON/LaTeX grammar and math
     boundaries; it never matches or rewrites individual LaTeX commands.
     """
 
@@ -50,6 +94,15 @@ def _preserve_latex_backslashes(value: str) -> str:
 
     while index < len(value):
         if ord(value[index]) < 32:
+            escape_letter = _DECODED_JSON_CONTROL_ESCAPES.get(value[index])
+            following = value[index + 1] if index + 1 < len(value) else ""
+            if escape_letter and following.isascii() and following.islower():
+                # The provider/SDK may already have decoded an under-escaped
+                # LaTeX word. Emit two JSON backslashes so the final decoded
+                # answer receives one literal LaTeX backslash.
+                output.append("\\\\" + escape_letter)
+                index += 1
+                continue
             # Raw line breaks and other control characters are invalid inside a
             # JSON string. Encode them using JSON itself so multiline Markdown,
             # tables, and fenced blocks survive standard decoding unchanged.
@@ -83,6 +136,23 @@ def _preserve_latex_backslashes(value: str) -> str:
         next_character = value[run_end] if run_end < len(value) else ""
         following_character = value[run_end + 1] if run_end + 1 < len(value) else ""
 
+        if run_length % 2 == 1:
+            if (
+                math_delimiter is None
+                and next_character in "(["
+                and _has_closing_latex_delimiter(
+                    value,
+                    run_end + 1,
+                    ")" if next_character == "(" else "]",
+                )
+            ):
+                math_delimiter = "\\)" if next_character == "(" else "\\]"
+            elif (
+                (math_delimiter == "\\)" and next_character == ")")
+                or (math_delimiter == "\\]" and next_character == "]")
+            ):
+                math_delimiter = None
+
         needs_json_escape = False
         if run_length % 2 == 1:
             valid_unicode_escape = (
@@ -93,13 +163,19 @@ def _preserve_latex_backslashes(value: str) -> str:
             valid_json_escape = next_character in _JSON_SIMPLE_ESCAPES or valid_unicode_escape
             needs_json_escape = not valid_json_escape
 
-            # Inside a Markdown math span, a JSON control-escape letter followed
-            # by another letter is a LaTeX control word, not formatting. JSON
-            # newlines/tabs next to delimiters or punctuation remain untouched.
+            # JSON-valid b/f/r/t escapes followed by an ASCII letter have the
+            # grammar of a LaTeX control word in any response path. Newline is
+            # ambiguous in prose, so only disambiguate n inside a known math
+            # span. This preserves real JSON line breaks such as ``\nNext``.
             if (
+                next_character in "bfrt"
+                and following_character.isascii()
+                and following_character.islower()
+            ) or (
                 math_delimiter is not None
-                and next_character in "bfnrt"
-                and following_character.isalpha()
+                and next_character == "n"
+                and following_character.isascii()
+                and following_character.islower()
             ):
                 needs_json_escape = True
 
@@ -134,6 +210,9 @@ def load_structured_response_json(content: str) -> Dict[str, Any]:
     if not isinstance(parsed, dict):
         raise TypeError("structured response must be an object")
     answer = parsed.get("answer")
+    if isinstance(answer, str):
+        answer = _restore_decoded_latex_control_words(answer)
+        parsed["answer"] = answer
     if isinstance(answer, str) and any(
         ord(character) < 32 and character not in "\n\r\t"
         for character in answer
