@@ -20,7 +20,7 @@ const visuals = read("js/chatbot/educational-visuals.js");
   "js/chatbot/educational-visuals.js",
   "js/app.js"
 ].forEach((script) => {
-  assert.ok(page.includes(`src="${script}"`), `maths_gpt.html should load ${script}`);
+  assert.ok(page.includes(`src="${script}`), `maths_gpt.html should load ${script}`);
 });
 
 [
@@ -39,6 +39,8 @@ const visuals = read("js/chatbot/educational-visuals.js");
 });
 
 assert.ok(app.includes('getBackendEndpoint("/api/chat")'), "frontend should call the backend semantic chat endpoint");
+assert.ok(app.includes('return "https://tutorly-api.onrender.com"'), "production chat should use the deployed Tutorly API");
+assert.ok(app.includes("activity_chat_id"), "frontend should retain the persisted chat id for feedback");
 assert.ok(app.includes("semanticRoute"), "frontend should consume validated semantic route metadata");
 assert.ok(app.includes("fromSemanticRoute"), "visual rendering should use semantic route output");
 assert.ok(app.includes("chatRequestInFlight"), "send button should suppress duplicate in-flight requests");

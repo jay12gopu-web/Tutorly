@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const isLocalDevelopment = ["127.0.0.1", "localhost"].includes(window.location.hostname);
     if (!isLocalDevelopment && ["http:", "https:"].includes(window.location.protocol)) {
-      return window.location.origin;
+      return "https://tutorly-api.onrender.com";
     }
 
     return "http://127.0.0.1:8000";
@@ -418,6 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
       context.semanticRoute = data?.metadata?.semantic_route || null;
       context.quickActions = data?.metadata?.quick_actions || [];
       context.backendConversationId = data?.conversation_id || context.conversationId || null;
+      context.activityChatId = data?.metadata?.activity_chat_id || null;
       if (data?.error && data?.message) return data.message;
       const answer = data?.answer || data?.message || data?.response || "";
       if (!answer || /error generating response/i.test(answer)) {
@@ -448,7 +449,8 @@ document.addEventListener("DOMContentLoaded", () => {
           analysis: null,
           metadata: {
             model: payload.model || selectedModel,
-            source: "chat-ui"
+            source: "chat-ui",
+            activity_chat_id: payload.activityChatId || null
           }
         })
       });
@@ -2706,6 +2708,7 @@ document.addEventListener("DOMContentLoaded", () => {
           reply: rawReply,
           feedbackType: action,
           model: meta.model || message.dataset.model || selectedModel,
+          activityChatId: meta.context?.activityChatId || meta.activityChatId || null,
           adaptiveContext: meta.context?.adaptiveContext || meta.adaptiveContext || null
         });
         showToast(action === "up" ? "Marked as helpful." : "Marked for improvement.");
@@ -2723,6 +2726,7 @@ document.addEventListener("DOMContentLoaded", () => {
           reply: rawReply,
           feedbackType: action,
           model: meta.model || message.dataset.model || selectedModel,
+          activityChatId: meta.context?.activityChatId || meta.activityChatId || null,
           adaptiveContext: meta.context?.adaptiveContext || meta.adaptiveContext || null
         });
         const followup = feedbackResult?.followup || GPT?.createFeedbackFollowup?.(action, {
@@ -3289,6 +3293,7 @@ document.addEventListener("DOMContentLoaded", () => {
           directives: requestPayload.responseDirectives,
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
+          activityChatId: requestPayload.activityChatId || null,
           hasImage
         }
       }) || ChatHistory?.appendMessage?.(conversationId, {
@@ -3305,6 +3310,7 @@ document.addEventListener("DOMContentLoaded", () => {
           directives: requestPayload.responseDirectives,
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
+          activityChatId: requestPayload.activityChatId || null,
           hasImage
         }
       });

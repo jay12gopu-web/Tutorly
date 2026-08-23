@@ -91,7 +91,7 @@ const envExample = read(".env.example");
 assert(envExample.includes("APP_ORIGIN=https://mytutor.co.in"), "Production app origin must use the public domain");
 assert(envExample.includes("TUTORLY_ALLOWED_ORIGINS=https://mytutor.co.in"), "FastAPI origin list must include the public domain");
 const appSource = read("js/app.js");
-assert(appSource.includes("return window.location.origin"), "Production chat API must use the deployed same origin");
+assert(appSource.includes('return "https://tutorly-api.onrender.com"'), "Production chat API must use the deployed Tutorly backend");
 
 const subscriptions = read("subscriptions.html");
 assert(subscriptions.includes("₹499<small>/month</small>"), "Plus price encoding is incorrect");
