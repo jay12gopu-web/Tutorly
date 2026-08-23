@@ -145,6 +145,7 @@ class ChatbotOrchestrator:
                     "provider": semantic_result.provider if semantic_result.provider_used else "none",
                     "model": semantic_result.model,
                     "status": semantic_result.status,
+                    "retry_after_seconds": semantic_result.retry_after_seconds,
                 },
                 "response_policy": plan_metadata,
                 "quick_actions": self.response_policy.action_metadata(response_plan),

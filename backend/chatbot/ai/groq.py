@@ -28,6 +28,10 @@ class GroqProvider(AIProvider):
             or self.DEFAULT_MODEL
         ).strip()
         self._timeout_seconds = max(5.0, min(float(timeout_seconds), 45.0))
+        self._max_completion_tokens = max(
+            400,
+            min(int(os.getenv("TUTORLY_GROQ_MAX_COMPLETION_TOKENS", "900")), 1800),
+        )
         self._client = None
 
     @property
@@ -104,13 +108,13 @@ class GroqProvider(AIProvider):
             temperature=0.2,
             reasoning_effort="low",
             reasoning_format="hidden",
-            max_completion_tokens=2600,
+            max_completion_tokens=self._max_completion_tokens,
             response_format={
                 "type": "json_schema",
                 "json_schema": {
                     "name": schema_name,
                     "strict": True,
-                    "schema": schema,
+                    "schema": _compact_schema(schema),
                 },
             },
         )
@@ -124,3 +128,16 @@ class GroqProvider(AIProvider):
         if not isinstance(parsed, dict):
             raise ProviderFailure("invalid_json")
         return parsed
+
+
+def _compact_schema(value: Any) -> Any:
+    """Remove documentation-only JSON Schema fields before sending them to Groq."""
+    if isinstance(value, dict):
+        return {
+            key: _compact_schema(item)
+            for key, item in value.items()
+            if key not in {"title", "description", "examples", "default"}
+        }
+    if isinstance(value, list):
+        return [_compact_schema(item) for item in value]
+    return value
