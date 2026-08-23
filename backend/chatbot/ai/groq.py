@@ -114,7 +114,7 @@ class GroqProvider(AIProvider):
                 "json_schema": {
                     "name": schema_name,
                     "strict": True,
-                    "schema": _compact_schema(schema),
+                    "schema": schema,
                 },
             },
         )
@@ -128,16 +128,3 @@ class GroqProvider(AIProvider):
         if not isinstance(parsed, dict):
             raise ProviderFailure("invalid_json")
         return parsed
-
-
-def _compact_schema(value: Any) -> Any:
-    """Remove documentation-only JSON Schema fields before sending them to Groq."""
-    if isinstance(value, dict):
-        return {
-            key: _compact_schema(item)
-            for key, item in value.items()
-            if key not in {"title", "description", "examples", "default"}
-        }
-    if isinstance(value, list):
-        return [_compact_schema(item) for item in value]
-    return value
