@@ -62,6 +62,11 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 class LegacyChatRequest(BaseModel):
     userId: str | None = None
     user_id: str | None = None

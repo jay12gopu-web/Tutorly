@@ -1,9 +1,16 @@
 from __future__ import annotations
 
+import asyncio
 import json
+from time import perf_counter
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse
+
+try:
+    from backend.activity_store import activity_store
+except ImportError:
+    from activity_store import activity_store
 
 from .orchestrator import ChatbotOrchestrator
 from .rate_limit import SlidingWindowRateLimiter
@@ -62,13 +69,54 @@ async def respond_options() -> dict:
 @router.post("/chat")
 @router.post("/chatbot/respond")
 async def respond(request: ChatbotRequest):
-    enforce_chat_rate_limit(request)
+    started = perf_counter()
     try:
-        return await orchestrator.respond(request)
-    except HTTPException:
+        enforce_chat_rate_limit(request)
+        response = await orchestrator.respond(request)
+        generation = response.metadata.get("generation", {})
+        chat_id = await asyncio.to_thread(
+            activity_store.record_chat,
+            user_id=request.user_id,
+            grade=request.profile.grade if request.profile and request.profile.grade else "",
+            question=request.message,
+            answer=response.answer,
+            subject=response.subject.value,
+            mode=request.mode.value,
+            provider=str(generation.get("provider") or "groq"),
+            model=str(generation.get("model") or ""),
+            provider_status=str(generation.get("status") or "unknown"),
+            latency_ms=round((perf_counter() - started) * 1000),
+            endpoint="/api/chat",
+        )
+        if chat_id:
+            response.metadata["activity_chat_id"] = chat_id
+        return response
+    except HTTPException as error:
+        await asyncio.to_thread(
+            activity_store.record_failure,
+            user_id=request.user_id,
+            grade=request.profile.grade if request.profile and request.profile.grade else "",
+            provider=orchestrator.semantic_tutor.provider.name,
+            model=orchestrator.semantic_tutor.provider.model,
+            error_code=f"HTTP_{error.status_code}",
+            http_status=error.status_code,
+            latency_ms=round((perf_counter() - started) * 1000),
+            endpoint="/api/chat",
+        )
         raise
     except Exception as error:
         print(f"[Tutorly][semantic-chat] unexpected failure type={type(error).__name__}")
+        await asyncio.to_thread(
+            activity_store.record_failure,
+            user_id=request.user_id,
+            grade=request.profile.grade if request.profile and request.profile.grade else "",
+            provider=orchestrator.semantic_tutor.provider.name,
+            model=orchestrator.semantic_tutor.provider.model,
+            error_code="BACKEND_EXCEPTION",
+            http_status=503,
+            latency_ms=round((perf_counter() - started) * 1000),
+            endpoint="/api/chat",
+        )
         raise HTTPException(
             status_code=503,
             detail="I couldn't process that question properly. Please try again.",
@@ -77,7 +125,15 @@ async def respond(request: ChatbotRequest):
 
 @router.post("/chatbot/feedback")
 async def feedback(request: TeachingFeedbackRequest):
-    return teaching_success.record(request)
+    result = teaching_success.record(request)
+    await asyncio.to_thread(
+        activity_store.record_feedback,
+        user_id=request.user_id,
+        chat_id=str(request.metadata.get("activity_chat_id") or "") if isinstance(request.metadata, dict) else None,
+        conversation_id=request.conversation_id,
+        feedback_type=request.feedback_type,
+    )
+    return result
 
 
 @router.post("/chatbot/stream")
