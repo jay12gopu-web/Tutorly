@@ -45,6 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const MathResponseContract = window.TutorlyMathResponseContract || null;
   const ResponsePolicy = window.TutorlyResponsePolicy || null;
   const EducationalVisuals = window.TutorlyEducationalVisuals || null;
+  const RichResponse = window.TutorlyRichResponse || null;
+  const MarkdownRenderer = window.TutorlyMarkdownRenderer || null;
   const ENABLE_LEGACY_LOCAL_ROUTER = false;
   const BOT_AVATAR_SRC = "assets/chatbot-star.png";
   const MODEL_STORAGE_KEY = "tutorly_selected_ai_model";
@@ -402,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function requestBackendChat(message, context = {}) {
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 18000);
+    const timeout = window.setTimeout(() => controller.abort(), 50000);
 
     try {
       let data;
@@ -1298,18 +1300,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderInlineMarkdown(value) {
     const codeTokens = [];
-    const tokenized = String(value || "").replace(/`([^`]+)`/g, (_, code) => {
+    const mathTokens = [];
+    const linkTokens = [];
+    let tokenized = String(value || "").replace(/`([^`]+)`/g, (_, code) => {
       codeTokens.push(`<code>${escapeHtml(code)}</code>`);
-      return `@@TUTORLY_CODE_${codeTokens.length - 1}@@`;
+      return `@@TUTORLYCODE${codeTokens.length - 1}@@`;
+    });
+    tokenized = tokenized.replace(/\\\((.+?)\\\)|\$([^$\n]+)\$/g, (_, parenMath, dollarMath) => {
+      const expression = parenMath || dollarMath || "";
+      mathTokens.push(
+        RichResponse?.renderMath
+          ? RichResponse.renderMath(expression, false, escapeHtml)
+          : `<span class="math-inline">${escapeHtml(expression)}</span>`
+      );
+      return `@@TUTORLYMATH${mathTokens.length - 1}@@`;
+    });
+    tokenized = tokenized.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi, (_, label, href) => {
+      linkTokens.push(`<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
+      return `@@TUTORLYLINK${linkTokens.length - 1}@@`;
     });
     let html = escapeHtml(tokenized)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/_([^_]+)_/g, "<em>$1</em>")
-      .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '<span class="math-fraction"><span>$1</span><span>$2</span></span>')
-      .replace(/\\sqrt\{([^{}]+)\}/g, '<span class="math-root">√<span class="math-radicand">$1</span></span>')
-      .replace(/\\\((.+?)\\\)|\$([^$]+)\$/g, (_, parenMath, dollarMath) => `<span class="math-inline">${parenMath || dollarMath}</span>`);
+      .replace(/_([^_]+)_/g, "<em>$1</em>");
     codeTokens.forEach((token, index) => {
-      html = html.replace(`@@TUTORLY_CODE_${index}@@`, token);
+      html = html.replace(`@@TUTORLYCODE${index}@@`, token);
+    });
+    mathTokens.forEach((token, index) => {
+      html = html.replace(`@@TUTORLYMATH${index}@@`, token);
+    });
+    linkTokens.forEach((token, index) => {
+      html = html.replace(`@@TUTORLYLINK${index}@@`, token);
     });
     return html;
   }
@@ -1324,6 +1344,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderMarkdownNote(markdown) {
+    if (MarkdownRenderer?.render) {
+      return MarkdownRenderer.render(markdown, { richResponse: RichResponse });
+    }
     const trustedHtml = String(markdown || "").trim();
     if (/^<section\s+class="math-learning-flow"\s+data-tutorly-math-response/i.test(trustedHtml)) {
       return trustedHtml;
@@ -1349,9 +1372,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function closeCodeBlock() {
       if (!codeBlock) return;
+      if (RichResponse?.renderCodeBlock) {
+        html.push(RichResponse.renderCodeBlock(codeBlock.language, codeBlock.lines.join("\n"), escapeHtml));
+        codeBlock = null;
+        return;
+      }
       const language = codeBlock.language ? ` data-language="${escapeHtml(codeBlock.language)}"` : "";
       html.push(`<pre${language}><code>${escapeHtml(codeBlock.lines.join("\n"))}</code></pre>`);
       codeBlock = null;
+    }
+
+    function renderDisplayMath(expression) {
+      return RichResponse?.renderMath
+        ? RichResponse.renderMath(expression, true, escapeHtml)
+        : `<div class="math-display">${escapeHtml(expression)}</div>`;
     }
 
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
@@ -1381,6 +1415,23 @@ document.addEventListener("DOMContentLoaded", () => {
         continue;
       }
 
+      if (line === "$$" || line === "\\[") {
+        const closingDelimiter = line === "$$" ? "$$" : "\\]";
+        const mathLines = [];
+        let mathIndex = lineIndex + 1;
+        while (mathIndex < lines.length && lines[mathIndex].trim() !== closingDelimiter) {
+          mathLines.push(lines[mathIndex]);
+          mathIndex += 1;
+        }
+        if (mathIndex < lines.length) {
+          closeParagraph();
+          closeList();
+          html.push(renderDisplayMath(mathLines.join("\n").trim()));
+          lineIndex = mathIndex;
+          continue;
+        }
+      }
+
       if (line.includes("|") && lines[lineIndex + 1] && isMarkdownTableDivider(lines[lineIndex + 1])) {
         closeParagraph();
         closeList();
@@ -1407,7 +1458,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (displayMath) {
         closeParagraph();
         closeList();
-        html.push(`<div class="math-display">${renderInlineMarkdown(`$${displayMath[1] || displayMath[2]}$`)}</div>`);
+        const expression = displayMath[1] || displayMath[2] || "";
+        html.push(renderDisplayMath(expression));
         continue;
       }
 
@@ -2385,6 +2437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (meta.prompt) message.dataset.prompt = meta.prompt;
     if (meta.model) message.dataset.model = meta.model;
     content.innerHTML = renderMarkdownNote(markdown);
+    RichResponse?.hydrate?.(content);
     hydrateMathLearningCards(message);
     attachEducationalVisual(message, meta);
     attachMathVisual(message, meta);
@@ -2395,7 +2448,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function attachEducationalVisual(message, meta = {}) {
     if (!EducationalVisuals?.fromSemanticRoute || !EducationalVisuals?.renderPanel) return;
     const content = message.querySelector(".bot-content");
-    if (!content || content.querySelector(".edu-visual-panel")) return;
+    if (!content || content.querySelector(".edu-visual-panel, .tutorly-diagram-block, .tutorly-chart-block")) return;
 
     const prompt = meta.prompt || message.dataset.prompt || "";
     if (!prompt) return;
@@ -2799,8 +2852,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const shouldStream = mode ? mode.stream !== false : true;
     const text = String(markdown || "");
     const isInteractiveMath = /^<section\s+class="math-learning-flow"\s+data-tutorly-math-response/i.test(text.trim());
+    const hasRichVisualFence = /```(?:mermaid|chart)\b/i.test(text);
 
-    if (!content || isInteractiveMath || !shouldStream || text.length < 160) {
+    if (!content || isInteractiveMath || hasRichVisualFence || !shouldStream || text.length < 160) {
       message.classList.remove("loading");
       updateBotContent(message, text, meta);
       if (typeof meta.onDone === "function") meta.onDone();
@@ -2808,7 +2862,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const chunks = text.match(/.{1,42}(\s|$)/g) || [text];
+    // Slice every character losslessly. A whitespace-based matcher previously
+    // skipped line breaks while simulating streaming, which could temporarily
+    // alter Markdown and display-math boundaries before the final render.
+    const chunks = text.match(/[\s\S]{1,42}/g) || [text];
     let index = 0;
     const interval = meta.model === "spark" ? 14 : meta.model === "deep" ? 28 : 20;
 
@@ -2859,6 +2916,7 @@ document.addEventListener("DOMContentLoaded", () => {
         content.appendChild(dots);
       } else {
         content.innerHTML = renderMarkdownNote(text);
+        RichResponse?.hydrate?.(content);
         hydrateMathLearningCards(message);
       }
 

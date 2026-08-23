@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
@@ -10,6 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ..schemas import Attachment, ConversationTurn, LearnerProfile
 from .provider import AIProvider, ProviderFailure
+
+
+logger = logging.getLogger(__name__)
 
 
 class TutorlySubject(str, Enum):
@@ -266,7 +270,7 @@ class SemanticTutorService:
 
     SCHEMA_NAME = "tutorly_semantic_tutor_response"
     FRIENDLY_ERROR = "I couldn't process that question properly. Please try again."
-    RATE_LIMIT_ERROR = "Tutorly is busy right now. Please wait about a minute, then try again."
+    RATE_LIMIT_ERROR = "Tutorly's AI is temporarily busy. Please try again later."
 
     def __init__(self, provider: AIProvider) -> None:
         self.provider = provider
@@ -296,11 +300,43 @@ class SemanticTutorService:
                 schema=SemanticTutorOutput.model_json_schema(),
                 schema_name=self.SCHEMA_NAME,
             )
-            output = SemanticTutorOutput.model_validate(payload)
         except ProviderFailure as error:
+            logger.warning(
+                "Tutorly AI provider failure stage=provider status=%s retry_after_seconds=%s",
+                error.status,
+                error.retry_after_seconds,
+            )
             return self._fallback(error.status, retry_after_seconds=error.retry_after_seconds)
-        except (ValidationError, TypeError, ValueError):
+        except (TypeError, ValueError) as error:
+            logger.warning(
+                "Tutorly AI provider failure stage=structured_payload error_type=%s",
+                type(error).__name__,
+            )
             return self._fallback("invalid_schema")
+
+        result_status = "generated"
+        try:
+            output = SemanticTutorOutput.model_validate(payload)
+        except ValidationError as error:
+            salvaged_answer = clean_student_answer(
+                payload.get("answer", "") if isinstance(payload, dict) else ""
+            )
+            if not salvaged_answer:
+                locations = [".".join(str(part) for part in item["loc"]) for item in error.errors()[:8]]
+                logger.warning(
+                    "Tutorly AI validation failure stage=schema answer_salvaged=false fields=%s",
+                    ",".join(locations),
+                )
+                return self._fallback("invalid_schema")
+            logger.warning(
+                "Tutorly AI validation degradation stage=schema answer_salvaged=true error_count=%s",
+                len(error.errors()),
+            )
+            output = SemanticTutorOutput(
+                classification=fallback_classification(),
+                answer=salvaged_answer,
+            )
+            result_status = "generated_degraded"
 
         answer = clean_student_answer(output.answer)
         if not answer:
@@ -311,7 +347,7 @@ class SemanticTutorService:
             provider_used=True,
             provider=self.provider.name,
             model=self.provider.model,
-            status="generated",
+            status=result_status,
         )
 
     def _fallback(
@@ -417,6 +453,11 @@ Answer-generation rules:
 - Answer facts immediately; define terms plainly; explain why-questions from the cause; show only necessary maths working and bold the result; number real processes; use compact tables for comparisons and fenced code for debugging.
 - Respect the supplied grade. Use correct units, balanced equations where relevant, school-level biology, concise literary analysis, jurisdiction-neutral civics, and clear causes/effects for humanities.
 - Continue follow-ups naturally without restarting or repeating the lesson. If a visual was selected, explain what to notice without exposing the route.
+- Use `$...$` for inline mathematics and `$$...$$` for display mathematics. Keep delimiters balanced and JSON-escape every literal backslash in the raw structured response.
+- When a selected process, cycle, sequence, hierarchy, relationship, or timeline is materially clearer visually, include one compact fenced `mermaid` block with short labels and no links, click actions, HTML, styling, or initialization directives.
+- When honest quantitative data materially clarifies a comparison, trend, or distribution, a fenced `chart` block may contain strict JSON for a `bar`, `line`, or `pie` chart with no comments, at most 12 rows, and at most 3 series.
+- Rich visuals are optional. Never emit them merely because a topic could have one, and do not duplicate the same information as both a diagram and chart.
+- Use language-labelled fenced code blocks for programming answers, with explanation outside the fence.
 """.strip()
 
 

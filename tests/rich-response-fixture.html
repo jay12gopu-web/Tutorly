@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly Rich Response Fixture</title>
+  <link rel="stylesheet" href="../css/chatbot.css" />
+</head>
+<body class="has-chat">
+  <main style="width:min(920px,calc(100% - 32px));margin:32px auto;">
+    <section class="messages">
+      <article class="msg bot">
+        <span class="bot-avatar" aria-hidden="true"><img src="../assets/chatbot-star.png" alt="" /></span>
+        <div id="fixture" class="bot-content" aria-label="Rich response fixture"></div>
+      </article>
+    </section>
+  </main>
+  <script src="../js/chatbot/rich-response-renderer.js"></script>
+  <script src="../js/chatbot/markdown-renderer.js"></script>
+  <script>
+    const renderer = window.TutorlyRichResponse;
+    const markdown = window.TutorlyMarkdownRenderer;
+    const target = document.getElementById("fixture");
+    const projectileResponse = [
+      "# Projectile motion",
+      "",
+      "A projectile has constant horizontal velocity and vertical acceleration $-g$.",
+      "",
+      String.raw`$$x=u\cos(\theta)t$$`,
+      String.raw`$$y=u\sin(\theta)t-\frac{1}{2}gt^2$$`,
+      "",
+      "## Worked example",
+      "",
+      String.raw`For $u=20\,\text{m/s}$ and $\theta=30^\circ$, the initial vertical velocity is $u_y=20\sin(30^\circ)=10\,\text{m/s}$.`,
+      "",
+      "| Component | Acceleration |",
+      "|---|---|",
+      "| Horizontal | $0$ |",
+      "| Vertical | $-g$ |",
+      "",
+      "```mermaid",
+      "flowchart LR",
+      "A[Launch] --> B[Projectile rises]",
+      "B --> C[Maximum height]",
+      "C --> D[Projectile falls]",
+      "```"
+    ].join("\n");
+    target.innerHTML = markdown.render(projectileResponse, { richResponse: renderer });
+    renderer.hydrate(target);
+  </script>
+</body>
+</html>

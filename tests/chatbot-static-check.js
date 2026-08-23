@@ -18,6 +18,8 @@ const visuals = read("js/chatbot/educational-visuals.js");
   "js/chatbot/learning-tools.js",
   "js/chatbot/response-policy.js",
   "js/chatbot/educational-visuals.js",
+  "js/chatbot/rich-response-renderer.js",
+  "js/chatbot/markdown-renderer.js",
   "js/app.js"
 ].forEach((script) => {
   assert.ok(page.includes(`src="${script}`), `maths_gpt.html should load ${script}`);
@@ -49,6 +51,10 @@ assert.ok(app.includes("placeSemanticVisual"), "frontend should honor semantic v
 assert.ok(app.includes("renderMarkdownNote"), "existing Markdown renderer should be reused");
 assert.ok(app.includes("markdown-table-wrap"), "Markdown tables should be supported");
 assert.ok(app.includes("<pre${language}><code>"), "fenced code blocks should be supported");
+assert.ok(app.includes("renderDisplayMath"), "inline and multiline display math should be supported");
+assert.ok(app.includes("RichResponse?.hydrate?.(content)"), "rich response blocks should hydrate inside existing messages");
+assert.ok(app.includes("MarkdownRenderer.render(markdown"), "chat should use the shared failure-isolated Markdown renderer");
+assert.ok(app.includes("text.match(/[\\s\\S]{1,42}/g)"), "simulated streaming must preserve every response character");
 
 const getBotStart = app.indexOf("async function getBotReply");
 const sendStart = app.indexOf("async function sendMessage", getBotStart);

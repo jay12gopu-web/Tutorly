@@ -1608,6 +1608,179 @@ body.has-chat .chat-window {
 .math-fraction > span:last-child { padding: 0.08em 0.18em 0; }
 .math-radicand { border-top: 1px solid currentColor; padding: 0 0.12em; }
 
+/* Rich educational blocks rendered inside the existing Tutorly message surface. */
+.tutorly-code-block {
+  margin: 14px 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #11172a;
+  box-shadow: 0 10px 26px rgba(22, 32, 72, 0.12);
+}
+
+.tutorly-code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 7px 10px 7px 14px;
+  color: #bfc9ef;
+  background: #19213a;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.tutorly-code-head button {
+  border: 1px solid rgba(190, 205, 255, 0.18);
+  border-radius: 9px;
+  padding: 5px 9px;
+  color: #eef2ff;
+  background: rgba(255, 255, 255, 0.07);
+  font: inherit;
+  cursor: pointer;
+  transition: background 170ms cubic-bezier(.2,.8,.2,1), transform 170ms cubic-bezier(.2,.8,.2,1);
+}
+
+.tutorly-code-head button:hover {
+  background: rgba(255, 255, 255, 0.13);
+  transform: translateY(-1px);
+}
+
+.tutorly-code-block pre {
+  margin: 0;
+  overflow-x: auto;
+  border: 0;
+  border-radius: 0;
+  padding: 16px;
+  color: #f4f6ff;
+  background: transparent;
+  font: 13px/1.65 "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  tab-size: 2;
+}
+
+.tutorly-code-block code {
+  color: inherit;
+  background: transparent;
+  white-space: pre;
+}
+
+.tutorly-mermaid-canvas,
+.tutorly-chart-canvas {
+  width: 100%;
+  overflow-x: auto;
+  padding: 10px 16px 18px;
+}
+
+.tutorly-mermaid-canvas svg,
+.tutorly-chart-canvas svg {
+  display: block;
+  width: 100%;
+  min-width: 520px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.tutorly-rich-loading {
+  display: block;
+  padding: 22px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+.tutorly-rich-error {
+  margin: 12px 0;
+  border: 1px solid rgba(218, 93, 113, 0.24);
+  border-radius: 14px;
+  padding: 11px 13px;
+  color: #8f2f45;
+  background: rgba(255, 237, 241, 0.72);
+  font-size: 13px;
+}
+
+.tutorly-chart-grid {
+  stroke: rgba(93, 111, 166, 0.18);
+  stroke-width: 1;
+}
+
+.tutorly-chart-axis {
+  stroke: rgba(43, 57, 102, 0.55);
+  stroke-width: 1.5;
+}
+
+.tutorly-chart-label {
+  fill: var(--muted);
+  font: 11px Inter, system-ui, sans-serif;
+}
+
+.tutorly-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 0 17px 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.tutorly-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.tutorly-chart-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.tutorly-pie-layout {
+  display: grid;
+  grid-template-columns: minmax(170px, 240px) 1fr;
+  align-items: center;
+  gap: 22px;
+  padding: 10px 18px 20px;
+}
+
+.tutorly-pie-chart {
+  width: min(220px, 58vw);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 44px rgba(255, 255, 255, 0.78);
+}
+
+.tutorly-pie-legend {
+  display: grid;
+  padding: 0;
+}
+
+body[data-theme="dark"] .tutorly-rich-error {
+  color: #ffc2cf;
+  background: rgba(121, 36, 58, 0.22);
+}
+
+body[data-theme="dark"] .tutorly-pie-chart {
+  box-shadow: inset 0 0 0 44px rgba(20, 27, 52, 0.86);
+}
+
+@media (max-width: 640px) {
+  .tutorly-mermaid-canvas,
+  .tutorly-chart-canvas {
+    padding-inline: 10px;
+  }
+
+  .tutorly-mermaid-canvas svg,
+  .tutorly-chart-canvas svg {
+    min-width: 460px;
+  }
+
+  .tutorly-pie-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 .contextual-actions {
   flex: 1 1 320px;
   margin-left: 6px;

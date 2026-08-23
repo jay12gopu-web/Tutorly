@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from backend.chatbot.ai.groq import GroqProvider
+from backend.chatbot.ai.groq import GroqProvider, load_structured_response_json
 from backend.chatbot.ai.provider import AIProvider, ProviderFailure
 from backend.chatbot.ai.semantic_router import (
     ANSWER_GENERATION_PROMPT,
@@ -21,7 +21,7 @@ from backend.chatbot.ai.semantic_router import (
 )
 from backend.chatbot.orchestrator import ChatbotOrchestrator
 from backend.chatbot.rate_limit import SlidingWindowRateLimiter
-from backend.chatbot.schemas import ChatbotRequest, LearnerProfile
+from backend.chatbot.schemas import ChatbotRequest, LearnerProfile, ResponseStage, StreamEvent
 
 
 def semantic_output(
@@ -107,13 +107,46 @@ class InvalidSchemaProvider(FakeSemanticProvider):
         return {"classification": {"subject": "not-a-subject"}, "answer": ""}
 
 
+class MissingMetadataProvider(FakeSemanticProvider):
+    async def complete_structured(self, *, messages, schema, schema_name):
+        return {
+            "classification": {"subject": "physics"},
+            "answer": "Useful text with $v_y=u_y-gt$ survives missing optional metadata.",
+        }
+
+
 class FailedProvider(FakeSemanticProvider):
     async def complete_structured(self, *, messages, schema, schema_name):
         raise ProviderFailure("timeout")
 
 
+class RateLimitedProvider(FakeSemanticProvider):
+    async def complete_structured(self, *, messages, schema, schema_name):
+        raise ProviderFailure("rate_limited", retry_after_seconds=60)
+
+
 def fixtures() -> dict[str, dict]:
     return {
+        "Explain projectile motion for an 11th-grade student. Include the main equations, one worked example, a small comparison table, and a diagram.": semantic_output(
+            subject="physics", topic="projectile motion", intent="concept_explanation",
+            response_type="worked_solution", answer_format="physics_numerical", response_length="detailed",
+            visual_type="motion_graph", visual_title="Projectile path",
+            visual_reason="A trajectory diagram connects horizontal and vertical motion.",
+            visual_elements=["launch", "rising", "maximum height", "falling"],
+            visual_placement="before_steps", calculator=True, diagram_renderer=True,
+            answer=(
+                "# Projectile motion\n\n"
+                "A projectile has constant horizontal velocity and vertical acceleration $-g$.\n\n"
+                "$$x=u\\cos(\\theta)t$$\n"
+                "$$y=u\\sin(\\theta)t-\\frac{1}{2}gt^2$$\n\n"
+                "## Worked example\n\n"
+                "For $u=20\\,\\text{m/s}$ and $\\theta=30^\\circ$, "
+                "$u_y=20\\sin(30^\\circ)=10\\,\\text{m/s}$.\n\n"
+                "| Component | Acceleration |\n|---|---|\n| Horizontal | $0$ |\n| Vertical | $-g$ |\n\n"
+                "```mermaid\nflowchart LR\nA[Launch] --> B[Projectile rises]\n"
+                "B --> C[Maximum height]\nC --> D[Projectile falls]\n```"
+            ),
+        ),
         "Why does the powerhouse of a cell need oxygen?": semantic_output(
             subject="biology", topic="mitochondria and cellular respiration", intent="why_question",
             response_type="explanation", answer_format="why_explanation", response_length="medium",
@@ -272,6 +305,36 @@ async def run_semantic_and_format_tests() -> None:
         assert route["answer_format"] and route["response_length"]
         assert "subject:" not in response.answer.lower()
 
+    projectile_prompt = (
+        "Explain projectile motion for an 11th-grade student. Include the main equations, "
+        "one worked example, a small comparison table, and a diagram."
+    )
+    projectile = await orchestrator.respond(ChatbotRequest(
+        user_id="projectile-test",
+        conversation_id="projectile-rich-response",
+        message=projectile_prompt,
+        profile=LearnerProfile(user_id="projectile-test", grade="grade_11"),
+    ))
+    assert projectile.subject.value == "physics"
+    assert projectile.metadata["generation"]["status"] == "generated"
+    assert "\\frac{1}{2}" in projectile.answer
+    assert "| Component | Acceleration |" in projectile.answer
+    assert "```mermaid" in projectile.answer
+    assert SemanticTutorService.FRIENDLY_ERROR not in projectile.answer
+
+    stream_events = []
+    async for event in orchestrator.stream(ChatbotRequest(
+        user_id="projectile-stream-test",
+        conversation_id="projectile-rich-stream",
+        message=projectile_prompt,
+        profile=LearnerProfile(user_id="projectile-stream-test", grade="grade_11"),
+    )):
+        stream_events.append(event)
+    streamed_answer = "".join(event.delta for event in stream_events)
+    assert streamed_answer == stream_events[-1].payload["answer"]
+    assert stream_events[-1].done is True
+    assert SemanticTutorService.FRIENDLY_ERROR not in streamed_answer
+
     formatting_questions = [
         "What is the SI unit of force?",
         "What do mitochondria do?",
@@ -330,6 +393,18 @@ async def run_error_tests() -> None:
     assert invalid_result.output.classification.visual.needed is False
     assert invalid_result.output.answer == SemanticTutorService.FRIENDLY_ERROR
 
+    degraded = SemanticTutorService(MissingMetadataProvider({}))
+    degraded_result = await degraded.route_and_answer(
+        student_question="Explain a physics idea",
+        conversation_context=[],
+        profile=LearnerProfile(),
+        mode="prime",
+    )
+    assert degraded_result.status == "generated_degraded"
+    assert degraded_result.output.classification.subject.value == "general"
+    assert "Useful text" in degraded_result.output.answer
+    assert degraded_result.output.answer != SemanticTutorService.FRIENDLY_ERROR
+
     failed = SemanticTutorService(FailedProvider({}))
     failed_result = await failed.route_and_answer(
         student_question="Explain something",
@@ -339,6 +414,18 @@ async def run_error_tests() -> None:
     )
     assert failed_result.status == "timeout"
     assert failed_result.output.answer == SemanticTutorService.FRIENDLY_ERROR
+
+    rate_limited = SemanticTutorService(RateLimitedProvider({}))
+    rate_limited_result = await rate_limited.route_and_answer(
+        student_question="Explain something",
+        conversation_context=[],
+        profile=LearnerProfile(),
+        mode="prime",
+    )
+    assert rate_limited_result.status == "rate_limited"
+    assert rate_limited_result.retry_after_seconds == 60
+    assert rate_limited_result.output.answer == SemanticTutorService.RATE_LIMIT_ERROR
+    assert rate_limited_result.output.answer != SemanticTutorService.FRIENDLY_ERROR
 
 
 def run_schema_security_and_limit_tests() -> None:
@@ -353,6 +440,47 @@ def run_schema_security_and_limit_tests() -> None:
         assert field in classification["required"]
 
     assert GroqProvider.DEFAULT_MODEL == "openai/gpt-oss-120b"
+
+    inline_latex = (
+        r"Inline $\frac{-8}{2\cdot2}$, $\boxed{x=2}$, and $\sqrt{16}$."
+    )
+    underescaped_inline_json = (
+        r'{"answer":"Inline $\frac{-8}{2\cdot2}$, $\boxed{x=2}$, and $\sqrt{16}$."}'
+    )
+    assert load_structured_response_json(underescaped_inline_json)["answer"] == inline_latex
+
+    display_latex = (
+        "$$\\sqrt{16}=4$$\n"
+        "$$\\begin{bmatrix}1 & 2 \\\\ 3 & 4\\end{bmatrix}$$"
+    )
+    underescaped_display_json = (
+        r'{"answer":"$$\sqrt{16}=4$$\n$$\begin{bmatrix}1 & 2 \\\\ 3 & 4\end{bmatrix}$$"}'
+    )
+    assert load_structured_response_json(underescaped_display_json)["answer"] == display_latex
+    assert load_structured_response_json(json.dumps({"answer": display_latex}))["answer"] == display_latex
+    assert clean_student_answer(display_latex) == display_latex
+
+    multiline_rich_answer = (
+        "Explanation with $v_y=u_y-gt$.\n\n"
+        "| Part | Motion |\n|---|---|\n| Horizontal | Constant velocity |\n\n"
+        "```mermaid\nflowchart LR\nA[Launch] --> B[Flight]\n```"
+    )
+    raw_multiline_json = '{"answer":"' + multiline_rich_answer + '"}'
+    assert load_structured_response_json(raw_multiline_json)["answer"] == multiline_rich_answer
+
+    streamed_latex = inline_latex + "\n" + display_latex
+    chunks = ChatbotOrchestrator._chunk_answer(streamed_latex, size=7)
+    assert "".join(chunks) == streamed_latex
+    transported_chunks = [
+        json.loads(StreamEvent(
+            stage=ResponseStage.final,
+            message="Writing answer...",
+            delta=chunk,
+        ).model_dump_json())["delta"]
+        for chunk in chunks
+    ]
+    assert "".join(transported_chunks) == streamed_latex
+
     cleaned = clean_student_answer(
         "## Working\n\nSubtract 3 from both sides.\n\n"
         "### Final Answer\n\n**Final answer: x = 4**\n\n"
@@ -365,6 +493,7 @@ def run_schema_security_and_limit_tests() -> None:
     assert "x = 4" in cleaned
     assert "smallest useful number of sections" in ANSWER_GENERATION_PROMPT
     assert "Never append a practice problem" in ANSWER_GENERATION_PROMPT
+    assert "JSON-escape every literal backslash" in ANSWER_GENERATION_PROMPT
     limiter = SlidingWindowRateLimiter(requests_per_minute=3, requests_per_hour=20)
     assert limiter.check("student:chat").allowed
     assert limiter.check("student:chat").allowed
