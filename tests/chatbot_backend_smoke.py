@@ -538,6 +538,11 @@ def run_schema_security_and_limit_tests() -> None:
     assert "x = 4" in cleaned
     assert "smallest useful number of sections" in ANSWER_GENERATION_PROMPT
     assert "Never append a practice problem" in ANSWER_GENERATION_PROMPT
+    assert "smart, patient study friend" in ANSWER_GENERATION_PROMPT
+    assert "not a formal teacher" in ANSWER_GENERATION_PROMPT
+    assert "simplify or switch examples/analogies" in ANSWER_GENERATION_PROMPT
+    assert "Correct mistakes casually" in ANSWER_GENERATION_PROMPT
+    assert "Ask one short clarifying question only" in ANSWER_GENERATION_PROMPT
     assert "JSON-escape every literal backslash" in ANSWER_GENERATION_PROMPT
     assert "Never use a comma as multiplication" in ANSWER_GENERATION_PROMPT
     assert "Never invent image URLs" in ANSWER_GENERATION_PROMPT
