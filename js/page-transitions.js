@@ -56,6 +56,7 @@
 
       var routeElement = event.target.closest && event.target.closest('[data-route]');
       var link = event.target.closest && event.target.closest('a[href]');
+      if (link && link.hasAttribute('data-workspace-route')) return;
       var rawTarget = routeElement ? routeElement.getAttribute('data-route') : link && link.getAttribute('href');
       if (!rawTarget || rawTarget.startsWith('#') || rawTarget.startsWith('mailto:') || rawTarget.startsWith('tel:') || rawTarget.startsWith('javascript:')) return;
       if (link && (link.target || link.hasAttribute('download'))) return;

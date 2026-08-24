@@ -71,7 +71,11 @@ assert.ok(app.includes("text.match(/[\\s\\S]{1,42}/g)"), "simulated streaming mu
   'href="more-tools.html"',
   'href="subscriptions.html"',
   'id="confirmOverlay"',
-  'id="confirmActionBtn"'
+  'id="confirmActionBtn"',
+  'id="toolWorkspace"',
+  'id="toolFrame"',
+  'data-workspace-route="lessons.html"',
+  'class="learn-crown side-label"'
 ].forEach((marker) => assert.ok(page.includes(marker), `chat shell should preserve ${marker}`));
 assert.ok(!page.includes('<a class="profile-dot" href="profile.html"'), "the redundant top-right profile avatar should be removed");
 assert.ok(!page.includes('id="themeToggle"'), "the top-right theme control should be removed");
@@ -85,6 +89,8 @@ assert.ok(app.includes("openSettingsPanel()"), "account Settings should reuse th
 assert.ok(app.includes("signOutFromTutorly"), "account menu should provide the existing logout behavior");
 assert.ok(app.includes('title: "Delete this chat?"'), "chat deletion should require a confirmation dialog");
 assert.ok(app.includes('title: "Sign out of Tutorly?"'), "sign out should require a confirmation dialog");
+assert.ok(app.includes("function showToolWorkspace"), "study pages should open inside the persistent right-side workspace");
+assert.ok(app.includes('toolFrame.addEventListener("load"'), "embedded tool navigation should keep the Tutorly shell synchronized");
 assert.ok(app.includes('localStorage.removeItem("tutorly_logged_in")'), "logout should clear the existing authenticated session flag");
 assert.ok(app.includes('ChatbotCore?.on?.("history:changed", renderSidebarRecents)'), "recent chats should stay synced with chat history changes");
 assert.ok(chatHistorySource.includes("function deleteConversation(id)"), "the shared history module should support permanent chat deletion");
@@ -102,6 +108,7 @@ assert.ok(chatbotCss.includes("@media (max-width: 1080px)"), "responsive drawer 
   "progress.html",
   "bookmarks.html"
 ].forEach((route) => assert.ok(moreToolsPage.includes(`href="${route}"`), `More Tools should link to ${route}`));
+assert.ok(moreToolsPage.includes('class="tool-learn-crown"'), "More Tools should show the gold crown beside Learn");
 
 let inMemoryHistoryState = null;
 const historyModules = {};

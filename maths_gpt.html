@@ -19,7 +19,7 @@
     })();
   </script>
 
-  <link rel="stylesheet" href="css/chatbot.css?v=sidebar-tools-20260824" />
+  <link rel="stylesheet" href="css/chatbot.css?v=embedded-tools-20260824" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
@@ -61,15 +61,16 @@
       <div class="sidebar-nav-scroll">
         <div class="side-section-label side-label">Study</div>
 
-        <a class="side-link" href="lessons.html" title="Learn">
+        <a class="side-link workspace-link learn-workspace-link" href="lessons.html" data-workspace-route="lessons.html" data-workspace-title="Learn" title="Learn">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H7a3 3 0 0 0-3 3V5.5Z" />
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
           </svg>
           <span class="side-label">Learn</span>
+          <span class="learn-crown side-label" aria-label="Premium learning tool">&#9813;</span>
         </a>
 
-        <a class="side-link" href="tests.html" title="Tests">
+        <a class="side-link workspace-link" href="tests.html" data-workspace-route="tests.html" data-workspace-title="Tests" title="Tests">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M7 3h10v4H7z" />
             <path d="M5 5v16h14V5" />
@@ -78,14 +79,14 @@
           <span class="side-label">Tests</span>
         </a>
 
-        <a class="side-link" href="quests.html" title="Quests">
+        <a class="side-link workspace-link" href="quests.html" data-workspace-route="quests.html" data-workspace-title="Quests" title="Quests">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m13 2-1 7h6l-8 13 1-8H5l8-12z" />
           </svg>
           <span class="side-label">Quests</span>
         </a>
 
-        <a class="side-link" href="more-tools.html" title="More Tools">
+        <a class="side-link workspace-link" href="more-tools.html" data-workspace-route="more-tools.html" data-workspace-title="More Tools" title="More Tools">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="3" width="7" height="7" rx="2" />
             <rect x="14" y="3" width="7" height="7" rx="2" />
@@ -260,6 +261,10 @@
           <p class="disclaimer">Tutorly can make mistakes. Check important answers.</p>
         </section>
       </section>
+
+      <section id="toolWorkspace" class="tool-workspace" aria-label="Tutorly tool workspace" hidden>
+        <iframe id="toolFrame" name="tutorlyToolFrame" title="Tutorly learning tool" src="about:blank"></iframe>
+      </section>
     </main>
 
   </div>
@@ -285,9 +290,9 @@
   <script src="js/chatbot/educational-visuals.js"></script>
   <script src="js/chatbot/rich-response-renderer.js?v=rich-response-20260823b"></script>
   <script src="js/chatbot/markdown-renderer.js?v=rich-response-20260823b"></script>
-  <script src="js/app.js?v=sidebar-tools-20260824"></script>
+  <script src="js/app.js?v=embedded-tools-20260824"></script>
   <script src="js/tutorly-shell.js"></script>
-  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+  <script src="js/page-transitions.js?v=embedded-tools-20260824"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
 </body>

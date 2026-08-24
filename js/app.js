@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmMessage = document.getElementById("confirmMessage");
   const confirmCancelBtn = document.getElementById("confirmCancelBtn");
   const confirmActionBtn = document.getElementById("confirmActionBtn");
+  const workArea = document.querySelector(".work-area");
+  const toolWorkspace = document.getElementById("toolWorkspace");
+  const toolFrame = document.getElementById("toolFrame");
+  const workspaceLinks = document.querySelectorAll("[data-workspace-route]");
   const input = document.getElementById("input");
   const sendBtn = document.getElementById("sendBtn");
   const messages = document.getElementById("messages");
@@ -45,6 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let chatRequestInFlight = false;
   let pendingConfirmAction = null;
   let confirmReturnFocus = null;
+
+  const TOOL_ROUTE_TITLES = Object.freeze({
+    "lessons.html": "Learn",
+    "practice.html": "Practice",
+    "tests.html": "Tests",
+    "quests.html": "Quests",
+    "progress.html": "Progress",
+    "bookmarks.html": "Bookmarks",
+    "more-tools.html": "More Tools"
+  });
 
   if (!input || !sendBtn || !messages || !chatWindow) {
     return;
@@ -3454,6 +3468,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateSendState();
     activeConversationId = null;
     GPT?.setActiveConversation?.(null) || ChatHistory?.setActiveConversation?.(null);
+    showChatWorkspace();
     setChatMode(false);
     closeAccountMenu();
     closeMobileSidebar();
@@ -3524,6 +3539,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function closeAccountMenu() {
     setAccountMenuOpen(false);
+  }
+
+  function normalizeToolRoute(route) {
+    const value = String(route || "").trim();
+    const fileName = value.split(/[?#]/, 1)[0].split("/").pop();
+    return Object.prototype.hasOwnProperty.call(TOOL_ROUTE_TITLES, fileName) ? fileName : "";
+  }
+
+  function setActiveWorkspaceLink(route = "") {
+    workspaceLinks.forEach((link) => {
+      const isActive = normalizeToolRoute(link.dataset.workspaceRoute) === route;
+      link.classList.toggle("active", isActive);
+      if (isActive) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+  }
+
+  function showToolWorkspace(route, title = "") {
+    const safeRoute = normalizeToolRoute(route);
+    if (!safeRoute || !workArea || !toolWorkspace || !toolFrame) return;
+    workArea.hidden = true;
+    toolWorkspace.hidden = false;
+    if (toolFrame.dataset.route !== safeRoute) {
+      toolFrame.dataset.route = safeRoute;
+      toolFrame.src = safeRoute;
+    }
+    if (chatTitle) chatTitle.textContent = title || TOOL_ROUTE_TITLES[safeRoute];
+    setActiveWorkspaceLink(safeRoute);
+    closeAccountMenu();
+    closeSidebarChatMenus();
+    closeMobileSidebar();
+  }
+
+  function showChatWorkspace() {
+    if (workArea) workArea.hidden = false;
+    if (toolWorkspace) toolWorkspace.hidden = true;
+    setActiveWorkspaceLink("");
   }
 
   function closeConfirmDialog(options = {}) {
@@ -3656,6 +3708,7 @@ document.addEventListener("DOMContentLoaded", () => {
     messages.innerHTML = "";
     activeConversationId = conversation.id;
     GPT?.setActiveConversation?.(conversation.id) || ChatHistory.setActiveConversation(conversation.id);
+    showChatWorkspace();
     setChatMode(true);
     if (chatTitle) chatTitle.textContent = conversation.title || "Tutorly chat";
 
@@ -4006,6 +4059,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (chatHistoryBtn) {
     chatHistoryBtn.addEventListener("click", openHistoryPanel);
+  }
+
+  workspaceLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      showToolWorkspace(link.dataset.workspaceRoute, link.dataset.workspaceTitle || "");
+    });
+  });
+
+  if (toolFrame) {
+    toolFrame.addEventListener("load", () => {
+      let loadedRoute = "";
+      try {
+        loadedRoute = new URL(toolFrame.contentWindow.location.href).pathname.split("/").pop();
+      } catch (error) {
+        return;
+      }
+      if (["maths_gpt.html", "home.html"].includes(loadedRoute)) {
+        showChatWorkspace();
+        return;
+      }
+      const safeRoute = normalizeToolRoute(loadedRoute);
+      if (!safeRoute) return;
+      toolFrame.dataset.route = safeRoute;
+      if (chatTitle) chatTitle.textContent = TOOL_ROUTE_TITLES[safeRoute];
+      const sidebarRoute = ["lessons.html", "tests.html", "quests.html", "more-tools.html"].includes(safeRoute)
+        ? safeRoute
+        : "more-tools.html";
+      setActiveWorkspaceLink(sidebarRoute);
+    });
   }
 
   if (sidebarRecentChats) {

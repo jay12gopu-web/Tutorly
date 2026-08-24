@@ -5778,3 +5778,63 @@ body[data-theme="dark"] .sidebar-chat-menu .sidebar-chat-delete {
     transition-duration: 0.01ms;
   }
 }
+
+/* Persistent study-tool workspace */
+.learn-workspace-link {
+  grid-template-columns: 25px minmax(0, 1fr) 18px;
+}
+
+.learn-crown {
+  justify-self: end;
+  color: #d7a817;
+  font-size: 15px;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(111, 75, 0, 0.2);
+}
+
+.workspace-link.active {
+  color: #294986;
+  background: rgba(79, 124, 255, 0.13);
+}
+
+body[data-theme="dark"] .learn-crown {
+  color: #ffd45c;
+}
+
+body[data-theme="dark"] .workspace-link.active {
+  color: #fff;
+  background: rgba(129, 140, 248, 0.14);
+}
+
+.work-area[hidden],
+.tool-workspace[hidden] {
+  display: none !important;
+}
+
+.tool-workspace {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #edf4ff;
+}
+
+.tool-workspace iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  background: #edf4ff;
+}
+
+body[data-theme="dark"] .tool-workspace,
+body[data-theme="dark"] .tool-workspace iframe {
+  background: #0b1020;
+}
+
+@media (max-width: 1080px) {
+  .sidebar.collapsed .learn-workspace-link {
+    grid-template-columns: 25px minmax(0, 1fr) 18px;
+  }
+}
