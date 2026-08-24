@@ -3475,7 +3475,6 @@ body.model-prime .model-selector-btn {
     0 0 0 5px rgba(124, 92, 255, 0.1);
 }
 
-body.composer-ready #speechTextBtn,
 body.composer-ready #voiceBtn {
   width: 0;
   min-width: 0;
@@ -3567,7 +3566,6 @@ body:not(.composer-ready) .send-btn {
     height: 40px;
   }
 
-  body.composer-ready #speechTextBtn,
   body.composer-ready #voiceBtn {
     height: 38px;
   }
@@ -4181,7 +4179,8 @@ body:not(.composer-ready) .send-btn {
 }
 
 .live-hidden-control,
-.speech-text-btn[hidden] {
+.speech-text-btn[hidden],
+.voice-chat-btn[hidden] {
   display: none !important;
 }
 
@@ -4986,6 +4985,12 @@ body[data-theme="dark"] .disclaimer {
     border-color: rgba(255, 255, 255, 0.08);
     background: rgba(26, 30, 38, 0.9);
   }
+}
+
+.voice-chat-btn.voice-error {
+  color: #ffffff;
+  background: linear-gradient(135deg, #d65368, #9f3f67);
+  box-shadow: 0 10px 24px rgba(159, 63, 103, 0.24);
 }
 
 /* Chat-first sidebar shell */

@@ -89,6 +89,7 @@
   function create(options = {}) {
     const overlay = options.overlay || document.getElementById("voiceChatOverlay");
     if (!overlay) return null;
+    const inline = options.inline === true;
 
     const stateLabel = overlay.querySelector("#voiceSessionState");
     const stateHint = overlay.querySelector("#voiceSessionHint");
@@ -146,6 +147,10 @@
       const copy = STATE_COPY[next] || STATE_COPY.error;
       if (stateLabel) stateLabel.textContent = copy[0];
       if (stateHint) stateHint.textContent = hintOverride || copy[1];
+      options.onStateChange?.(next, {
+        label: copy[0],
+        hint: hintOverride || copy[1]
+      });
     }
 
     function setTranscript(text) {
@@ -410,10 +415,12 @@
       open = true;
       mode = nextMode === "vision" ? "vision" : "voice";
       returnFocus = trigger || document.activeElement;
-      overlay.hidden = false;
-      overlay.setAttribute("aria-hidden", "false");
-      document.body.classList.add("voice-session-open");
-      root.requestAnimationFrame(() => overlay.classList.add("show"));
+      if (!inline) {
+        overlay.hidden = false;
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("voice-session-open");
+        root.requestAnimationFrame(() => overlay.classList.add("show"));
+      }
       setTranscript("");
       setReply("");
       setState("connecting");
@@ -448,9 +455,11 @@
           : "Only sustained speech-like audio will start a turn.");
       } catch (error) {
         releaseAudio();
-        setState("error", error?.name === "NotAllowedError"
+        const message = error?.name === "NotAllowedError"
           ? "Microphone permission was denied. Allow it in your browser and reopen Voice Chat."
-          : "No working microphone was found. You can still type your question.");
+          : "No working microphone was found. You can still type your question.";
+        setState("error", message);
+        notify(message);
       }
     }
 

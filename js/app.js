@@ -3048,13 +3048,15 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.disabled = locked || chatRequestInFlight || !hasReadyContent;
     sendBtn.classList.toggle("active", !locked && !chatRequestInFlight && hasReadyContent);
     if (voiceBtn) {
+      voiceBtn.hidden = !locked && hasReadyContent;
       voiceBtn.disabled = locked || chatRequestInFlight;
       voiceBtn.classList.toggle("active", !locked && !chatRequestInFlight && !hasReadyContent);
       voiceBtn.setAttribute("aria-hidden", String(!locked && !chatRequestInFlight && hasReadyContent));
     }
     if (speechTextBtn) {
-      speechTextBtn.hidden = true;
-      speechTextBtn.setAttribute("aria-hidden", "true");
+      speechTextBtn.hidden = false;
+      speechTextBtn.disabled = locked;
+      speechTextBtn.setAttribute("aria-hidden", "false");
     }
     body.classList.toggle("composer-ready", !locked && hasReadyContent);
   }
@@ -4302,7 +4304,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
     let isDictating = false;
-    let liveActionSheet = null;
 
     function setDictationState(value) {
       isDictating = value;
@@ -4357,8 +4358,8 @@ document.addEventListener("DOMContentLoaded", () => {
           .trim();
         if (transcript) appendToInput(transcript);
       });
-      speechTextBtn?.addEventListener("click", startDictation);
     }
+    speechTextBtn?.addEventListener("click", startDictation);
 
     async function submitLiveTranscript(transcript, metadata = {}) {
       const spokenText = String(transcript || "").trim();
@@ -4377,6 +4378,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     voiceSession = window.TutorlyVoiceChat?.create?.({
       overlay: document.getElementById("voiceChatOverlay"),
+      inline: true,
       getTranscriptionEndpoint: () => getBackendEndpoint("/api/transcribe"),
       getSessionId: () => activeConversationId || getChatUserId(),
       getLanguage: getVoiceLanguage,
@@ -4385,10 +4387,29 @@ document.addEventListener("DOMContentLoaded", () => {
       onPhoto: () => uploadInput?.click(),
       onInterrupt: abortActiveChatRequest,
       onTranscript: submitLiveTranscript,
+      onStateChange: (state, copy = {}) => {
+        const listening = state === "listening";
+        const thinking = state === "connecting" || state === "processing";
+        const speaking = state === "speaking";
+        voiceBtn?.classList.toggle("listening", listening);
+        voiceBtn?.classList.toggle("thinking", thinking);
+        voiceBtn?.classList.toggle("speaking", speaking);
+        voiceBtn?.classList.toggle("voice-error", state === "error");
+        if (voiceBtn) {
+          const stateLabel = state === "closed" ? "Voice Chat" : `${copy.label || "Voice Chat"} — click to stop`;
+          voiceBtn.title = stateLabel;
+          voiceBtn.setAttribute("aria-label", stateLabel);
+          voiceBtn.setAttribute("aria-pressed", String(state !== "closed"));
+        }
+      },
       onClose: () => {
         liveSessionMode = null;
-        voiceBtn?.classList.remove("listening", "thinking", "speaking");
+        voiceBtn?.classList.remove("listening", "thinking", "speaking", "voice-error");
         voiceBtn?.setAttribute("aria-pressed", "false");
+        if (voiceBtn) {
+          voiceBtn.title = "Voice Chat";
+          voiceBtn.setAttribute("aria-label", "Open Tutorly Voice Chat");
+        }
       }
     }) || null;
 
@@ -4396,76 +4417,14 @@ document.addEventListener("DOMContentLoaded", () => {
       voiceSession?.speak(markdown, spokenAnswer);
     };
 
-    function beginLiveMode(mode = "voice") {
-      if (mode === "dictate") {
-        startDictation();
-        return;
-      }
-      liveSessionMode = mode === "vision" ? "vision" : "voice";
-      if (liveSessionMode === "vision") {
-        setSelectedModel("lens", { announce: false });
-        showToast("Attach a homework image any time, then ask about it naturally.");
-      }
+    function openVoiceChat() {
+      liveSessionMode = "voice";
       if (!voiceSession) {
-        showToast("Full Voice Chat is unavailable in this browser. You can still dictate into the message box.");
+        showToast("Voice Chat is unavailable in this browser. You can still use speech-to-text.");
         return;
       }
       voiceBtn?.setAttribute("aria-pressed", "true");
-      voiceSession.open(liveSessionMode, voiceBtn);
-    }
-
-    function closeLiveActionSheet() {
-      if (!liveActionSheet) return;
-      liveActionSheet.classList.remove("show");
-      liveActionSheet.setAttribute("aria-hidden", "true");
-      window.setTimeout(() => {
-        liveActionSheet?.remove();
-        liveActionSheet = null;
-      }, 180);
-    }
-
-    function openLiveActionSheet() {
-      closeLiveActionSheet();
-      liveActionSheet = document.createElement("div");
-      liveActionSheet.className = "live-sheet-backdrop";
-      liveActionSheet.setAttribute("aria-hidden", "true");
-      liveActionSheet.innerHTML = `
-        <section class="live-sheet" role="dialog" aria-modal="true" aria-labelledby="liveSheetTitle">
-          <div class="live-sheet-handle" aria-hidden="true"></div>
-          <div class="live-sheet-heading">
-            <span class="live-sheet-orb" aria-hidden="true">✦</span>
-            <div><p>Choose voice mode</p><h2 id="liveSheetTitle">How do you want to talk?</h2></div>
-          </div>
-          <button class="live-mode-option" type="button" data-live-mode="dictate">
-            <span class="live-mode-icon" aria-hidden="true">⌨</span>
-            <span><strong>Dictate a message</strong><small>Turn speech into editable text</small></span>
-          </button>
-          <button class="live-mode-option" type="button" data-live-mode="voice">
-            <span class="live-mode-icon" aria-hidden="true">🎤</span>
-            <span><strong>Tutorly Voice Chat</strong><small>Hands-free tutoring with spoken replies</small></span>
-          </button>
-          <button class="live-mode-option" type="button" data-live-mode="vision">
-            <span class="live-mode-icon" aria-hidden="true">▣</span>
-            <span><strong>Homework + Voice</strong><small>Attach a photo and discuss it naturally</small></span>
-          </button>
-        </section>
-      `;
-      document.body.appendChild(liveActionSheet);
-      liveActionSheet.addEventListener("click", (event) => {
-        if (event.target === liveActionSheet) closeLiveActionSheet();
-      });
-      liveActionSheet.querySelectorAll("[data-live-mode]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const mode = button.dataset.liveMode || "voice";
-          closeLiveActionSheet();
-          beginLiveMode(mode);
-        });
-      });
-      window.requestAnimationFrame(() => {
-        liveActionSheet?.classList.add("show");
-        liveActionSheet?.setAttribute("aria-hidden", "false");
-        liveActionSheet?.querySelector("[data-live-mode]")?.focus();
-      });
+      voiceSession.open("voice", voiceBtn);
     }
 
     voiceBtn?.addEventListener("click", () => {
@@ -4473,10 +4432,7 @@ document.addEventListener("DOMContentLoaded", () => {
         voiceSession.close();
         return;
       }
-      openLiveActionSheet();
-    });
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeLiveActionSheet();
+      openVoiceChat();
     });
   }
 
