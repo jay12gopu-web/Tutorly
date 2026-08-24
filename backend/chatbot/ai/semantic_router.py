@@ -219,6 +219,7 @@ class SemanticTutorOutput(BaseModel):
 
     classification: SemanticClassification
     answer: str
+    spoken_answer: str
 
 
 @dataclass(frozen=True)
@@ -283,6 +284,7 @@ class SemanticTutorService:
         profile: LearnerProfile,
         mode: str,
         attachments: Sequence[Attachment] = (),
+        client_context: Dict[str, Any] | None = None,
     ) -> SemanticServiceResult:
         if not self.provider.configured:
             return self._fallback("not_configured")
@@ -293,6 +295,7 @@ class SemanticTutorService:
             profile=profile,
             mode=mode,
             attachments=attachments,
+            client_context=client_context or {},
         )
         try:
             payload = await self.provider.complete_structured(
@@ -335,6 +338,7 @@ class SemanticTutorService:
             output = SemanticTutorOutput(
                 classification=fallback_classification(),
                 answer=salvaged_answer,
+                spoken_answer="",
             )
             result_status = "generated_degraded"
 
@@ -342,6 +346,7 @@ class SemanticTutorService:
         if not answer:
             return self._fallback("empty_response")
         output.answer = answer
+        output.spoken_answer = clean_spoken_answer(output.spoken_answer)
         return SemanticServiceResult(
             output=output,
             provider_used=True,
@@ -360,6 +365,7 @@ class SemanticTutorService:
             output=SemanticTutorOutput(
                 classification=fallback_classification(),
                 answer=self.RATE_LIMIT_ERROR if status == "rate_limited" else self.FRIENDLY_ERROR,
+                spoken_answer="",
             ),
             provider_used=False,
             provider=self.provider.name,
@@ -376,6 +382,7 @@ class SemanticTutorService:
         profile: LearnerProfile,
         mode: str,
         attachments: Sequence[Attachment],
+        client_context: Dict[str, Any],
     ) -> list[Dict[str, str]]:
         system_prompt = self._system_prompt()
         history = self._history_payload(conversation_context, student_question)
@@ -399,6 +406,10 @@ class SemanticTutorService:
             "student_profile": profile_payload,
             "tutor_mode": mode,
             "attachment_context": attachment_context,
+            "delivery_context": {
+                "voice_mode": bool(client_context.get("voice_mode")),
+                "voice_language": str(client_context.get("voice_language") or "auto")[:20],
+            },
         }
         return [
             {"role": "system", "content": system_prompt},
@@ -463,6 +474,9 @@ Answer-generation rules:
 - When honest quantitative data materially clarifies a comparison, trend, or distribution, a fenced `chart` block may contain strict JSON for a `bar`, `line`, or `pie` chart with no comments, at most 12 rows, and at most 3 series.
 - Rich visuals are optional. Never emit them merely because a topic could have one, and do not duplicate the same information as both a diagram and chart.
 - Use language-labelled fenced code blocks for programming answers, with explanation outside the fence.
+- English tutoring must feel conversational and precise. For a grammar correction, show the corrected wording first, explain the exact issue casually, and add only the smallest useful rule/example. For vocabulary, explain meaning in context with a natural example. For literature, answer the student's direct question before deeper analysis and avoid inflated textbook language.
+- Distinguish writing guidance from finished writing. Teach structure when asked how to write; edit and explain when given a draft; only when the student explicitly requests a finished essay, paragraph, letter, speech, report, story, article, notice, email, summary, or similar piece, place the complete finished piece inside one fenced `writing` block. Its first line must be `TITLE: ...`; keep teaching notes outside the block and never nest fences.
+- `spoken_answer` is backend-only delivery text. When `delivery_context.voice_mode` is false, return an empty string. When it is true, provide a natural plain-spoken companion to `answer`: normally 1–3 short sentences and no Markdown, headings, bullets, tables, code, Mermaid, chart data, or raw LaTeX. Mention useful on-screen visuals briefly instead of reading their syntax. Use the requested voice language when supplied. Handle short follow-ups, simpler/repeat requests, and one-question-at-a-time quizzes from conversation context.
 """.strip()
 
 
@@ -489,3 +503,15 @@ def clean_student_answer(answer: str) -> str:
     )
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
     return cleaned
+
+
+def clean_spoken_answer(answer: str) -> str:
+    """Keep the voice companion short, plain, and safe to pass to browser TTS."""
+
+    cleaned = re.sub(r"```[\s\S]*?```", " ", str(answer or ""))
+    cleaned = re.sub(r"\$\$[\s\S]*?\$\$", " ", cleaned)
+    cleaned = re.sub(r"\$([^$]+)\$", r"\1", cleaned)
+    cleaned = re.sub(r"^\s{0,3}#{1,6}\s*", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r"[*_`>|~]", " ", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned[:700]

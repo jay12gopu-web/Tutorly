@@ -11,12 +11,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from backend.chatbot.ai.groq import GroqProvider, load_structured_response_json
+from backend.chatbot.ai.groq import GroqProvider, load_structured_response_json, normalize_transcription_language
 from backend.chatbot.ai.provider import AIProvider, ProviderFailure
 from backend.chatbot.ai.semantic_router import (
     ANSWER_GENERATION_PROMPT,
     SemanticTutorOutput,
     SemanticTutorService,
+    clean_spoken_answer,
     clean_student_answer,
 )
 from backend.chatbot.orchestrator import ChatbotOrchestrator
@@ -43,6 +44,7 @@ def semantic_output(
     geometry_renderer: bool = False,
     diagram_renderer: bool = False,
     code_runner: bool = False,
+    spoken_answer: str = "",
 ) -> dict:
     visual_needed = visual_type != "none"
     return {
@@ -73,6 +75,7 @@ def semantic_output(
             "confidence": 0.94,
         },
         "answer": answer,
+        "spoken_answer": spoken_answer,
     }
 
 
@@ -271,6 +274,16 @@ def fixtures() -> dict[str, dict]:
             answer_format="concept_explanation", response_length="very_short",
             answer="Plants use sunlight to make their food. They take in water and carbon dioxide, make sugar, and release oxygen.",
         ),
+        "What's wrong with this sentence: \"She don't like apples\"?": semantic_output(
+            subject="english", topic="subject-verb agreement", intent="grammar_help",
+            response_type="explanation", answer_format="english_grammar", response_length="short",
+            answer="**She doesn't like apples.**\n\nAlmost — **she** is singular, so the helping verb changes from **don't** to **doesn't**.",
+        ),
+        "Write a short speech about protecting the environment for a school assembly.": semantic_output(
+            subject="english", topic="school assembly speech", intent="writing_help",
+            response_type="writing", answer_format="writing_help", response_length="medium",
+            answer="```writing\nTITLE: Protecting Our Environment\nGood morning, everyone. Protecting our planet starts with small choices we make each day.\n```",
+        ),
     }
 
 
@@ -366,6 +379,26 @@ async def run_semantic_and_format_tests() -> None:
     assert formatted["What do mitochondria do?"].visual["placement"] == "after_intro"
     assert formatted["Why does one side of a mountain get more rain than the other?"].visual["needed"] is True
 
+    grammar = await orchestrator.respond(ChatbotRequest(
+        user_id="english-test",
+        conversation_id="english-grammar",
+        message='What\'s wrong with this sentence: "She don\'t like apples"?',
+        client_context={"voice_mode": True, "voice_language": "en-US"},
+    ))
+    assert grammar.subject.value == "english"
+    assert "She doesn't like apples" in grammar.answer
+    assert "subject-verb agreement" in grammar.topic
+    assert provider.calls[-1]["delivery_context"] == {"voice_mode": True, "voice_language": "en-US"}
+
+    writing = await orchestrator.respond(ChatbotRequest(
+        user_id="english-test",
+        conversation_id="english-writing",
+        message="Write a short speech about protecting the environment for a school assembly.",
+    ))
+    assert writing.subject.value == "english"
+    assert "```writing" in writing.answer
+    assert "TITLE: Protecting Our Environment" in writing.answer
+
     followup_id = "photosynthesis-followup"
     first = await orchestrator.respond(ChatbotRequest(
         user_id="followup-test", conversation_id=followup_id, message="What is photosynthesis?"
@@ -431,6 +464,7 @@ async def run_error_tests() -> None:
 def run_schema_security_and_limit_tests() -> None:
     schema = SemanticTutorOutput.model_json_schema()
     assert schema["additionalProperties"] is False
+    assert "spoken_answer" in schema["required"]
     classification = schema["$defs"]["SemanticClassification"]
     assert classification["additionalProperties"] is False
     for field in (
@@ -546,6 +580,12 @@ def run_schema_security_and_limit_tests() -> None:
     assert "JSON-escape every literal backslash" in ANSWER_GENERATION_PROMPT
     assert "Never use a comma as multiplication" in ANSWER_GENERATION_PROMPT
     assert "Never invent image URLs" in ANSWER_GENERATION_PROMPT
+    assert "grammar correction" in ANSWER_GENERATION_PROMPT
+    assert "fenced `writing` block" in ANSWER_GENERATION_PROMPT
+    assert "delivery_context.voice_mode" in ANSWER_GENERATION_PROMPT
+    assert clean_spoken_answer("## Idea\nUse **inertia**.\n```mermaid\nA-->B\n```") == "Idea Use inertia ."
+    assert normalize_transcription_language("English") == "en"
+    assert normalize_transcription_language("te-IN") == "te"
     limiter = SlidingWindowRateLimiter(requests_per_minute=3, requests_per_hour=20)
     assert limiter.check("student:chat").allowed
     assert limiter.check("student:chat").allowed

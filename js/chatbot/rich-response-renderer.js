@@ -194,6 +194,16 @@
     return `<${tag} class="tutorly-rich-notice tutorly-attachment-placeholder" role="status" data-unavailable-visual="true"><strong>${escapeHtml(safeLabel)} unavailable.</strong> No generated image was attached; the written explanation is still available.</${tag}>`;
   }
 
+  function renderWritingBlock(source, customEscape) {
+    const escape = typeof customEscape === "function" ? customEscape : escapeHtml;
+    const lines = String(source || "").replace(/\r\n?/g, "\n").split("\n");
+    const titleMatch = lines[0]?.match(/^\s*TITLE\s*:\s*(.+?)\s*$/i);
+    const title = clampText(titleMatch?.[1] || "Writing sample", 100) || "Writing sample";
+    const body = (titleMatch ? lines.slice(1) : lines).join("\n").trim();
+    const id = remember("writing", body);
+    return `<section class="tutorly-writing-block" role="group" aria-label="${escape(title)}"><header class="tutorly-writing-head"><div class="tutorly-writing-title"><span>Writing sample</span><strong title="${escape(title)}">${escape(title)}</strong></div><button type="button" data-copy-source="${id}" aria-label="Copy writing sample">Copy</button></header><pre class="tutorly-writing-body">${escape(body)}</pre></section>`;
+  }
+
   function renderCodeBlock(language, source, customEscape) {
     const escape = typeof customEscape === "function" ? customEscape : escapeHtml;
     const normalized = normalizeLanguage(language);
@@ -212,6 +222,9 @@
       } catch (error) {
         return richError("Chart", "The chart data could not be rendered safely.");
       }
+    }
+    if (normalized === "writing") {
+      return renderWritingBlock(source, escape);
     }
 
     const id = remember("code", source);
@@ -372,6 +385,7 @@
     parseChartSpec,
     renderChart,
     renderCodeBlock,
+    renderWritingBlock,
     renderMath,
     renderUnavailableVisual,
     hydrate,

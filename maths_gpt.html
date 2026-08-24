@@ -19,7 +19,7 @@
     })();
   </script>
 
-  <link rel="stylesheet" href="css/chatbot.css?v=embedded-tools-20260824" />
+  <link rel="stylesheet" href="css/chatbot.css?v=voice-english-20260824" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
@@ -269,6 +269,41 @@
 
   </div>
 
+  <div id="voiceChatOverlay" class="voice-session-overlay" aria-hidden="true" hidden>
+    <section class="voice-session-panel" role="dialog" aria-modal="true" aria-labelledby="voiceSessionTitle" aria-describedby="voiceSessionHint">
+      <header class="voice-session-header">
+        <div class="voice-session-brand">
+          <span class="voice-session-brand-mark" aria-hidden="true">&#10022;</span>
+          <div>
+            <p>Tutorly Live</p>
+            <h2 id="voiceSessionTitle">Voice Chat</h2>
+          </div>
+        </div>
+        <div class="voice-session-actions">
+          <button id="voiceSessionPhoto" class="voice-session-control" type="button" aria-label="Attach a homework image">Photo</button>
+          <label class="voice-session-language">
+            <span class="sr-only">Voice language</span>
+            <select id="voiceSessionLanguage" aria-label="Voice language"></select>
+          </label>
+          <button id="voiceSessionClose" class="voice-session-end" type="button" aria-label="End Voice Chat">End</button>
+        </div>
+      </header>
+
+      <div class="voice-session-content">
+        <div class="voice-session-orb" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="voice-session-copy" aria-live="polite">
+          <h3 id="voiceSessionState">Getting ready…</h3>
+          <p id="voiceSessionHint">Checking your microphone.</p>
+          <p id="voiceSessionImageStatus" class="voice-session-image-status" hidden></p>
+          <p id="voiceSessionTranscript" class="voice-session-transcript" hidden></p>
+          <p id="voiceSessionReply" class="voice-session-reply" hidden></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <div id="confirmOverlay" class="confirm-overlay" aria-hidden="true" hidden>
     <article class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
       <span class="confirm-icon" aria-hidden="true">!</span>
@@ -288,9 +323,10 @@
   <script src="js/chatbot/learning-tools.js"></script>
   <script src="js/chatbot/response-policy.js"></script>
   <script src="js/chatbot/educational-visuals.js"></script>
-  <script src="js/chatbot/rich-response-renderer.js?v=rich-response-20260823b"></script>
-  <script src="js/chatbot/markdown-renderer.js?v=rich-response-20260823b"></script>
-  <script src="js/app.js?v=embedded-tools-20260824"></script>
+  <script src="js/chatbot/rich-response-renderer.js?v=voice-english-20260824"></script>
+  <script src="js/chatbot/markdown-renderer.js?v=voice-english-20260824"></script>
+  <script src="js/chatbot/voice-chat.js?v=voice-english-20260824"></script>
+  <script src="js/app.js?v=voice-english-20260824"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=embedded-tools-20260824"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>

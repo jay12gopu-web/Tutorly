@@ -38,6 +38,22 @@ assert.throws(
 assert.match(renderer.renderCodeBlock("python", "for i in range(3):\n    print(i)"), /data-copy-source/);
 assert.match(renderer.renderMath("x^2 + y^2 = z^2", true), /tutorly-katex/);
 
+const writingMarkup = renderer.renderCodeBlock(
+  "writing",
+  "TITLE: Protecting Our Environment\nGood morning everyone. <script>alert('no')</script>"
+);
+assert.match(writingMarkup, /tutorly-writing-block/);
+assert.match(writingMarkup, /Protecting Our Environment/);
+assert.match(writingMarkup, /data-copy-source/);
+assert.ok(writingMarkup.includes("&lt;script&gt;"), "writing content must be escaped");
+assert.ok(!writingMarkup.includes("<script>"), "writing content must not inject HTML");
+const renderedWriting = markdown.render(
+  "Here is the speech:\n\n```writing\nTITLE: Assembly Speech\nGood morning, everyone.\n```",
+  { richResponse: renderer }
+);
+assert.ok(renderedWriting.includes("tutorly-writing-block"));
+assert.ok(renderedWriting.includes("Assembly Speech"));
+
 const inlineLatex = String.raw`\frac{-8}{2\cdot2} + \boxed{x=2} + \sqrt{16}`;
 const matrixLatex = String.raw`\begin{bmatrix}1 & 2 \\ 3 & 4\end{bmatrix}`;
 const projectileLatex = String.raw`x(t)=v_{0x}t,\quad v_y=v_0\sin(\theta)-gt,\quad \text{units: m/s}`;

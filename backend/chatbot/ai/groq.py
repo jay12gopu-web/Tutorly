@@ -12,6 +12,30 @@ from .provider import AIProvider, ProviderFailure
 _ANSWER_STRING_START = re.compile(r'"answer"\s*:\s*"')
 _JSON_SIMPLE_ESCAPES = frozenset('"\\/bfnrt')
 
+_LANGUAGE_NAME_TO_CODE = {
+    "english": "en",
+    "hindi": "hi",
+    "telugu": "te",
+    "tamil": "ta",
+    "bengali": "bn",
+    "marathi": "mr",
+    "spanish": "es",
+    "french": "fr",
+    "german": "de",
+}
+
+
+def normalize_transcription_language(value: Any) -> str:
+    """Normalize Groq/Whisper language metadata to a short language code."""
+
+    normalized = str(value or "").strip().lower().replace("_", "-")
+    if not normalized:
+        return ""
+    if normalized in _LANGUAGE_NAME_TO_CODE:
+        return _LANGUAGE_NAME_TO_CODE[normalized]
+    candidate = normalized.split("-", 1)[0]
+    return candidate if re.fullmatch(r"[a-z]{2,3}", candidate) else ""
+
 
 def _is_unescaped(value: str, index: int) -> bool:
     backslashes = 0
@@ -304,6 +328,42 @@ class GroqProvider(AIProvider):
                 raise ProviderFailure("timeout") from error
             raise ProviderFailure("provider_error") from error
 
+    async def transcribe_audio(
+        self,
+        *,
+        audio: bytes,
+        filename: str,
+        mime_type: str,
+        language: str | None = None,
+    ) -> Dict[str, str]:
+        if not self.configured:
+            raise ProviderFailure("not_configured")
+        try:
+            return await asyncio.wait_for(
+                asyncio.to_thread(
+                    self._transcribe,
+                    bytes(audio),
+                    filename,
+                    mime_type,
+                    language,
+                ),
+                timeout=self._timeout_seconds + 2,
+            )
+        except asyncio.TimeoutError as error:
+            raise ProviderFailure("timeout") from error
+        except ProviderFailure:
+            raise
+        except Exception as error:
+            status_code = getattr(error, "status_code", None)
+            error_name = type(error).__name__.lower()
+            if status_code in {401, 403} or "authentication" in error_name:
+                raise ProviderFailure("authentication_failed") from error
+            if status_code == 429 or "ratelimit" in error_name or "rate_limit" in error_name:
+                raise ProviderFailure("rate_limited") from error
+            if "timeout" in error_name:
+                raise ProviderFailure("timeout") from error
+            raise ProviderFailure("transcription_failed") from error
+
     def _complete(
         self,
         messages: list[Dict[str, Any]],
@@ -339,3 +399,38 @@ class GroqProvider(AIProvider):
         except (TypeError, ValueError, json.JSONDecodeError) as error:
             raise ProviderFailure("invalid_json") from error
         return parsed
+
+    def _transcribe(
+        self,
+        audio: bytes,
+        filename: str,
+        mime_type: str,
+        language: str | None,
+    ) -> Dict[str, str]:
+        if self._client is None:
+            from groq import Groq
+
+            self._client = Groq(api_key=self._api_key, timeout=self._timeout_seconds)
+
+        requested_language = normalize_transcription_language(language)
+        options: Dict[str, Any] = {
+            "file": (filename, audio, mime_type),
+            "model": os.getenv("TUTORLY_GROQ_TRANSCRIPTION_MODEL", "whisper-large-v3-turbo"),
+            "prompt": (
+                "A student is asking an educational question. Preserve subject vocabulary, "
+                "names, punctuation, and spoken mathematical expressions accurately."
+            ),
+            "response_format": "verbose_json",
+            "temperature": 0.0,
+        }
+        if requested_language:
+            options["language"] = requested_language
+
+        response = self._client.audio.transcriptions.create(**options)
+        text = str(getattr(response, "text", "") or "").strip()
+        detected = normalize_transcription_language(
+            requested_language or getattr(response, "language", "")
+        )
+        if not text:
+            raise ProviderFailure("empty_transcription")
+        return {"text": text, "language": detected}

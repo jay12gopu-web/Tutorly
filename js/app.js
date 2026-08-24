@@ -46,6 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const suggestionChips = document.querySelectorAll(".suggestion-chip");
   const disclaimer = document.querySelector(".disclaimer");
   let speakLiveReply = null;
+  let activeChatController = null;
+  let activeReplyStreamToken = 0;
+  let voiceSession = null;
+  let liveSessionMode = null;
   let chatRequestInFlight = false;
   let pendingConfirmAction = null;
   let confirmReturnFocus = null;
@@ -288,7 +292,9 @@ document.addEventListener("DOMContentLoaded", () => {
         source: "maths_gpt.html",
         model,
         adaptiveContext: context.adaptiveContext || null,
-        hasImage: !!context.hasImage
+        hasImage: !!context.hasImage,
+        voice_mode: !!context.voiceMode,
+        voice_language: context.voiceLanguage || "auto"
       }
     };
   }
@@ -433,6 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function requestBackendChat(message, context = {}) {
     const controller = new AbortController();
+    activeChatController = controller;
     const timeout = window.setTimeout(() => controller.abort(), 50000);
 
     try {
@@ -450,6 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
       context.quickActions = data?.metadata?.quick_actions || [];
       context.backendConversationId = data?.conversation_id || context.conversationId || null;
       context.activityChatId = data?.metadata?.activity_chat_id || null;
+      context.spokenReply = data?.metadata?.spoken_answer || "";
       if (data?.error && data?.message) return data.message;
       const answer = data?.answer || data?.message || data?.response || "";
       if (!answer || /error generating response/i.test(answer)) {
@@ -458,7 +466,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return String(answer).trim();
     } finally {
       window.clearTimeout(timeout);
+      if (activeChatController === controller) activeChatController = null;
     }
+  }
+
+  function abortActiveChatRequest() {
+    activeReplyStreamToken += 1;
+    activeChatController?.abort();
   }
 
   async function sendTeachingFeedback(payload = {}) {
@@ -2183,6 +2197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pendingImage = null;
     const card = document.getElementById("imagePreviewCard");
     if (card) card.classList.remove("show");
+    voiceSession?.setImageReady(false);
     updateSendState();
   }
 
@@ -2354,6 +2369,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ocrRunning: false
     };
     showImagePreview();
+    voiceSession?.setImageReady(true, file.name || "Homework image");
     setPreviewStatus("Reading text from image... 0%", 0);
     updateSendState();
     runOcrForPendingImage();
@@ -2921,6 +2937,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = String(markdown || "");
     const isInteractiveMath = /^<section\s+class="math-learning-flow"\s+data-tutorly-math-response/i.test(text.trim());
     const hasRichVisualFence = /```(?:mermaid|chart)\b/i.test(text);
+    const streamToken = ++activeReplyStreamToken;
 
     if (!content || isInteractiveMath || hasRichVisualFence || !shouldStream || text.length < 160) {
       message.classList.remove("loading");
@@ -2938,6 +2955,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const interval = meta.model === "spark" ? 14 : meta.model === "deep" ? 28 : 20;
 
     function tick() {
+      if (streamToken !== activeReplyStreamToken) {
+        message.classList.remove("loading");
+        return;
+      }
       index += 1;
       const partial = chunks.slice(0, index).join("");
       content.innerHTML = renderMarkdownNote(partial);
@@ -3280,6 +3301,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     } catch (error) {
+      if (error?.name === "AbortError") throw error;
       console.warn("Tutorly semantic chat request failed.");
     }
     return "I couldn't process that question properly. Please try again.";
@@ -3319,6 +3341,10 @@ document.addEventListener("DOMContentLoaded", () => {
       imageDataUrl,
       extractedText: imageToSend?.extractedText || ""
     });
+    requestPayload.voiceMode = !!options.liveMode;
+    requestPayload.voiceLanguage = options.voiceLanguage
+      || voiceSession?.getEffectiveLanguage?.()
+      || getVoiceLanguage();
     const modelAtSend = requestPayload.model;
     const subjectAtSend = "general";
     const conversation = ensureActiveConversation(botInputText);
@@ -3372,6 +3398,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.getElementById("imagePreviewCard");
       if (card) card.classList.remove("show");
       pendingImage = null;
+      voiceSession?.setImageReady(false);
       uploadImageToBackend(fileForUpload).catch(() => {
         showToast("Upload failed. The image is still visible in this chat.");
       });
@@ -3395,6 +3422,14 @@ document.addEventListener("DOMContentLoaded", () => {
       let replyText;
       try {
         replyText = await getBotReply(botInputText, modelAtSend, requestPayload);
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          loadingMessage?.remove();
+          chatRequestInFlight = false;
+          updateSendState();
+          return;
+        }
+        throw error;
       } finally {
         chatRequestInFlight = false;
         updateSendState();
@@ -3450,7 +3485,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toolkit,
         onDone: () => {
           if (options.speakReply && typeof speakLiveReply === "function") {
-            speakLiveReply(replyText);
+            speakLiveReply(replyText, requestPayload.spokenReply || "");
           }
           if (shouldShowTrialLimitAfterReply) {
             showWelcomeTrialLimit();
@@ -3817,27 +3852,33 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.querySelector("#chatHistorySearch")?.focus();
   }
 
-  const ENGLISH_VOICE_LANGUAGES = new Set(["en-US", "en-IN", "en-GB"]);
+  const VOICE_LANGUAGES = new Set([
+    "auto", "en-US", "en-IN", "en-GB", "hi-IN", "te-IN", "ta-IN",
+    "bn-IN", "mr-IN", "es-ES", "fr-FR", "de-DE"
+  ]);
 
   function normalizeVoiceLanguage(value) {
-    return ENGLISH_VOICE_LANGUAGES.has(value) ? value : "en-US";
+    return VOICE_LANGUAGES.has(value) ? value : "auto";
   }
 
   function getVoiceLanguage() {
     try {
       const storedLanguage = localStorage.getItem("tutorly_voice_language");
-      const language = normalizeVoiceLanguage(storedLanguage || "en-US");
+      const language = normalizeVoiceLanguage(storedLanguage || "auto");
       if (storedLanguage !== language) {
         localStorage.setItem("tutorly_voice_language", language);
       }
       return language;
     } catch (error) {
-      return "en-US";
+      return "auto";
     }
   }
 
-  function containsNonEnglishScript(text) {
-    return /[\u0900-\u097F\u0C00-\u0C7F]/.test(text || "");
+  function getRecognitionLanguage() {
+    const selected = getVoiceLanguage();
+    if (selected !== "auto") return selected;
+    const browserLanguage = String(navigator.language || "en-US");
+    return VOICE_LANGUAGES.has(browserLanguage) ? browserLanguage : "en-US";
   }
 
   function setStoredValue(key, value) {
@@ -3903,9 +3944,18 @@ document.addEventListener("DOMContentLoaded", () => {
           <label class="settings-field">
             <span>Voice language</span>
             <select id="settingsVoiceSelect">
+              <option value="auto">Auto-detect</option>
               <option value="en-US">English (US)</option>
               <option value="en-IN">English (India)</option>
               <option value="en-GB">English (UK)</option>
+              <option value="hi-IN">Hindi</option>
+              <option value="te-IN">Telugu</option>
+              <option value="ta-IN">Tamil</option>
+              <option value="bn-IN">Bengali</option>
+              <option value="mr-IN">Marathi</option>
+              <option value="es-ES">Spanish</option>
+              <option value="fr-FR">French</option>
+              <option value="de-DE">German</option>
             </select>
           </label>
         </div>
@@ -3929,7 +3979,7 @@ document.addEventListener("DOMContentLoaded", () => {
       voiceSelect.value = getVoiceLanguage();
     } catch (error) {
       toneSelect.value = "";
-      voiceSelect.value = "en-US";
+      voiceSelect.value = "auto";
     }
 
     overlay.querySelector("#settingsCloseBtn").addEventListener("click", closeSettingsPanel);
@@ -4250,194 +4300,128 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (voiceBtn || speechTextBtn) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    const NO_SPEECH_TIMEOUT_MS = 3800;
-    const WAVE_PATTERN = [0.32, 0.56, 0.82, 0.5, 1, 0.68, 0.9, 0.48, 0.76, 0.54, 0.34];
     let recognition = null;
-    let isListening = false;
-    let activeSpeechButton = null;
-    let speechDetected = false;
-    let transcriptReceived = false;
-    let speechStream = null;
-    let speechAudioContext = null;
-    let speechAnalyser = null;
-    let speechData = null;
-    let waveFrameId = null;
-    let noSpeechTimer = null;
-    let liveSessionMode = null;
-    let liveRestartTimer = null;
+    let isDictating = false;
     let liveActionSheet = null;
-    let beginLiveMode = () => showToast("Speech recognition is not supported in this browser.");
-    const speechButtons = [speechTextBtn, voiceBtn].filter(Boolean);
 
-    function clearNoSpeechTimer() {
-      window.clearTimeout(noSpeechTimer);
-      noSpeechTimer = null;
-    }
-
-    function markSpeechDetected() {
-      speechDetected = true;
-      clearNoSpeechTimer();
-    }
-
-    function resetVoiceWave() {
+    function setDictationState(value) {
+      isDictating = value;
+      body.classList.toggle("voice-wave-active", value);
+      speechTextBtn?.classList.toggle("listening", value);
+      speechTextBtn?.setAttribute("aria-pressed", String(value));
       voiceWaveBars.forEach((bar) => {
-        bar.style.height = "";
-        bar.style.opacity = "";
+        bar.style.height = value ? "18px" : "";
+        bar.style.opacity = value ? "0.78" : "";
       });
     }
 
-    function stopMicrophoneMeter() {
-      if (waveFrameId) {
-        cancelAnimationFrame(waveFrameId);
-        waveFrameId = null;
+    function stopDictation() {
+      if (isDictating && recognition) {
+        try { recognition.abort(); } catch (error) {}
       }
-
-      if (speechStream) {
-        speechStream.getTracks().forEach((track) => track.stop());
-        speechStream = null;
-      }
-
-      if (speechAudioContext) {
-        speechAudioContext.close().catch(() => {});
-        speechAudioContext = null;
-      }
-
-      speechAnalyser = null;
-      speechData = null;
-      resetVoiceWave();
+      setDictationState(false);
     }
 
-    function drawLiveVoiceWave() {
-      if (!speechAnalyser || !speechData || !voiceWaveBars.length) return;
-
-      speechAnalyser.getByteTimeDomainData(speechData);
-      let sum = 0;
-      for (let i = 0; i < speechData.length; i += 1) {
-        const value = (speechData[i] - 128) / 128;
-        sum += value * value;
+    function startDictation() {
+      if (!recognition) {
+        showToast("Speech-to-text is not supported in this browser.");
+        return;
       }
-
-      const rms = Math.sqrt(sum / speechData.length);
-      const loudness = Math.max(0, Math.min(1, (rms - 0.012) * 12));
-
-      if (loudness > 0.12) {
-        markSpeechDetected();
+      if (isDictating) {
+        stopDictation();
+        return;
       }
+      recognition.lang = getRecognitionLanguage();
+      try {
+        recognition.start();
+      } catch (error) {
+        showToast("Microphone access is unavailable. Check browser permission and try again.");
+      }
+    }
 
-      voiceWaveBars.forEach((bar, index) => {
-        const shape = WAVE_PATTERN[index % WAVE_PATTERN.length];
-        const shimmer = Math.sin(performance.now() / 95 + index * 0.7) * 0.045;
-        const energy = Math.max(0, Math.min(1, loudness * (0.62 + shape * 0.62) + shimmer));
-        const height = 7 + energy * (12 + shape * 22);
-        bar.style.height = `${height.toFixed(1)}px`;
-        bar.style.opacity = String(0.42 + energy * 0.58);
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = getRecognitionLanguage();
+      recognition.addEventListener("start", () => setDictationState(true));
+      recognition.addEventListener("end", () => setDictationState(false));
+      recognition.addEventListener("error", (event) => {
+        setDictationState(false);
+        if (event.error !== "aborted") showToast("I couldn’t hear that clearly. Try dictating again.");
       });
-
-      waveFrameId = requestAnimationFrame(drawLiveVoiceWave);
-    }
-
-    async function startMicrophoneMeter() {
-      if (!navigator.mediaDevices?.getUserMedia || !AudioContextClass) {
-        throw new Error("Microphone meter unavailable");
-      }
-
-      stopMicrophoneMeter();
-      speechStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
+      recognition.addEventListener("result", (event) => {
+        const transcript = Array.from(event.results)
+          .map((result) => result[0].transcript)
+          .join(" ")
+          .trim();
+        if (transcript) appendToInput(transcript);
       });
-
-      speechAudioContext = new AudioContextClass();
-      if (speechAudioContext.state === "suspended") {
-        await speechAudioContext.resume();
-      }
-
-      const source = speechAudioContext.createMediaStreamSource(speechStream);
-      speechAnalyser = speechAudioContext.createAnalyser();
-      speechAnalyser.fftSize = 1024;
-      speechAnalyser.smoothingTimeConstant = 0.72;
-      speechData = new Uint8Array(speechAnalyser.fftSize);
-      source.connect(speechAnalyser);
-      drawLiveVoiceWave();
+      speechTextBtn?.addEventListener("click", startDictation);
     }
 
-    function stopSpeechRecognition(reason = "") {
-      clearNoSpeechTimer();
-      clearLiveRestartTimer();
-      if (isListening && recognition) {
-        try {
-          recognition.abort();
-        } catch (error) {
-          try {
-            recognition.stop();
-          } catch (_stopError) {}
-        }
-      }
+    async function submitLiveTranscript(transcript, metadata = {}) {
+      const spokenText = String(transcript || "").trim();
+      if (!spokenText) return;
+      input.value = spokenText;
+      resizeInput();
+      updateSendState();
+      await sendMessage({
+        speakReply: true,
+        liveMode: liveSessionMode || metadata.mode || "voice",
+        voiceLanguage: metadata.language === "auto"
+          ? (voiceSession?.getEffectiveLanguage?.() || "auto")
+          : (metadata.language || getVoiceLanguage())
+      });
+    }
 
-      setVoiceListening(false);
-      activeSpeechButton = null;
-      stopMicrophoneMeter();
-
-      if (reason) {
+    voiceSession = window.TutorlyVoiceChat?.create?.({
+      overlay: document.getElementById("voiceChatOverlay"),
+      getTranscriptionEndpoint: () => getBackendEndpoint("/api/transcribe"),
+      getSessionId: () => activeConversationId || getChatUserId(),
+      getLanguage: getVoiceLanguage,
+      setLanguage: (language) => setStoredValue("tutorly_voice_language", normalizeVoiceLanguage(language)),
+      onNotice: showToast,
+      onPhoto: () => uploadInput?.click(),
+      onInterrupt: abortActiveChatRequest,
+      onTranscript: submitLiveTranscript,
+      onClose: () => {
         liveSessionMode = null;
-        setLiveButtonState("idle");
-        showToast(reason);
+        voiceBtn?.classList.remove("listening", "thinking", "speaking");
+        voiceBtn?.setAttribute("aria-pressed", "false");
       }
-    }
+    }) || null;
 
-    function startNoSpeechTimer() {
-      clearNoSpeechTimer();
-      noSpeechTimer = window.setTimeout(() => {
-        if (!transcriptReceived && !speechDetected) {
-          stopSpeechRecognition("No speech detected. Tap the mic and try again.");
-        }
-      }, NO_SPEECH_TIMEOUT_MS);
-    }
+    speakLiveReply = (markdown, spokenAnswer = "") => {
+      voiceSession?.speak(markdown, spokenAnswer);
+    };
 
-    function clearLiveRestartTimer() {
-      window.clearTimeout(liveRestartTimer);
-      liveRestartTimer = null;
-    }
-
-    function setLiveButtonState(state = "idle") {
-      if (!voiceBtn) return;
-      ["listening", "thinking", "speaking"].forEach((className) => {
-        voiceBtn.classList.toggle(className, className === state);
-      });
-      body.classList.toggle("live-tutor-active", state !== "idle");
-      body.classList.toggle("live-tutor-speaking", state === "speaking");
-      voiceBtn.dataset.liveState = state;
-    }
-
-    function getSpeakableText(markdown) {
-      const scratch = document.createElement("div");
-      scratch.innerHTML = renderMarkdown(markdown || "");
-      return (scratch.textContent || "")
-        .replace(/\s+/g, " ")
-        .replace(/Final answer:/gi, "Final answer:")
-        .trim()
-        .slice(0, 900);
+    function beginLiveMode(mode = "voice") {
+      if (mode === "dictate") {
+        startDictation();
+        return;
+      }
+      liveSessionMode = mode === "vision" ? "vision" : "voice";
+      if (liveSessionMode === "vision") {
+        setSelectedModel("lens", { announce: false });
+        showToast("Attach a homework image any time, then ask about it naturally.");
+      }
+      if (!voiceSession) {
+        showToast("Full Voice Chat is unavailable in this browser. You can still dictate into the message box.");
+        return;
+      }
+      voiceBtn?.setAttribute("aria-pressed", "true");
+      voiceSession.open(liveSessionMode, voiceBtn);
     }
 
     function closeLiveActionSheet() {
       if (!liveActionSheet) return;
-      document.removeEventListener("keydown", handleLiveSheetKeydown);
       liveActionSheet.classList.remove("show");
       liveActionSheet.setAttribute("aria-hidden", "true");
       window.setTimeout(() => {
         liveActionSheet?.remove();
         liveActionSheet = null;
       }, 180);
-    }
-
-    function handleLiveSheetKeydown(event) {
-      if (event.key === "Escape") {
-        closeLiveActionSheet();
-      }
     }
 
     function openLiveActionSheet() {
@@ -4450,23 +4434,23 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="live-sheet-handle" aria-hidden="true"></div>
           <div class="live-sheet-heading">
             <span class="live-sheet-orb" aria-hidden="true">✦</span>
-            <div>
-              <p>Choose live mode</p>
-              <h2 id="liveSheetTitle">How do you want to learn?</h2>
-            </div>
+            <div><p>Choose voice mode</p><h2 id="liveSheetTitle">How do you want to talk?</h2></div>
           </div>
+          <button class="live-mode-option" type="button" data-live-mode="dictate">
+            <span class="live-mode-icon" aria-hidden="true">⌨</span>
+            <span><strong>Dictate a message</strong><small>Turn speech into editable text</small></span>
+          </button>
           <button class="live-mode-option" type="button" data-live-mode="voice">
             <span class="live-mode-icon" aria-hidden="true">🎤</span>
-            <span><strong>Tutorly Live</strong><small>Voice-only tutor conversation</small></span>
+            <span><strong>Tutorly Voice Chat</strong><small>Hands-free tutoring with spoken replies</small></span>
           </button>
           <button class="live-mode-option" type="button" data-live-mode="vision">
-            <span class="live-mode-icon" aria-hidden="true">📹</span>
-            <span><strong>Vision Live</strong><small>Camera + voice for homework help</small></span>
+            <span class="live-mode-icon" aria-hidden="true">▣</span>
+            <span><strong>Homework + Voice</strong><small>Attach a photo and discuss it naturally</small></span>
           </button>
         </section>
       `;
       document.body.appendChild(liveActionSheet);
-      document.addEventListener("keydown", handleLiveSheetKeydown);
       liveActionSheet.addEventListener("click", (event) => {
         if (event.target === liveActionSheet) closeLiveActionSheet();
       });
@@ -4480,241 +4464,20 @@ document.addEventListener("DOMContentLoaded", () => {
       window.requestAnimationFrame(() => {
         liveActionSheet?.classList.add("show");
         liveActionSheet?.setAttribute("aria-hidden", "false");
+        liveActionSheet?.querySelector("[data-live-mode]")?.focus();
       });
     }
 
-    async function attachVisionLiveFrame() {
-      const overlay = document.getElementById("cameraOverlay");
-      const video = overlay?.querySelector("#cameraVideo");
-      const canvas = overlay?.querySelector("#cameraCanvas");
-      if (!video || !canvas || !cameraStream) return false;
-
-      const width = video.videoWidth || 1280;
-      const height = video.videoHeight || 960;
-      if (!width || !height) return false;
-
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, width, height);
-
-      const blob = await new Promise((resolve) => {
-        canvas.toBlob(resolve, "image/jpeg", 0.82);
-      });
-      if (!blob || blob.size === 0) return false;
-
-      const file = new File([blob], `vision-live-${Date.now()}.jpg`, { type: "image/jpeg" });
-      setSelectedModel("lens", { announce: false });
-      removePendingImage();
-      pendingImage = {
-        file,
-        uploadFile: file,
-        source: "camera",
-        previewUrl: URL.createObjectURL(file),
-        extractedText: "",
-        ocrRunning: false
-      };
-      return true;
-    }
-
-    async function submitLiveTranscript(transcript) {
-      const spokenText = String(transcript || "").trim();
-      if (!spokenText) return;
-
-      setLiveButtonState("thinking");
-      if (liveSessionMode === "vision") {
-        const frameAttached = await attachVisionLiveFrame();
-        if (!frameAttached) {
-          showToast("Vision Live is listening. Keep the camera open or use the photo button for image analysis.");
-        }
+    voiceBtn?.addEventListener("click", () => {
+      if (voiceSession?.isOpen()) {
+        voiceSession.close();
+        return;
       }
-
-      input.value = spokenText;
-      resizeInput();
-      updateSendState();
-      sendMessage({ speakReply: true, liveMode: liveSessionMode });
-    }
-
-    function setVoiceListening(value) {
-      isListening = value;
-      body.classList.toggle("voice-wave-active", value);
-      speechButtons.forEach((button) => {
-        const isActiveButton = value && button === activeSpeechButton;
-        button.classList.toggle("listening", isActiveButton);
-        button.setAttribute("aria-pressed", String(isActiveButton));
-      });
-    }
-
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = getVoiceLanguage();
-
-      recognition.addEventListener("start", () => {
-        setVoiceListening(true);
-        if (activeSpeechButton === voiceBtn && liveSessionMode) {
-          setLiveButtonState("listening");
-        }
-        startNoSpeechTimer();
-      });
-      recognition.addEventListener("soundstart", markSpeechDetected);
-      recognition.addEventListener("speechstart", markSpeechDetected);
-      recognition.addEventListener("end", () => {
-        const wasLiveListening = activeSpeechButton === voiceBtn && liveSessionMode;
-        const hadTranscript = transcriptReceived;
-        clearNoSpeechTimer();
-        setVoiceListening(false);
-        activeSpeechButton = null;
-        stopMicrophoneMeter();
-        if (wasLiveListening && !hadTranscript) {
-          liveSessionMode = null;
-          setLiveButtonState("idle");
-        }
-      });
-      recognition.addEventListener("error", () => {
-        const wasLiveListening = activeSpeechButton === voiceBtn && liveSessionMode;
-        clearNoSpeechTimer();
-        setVoiceListening(false);
-        activeSpeechButton = null;
-        stopMicrophoneMeter();
-        if (wasLiveListening) {
-          liveSessionMode = null;
-          setLiveButtonState("idle");
-        }
-      });
-      recognition.addEventListener("result", (event) => {
-        const transcript = Array.from(event.results)
-          .map((result) => result[0].transcript)
-          .join(" ")
-          .trim();
-
-        if (transcript) {
-          transcriptReceived = true;
-          clearNoSpeechTimer();
-          if (containsNonEnglishScript(transcript)) {
-            setStoredValue("tutorly_voice_language", "en-US");
-            recognition.lang = "en-US";
-            showToast("Voice input is now set to English. Please try again.");
-            return;
-          }
-          if (activeSpeechButton === voiceBtn && liveSessionMode) {
-            submitLiveTranscript(transcript).catch(() => {
-              liveSessionMode = null;
-              setLiveButtonState("idle");
-              showToast("Live mode could not send that message. Please try again.");
-            });
-          } else {
-            appendToInput(transcript);
-          }
-        }
-      });
-
-      async function startSpeechRecognition(button) {
-        if (isListening) {
-          stopSpeechRecognition();
-          return;
-        }
-
-        activeSpeechButton = button;
-        speechDetected = false;
-        transcriptReceived = false;
-        try {
-          recognition.lang = getVoiceLanguage();
-          await startMicrophoneMeter();
-          recognition.start();
-        } catch (error) {
-          setVoiceListening(false);
-          activeSpeechButton = null;
-          stopMicrophoneMeter();
-          const message = error.message === "Microphone meter unavailable"
-            ? "Microphone access is not available in this browser."
-            : "Microphone permission denied. Please allow mic access and try again.";
-          showToast(message);
-        }
-      }
-
-      speakLiveReply = (markdown) => {
-        if (!liveSessionMode) {
-          setLiveButtonState("idle");
-          return;
-        }
-
-        const spokenText = getSpeakableText(markdown);
-        if (!spokenText || !window.speechSynthesis) {
-          setLiveButtonState("idle");
-          return;
-        }
-
-        clearLiveRestartTimer();
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(spokenText);
-        utterance.lang = getVoiceLanguage();
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        utterance.onstart = () => setLiveButtonState("speaking");
-        utterance.onend = () => {
-          setLiveButtonState("idle");
-          if (liveSessionMode) {
-            liveRestartTimer = window.setTimeout(() => startSpeechRecognition(voiceBtn), 420);
-          }
-        };
-        utterance.onerror = () => {
-          setLiveButtonState("idle");
-          if (liveSessionMode) {
-            liveRestartTimer = window.setTimeout(() => startSpeechRecognition(voiceBtn), 420);
-          }
-        };
-        window.speechSynthesis.speak(utterance);
-      };
-
-      beginLiveMode = (mode = "voice") => {
-        liveSessionMode = mode === "vision" ? "vision" : "voice";
-        clearLiveRestartTimer();
-        if (window.speechSynthesis?.speaking) {
-          window.speechSynthesis.cancel();
-        }
-        if (liveSessionMode === "vision") {
-          setSelectedModel("lens", { announce: true });
-          openCamera();
-          showToast("Vision Live is ready. Point the camera and speak your question.");
-        } else {
-          showToast("Tutorly Live is listening. Speak your doubt naturally.");
-        }
-        startSpeechRecognition(voiceBtn);
-      };
-
-      if (speechTextBtn) {
-        speechTextBtn.addEventListener("click", () => startSpeechRecognition(speechTextBtn));
-      }
-
-      if (voiceBtn) {
-        voiceBtn.addEventListener("click", () => {
-          if (isListening && activeSpeechButton === voiceBtn) {
-            liveSessionMode = null;
-            stopSpeechRecognition();
-            setLiveButtonState("idle");
-            return;
-          }
-
-          if (liveSessionMode && window.speechSynthesis?.speaking) {
-            window.speechSynthesis.cancel();
-            setLiveButtonState("listening");
-            startSpeechRecognition(voiceBtn);
-            return;
-          }
-
-          openLiveActionSheet();
-        });
-      }
-    } else {
-      speechButtons.forEach((button) => {
-        button.title = "Speech recognition is not supported in this browser";
-        button.addEventListener("click", () => {
-          showToast("Speech recognition is not supported in this browser.");
-        });
-      });
-    }
+      openLiveActionSheet();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeLiveActionSheet();
+    });
   }
 
   if (sidebarToggle && sidebar && chatShell) {

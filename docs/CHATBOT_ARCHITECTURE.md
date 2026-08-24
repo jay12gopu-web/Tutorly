@@ -8,7 +8,7 @@ Tutorly's browser is a renderer and conversation client. Academic understanding 
 2. `backend/chatbot/orchestrator.py` loads bounded recent conversation context.
 3. `backend/chatbot/ai/semantic_router.py` makes one structured LLM call through the provider-neutral `AIProvider` interface.
 4. `GroqProvider` calls Groq's `openai/gpt-oss-120b` model with a strict JSON Schema.
-5. The validated response contains subject, topic, intent, difficulty, answer format, response length, visual decision, tool decision, and the polished answer.
+5. The validated response contains subject, topic, intent, difficulty, answer format, response length, visual decision, tool decision, the polished answer, and an optional short voice companion.
 6. The orchestrator runs only the tools selected by that semantic decision, saves recent context, and returns the response.
 7. The browser renders the answer as Markdown, places any selected visual, and shows a small set of contextual actions.
 
@@ -22,11 +22,12 @@ There is no active browser-side subject, topic, intent, or diagram classifier. L
 - `backend/chatbot/conversation_context.py`: bounded recent-turn context.
 - `backend/chatbot/rate_limit.py`: per-user/conversation sliding-window limits.
 - `backend/chatbot/orchestrator.py`: provider-neutral chat pipeline.
-- `backend/chatbot/routes.py`: `/api/chat`, compatibility, feedback, SSE, and WebSocket routes.
+- `backend/chatbot/routes.py`: `/api/chat`, backend-only `/api/transcribe`, compatibility, feedback, SSE, and WebSocket routes.
 
 ## API
 
 - `POST /api/chat`: primary browser endpoint.
+- `POST /api/transcribe`: validated, rate-limited Voice Chat transcription through the configured backend provider. Audio is processed in memory and is not stored by Tutorly.
 - `POST /api/chatbot/respond`: compatibility alias using the same semantic pipeline.
 - `GET /api/chatbot/health`: provider/model configuration status without secrets.
 - `POST /api/chatbot/stream`: server-sent semantic response stream.
@@ -34,4 +35,4 @@ There is no active browser-side subject, topic, intent, or diagram classifier. L
 
 ## Security
 
-`GROQ_API_KEY` is read only by the backend provider from a server environment file. Frontend JavaScript never calls Groq and never receives the key.
+`GROQ_API_KEY` is read only by the backend provider from a server environment file. Frontend JavaScript never calls Groq and never receives the key. Voice audio is sent only to Tutorly's own backend endpoint; the browser never contacts Groq directly.

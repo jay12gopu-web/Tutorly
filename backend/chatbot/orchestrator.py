@@ -72,6 +72,7 @@ class ChatbotOrchestrator:
             profile=profile,
             mode=request.mode.value,
             attachments=request.attachments,
+            client_context=request.client_context,
         )
         classification = semantic_result.output.classification
         analysis = self._analysis_from_semantic(classification)
@@ -149,6 +150,7 @@ class ChatbotOrchestrator:
                 },
                 "response_policy": plan_metadata,
                 "quick_actions": self.response_policy.action_metadata(response_plan),
+                "spoken_answer": semantic_result.output.spoken_answer,
                 "visual": route_metadata["visual"],
                 "tools": route_metadata["tools"],
             },

@@ -40,3 +40,15 @@ class AIProvider(ABC):
         schema_name: str,
     ) -> Dict[str, Any]:
         raise NotImplementedError
+
+    async def transcribe_audio(
+        self,
+        *,
+        audio: bytes,
+        filename: str,
+        mime_type: str,
+        language: str | None = None,
+    ) -> Dict[str, str]:
+        """Optional provider-neutral speech-to-text capability."""
+
+        raise ProviderFailure("transcription_unsupported")

@@ -14,6 +14,7 @@ const gptSource = read("js/gpt.js");
 const moreToolsPage = read("more-tools.html");
 const policySource = read("js/chatbot/response-policy.js");
 const visuals = read("js/chatbot/educational-visuals.js");
+const voiceSource = read("js/chatbot/voice-chat.js");
 
 [
   "js/chatbot/chatbot-core.js",
@@ -24,6 +25,7 @@ const visuals = read("js/chatbot/educational-visuals.js");
   "js/chatbot/educational-visuals.js",
   "js/chatbot/rich-response-renderer.js",
   "js/chatbot/markdown-renderer.js",
+  "js/chatbot/voice-chat.js",
   "js/app.js"
 ].forEach((script) => {
   assert.ok(page.includes(`src="${script}`), `maths_gpt.html should load ${script}`);
@@ -59,6 +61,21 @@ assert.ok(app.includes("renderDisplayMath"), "inline and multiline display math 
 assert.ok(app.includes("RichResponse?.hydrate?.(content)"), "rich response blocks should hydrate inside existing messages");
 assert.ok(app.includes("MarkdownRenderer.render(markdown"), "chat should use the shared failure-isolated Markdown renderer");
 assert.ok(app.includes("text.match(/[\\s\\S]{1,42}/g)"), "simulated streaming must preserve every response character");
+assert.ok(page.includes('id="voiceChatOverlay"'), "Tutorly should include the full Voice Chat dialog");
+assert.ok(app.includes('getBackendEndpoint("/api/transcribe")'), "voice audio should use Tutorly's backend transcription endpoint");
+assert.ok(app.includes("voiceSession?.speak"), "full voice mode should speak the concise voice companion");
+assert.ok(app.includes("onInterrupt: abortActiveChatRequest"), "barge-in should cancel an active tutor response");
+assert.ok(app.includes("streamToken !== activeReplyStreamToken"), "barge-in should also stop the current progressive renderer");
+assert.ok(app.includes("Dictate a message"), "normal editable speech-to-text should remain available");
+assert.ok(app.includes("voiceMode = !!options.liveMode"), "voice requests should carry backend-only delivery context");
+assert.ok(voiceSource.includes("getFloatFrequencyData"), "voice activity detection should inspect spectral energy");
+assert.ok(voiceSource.includes("voiceBandMinHz"), "voice activity detection should focus on the human speech band");
+assert.ok(voiceSource.includes("zeroCrossingRate"), "random noise should be filtered using speech-shape features");
+assert.ok(voiceSource.includes("minimumVoiceFrames"), "a turn should require sustained voice-like frames");
+assert.ok(voiceSource.includes("await calibrate()"), "voice thresholds should calibrate to ambient noise");
+assert.ok(voiceSource.includes("speechSynthesis?.cancel"), "closing or interrupting Voice Chat should stop speech output");
+assert.ok(voiceSource.includes("getTracks().forEach((track) => track.stop())"), "closing Voice Chat should release microphone tracks");
+assert.ok(voiceSource.includes("Auto-detect"), "voice language selection should support safe auto detection");
 
 [
   'id="sidebarRecentChats"',
