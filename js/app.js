@@ -4524,7 +4524,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     voiceSession = window.TutorlyVoiceChat?.create?.({
       overlay: document.getElementById("voiceChatOverlay"),
-      inline: true,
+      inline: false,
       getTranscriptionEndpoint: () => getBackendEndpoint("/api/transcribe"),
       getSessionId: () => activeConversationId || getChatUserId(),
       getLanguage: getVoiceLanguage,

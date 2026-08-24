@@ -19,10 +19,10 @@
     silenceMs: 1250,
     maxUtteranceMs: 20000,
     startFrames: 8,
-    bargeFrames: 12,
+    bargeFrames: 18,
     minimumVoiceFrames: 14,
     minimumUtteranceMs: 320,
-    echoGuardMs: 950,
+    echoGuardMs: 1400,
     thinkingTimeoutMs: 60000,
     voiceBandMinHz: 85,
     voiceBandMaxHz: 4200,
@@ -34,11 +34,23 @@
 
   const STATE_COPY = Object.freeze({
     connecting: ["Getting ready…", "Checking your microphone."],
-    listening: ["Listening", "Speak naturally. I’ll respond when you finish."],
+    listening: ["Listening — just talk", "Speak naturally. I’ll respond when you finish."],
     processing: ["Thinking…", "You can interrupt and ask something else."],
     speaking: ["Tutorly is speaking", "Start talking to interrupt."],
     error: ["Voice unavailable", "Check microphone permission, then try again."],
     closed: ["Voice chat", ""]
+  });
+
+  const GREETINGS = Object.freeze({
+    "en-US": "Hi — I’m Tutorly. Just talk to me and I’ll listen and reply. What would you like to learn today?",
+    "hi-IN": "नमस्ते — मैं ट्यूटरली हूँ। बस मुझसे बात करो, मैं सुनूँगा और जवाब दूँगा। आज तुम क्या सीखना चाहोगे?",
+    "te-IN": "నమస్తే — నేను ట్యూటర్లీ. నాతో మాట్లాడండి, నేను విని సమాధానం చెబుతాను. ఈ రోజు మీరు ఏమి నేర్చుకోవాలనుకుంటున్నారు?",
+    "ta-IN": "வணக்கம் — நான் டியூட்டர்லி. என்னிடம் பேசுங்கள், நான் கேட்டு பதிலளிப்பேன். இன்று என்ன கற்க விரும்புகிறீர்கள்?",
+    "bn-IN": "নমস্কার — আমি টিউটরলি। আমার সঙ্গে কথা বলো, আমি শুনে উত্তর দেব। আজ তুমি কী শিখতে চাও?",
+    "mr-IN": "नमस्कार — मी ट्यूटरली आहे. माझ्याशी बोला, मी ऐकून उत्तर देईन. आज तुम्हाला काय शिकायचे आहे?",
+    "es-ES": "Hola, soy Tutorly. Háblame y te escucharé y responderé. ¿Qué quieres aprender hoy?",
+    "fr-FR": "Salut, je suis Tutorly. Parle-moi, je t’écoute et je te réponds. Que veux-tu apprendre aujourd’hui ?",
+    "de-DE": "Hallo, ich bin Tutorly. Sprich mit mir, ich höre zu und antworte. Was möchtest du heute lernen?"
   });
 
   function normalizeLanguage(value) {
@@ -123,6 +135,7 @@
     let animationFrame = null;
     let transcriptionController = null;
     let responseTimer = null;
+    let speechPulseTimer = null;
     let speaking = false;
     let speakingStartedAt = 0;
     let speechToken = 0;
@@ -134,6 +147,7 @@
     let noiseFloor = 0.008;
     let speechThreshold = 0.022;
     let bargeThreshold = 0.06;
+    let speakerEchoFloor = 0.008;
     let detectedLanguage = "en";
     let returnFocus = null;
 
@@ -177,6 +191,9 @@
 
     function cancelSpeech() {
       speechToken += 1;
+      root.clearTimeout(speechPulseTimer);
+      speechPulseTimer = null;
+      orb?.style.setProperty("--speech-level", "0");
       try { root.speechSynthesis?.cancel(); } catch (error) {}
       speaking = false;
     }
@@ -361,11 +378,20 @@
       const features = audioFeatures();
       updateOrb(features);
       const now = performance.now();
-      const threshold = state === "speaking" || state === "processing" ? bargeThreshold : speechThreshold;
+      const processingThreshold = Math.max(bargeThreshold, noiseFloor * 5.2);
+      const speakingThreshold = Math.max(bargeThreshold, speakerEchoFloor * 2.15);
+      const threshold = state === "speaking"
+        ? speakingThreshold
+        : state === "processing"
+          ? processingThreshold
+          : speechThreshold;
       const isVoice = features.voiceLike && features.rms >= threshold;
 
       if (state === "speaking" || state === "processing") {
         const echoGuardPassed = state !== "speaking" || now - speakingStartedAt >= CONFIG.echoGuardMs;
+        if (state === "speaking" && (!echoGuardPassed || !isVoice)) {
+          speakerEchoFloor = Math.max(noiseFloor, speakerEchoFloor * 0.92 + features.rms * 0.08);
+        }
         bargeFrameCount = echoGuardPassed && isVoice ? bargeFrameCount + 1 : 0;
         if (bargeFrameCount >= CONFIG.bargeFrames) interruptCurrentTurn(now);
       } else if (state === "listening") {
@@ -403,7 +429,8 @@
       const upperQuiet = samples[Math.floor(samples.length * 0.85)] || median;
       noiseFloor = Math.max(0.004, median, upperQuiet * 0.85);
       speechThreshold = Math.max(0.018, noiseFloor * 3.1);
-      bargeThreshold = Math.max(0.055, noiseFloor * 5.8, speechThreshold * 1.7);
+      bargeThreshold = Math.max(0.075, noiseFloor * 7.2, speechThreshold * 2.1);
+      speakerEchoFloor = noiseFloor;
     }
 
     async function openSession(nextMode = "voice", trigger = null) {
@@ -450,9 +477,10 @@
         animationFrame = root.requestAnimationFrame(tick);
         await calibrate();
         if (!open) return;
-        setState("listening", mode === "vision"
-          ? "Your homework image can stay attached while you speak."
-          : "Only sustained speech-like audio will start a turn.");
+        const selectedLanguage = normalizeLanguage(languageSelect?.value || "auto");
+        const greetingLanguage = selectedLanguage === "auto" ? "en-US" : selectedLanguage;
+        const greeting = GREETINGS[greetingLanguage] || GREETINGS["en-US"];
+        speak(mode === "vision" ? `${greeting} Your homework image is ready too.` : greeting);
       } catch (error) {
         releaseAudio();
         const message = error?.name === "NotAllowedError"
@@ -486,11 +514,26 @@
         if (!open || token !== speechToken) return;
         speaking = true;
         speakingStartedAt = performance.now();
+        speakerEchoFloor = Math.max(noiseFloor, speechThreshold);
         bargeFrameCount = 0;
         setState("speaking");
       });
+      utterance.addEventListener("boundary", (event) => {
+        if (!open || token !== speechToken || !orb) return;
+        const remaining = text.slice(Number(event.charIndex) || 0);
+        const wordLength = (remaining.match(/^\S+/)?.[0] || "").length;
+        const cadence = Math.min(1, 0.38 + wordLength / 16);
+        orb.style.setProperty("--speech-level", cadence.toFixed(2));
+        root.clearTimeout(speechPulseTimer);
+        speechPulseTimer = root.setTimeout(() => {
+          orb?.style.setProperty("--speech-level", "0.12");
+        }, 105);
+      });
       const finish = () => {
         if (!open || token !== speechToken) return;
+        root.clearTimeout(speechPulseTimer);
+        speechPulseTimer = null;
+        orb?.style.setProperty("--speech-level", "0");
         speaking = false;
         setState("listening");
       };
@@ -498,6 +541,7 @@
       utterance.addEventListener("error", finish, { once: true });
       speaking = true;
       speakingStartedAt = performance.now();
+      speakerEchoFloor = Math.max(noiseFloor, speechThreshold);
       setState("speaking");
       root.speechSynthesis.speak(utterance);
     }

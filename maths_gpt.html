@@ -317,10 +317,7 @@
       <header class="voice-session-header">
         <div class="voice-session-brand">
           <span class="voice-session-brand-mark" aria-hidden="true">&#10022;</span>
-          <div>
-            <p>Tutorly Live</p>
-            <h2 id="voiceSessionTitle">Voice Chat</h2>
-          </div>
+          <h2 id="voiceSessionTitle">Voice chat with Tutorly</h2>
         </div>
         <div class="voice-session-actions">
           <button id="voiceSessionPhoto" class="voice-session-control" type="button" aria-label="Attach a homework image">Photo</button>
@@ -334,7 +331,10 @@
 
       <div class="voice-session-content">
         <div class="voice-session-orb" aria-hidden="true">
-          <span></span><span></span><span></span><span></span><span></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
+            <path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v3M8 21h8" />
+          </svg>
         </div>
         <div class="voice-session-copy" aria-live="polite">
           <h3 id="voiceSessionState">Getting ready…</h3>
@@ -344,6 +344,7 @@
           <p id="voiceSessionReply" class="voice-session-reply" hidden></p>
         </div>
       </div>
+      <p class="voice-session-footnote">Speak naturally. Tutorly pauses when you talk and replies when you stop.</p>
     </section>
   </div>
 
