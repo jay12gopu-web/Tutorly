@@ -11,14 +11,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-  <script>
-    (function () {
-      var signedIn = localStorage.getItem('tutorly_logged_in') === 'true';
-      var preview = new URLSearchParams(window.location.search).get('preview') === '1';
-      if (!signedIn && !preview) window.location.replace('welcome.html');
-    })();
-  </script>
-
   <link rel="stylesheet" href="css/chatbot.css?v=voice-english-20260824" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
@@ -181,9 +173,9 @@
         <div id="chatTitle" class="chat-title">New chat</div>
 
         <div class="top-actions">
-          <a class="upgrade-plans-btn" href="subscriptions.html" aria-label="Upgrade your Tutorly plan">
-            <img class="upgrade-crown" src="assets/premium-crown.png" alt="" aria-hidden="true" />
-            <span>Upgrade your plan</span>
+          <a id="topAccountAction" class="upgrade-plans-btn" href="subscriptions.html" aria-label="Upgrade your Tutorly plan">
+            <img id="topAccountActionIcon" class="upgrade-crown" src="assets/premium-crown.png" alt="" aria-hidden="true" />
+            <span id="topAccountActionLabel">Upgrade your plan</span>
           </a>
           <button id="mobileMenu" class="icon-btn mobile-menu" type="button" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -361,6 +353,7 @@
   </div>
 
   <script src="shared/tutorly-plans.js"></script>
+  <script src="js/auth-client.js"></script>
   <script src="frontend/subscription/premium-guard.js"></script>
   <script src="js/chatbot/chatbot-core.js"></script>
   <script src="js/chatbot/mode-registry.js"></script>

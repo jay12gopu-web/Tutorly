@@ -184,7 +184,7 @@
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
 <body data-tutorly-surface="auth">
-  <a class="back-home-btn" href="welcome.html" aria-label="Back to Tutorly welcome">Tutorly</a>
+  <a class="back-home-btn" href="maths_gpt.html" aria-label="Back to Tutorly chat">Tutorly</a>
   <div class="auth-wrap">
     <form class="panel panel-soft auth-card fade-up" id="loginForm" novalidate>
       <span class="auth-brand">&#10022; Tutorly</span>
@@ -234,6 +234,7 @@
     </div>
   </div>
 
+  <script src="js/auth-client.js"></script>
   <script>
     const loginForm = document.getElementById('loginForm');
     const otpModal = document.getElementById('otpModal');
@@ -246,7 +247,6 @@
     const loginParams = new URLSearchParams(window.location.search);
     const chatbotLoginOnly = loginParams.get('intent') === 'chatbot';
 
-    let generatedOtp = '';
     let loginMode = 'password';
 
     if (chatbotLoginOnly) {
@@ -264,21 +264,26 @@
       });
     });
 
-    function makeOtp() {
-      return String(Math.floor(100000 + Math.random() * 900000));
+    async function sendOtp() {
+      const email = document.getElementById('email').value.trim();
+      otpStatus.textContent = 'Sending your code…';
+      document.getElementById('resendOtpBtn').disabled = true;
+      try {
+        await window.TutorlyAuth.requestOtp(email);
+        otpStatus.textContent = `Code sent to ${email}. It expires in 10 minutes.`;
+      } catch (error) {
+        otpStatus.textContent = error.message;
+        throw error;
+      } finally {
+        document.getElementById('resendOtpBtn').disabled = false;
+      }
     }
 
-    function sendOtp() {
-      generatedOtp = makeOtp();
-      alert(`Demo OTP code: ${generatedOtp}`);
-      otpStatus.textContent = 'OTP sent. Please enter the 6-digit code.';
-    }
-
-    function openOtpModal() {
+    async function openOtpModal() {
       otpModal.classList.add('show');
       otpInputs.forEach((i) => i.value = '');
       otpInputs[0].focus();
-      sendOtp();
+      await sendOtp();
     }
 
     function closeOtpModal() {
@@ -290,13 +295,6 @@
     }
 
     function completeLogin() {
-      localStorage.setItem('tutorly_logged_in', 'true');
-      localStorage.setItem('tutorly_email', document.getElementById('email').value.trim());
-      if (chatbotLoginOnly) {
-        localStorage.setItem('tutorly_signed_up', 'true');
-        localStorage.setItem('tutorly_account_role', 'student');
-        localStorage.setItem('tutorly_bot_try_count', '0');
-      }
       window.location.href = 'maths_gpt.html';
     }
 
@@ -331,7 +329,7 @@
       });
     });
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
@@ -347,32 +345,53 @@
       }
 
       if (loginMode === 'otp') {
-        openOtpModal();
+        loginSubmit.disabled = true;
+        try {
+          await openOtpModal();
+        } catch (error) {
+          // The modal shows the friendly delivery error.
+        } finally {
+          loginSubmit.disabled = false;
+        }
         return;
       }
 
-      completeLogin();
+      loginSubmit.disabled = true;
+      loginSubmit.textContent = 'Logging in…';
+      try {
+        await window.TutorlyAuth.passwordLogin(email, password);
+        completeLogin();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = 'Log in';
+      }
     });
 
-    document.getElementById('resendOtpBtn').addEventListener('click', sendOtp);
+    document.getElementById('resendOtpBtn').addEventListener('click', () => {
+      sendOtp().catch(() => {});
+    });
 
-    document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+    document.getElementById('verifyOtpBtn').addEventListener('click', async () => {
       const userOtp = collectOtp();
       if (userOtp.length !== 6) {
         otpStatus.textContent = 'Please enter all 6 digits.';
         return;
       }
-
-      if (userOtp !== generatedOtp) {
-        otpStatus.textContent = 'Incorrect OTP. Please try again.';
-        return;
-      }
-
-      otpStatus.textContent = 'OTP verified successfully.';
-      setTimeout(() => {
+      const verifyButton = document.getElementById('verifyOtpBtn');
+      verifyButton.disabled = true;
+      otpStatus.textContent = 'Verifying…';
+      try {
+        await window.TutorlyAuth.verifyOtp(document.getElementById('email').value.trim(), userOtp);
+        otpStatus.textContent = 'OTP verified successfully.';
         closeOtpModal();
         completeLogin();
-      }, 350);
+      } catch (error) {
+        otpStatus.textContent = error.message;
+      } finally {
+        verifyButton.disabled = false;
+      }
     });
 
     otpModal.addEventListener('click', (e) => {

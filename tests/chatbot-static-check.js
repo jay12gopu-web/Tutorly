@@ -87,6 +87,10 @@ assert.ok(!app.includes("openLiveActionSheet") && !app.includes("data-live-mode"
 assert.ok(chatbotCss.includes("body.composer-ready #voiceBtn"), "Voice Chat should collapse when the composer is ready to send");
 assert.ok(!chatbotCss.replace(/\r\n/g, "\n").includes("body.composer-ready #speechTextBtn,\nbody.composer-ready #voiceBtn"), "speech-to-text should not be replaced by the Send button");
 assert.ok(app.includes("voiceMode = !!options.liveMode"), "voice requests should carry backend-only delivery context");
+assert.ok(app.includes("const isGuestMode = !isSignedIn"), "logged-out visitors should use the Tutorly chat home in guest mode");
+assert.ok(app.includes('topAccountActionLabel.textContent = "Log in"'), "guest mode should replace Upgrade with Log in");
+assert.ok(app.includes('showGuestToolNotice(link)'), "guest study tools should show a nearby login notice");
+assert.ok(app.includes('window.location.href = "maths_gpt.html"'), "logout should return to the Tutorly chat home");
 assert.ok(voiceSource.includes("getFloatFrequencyData"), "voice activity detection should inspect spectral energy");
 assert.ok(voiceSource.includes("voiceBandMinHz"), "voice activity detection should focus on the human speech band");
 assert.ok(voiceSource.includes("zeroCrossingRate"), "random noise should be filtered using speech-shape features");

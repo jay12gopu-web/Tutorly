@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarHelpBack = document.getElementById("sidebarHelpBack");
   const keyboardShortcutsBtn = document.getElementById("keyboardShortcutsBtn");
   const sidebarSignOutBtn = document.getElementById("sidebarSignOutBtn");
+  const topAccountAction = document.getElementById("topAccountAction");
+  const topAccountActionIcon = document.getElementById("topAccountActionIcon");
+  const topAccountActionLabel = document.getElementById("topAccountActionLabel");
   const uploadInput = document.getElementById("uploadInput");
   const uploadBtn = document.getElementById("uploadBtn");
   const cameraBtn = document.getElementById("cameraBtn");
@@ -129,9 +132,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const WELCOME_TRIAL_LIMIT = 5;
   const WELCOME_TRIAL_KEY = "tutorly_bot_try_count";
   const pageParams = new URLSearchParams(window.location.search);
-  const isWelcomeTrial = pageParams.get("entry") === "welcome";
+  const isSignedIn = (() => {
+    try {
+      return localStorage.getItem("tutorly_logged_in") === "true"
+        && !!window.TutorlyAuth?.getSessionToken?.();
+    }
+    catch (error) { return false; }
+  })();
+  const isGuestMode = !isSignedIn;
+  const isWelcomeTrial = isGuestMode || pageParams.get("entry") === "welcome";
+  body.classList.toggle("guest-mode", isGuestMode);
   let selectedModel = getStoredModel();
-  let activeConversationId = GPT?.getActiveConversationId?.() || ChatHistory?.getActiveConversationId?.() || null;
+  let activeConversationId = isGuestMode ? null : (GPT?.getActiveConversationId?.() || ChatHistory?.getActiveConversationId?.() || null);
   let welcomeTrialLocked = false;
   let pendingImage = null;
   let tesseractLoaderPromise = null;
@@ -2054,16 +2066,16 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.innerHTML = `
       <article class="cooldown-card" role="dialog" aria-modal="true" aria-labelledby="welcomeTrialTitle">
         <div class="cooldown-icon" aria-hidden="true">✦</div>
-        <p class="cooldown-kicker">Welcome trial finished</p>
-        <h2 id="welcomeTrialTitle">Return Home to continue</h2>
-        <p class="cooldown-copy">You have used your 5 chatbot attempts from the welcome page. Please return to the Home screen to continue your search with Tutorly.</p>
-        <button class="cooldown-close" id="welcomeTrialHomeBtn" type="button">Go to Home</button>
+        <p class="cooldown-kicker">Guest preview complete</p>
+        <h2 id="welcomeTrialTitle">Log in to keep learning</h2>
+        <p class="cooldown-copy">Create a Tutorly account or log in to continue chatting and save your learning progress.</p>
+        <button class="cooldown-close" id="welcomeTrialHomeBtn" type="button">Log in</button>
       </article>
     `;
     document.body.appendChild(overlay);
 
     overlay.querySelector("#welcomeTrialHomeBtn").addEventListener("click", () => {
-      window.location.href = "home.html";
+      window.location.href = "login.html?intent=chatbot";
     });
 
     return overlay;
@@ -2073,7 +2085,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isWelcomeTrial) return;
     welcomeTrialLocked = true;
     input.disabled = true;
-    input.placeholder = "Return Home to continue using Tutorly";
+    input.placeholder = "Log in to continue using Tutorly";
     sendBtn.disabled = true;
     if (uploadBtn) uploadBtn.disabled = true;
     if (cameraBtn) cameraBtn.disabled = true;
@@ -2097,8 +2109,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isWelcomeTrial || !disclaimer) return;
     const left = getWelcomeTrialLeft();
     disclaimer.textContent = left > 0
-      ? `Welcome trial: ${left} of ${WELCOME_TRIAL_LIMIT} messages left. Go Home for full chatbot access.`
-      : "Welcome trial finished. Return Home to continue with Tutorly.";
+      ? "Guest preview · 100% ready. Log in anytime to save your chats and progress."
+      : "Guest preview complete. Log in to continue with Tutorly.";
   }
 
   function registerWelcomeTrialAttempt() {
@@ -3559,6 +3571,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function syncSidebarAccount(subscriptionOverride = null) {
     if (!sidebarAccountBtn) return;
+    if (isGuestMode) {
+      sidebarAccountBtn.dataset.guest = "true";
+      sidebarAccountBtn.title = "Log in to Tutorly";
+      if (sidebarAccountName) sidebarAccountName.textContent = "Guest";
+      if (sidebarAccountAvatar) sidebarAccountAvatar.textContent = "G";
+      if (sidebarAccountPlan) {
+        sidebarAccountPlan.textContent = "Log in to save your progress";
+        sidebarAccountPlan.hidden = false;
+      }
+      if (sidebarAccountCrown) sidebarAccountCrown.hidden = true;
+      if (topAccountAction) {
+        topAccountAction.href = "login.html?intent=chatbot";
+        topAccountAction.classList.add("login-action");
+        topAccountAction.setAttribute("aria-label", "Log in to Tutorly");
+      }
+      if (topAccountActionIcon) topAccountActionIcon.hidden = true;
+      if (topAccountActionLabel) topAccountActionLabel.textContent = "Log in";
+      workspaceLinks.forEach((link) => {
+        link.classList.add("guest-locked");
+        link.dataset.guestLocked = "true";
+        link.setAttribute("aria-label", `${link.dataset.workspaceTitle || "Tutorly tool"} — log in required`);
+      });
+      return;
+    }
     const displayName = readStoredAccountValue([
       "tutorly_name",
       "math-bot-name",
@@ -3611,6 +3647,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function syncAuthoritativeAccount() {
+    if (isGuestMode) return;
     try {
       const subscription = await window.TutorlyPremiumGuard?.syncSubscription?.();
       if (subscription) syncSidebarAccount(subscription);
@@ -3651,6 +3688,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function closeAccountMenu() {
     setAccountMenuOpen(false);
+  }
+
+  function showGuestToolNotice(link, message = "Log in to try these out") {
+    if (!link) return;
+    document.querySelectorAll(".guest-tool-notice").forEach((notice) => notice.remove());
+    const notice = document.createElement("span");
+    notice.className = "guest-tool-notice";
+    notice.setAttribute("role", "status");
+    notice.textContent = message;
+    link.appendChild(notice);
+    window.setTimeout(() => notice.classList.add("show"), 0);
+    window.setTimeout(() => {
+      notice.classList.remove("show");
+      window.setTimeout(() => notice.remove(), 180);
+    }, 2400);
   }
 
   function normalizeToolRoute(route) {
@@ -3727,6 +3779,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderSidebarRecents() {
     if (!sidebarRecentChats || (!GPT && !ChatHistory)) return;
+    if (isGuestMode) {
+      sidebarRecentChats.innerHTML = "";
+      if (sidebarRecentEmpty) {
+        sidebarRecentEmpty.hidden = false;
+        sidebarRecentEmpty.textContent = "Log in to see your recent chats.";
+      }
+      return;
+    }
     const conversations = (
       GPT?.listConversations?.({ includeArchived: false })
       || ChatHistory.listConversations({ includeArchived: false })
@@ -3754,12 +3814,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sidebarRecentEmpty) sidebarRecentEmpty.hidden = conversations.length > 0;
   }
 
-  function signOutFromTutorly() {
+  async function signOutFromTutorly() {
+    await window.TutorlyAuth?.logout?.();
     localStorage.removeItem("tutorly_logged_in");
     localStorage.removeItem("tutorly_signed_up");
     localStorage.removeItem("tutorly_account_role");
     localStorage.removeItem("tutorly_bot_try_count");
-    window.location.href = "welcome.html";
+    window.location.href = "maths_gpt.html";
   }
 
   function closeHistoryPanel() {
@@ -4229,12 +4290,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (chatHistoryBtn) {
-    chatHistoryBtn.addEventListener("click", openHistoryPanel);
+    chatHistoryBtn.addEventListener("click", () => {
+      if (isGuestMode) {
+        showGuestToolNotice(chatHistoryBtn, "Log in to search your chats");
+        return;
+      }
+      openHistoryPanel();
+    });
   }
 
   workspaceLinks.forEach((link) => {
     link.addEventListener("click", (event) => {
       event.preventDefault();
+      if (isGuestMode) {
+        showGuestToolNotice(link);
+        return;
+      }
       showToolWorkspace(link.dataset.workspaceRoute, link.dataset.workspaceTitle || "");
     });
   });
@@ -4329,6 +4400,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (sidebarAccountBtn) {
     sidebarAccountBtn.addEventListener("click", (event) => {
       event.stopPropagation();
+      if (isGuestMode) {
+        window.location.href = "login.html?intent=chatbot";
+        return;
+      }
       const willOpen = sidebarAccountMenu?.hidden !== false;
       setAccountMenuOpen(willOpen);
     });

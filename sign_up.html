@@ -126,7 +126,7 @@
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
 <body data-tutorly-surface="auth">
-  <a class="back-home-btn" href="welcome.html" aria-label="Back to Tutorly welcome">Tutorly</a>
+  <a class="back-home-btn" href="maths_gpt.html" aria-label="Back to Tutorly chat">Tutorly</a>
   <div class="auth-wrap">
     <form class="panel panel-soft auth-card fade-up" id="signupForm" novalidate>
       <span class="auth-brand">&#10022; Tutorly</span>
@@ -140,7 +140,7 @@
         <input class="input" id="fullName" type="text" placeholder="Full Name" required />
         <input class="input" id="signupEmail" type="email" placeholder="Email Address" required />
         <div class="password-field">
-          <input class="input" id="signupPassword" type="password" placeholder="Password" autocomplete="new-password" required />
+          <input class="input" id="signupPassword" type="password" minlength="8" placeholder="Password (8+ characters)" autocomplete="new-password" required />
           <button class="password-toggle" type="button" data-password-toggle="signupPassword" aria-label="Show password">Show</button>
         </div>
       </div>
@@ -151,6 +151,7 @@
     </form>
   </div>
 
+  <script src="js/auth-client.js"></script>
   <script>
     const signupParams = new URLSearchParams(window.location.search);
     const chatbotSignupOnly = signupParams.get('intent') === 'chatbot';
@@ -166,7 +167,7 @@
       });
     });
 
-    document.getElementById('signupForm').addEventListener('submit', function (e) {
+    document.getElementById('signupForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       const ids = ['fullName', 'signupEmail', 'signupPassword'];
@@ -176,15 +177,22 @@
         return;
       }
 
-      localStorage.setItem('tutorly_signed_up', 'true');
-      localStorage.setItem('tutorly_logged_in', 'true');
-      localStorage.setItem('tutorly_account_role', 'student');
-      localStorage.setItem('tutorly_signup_full_name', document.getElementById('fullName').value.trim());
-      localStorage.setItem('tutorly_signup_email', document.getElementById('signupEmail').value.trim());
-      if (chatbotSignupOnly) {
-        localStorage.setItem('tutorly_bot_try_count', '0');
+      const submitButton = this.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'CREATING ACCOUNT…';
+      try {
+        await window.TutorlyAuth.register(
+          document.getElementById('fullName').value.trim(),
+          document.getElementById('signupEmail').value.trim(),
+          document.getElementById('signupPassword').value
+        );
+        window.location.href = 'info.html';
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'SIGN UP';
       }
-      window.location.href = 'info.html';
     });
   </script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>

@@ -76,11 +76,24 @@ assert(welcome.includes("+ English, Civics, Economics, Computer Science and more
 const signup = read("sign_up.html");
 assert(!signup.includes('id="phone"'), "Phone must not be required during initial signup");
 assert(!signup.includes('id="dateOfBirth"'), "Date of birth must not be required during initial signup");
+assert(signup.includes("TutorlyAuth.register"), "Signup must create the account through Tutorly's backend");
 
 const login = read("login.html");
 assert(login.includes("Enter your email and password."), "Password-mode copy is missing");
 assert(login.includes("We'll send a 6-digit code to your email."), "OTP-mode copy is missing");
 assert(login.includes("if (loginMode === 'otp')"), "OTP must only open for OTP mode");
+assert(login.includes("TutorlyAuth.requestOtp"), "OTP must be requested from Tutorly's backend");
+assert(login.includes("TutorlyAuth.verifyOtp"), "OTP must be verified by Tutorly's backend");
+assert(login.includes("TutorlyAuth.passwordLogin"), "Password login must be verified by Tutorly's backend");
+assert(!login.includes("Demo OTP code") && !login.includes("generatedOtp"), "Demo/client-generated OTP logic must be removed");
+
+const authClient = read("js/auth-client.js");
+assert(authClient.includes('request("/api/auth/request-otp"'), "Auth client must use the server OTP endpoint");
+assert(authClient.includes('request("/api/auth/verify-otp"'), "Auth client must use the server OTP verification endpoint");
+const backendEnvExample = read("backend/.env.example");
+for (const variable of ["SMTP_HOST", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_FROM_EMAIL", "TUTORLY_OTP_SECRET"]) {
+  assert(backendEnvExample.includes(`${variable}=`), `Backend OTP configuration is missing ${variable}`);
+}
 
 const contact = read("contact.html");
 assert(contact.includes("mailto:jay12.gopu@gmail.com"), "Support email link is missing");

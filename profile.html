@@ -1394,6 +1394,7 @@
 
   <div class="toast" id="profileToast" role="status" aria-live="polite">Profile saved successfully.</div>
 
+  <script src="js/auth-client.js"></script>
   <script>
     const icons = {
       activity: '<svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 8-6-16-3 8H2"></path></svg>',
@@ -1809,12 +1810,13 @@
       chip.addEventListener('click', () => chip.classList.toggle('active'));
     });
 
-    $('logoutBtn').addEventListener('click', () => {
+    $('logoutBtn').addEventListener('click', async () => {
+      await window.TutorlyAuth?.logout?.();
       localStorage.removeItem('tutorly_logged_in');
       localStorage.removeItem('tutorly_signed_up');
       localStorage.removeItem('tutorly_account_role');
       localStorage.removeItem('tutorly_bot_try_count');
-      window.location.href = 'welcome.html';
+      window.location.href = 'maths_gpt.html';
     });
 
     window.addEventListener('resize', () => {

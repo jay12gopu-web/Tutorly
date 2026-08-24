@@ -15,7 +15,8 @@
     "check:chatbot:stress": "python -u tests/semantic_stress_live.py",
     "check:chatbot:stress:dry": "python tests/semantic_stress_live.py --dry-run",
     "check:site": "node tests/site-consistency-check.js",
-    "check:account-billing": "node tests/account-billing-check.js"
+    "check:account-billing": "node tests/account-billing-check.js",
+    "check:auth": "python tests/auth_backend_smoke.py"
   },
   "dependencies": {
     "cors": "^2.8.5",

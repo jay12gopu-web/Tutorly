@@ -17,6 +17,7 @@ PROJECT_DIR = BACKEND_DIR.parent
 load_dotenv(BACKEND_DIR / ".env")
 
 try:
+    from backend.auth_routes import router as auth_router
     from backend.chatbot.routes import (
         enforce_chat_rate_limit,
         orchestrator as chatbot_orchestrator,
@@ -25,6 +26,7 @@ try:
     from backend.chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
     from backend.chatbot.teaching_success import TeachingSuccessScore
 except ImportError:
+    from auth_routes import router as auth_router
     from chatbot.routes import enforce_chat_rate_limit, orchestrator as chatbot_orchestrator, router as chatbot_router
     from chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
     from chatbot.teaching_success import TeachingSuccessScore
@@ -32,6 +34,7 @@ except ImportError:
 
 app = FastAPI(title="Tutorly")
 app.include_router(chatbot_router)
+app.include_router(auth_router)
 teaching_success_engine = TeachingSuccessScore()
 
 UPLOAD_DIR = PROJECT_DIR / "uploads"
@@ -43,6 +46,8 @@ DEFAULT_ALLOWED_ORIGINS = (
     "http://127.0.0.1:3001",
     "http://127.0.0.1:8000",
     "http://127.0.0.1:8765",
+    "http://127.0.0.1:8769",
+    "http://127.0.0.1:8770",
 )
 allowed_origins = [
     origin.strip().rstrip("/")

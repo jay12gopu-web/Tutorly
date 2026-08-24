@@ -5897,6 +5897,63 @@ body[data-theme="dark"] .keyboard-shortcuts-card kbd { color: #e2e5ec; border-co
   outline-offset: 2px;
 }
 
+.guest-mode .upgrade-plans-btn.login-action {
+  min-width: 104px;
+  background: linear-gradient(135deg, #397cff, #8157eb);
+}
+
+.guest-mode .workspace-link.guest-locked {
+  position: relative;
+  opacity: 0.62;
+  cursor: pointer;
+}
+
+.guest-mode .workspace-link.guest-locked:hover {
+  opacity: 0.82;
+}
+
+.guest-tool-notice {
+  position: absolute;
+  z-index: 30;
+  left: calc(100% + 10px);
+  top: 50%;
+  width: max-content;
+  max-width: 210px;
+  padding: 8px 11px;
+  border: 1px solid rgba(84, 101, 186, 0.16);
+  border-radius: 11px;
+  color: #34446f;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 12px 30px rgba(37, 53, 105, 0.18);
+  font-size: 11.5px;
+  font-weight: 750;
+  line-height: 1.3;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-4px, -50%) scale(0.97);
+  transition: opacity 170ms cubic-bezier(.2,.8,.2,1), transform 170ms cubic-bezier(.2,.8,.2,1);
+}
+
+.guest-tool-notice.show {
+  opacity: 1;
+  transform: translate(0, -50%) scale(1);
+}
+
+body[data-theme="dark"] .guest-tool-notice {
+  color: #eef2ff;
+  border-color: rgba(150, 162, 228, 0.18);
+  background: rgba(25, 32, 54, 0.97);
+}
+
+.guest-mode .sidebar-account-button[data-guest="true"] {
+  cursor: pointer;
+}
+
+.guest-mode .sidebar-account-button[data-guest="true"]:hover {
+  border-color: rgba(80, 105, 230, 0.22);
+  background: rgba(79, 124, 255, 0.08);
+}
+
 .upgrade-crown {
   width: 20px;
   height: 15px;
@@ -6054,6 +6111,16 @@ body[data-theme="dark"] .sidebar-chat-menu .sidebar-chat-delete {
     padding: 0 12px;
     border-radius: 15px;
     font-size: 11.5px;
+  }
+
+  .guest-tool-notice {
+    left: 12px;
+    top: calc(100% + 5px);
+    transform: translateY(-4px) scale(0.97);
+  }
+
+  .guest-tool-notice.show {
+    transform: translateY(0) scale(1);
   }
 
   .upgrade-crown { width: 18px; height: 14px; }
