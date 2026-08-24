@@ -7,6 +7,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const newChatBtn = document.getElementById("newChatBtn");
   const chatHistoryBtn = document.getElementById("chatHistoryBtn");
   const settingsBtn = document.getElementById("settingsBtn");
+  const sidebarRecentChats = document.getElementById("sidebarRecentChats");
+  const sidebarRecentEmpty = document.getElementById("sidebarRecentEmpty");
+  const sidebarAccount = document.querySelector(".sidebar-account");
+  const sidebarAccountBtn = document.getElementById("sidebarAccountBtn");
+  const sidebarAccountMenu = document.getElementById("sidebarAccountMenu");
+  const sidebarAccountAvatar = document.getElementById("sidebarAccountAvatar");
+  const sidebarAccountName = document.getElementById("sidebarAccountName");
+  const sidebarAccountPlan = document.getElementById("sidebarAccountPlan");
+  const sidebarSignOutBtn = document.getElementById("sidebarSignOutBtn");
   const uploadInput = document.getElementById("uploadInput");
   const uploadBtn = document.getElementById("uploadBtn");
   const cameraBtn = document.getElementById("cameraBtn");
@@ -3440,7 +3449,120 @@ document.addEventListener("DOMContentLoaded", () => {
     activeConversationId = null;
     GPT?.setActiveConversation?.(null) || ChatHistory?.setActiveConversation?.(null);
     setChatMode(false);
+    closeAccountMenu();
+    closeMobileSidebar();
     input.focus();
+  }
+
+  function readStoredAccountValue(keys) {
+    try {
+      for (const key of keys) {
+        const value = localStorage.getItem(key);
+        if (value && value.trim()) return value.trim();
+      }
+    } catch (error) {
+      return "";
+    }
+    return "";
+  }
+
+  function readStoredAccountJson(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function syncSidebarAccount() {
+    if (!sidebarAccountBtn) return;
+    const displayName = readStoredAccountValue([
+      "tutorly_name",
+      "math-bot-name",
+      "tutorly_signup_full_name"
+    ]) || "Student";
+    const avatarSource = readStoredAccountValue(["tutorly_avatar"]);
+    const subscription = readStoredAccountJson("tutorly_subscription");
+    const planId = readStoredAccountValue(["tutorly_current_plan"])
+      || String(subscription?.currentPlan || "").trim();
+    const planLabels = { casual: "Casual", plus: "Plus", pro: "Pro", prime: "Prime", free: "Free" };
+
+    if (sidebarAccountName) sidebarAccountName.textContent = displayName;
+    sidebarAccountBtn.title = displayName;
+
+    if (sidebarAccountAvatar) {
+      sidebarAccountAvatar.textContent = displayName.charAt(0).toUpperCase() || "S";
+      if (/^(?:data:image\/|https?:\/\/)/i.test(avatarSource)) {
+        const image = document.createElement("img");
+        image.src = avatarSource;
+        image.alt = "";
+        sidebarAccountAvatar.replaceChildren(image);
+      }
+    }
+
+    if (sidebarAccountPlan) {
+      const planLabel = planLabels[planId.toLowerCase()] || (planId ? planId.replace(/[_-]+/g, " ") : "");
+      sidebarAccountPlan.textContent = planLabel;
+      sidebarAccountPlan.hidden = !planLabel;
+    }
+  }
+
+  function setAccountMenuOpen(open) {
+    if (!sidebarAccountBtn || !sidebarAccountMenu) return;
+    const shouldOpen = !!open;
+    sidebarAccountMenu.hidden = !shouldOpen;
+    sidebarAccountBtn.setAttribute("aria-expanded", String(shouldOpen));
+    sidebarAccount?.classList.toggle("menu-open", shouldOpen);
+    if (shouldOpen) closeSidebarChatMenus();
+  }
+
+  function closeAccountMenu() {
+    setAccountMenuOpen(false);
+  }
+
+  function closeSidebarChatMenus(exceptMenu = null) {
+    if (!sidebarRecentChats) return;
+    sidebarRecentChats.querySelectorAll(".sidebar-chat-menu").forEach((menu) => {
+      if (menu === exceptMenu) return;
+      menu.hidden = true;
+      menu.closest(".sidebar-chat-row")?.querySelector(".sidebar-chat-more")?.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function renderSidebarRecents() {
+    if (!sidebarRecentChats || (!GPT && !ChatHistory)) return;
+    const conversations = (
+      GPT?.listConversations?.({ includeArchived: false })
+      || ChatHistory.listConversations({ includeArchived: false })
+    ).slice(0, 10);
+
+    sidebarRecentChats.innerHTML = conversations.map((conversation) => {
+      const title = conversation.title || "Study chat";
+      const isActive = conversation.id === activeConversationId;
+      return `
+        <div class="sidebar-chat-row ${isActive ? "active" : ""}" data-sidebar-chat-id="${escapeHtml(conversation.id)}">
+          <button class="sidebar-chat-open" type="button" data-sidebar-chat-action="open" title="${escapeHtml(title)}" ${isActive ? 'aria-current="page"' : ""}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /></svg>
+            <span>${escapeHtml(title)}</span>
+          </button>
+          <button class="sidebar-chat-more" type="button" data-sidebar-chat-action="menu" aria-label="More actions for ${escapeHtml(title)}" aria-haspopup="menu" aria-expanded="false">&hellip;</button>
+          <div class="sidebar-chat-menu" role="menu" hidden>
+            <button type="button" role="menuitem" data-sidebar-chat-action="pin">${conversation.pinned ? "Unpin" : "Pin"}</button>
+            <button type="button" role="menuitem" data-sidebar-chat-action="archive">Archive</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    if (sidebarRecentEmpty) sidebarRecentEmpty.hidden = conversations.length > 0;
+  }
+
+  function signOutFromTutorly() {
+    localStorage.removeItem("tutorly_logged_in");
+    localStorage.removeItem("tutorly_signed_up");
+    localStorage.removeItem("tutorly_account_role");
+    localStorage.removeItem("tutorly_bot_try_count");
+    window.location.href = "welcome.html";
   }
 
   function closeHistoryPanel() {
@@ -3502,6 +3624,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activeConversationId = conversation.id;
     GPT?.setActiveConversation?.(conversation.id) || ChatHistory.setActiveConversation(conversation.id);
     setChatMode(true);
+    if (chatTitle) chatTitle.textContent = conversation.title || "Tutorly chat";
 
     conversation.messages.forEach((messageRecord) => {
       if (messageRecord.role === "assistant") {
@@ -3525,6 +3648,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     closeHistoryPanel();
+    closeAccountMenu();
     closeMobileSidebar();
     scrollToBottom();
     input.focus();
@@ -3776,6 +3900,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !sidebar.classList.contains("open");
     sidebar.classList.toggle("open", shouldOpen);
     body.classList.toggle("sidebar-drawer-open", shouldOpen);
+    mobileMenu?.setAttribute("aria-expanded", String(shouldOpen));
+    if (isMobileLayout() && sidebarToggle) {
+      sidebarToggle.setAttribute("aria-label", shouldOpen ? "Close sidebar" : "Open sidebar");
+      sidebarToggle.setAttribute("title", shouldOpen ? "Close sidebar" : "Open sidebar");
+      sidebarToggle.setAttribute("aria-expanded", String(shouldOpen));
+    }
+  }
+
+  function updateSidebarToggleState() {
+    if (!sidebarToggle || !sidebar) return;
+    if (isMobileLayout()) {
+      const isOpen = sidebar.classList.contains("open");
+      sidebarToggle.setAttribute("aria-label", isOpen ? "Close sidebar" : "Open sidebar");
+      sidebarToggle.setAttribute("title", isOpen ? "Close sidebar" : "Open sidebar");
+      sidebarToggle.setAttribute("aria-expanded", String(isOpen));
+      return;
+    }
+    const isCollapsed = sidebar.classList.contains("collapsed");
+    sidebarToggle.setAttribute("aria-label", isCollapsed ? "Expand sidebar" : "Collapse sidebar");
+    sidebarToggle.setAttribute("title", isCollapsed ? "Expand sidebar" : "Collapse sidebar");
+    sidebarToggle.setAttribute("aria-expanded", String(!isCollapsed));
   }
 
   function closeMobileSidebar() {
@@ -3830,20 +3975,65 @@ document.addEventListener("DOMContentLoaded", () => {
     chatHistoryBtn.addEventListener("click", openHistoryPanel);
   }
 
+  if (sidebarRecentChats) {
+    sidebarRecentChats.addEventListener("click", (event) => {
+      const action = event.target.closest("[data-sidebar-chat-action]");
+      const row = event.target.closest(".sidebar-chat-row");
+      if (!action || !row || (!GPT && !ChatHistory)) return;
+      const conversationId = row.dataset.sidebarChatId;
+      const actionName = action.dataset.sidebarChatAction;
+
+      if (actionName === "open") {
+        loadConversation(conversationId);
+        return;
+      }
+
+      if (actionName === "menu") {
+        const menu = row.querySelector(".sidebar-chat-menu");
+        if (!menu) return;
+        const willOpen = menu.hidden;
+        closeSidebarChatMenus(menu);
+        closeAccountMenu();
+        menu.hidden = !willOpen;
+        action.setAttribute("aria-expanded", String(willOpen));
+        return;
+      }
+
+      if (actionName === "pin") {
+        const conversation = GPT?.getConversation?.(conversationId) || ChatHistory.getConversation(conversationId);
+        GPT?.pinConversation?.(conversationId, !conversation?.pinned) || ChatHistory.pinConversation(conversationId, !conversation?.pinned);
+        renderSidebarRecents();
+        return;
+      }
+
+      if (actionName === "archive") {
+        GPT?.archiveConversation?.(conversationId, true) || ChatHistory.archiveConversation(conversationId, true);
+        if (conversationId === activeConversationId) resetChat();
+        else renderSidebarRecents();
+        showToast("Chat archived.");
+      }
+    });
+  }
+
+  if (sidebarAccountBtn) {
+    sidebarAccountBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const willOpen = sidebarAccountMenu?.hidden !== false;
+      setAccountMenuOpen(willOpen);
+    });
+  }
+
+  if (sidebarSignOutBtn) {
+    sidebarSignOutBtn.addEventListener("click", signOutFromTutorly);
+  }
+
   if (settingsBtn) {
     settingsBtn.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopImmediatePropagation();
+      closeAccountMenu();
       openSettingsPanel();
     }, true);
-  }
-
-  if (settingsBtn) {
-    settingsBtn.addEventListener("click", () => {
-      setChatMode(true);
-      addMessage("⚙️ Settings are ready for future options like theme, voice language, and tutor style.", "bot");
-      closeMobileSidebar();
-    });
   }
 
   if (uploadBtn && uploadInput) {
@@ -4363,11 +4553,15 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebarToggle.addEventListener("click", () => {
       if (isMobileLayout()) {
         toggleMobileSidebar();
+        updateSidebarToggleState();
         return;
       }
 
       sidebar.classList.toggle("collapsed");
       chatShell.classList.toggle("sidebar-collapsed");
+      closeAccountMenu();
+      closeSidebarChatMenus();
+      updateSidebarToggleState();
     });
   }
 
@@ -4383,6 +4577,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
+      closeAccountMenu();
+      closeSidebarChatMenus();
       closeSettingsPanel();
       closeModelMenu();
       closeMobileSidebar();
@@ -4396,6 +4592,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("click", (event) => {
+    if (sidebarAccount && !sidebarAccount.contains(event.target)) {
+      closeAccountMenu();
+    }
+    if (sidebarRecentChats && !sidebarRecentChats.contains(event.target)) {
+      closeSidebarChatMenus();
+    }
+
     if (modelSelector && !modelSelector.contains(event.target)) {
       closeModelMenu();
     }
@@ -4411,8 +4614,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isMobileLayout()) {
       closeMobileSidebar();
     }
+    updateSidebarToggleState();
   });
 
+  ChatbotCore?.on?.("history:changed", renderSidebarRecents);
+  syncSidebarAccount();
+  renderSidebarRecents();
+  updateSidebarToggleState();
   updateImageDeviceMode();
   updateModelSelectorUi();
 

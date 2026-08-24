@@ -19,7 +19,7 @@
     })();
   </script>
 
-  <link rel="stylesheet" href="css/chatbot.css?v=rich-response-20260823b" />
+  <link rel="stylesheet" href="css/chatbot.css?v=sidebar-shell-20260824" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
@@ -33,16 +33,16 @@
           <span class="sidebar-brand-mark" aria-hidden="true">&#10022;</span>
           <span class="side-label">Tutorly</span>
         </a>
-        <button id="sidebarToggle" class="icon-btn" type="button" aria-label="Collapse sidebar">
+        <button id="sidebarToggle" class="icon-btn sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-controls="sidebar" aria-expanded="true" title="Collapse sidebar">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 6h16" />
-            <path d="M4 12h16" />
-            <path d="M4 18h16" />
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M9 4v16" />
+            <path d="m15 9-3 3 3 3" />
           </svg>
         </button>
       </div>
 
-      <button id="newChatBtn" class="side-link new-chat-link" type="button">
+      <button id="newChatBtn" class="side-link new-chat-link" type="button" title="New Chat">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 5v14" />
           <path d="M5 12h14" />
@@ -50,7 +50,7 @@
         <span class="side-label">New Chat</span>
       </button>
 
-      <button id="chatHistoryBtn" class="side-link" type="button">
+      <button id="chatHistoryBtn" class="side-link" type="button" title="Search Chats">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-4-4" />
@@ -58,66 +58,79 @@
         <span class="side-label">Search Chats</span>
       </button>
 
-      <div class="side-section-label side-label">Study</div>
+      <div class="sidebar-nav-scroll">
+        <div class="side-section-label side-label">Study</div>
 
-      <a class="side-link" href="lessons.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H7a3 3 0 0 0-3 3V5.5Z" />
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        </svg>
-        <span class="side-label">Learn</span>
-      </a>
+        <a class="side-link" href="lessons.html" title="Learn">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H7a3 3 0 0 0-3 3V5.5Z" />
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          </svg>
+          <span class="side-label">Learn</span>
+        </a>
 
-      <a class="side-link" href="practice.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 12l2 2 4-5" />
-          <path d="M4 4h16v16H4z" />
-        </svg>
-        <span class="side-label">Practice</span>
-      </a>
+        <a class="side-link" href="practice.html" title="Practice">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 12l2 2 4-5" />
+            <path d="M4 4h16v16H4z" />
+          </svg>
+          <span class="side-label">Practice</span>
+        </a>
 
-      <a class="side-link" href="tests.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M7 3h10v4H7z" />
-          <path d="M5 5v16h14V5" />
-          <path d="M8 11h8M8 15h6" />
-        </svg>
-        <span class="side-label">Tests</span>
-      </a>
+        <a class="side-link" href="tests.html" title="Tests">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 3h10v4H7z" />
+            <path d="M5 5v16h14V5" />
+            <path d="M8 11h8M8 15h6" />
+          </svg>
+          <span class="side-label">Tests</span>
+        </a>
 
-      <a class="side-link" href="progress.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
-        </svg>
-        <span class="side-label">Progress</span>
-      </a>
+        <a class="side-link" href="progress.html" title="Progress">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+          </svg>
+          <span class="side-label">Progress</span>
+        </a>
 
-      <div class="side-spacer"></div>
+        <div class="sidebar-conversations side-label">
+          <div class="side-section-label">Recent</div>
+          <div id="sidebarRecentChats" class="sidebar-recent-list" aria-live="polite"></div>
+          <p id="sidebarRecentEmpty" class="sidebar-recent-empty">Your recent chats will appear here.</p>
+          <button id="sidebarViewAllChats" class="side-link sidebar-view-all" type="button" data-open-history>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5M12 7v5l3 2" />
+            </svg>
+            <span>View all conversations</span>
+          </button>
+        </div>
+      </div>
 
-      <div class="side-section-label side-label">Recent Chats</div>
-      <button class="side-link recent-chat-link" type="button" data-open-history>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
-          <path d="M3 3v5h5M12 7v5l3 2" />
-        </svg>
-        <span class="side-label">View all conversations</span>
-      </button>
-
-      <a class="side-link" href="profile.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20 21a8 8 0 0 0-16 0" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-        <span class="side-label">Profile</span>
-      </a>
-
-      <button id="settingsBtn" class="side-link settings-link" type="button" aria-label="Settings">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z" />
-          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 16 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.3.37.7.57 1.2.6h.4a2 2 0 1 1 0 4h-.4c-.5.03-.9.23-1.2.6z" />
-        </svg>
-        <span class="side-label">Settings</span>
-      </button>
+      <div class="sidebar-account">
+        <div id="sidebarAccountMenu" class="sidebar-account-menu" role="menu" aria-label="Account menu" hidden>
+          <a class="sidebar-account-action" href="profile.html" role="menuitem">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="7" r="4" /></svg>
+            <span>Profile</span>
+          </a>
+          <button id="settingsBtn" class="sidebar-account-action" type="button" role="menuitem">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.1h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H3v-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3h4a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v4H21a1.7 1.7 0 0 0-1.6 1z" /></svg>
+            <span>Settings</span>
+          </button>
+          <button id="sidebarSignOutBtn" class="sidebar-account-action sidebar-sign-out" type="button" role="menuitem">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
+            <span>Sign out</span>
+          </button>
+        </div>
+        <button id="sidebarAccountBtn" class="sidebar-account-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="sidebarAccountMenu">
+          <span id="sidebarAccountAvatar" class="sidebar-account-avatar" aria-hidden="true">S</span>
+          <span class="sidebar-account-copy side-label">
+            <strong id="sidebarAccountName">Student</strong>
+            <small id="sidebarAccountPlan" hidden></small>
+          </span>
+          <svg class="sidebar-account-chevron side-label" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5" /></svg>
+        </button>
+      </div>
     </aside>
 
     <main class="main-area">
@@ -138,8 +151,7 @@
               <path d="M13.7 21a2 2 0 0 1-3.4 0" />
             </svg>
           </button>
-          <a class="profile-dot" href="profile.html" aria-label="Profile">J</a>
-          <button id="mobileMenu" class="icon-btn mobile-menu" type="button" aria-label="Open sidebar">
+          <button id="mobileMenu" class="icon-btn mobile-menu" type="button" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 6h16" />
               <path d="M4 12h16" />
@@ -271,7 +283,7 @@
   <script src="js/chatbot/educational-visuals.js"></script>
   <script src="js/chatbot/rich-response-renderer.js?v=rich-response-20260823b"></script>
   <script src="js/chatbot/markdown-renderer.js?v=rich-response-20260823b"></script>
-  <script src="js/app.js?v=shared-admin-rich-20260823b"></script>
+  <script src="js/app.js?v=sidebar-shell-20260824"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>

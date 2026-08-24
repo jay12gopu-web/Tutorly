@@ -8,6 +8,7 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), "u
 
 const page = read("maths_gpt.html");
 const app = read("js/app.js");
+const chatbotCss = read("css/chatbot.css");
 const policySource = read("js/chatbot/response-policy.js");
 const visuals = read("js/chatbot/educational-visuals.js");
 
@@ -55,6 +56,30 @@ assert.ok(app.includes("renderDisplayMath"), "inline and multiline display math 
 assert.ok(app.includes("RichResponse?.hydrate?.(content)"), "rich response blocks should hydrate inside existing messages");
 assert.ok(app.includes("MarkdownRenderer.render(markdown"), "chat should use the shared failure-isolated Markdown renderer");
 assert.ok(app.includes("text.match(/[\\s\\S]{1,42}/g)"), "simulated streaming must preserve every response character");
+
+[
+  'id="sidebarRecentChats"',
+  'id="sidebarAccountBtn"',
+  'id="sidebarAccountMenu"',
+  'id="sidebarSignOutBtn"',
+  'href="lessons.html"',
+  'href="practice.html"',
+  'href="tests.html"',
+  'href="progress.html"',
+  'id="themeToggle"',
+  'id="chatNotificationBtn"'
+].forEach((marker) => assert.ok(page.includes(marker), `chat shell should preserve ${marker}`));
+assert.ok(!page.includes('<a class="profile-dot" href="profile.html"'), "the redundant top-right profile avatar should be removed");
+assert.ok(app.includes("renderSidebarRecents"), "recent chats should render from the existing conversation store");
+assert.ok(app.includes("loadConversation(conversationId)"), "sidebar conversations should reuse the existing loader");
+assert.ok(app.includes("openSettingsPanel()"), "account Settings should reuse the existing settings panel");
+assert.ok(app.includes("signOutFromTutorly"), "account menu should provide the existing logout behavior");
+assert.ok(app.includes('localStorage.removeItem("tutorly_logged_in")'), "logout should clear the existing authenticated session flag");
+assert.ok(app.includes('ChatbotCore?.on?.("history:changed", renderSidebarRecents)'), "recent chats should stay synced with chat history changes");
+assert.ok(chatbotCss.includes(".sidebar-account"), "profile row should be anchored in the sidebar shell");
+assert.ok(chatbotCss.includes("text-overflow: ellipsis"), "long conversation titles should be truncated cleanly");
+assert.ok(chatbotCss.includes(".chat-shell.sidebar-collapsed"), "desktop collapsed rail styling should exist");
+assert.ok(chatbotCss.includes("@media (max-width: 1080px)"), "responsive drawer styling should remain available");
 
 const getBotStart = app.indexOf("async function getBotReply");
 const sendStart = app.indexOf("async function sendMessage", getBotStart);

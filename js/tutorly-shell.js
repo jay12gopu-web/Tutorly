@@ -5,7 +5,6 @@
   const chatShell = document.getElementById('chatShell');
   const sidebarToggle = document.getElementById('sidebarToggle');
   const historyButton = document.getElementById('chatHistoryBtn');
-  const profileButton = document.querySelector('.profile-dot[href="profile.html"]');
   const themeKey = 'tutorly_theme';
   const sidebarKey = 'tutorly_sidebar_collapsed';
 
@@ -58,9 +57,4 @@
     });
   });
 
-  if (profileButton) {
-    const name = localStorage.getItem('tutorly_name') || localStorage.getItem('tutorly_signup_full_name') || 'Student';
-    profileButton.textContent = name.trim().charAt(0).toUpperCase() || 'S';
-    profileButton.setAttribute('title', name);
-  }
 })();
