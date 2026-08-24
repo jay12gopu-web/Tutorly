@@ -1,18 +1,18 @@
 (function () {
-  const PLAN_LABELS = {
-    casual: "Casual",
-    plus: "Plus",
-    pro: "Pro",
-    "session-1": "1 Tutoring Session"
-  };
+  "use strict";
+
+  const PlanConfig = window.TutorlyPlanConfig;
+  if (!PlanConfig) throw new Error("Tutorly plan configuration is unavailable");
 
   const API_BASE = window.TUTORLY_PAYMENT_API_BASE ||
     (window.location.protocol === "file:" ? "http://127.0.0.1:3001" : window.location.origin);
 
   const state = {
     userId: getUserId(),
-    loadingPlanId: null,
-    subscription: getLocalSubscription()
+    loadingKey: "",
+    pendingTrialPlanId: "",
+    returnFocus: null,
+    subscription: normalizeSubscription(getLocalSubscription())
   };
 
   function getUserId() {
@@ -40,15 +40,39 @@
     }
   }
 
-  function saveSubscription(subscription) {
-    if (!subscription) return;
-    state.subscription = subscription;
-    localStorage.setItem("tutorly_subscription", JSON.stringify(subscription));
-    localStorage.setItem("tutorly_current_plan", subscription.currentPlan || "casual");
+  function normalizeSubscription(value) {
+    const source = value && typeof value === "object" ? value : {};
+    const plan = PlanConfig.getPlan(source.currentPlan);
+    const allowance = Number.isFinite(Number(source.creditAllowance))
+      ? Math.max(0, Number(source.creditAllowance))
+      : plan.monthlyPremiumCredits;
+    const remaining = Number.isFinite(Number(source.premiumCreditsRemaining))
+      ? Math.min(allowance, Math.max(0, Number(source.premiumCreditsRemaining)))
+      : allowance;
+    return {
+      ...source,
+      currentPlan: plan.id,
+      status: source.status || (plan.id === "standard" ? "free" : "inactive"),
+      paymentStatus: source.paymentStatus || (plan.id === "standard" ? "free" : "inactive"),
+      creditAllowance: allowance,
+      premiumCreditsRemaining: remaining,
+      trialActive: !!source.trialActive,
+      trialEligible: source.trialEligible !== false
+    };
   }
 
-  function money(amountPaise) {
-    return `₹${Math.round((Number(amountPaise) || 0) / 100).toLocaleString("en-IN")}`;
+  function saveSubscription(subscription) {
+    if (!subscription) return;
+    state.subscription = normalizeSubscription(subscription);
+    localStorage.setItem("tutorly_subscription", JSON.stringify(state.subscription));
+    localStorage.setItem("tutorly_current_plan", state.subscription.currentPlan);
+  }
+
+  function formatDate(value, fallback = "Not scheduled") {
+    if (!value) return fallback;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return fallback;
+    return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
   }
 
   function toast(message, type = "info") {
@@ -63,78 +87,104 @@
 
   async function api(path, options = {}) {
     const response = await fetch(`${API_BASE}${path}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      },
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
       ...options
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(data.error || `Request failed: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(data.error || "Tutorly billing is temporarily unavailable.");
     return data;
   }
 
-  function setLoading(planId, isLoading) {
-    state.loadingPlanId = isLoading ? planId : null;
-    if (!isLoading) {
-      renderCurrentPlan();
-      return;
-    }
-    document.querySelectorAll("[data-plan-button]").forEach((button) => {
-      const buttonPlan = button.getAttribute("data-plan-button");
-      const loading = state.loadingPlanId === buttonPlan;
-      button.disabled = true;
-      if (loading) {
-        button.innerHTML = '<span class="loading-inline">Processing</span>';
-      }
-    });
+  function isEntitlementActive(subscription = state.subscription) {
+    return subscription.currentPlan === "standard" ||
+      (subscription.status === "active" && (subscription.trialActive || ["captured", "paid", "trial"].includes(subscription.paymentStatus)));
+  }
+
+  function getEffectivePlanId() {
+    return isEntitlementActive() ? state.subscription.currentPlan : "standard";
+  }
+
+  function setLoading(key, loading) {
+    state.loadingKey = loading ? key : "";
+    renderCurrentPlan();
   }
 
   function renderCurrentPlan() {
-    const subscription = state.subscription || {};
-    const currentPlan = subscription.currentPlan || "casual";
-    const currentName = PLAN_LABELS[currentPlan] || currentPlan;
+    const subscription = state.subscription;
+    const currentPlanId = getEffectivePlanId();
+    const currentPlan = PlanConfig.getPlan(currentPlanId);
     const currentPlanName = document.getElementById("currentPlanName");
     const currentPlanMeta = document.getElementById("currentPlanMeta");
-    const subscriptionExpiry = document.getElementById("subscriptionExpiry");
-    const cancelBtn = document.getElementById("cancelSubscriptionBtn");
+    const currentCredits = document.getElementById("currentCredits");
+    const creditResetDate = document.getElementById("creditResetDate");
+    const meter = document.getElementById("creditMeterFill");
+    const allowance = currentPlanId === subscription.currentPlan
+      ? subscription.creditAllowance
+      : currentPlan.monthlyPremiumCredits;
+    const remaining = currentPlanId === subscription.currentPlan
+      ? subscription.premiumCreditsRemaining
+      : currentPlan.monthlyPremiumCredits;
 
-    if (currentPlanName) currentPlanName.textContent = currentName;
+    if (currentPlanName) currentPlanName.textContent = currentPlan.name;
     if (currentPlanMeta) {
-      currentPlanMeta.textContent = subscription.status === "active"
-        ? "Active premium subscription"
-        : currentPlan === "casual"
-          ? "Free plan active"
-          : "Subscription inactive";
+      currentPlanMeta.textContent = subscription.trialActive
+        ? `${currentPlan.name} trial · ends ${formatDate(subscription.trialEndsAt, "soon")}`
+        : `${PlanConfig.formatCredits(allowance)} premium credits each month`;
     }
-    if (subscriptionExpiry) {
-      subscriptionExpiry.textContent = subscription.subscriptionExpiry
-        ? new Date(subscription.subscriptionExpiry).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-        : "No expiry";
+    if (currentCredits) currentCredits.textContent = `${PlanConfig.formatCredits(remaining)} / ${PlanConfig.formatCredits(allowance)} credits remaining`;
+    if (creditResetDate) {
+      const label = subscription.trialActive ? "Trial ends" : "Credits reset";
+      creditResetDate.textContent = `${label} ${formatDate(subscription.trialActive ? subscription.trialEndsAt : subscription.creditsResetAt, "when the next cycle starts")}`;
     }
-    if (cancelBtn) {
-      cancelBtn.disabled = currentPlan === "casual" || subscription.status !== "active";
-    }
+    if (meter) meter.style.width = `${allowance > 0 ? Math.min(100, Math.max(0, (remaining / allowance) * 100)) : 0}%`;
 
     document.querySelectorAll("[data-current-for]").forEach((pill) => {
-      pill.hidden = pill.getAttribute("data-current-for") !== currentPlan;
+      pill.hidden = pill.getAttribute("data-current-for") !== currentPlanId;
     });
 
     document.querySelectorAll("[data-plan-button]").forEach((button) => {
       const planId = button.getAttribute("data-plan-button");
-      const isCurrent = planId === currentPlan;
-      button.disabled = isCurrent || !!state.loadingPlanId;
+      const isCurrent = planId === currentPlanId;
+      const loading = state.loadingKey === `pay:${planId}` || state.loadingKey === `standard:${planId}`;
+      button.disabled = isCurrent || !!state.loadingKey;
       button.setAttribute("aria-current", isCurrent ? "true" : "false");
-      if (isCurrent) {
-        button.textContent = "Current plan";
-      } else if (planId === "casual") {
-        button.textContent = "Use Casual";
-      } else {
-        button.textContent = `Subscribe ${PLAN_LABELS[planId] || planId}`;
-      }
+      if (loading) button.innerHTML = '<span class="loading-inline">Processing</span>';
+      else if (isCurrent) button.textContent = "Current plan";
+      else if (planId === "standard") button.textContent = "Switch to Standard";
+      else button.textContent = `Subscribe ${PlanConfig.getPlan(planId).name}`;
     });
+
+    document.querySelectorAll("[data-trial-button]").forEach((button) => {
+      const planId = button.getAttribute("data-trial-button");
+      const isCurrent = planId === currentPlanId;
+      const loading = state.loadingKey === `trial:${planId}`;
+      const premiumAlreadyActive = currentPlan.premium && !isCurrent;
+      button.disabled = isCurrent || subscription.trialEligible === false || premiumAlreadyActive || !!state.loadingKey;
+      if (loading) button.innerHTML = '<span class="loading-inline">Starting trial</span>';
+      else if (isCurrent) button.textContent = "Current plan";
+      else if (subscription.trialEligible === false) button.textContent = "Trial already used";
+      else if (premiumAlreadyActive) button.textContent = "Manage current plan";
+      else button.textContent = "Start free trial";
+    });
+  }
+
+  function renderCreditCosts() {
+    const list = document.getElementById("creditCostsList");
+    if (!list) return;
+    const visibleCosts = Object.values(PlanConfig.CREDIT_COSTS).filter((item) => item.available);
+    list.replaceChildren(...visibleCosts.map((item) => {
+      const card = document.createElement("article");
+      const label = document.createElement("span");
+      const cost = document.createElement("strong");
+      label.textContent = item.label;
+      cost.textContent = item.minCredits
+        ? `${item.minCredits}–${item.maxCredits} credits`
+        : item.perMinutes
+          ? `${item.credits} credit / ${item.perMinutes} minutes`
+          : `${item.credits} ${item.credits === 1 ? "credit" : "credits"}`;
+      card.append(label, cost);
+      return card;
+    }));
   }
 
   async function refreshSubscription() {
@@ -142,37 +192,74 @@
       const data = await api(`/subscription/${encodeURIComponent(state.userId)}`);
       saveSubscription(data.subscription);
       renderCurrentPlan();
-    } catch (error) {
+    } catch (_error) {
       renderCurrentPlan();
-      toast("Start the payment server to sync your subscription.", "warn");
+      toast("Showing your saved plan. Live billing sync is temporarily unavailable.", "warn");
     }
   }
 
-  async function activateCasual() {
+  async function activateStandard() {
     try {
-      setLoading("casual", true);
+      setLoading("standard:standard", true);
       const data = await api("/cancel-subscription", {
         method: "POST",
         body: JSON.stringify({ userId: state.userId })
       });
       saveSubscription(data.subscription);
-      renderCurrentPlan();
-      toast("Casual plan is active.");
+      toast("Standard is now your active plan.", "success");
     } catch (error) {
       toast(error.message, "error");
     } finally {
-      setLoading("casual", false);
+      setLoading("", false);
+    }
+  }
+
+  function openTrialDialog(planId, trigger) {
+    const plan = PlanConfig.getPlan(planId);
+    const dialog = document.getElementById("trialDialog");
+    if (!dialog || !plan.premium) return;
+    state.pendingTrialPlanId = plan.id;
+    state.returnFocus = trigger || document.activeElement;
+    document.getElementById("trialDialogTitle").textContent = `Start your ${plan.trialDays}-day ${plan.name} trial?`;
+    document.getElementById("trialDialogDetails").textContent = `${PlanConfig.formatCredits(plan.trialCredits)} trial credits are included. When the trial ends, choose ₹${(plan.amountPaise / 100).toLocaleString("en-IN")}/month to continue. You will not be charged automatically.`;
+    dialog.hidden = false;
+    dialog.classList.add("show");
+    dialog.setAttribute("aria-hidden", "false");
+    document.getElementById("trialDialogConfirm")?.focus();
+  }
+
+  function closeTrialDialog(options = {}) {
+    const dialog = document.getElementById("trialDialog");
+    if (!dialog) return;
+    dialog.classList.remove("show");
+    dialog.hidden = true;
+    dialog.setAttribute("aria-hidden", "true");
+    state.pendingTrialPlanId = "";
+    if (options.restoreFocus !== false) state.returnFocus?.focus?.();
+    state.returnFocus = null;
+  }
+
+  async function startTrial(planId) {
+    try {
+      closeTrialDialog({ restoreFocus: false });
+      setLoading(`trial:${planId}`, true);
+      const data = await api("/start-trial", {
+        method: "POST",
+        body: JSON.stringify({ userId: state.userId, planId })
+      });
+      saveSubscription(data.subscription);
+      toast(`${PlanConfig.getPlan(planId).name} trial started.`, "success");
+    } catch (error) {
+      toast(error.message, "error");
+    } finally {
+      setLoading("", false);
     }
   }
 
   async function createOrder(planId) {
     return api("/create-order", {
       method: "POST",
-      body: JSON.stringify({
-        userId: state.userId,
-        planId,
-        user: getUserProfile()
-      })
+      body: JSON.stringify({ userId: state.userId, planId, user: getUserProfile() })
     });
   }
 
@@ -192,75 +279,57 @@
   async function markPaymentFailed(orderId, reason) {
     if (!orderId) return;
     try {
-      await api("/payment-failed", {
-        method: "POST",
-        body: JSON.stringify({ orderId, reason })
-      });
+      await api("/payment-failed", { method: "POST", body: JSON.stringify({ orderId, reason }) });
     } catch (_error) {
-      // The toast already tells the user what happened; storing failure is best-effort.
-    }
-  }
-
-  function ensureRazorpayReady() {
-    if (!window.Razorpay) {
-      throw new Error("Razorpay Checkout did not load. Check your internet connection.");
+      // Failure recording is best-effort; the visible checkout state remains usable.
     }
   }
 
   async function startCheckout(planId) {
     try {
-      ensureRazorpayReady();
-      setLoading(planId, true);
+      if (!window.Razorpay) throw new Error("Razorpay Checkout did not load. Check your connection and try again.");
+      setLoading(`pay:${planId}`, true);
       const orderData = await createOrder(planId);
       const profile = getUserProfile();
-
       const checkout = new window.Razorpay({
         key: orderData.keyId,
         amount: orderData.order.amount,
         currency: orderData.order.currency,
         name: "Tutorly",
-        description: orderData.plan.name,
+        description: `${orderData.plan.name} monthly plan`,
         image: "assets/brand-star.png",
         order_id: orderData.order.id,
         prefill: profile,
-        notes: {
-          userId: state.userId,
-          planId
-        },
-        theme: {
-          color: "#347cff"
-        },
+        notes: { userId: state.userId, planId },
+        theme: { color: "#347cff" },
         handler: async function onPaymentSuccess(response) {
           try {
             const verified = await verifyPayment(response, planId);
             saveSubscription(verified.subscription);
-            toast("Payment verified. Subscription activated.", "success");
             window.location.href = `payment-success.html?status=success&plan=${encodeURIComponent(planId)}&orderId=${encodeURIComponent(response.razorpay_order_id)}`;
           } catch (error) {
             toast(error.message, "error");
             window.location.href = `payment-success.html?status=failed&plan=${encodeURIComponent(planId)}&orderId=${encodeURIComponent(response.razorpay_order_id || "")}`;
           } finally {
-            setLoading(planId, false);
+            setLoading("", false);
           }
         },
         modal: {
           ondismiss: function onDismiss() {
-            setLoading(planId, false);
-            toast("Payment popup closed. You can retry anytime.");
+            setLoading("", false);
+            toast("Payment window closed. You can retry whenever you’re ready.");
           }
         }
       });
-
       checkout.on("payment.failed", function onPaymentFailed(response) {
-        setLoading(planId, false);
-        const reason = response.error?.description || "Payment failed. Please retry.";
+        setLoading("", false);
+        const reason = response.error?.description || "Payment failed. Please try again.";
         markPaymentFailed(orderData.order.id, reason);
         toast(reason, "error");
       });
-
       checkout.open();
     } catch (error) {
-      setLoading(planId, false);
+      setLoading("", false);
       toast(error.message, "error");
     }
   }
@@ -269,28 +338,35 @@
     document.querySelectorAll("[data-plan-button]").forEach((button) => {
       button.addEventListener("click", () => {
         const planId = button.getAttribute("data-plan-button");
-        if (planId === "casual") {
-          activateCasual();
+        if (planId === "standard") {
+          if (getEffectivePlanId() === "standard" || confirm("Switch to Standard and end your current paid plan or trial?")) activateStandard();
           return;
         }
         startCheckout(planId);
       });
     });
+    document.querySelectorAll("[data-trial-button]").forEach((button) => {
+      button.addEventListener("click", () => openTrialDialog(button.getAttribute("data-trial-button"), button));
+    });
 
-    const cancelBtn = document.getElementById("cancelSubscriptionBtn");
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => {
-        if (confirm("Cancel your active Tutorly subscription and return to Casual?")) {
-          activateCasual();
-        }
-      });
-    }
+    document.getElementById("trialDialogClose")?.addEventListener("click", closeTrialDialog);
+    document.getElementById("trialDialogCancel")?.addEventListener("click", closeTrialDialog);
+    document.getElementById("trialDialogConfirm")?.addEventListener("click", () => {
+      const planId = state.pendingTrialPlanId;
+      if (planId) startTrial(planId);
+    });
+    document.getElementById("trialDialog")?.addEventListener("click", (event) => {
+      if (event.target.id === "trialDialog") closeTrialDialog();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !document.getElementById("trialDialog")?.hidden) closeTrialDialog();
+    });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     bindButtons();
+    renderCreditCosts();
     renderCurrentPlan();
     refreshSubscription();
   });
 })();
-

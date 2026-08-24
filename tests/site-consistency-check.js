@@ -94,11 +94,11 @@ const appSource = read("js/app.js");
 assert(appSource.includes('return "https://tutorly-api.onrender.com"'), "Production chat API must use the deployed Tutorly backend");
 
 const subscriptions = read("subscriptions.html");
-assert(subscriptions.includes("₹499<small>/month</small>"), "Plus price encoding is incorrect");
-assert(subscriptions.includes("₹999<small>/month</small>"), "Pro price encoding is incorrect");
+assert(subscriptions.includes("₹299<small>/month</small>"), "Plus price encoding is incorrect");
+assert(subscriptions.includes("₹599<small>/month</small>"), "Pro price encoding is incorrect");
 assert((subscriptions.match(/class="current-pill"[^>]+hidden/g) || []).length === 3, "All current-plan badges must start hidden");
 const subscriptionJs = read("frontend/subscription/subscription.js");
-assert(subscriptionJs.includes('pill.hidden = pill.getAttribute("data-current-for") !== currentPlan'), "Current plan badge must be data-driven");
+assert(subscriptionJs.includes('pill.hidden = pill.getAttribute("data-current-for") !== currentPlanId'), "Current plan badge must be data-driven");
 assert(subscriptionJs.includes('button.textContent = "Current plan"'), "Current plan button state must be data-driven");
 
 const profile = read("profile.html");

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/billing.html" />
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="frontend/subscription/subscription.css" />
+  <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+</head>
+<body data-tutorly-surface="workspace">
+  <a class="back-home-btn" href="maths_gpt.html" aria-label="Back to Tutorly Chat">Chat</a>
+  <header class="shell header-wrap fade-up">
+    <div class="topbar">
+      <a class="brand" href="maths_gpt.html"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></a>
+      <nav class="nav-links" aria-label="Billing navigation"><a href="subscriptions.html">View plans</a><a href="payment-history.html">Payment history</a><a href="contact.html">Support</a></nav>
+    </div>
+  </header>
+
+  <main class="payment-shell billing-shell">
+    <section class="payment-hero billing-hero fade-up">
+      <div>
+        <span class="payment-kicker">Plan &amp; Billing</span>
+        <h1 class="payment-title">Your Tutorly plan.</h1>
+        <p class="payment-sub">See your plan, premium credits, and billing dates in one place.</p>
+      </div>
+    </section>
+
+    <section class="payment-panel billing-card fade-up d2" aria-labelledby="billingPlanName">
+      <div class="billing-plan-heading">
+        <div>
+          <p class="status-eyebrow">Current plan</p>
+          <h2 id="billingPlanName" class="billing-plan-name"><img id="billingPlanCrown" src="assets/premium-crown.png" alt="" hidden /><span>Standard</span></h2>
+          <p id="billingPlanPrice">₹0</p>
+        </div>
+        <span id="billingPlanStatus" class="status-pill">Active</span>
+      </div>
+
+      <div class="credit-meter billing-meter" aria-label="Premium credit balance">
+        <div class="credit-meter-top"><strong id="billingCredits">100 / 100 premium credits remaining</strong><span id="billingReset">Credits reset next month</span></div>
+        <div class="credit-meter-track"><span id="billingCreditFill" style="width:100%"></span></div>
+      </div>
+
+      <dl class="billing-details">
+        <div><dt>Credits reset</dt><dd id="billingResetDate">Not scheduled</dd></div>
+        <div><dt id="billingNextLabel">Next billing date</dt><dd id="billingNextDate">Not applicable</dd></div>
+      </dl>
+
+      <div class="panel-actions billing-actions">
+        <a class="pay-action" href="subscriptions.html">Change plan</a>
+        <a class="pay-action secondary" href="payment-history.html">Payment history</a>
+        <button id="billingCancelBtn" class="pay-action danger" type="button" hidden>Cancel subscription</button>
+      </div>
+      <p id="billingNote" class="billing-note">Standard includes 100 premium credits every month.</p>
+    </section>
+
+    <section id="standardUpgradePanel" class="payment-panel fade-up d3">
+      <div class="session-card">
+        <div><h2>Need more premium credits?</h2><p>Plus includes 500 monthly credits. Pro includes 1,500.</p></div>
+        <div class="panel-actions"><a class="pay-action" href="subscriptions.html#plus">Upgrade to Plus or Pro</a></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="payment-toast" id="paymentToast" role="status" aria-live="polite"></div>
+  <script src="shared/tutorly-plans.js"></script>
+  <script src="frontend/subscription/billing.js"></script>
+  <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
+  <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
+</body>
+</html>

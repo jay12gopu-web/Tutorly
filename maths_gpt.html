@@ -67,7 +67,7 @@
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
           </svg>
           <span class="side-label">Learn</span>
-          <span class="learn-crown side-label" aria-label="Premium learning tool">&#9813;</span>
+          <img class="learn-crown side-label" src="assets/premium-crown.png" alt="Premium" />
         </a>
 
         <a class="side-link workspace-link" href="tests.html" data-workspace-route="tests.html" data-workspace-title="Tests" title="Tests">
@@ -105,24 +105,67 @@
 
       <div class="sidebar-account">
         <div id="sidebarAccountMenu" class="sidebar-account-menu" role="menu" aria-label="Account menu" hidden>
-          <a class="sidebar-account-action" href="profile.html" role="menuitem">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="7" r="4" /></svg>
-            <span>Profile</span>
-          </a>
-          <button id="settingsBtn" class="sidebar-account-action" type="button" role="menuitem">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.1h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H3v-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3h4a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v4H21a1.7 1.7 0 0 0-1.6 1z" /></svg>
-            <span>Settings</span>
-          </button>
-          <button id="sidebarSignOutBtn" class="sidebar-account-action sidebar-sign-out" type="button" role="menuitem">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
-            <span>Sign out</span>
-          </button>
+          <div id="sidebarAccountMainPanel" class="sidebar-account-panel">
+            <a class="sidebar-account-summary" href="profile.html" role="menuitem">
+              <span id="accountMenuAvatar" class="sidebar-account-avatar" aria-hidden="true">S</span>
+              <span class="sidebar-account-summary-copy">
+                <strong id="accountMenuName">Student</strong>
+                <small class="account-plan-line"><img id="accountMenuCrown" class="premium-inline-crown" src="assets/premium-crown.png" alt="" hidden /><span id="accountMenuPlan">Standard · 100 credits</span></small>
+              </span>
+              <svg class="account-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+
+            <div class="sidebar-menu-separator" role="separator"></div>
+
+            <a id="sidebarPlanAction" class="sidebar-account-action" href="subscriptions.html" role="menuitem">
+              <img class="premium-crown-icon" src="assets/premium-crown.png" alt="" aria-hidden="true" />
+              <span id="sidebarPlanActionLabel">Upgrade plan</span>
+            </a>
+            <button id="personalizationBtn" class="sidebar-account-action" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /><circle cx="12" cy="12" r="4" /></svg>
+              <span>Personalization</span>
+            </button>
+            <a class="sidebar-account-action" href="profile.html" role="menuitem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="7" r="4" /></svg>
+              <span>Profile</span>
+            </a>
+            <button id="settingsBtn" class="sidebar-account-action" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.1h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H3v-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3h4a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v4H21a1.7 1.7 0 0 0-1.6 1z" /></svg>
+              <span>Settings</span>
+            </button>
+
+            <div class="sidebar-menu-separator" role="separator"></div>
+
+            <button id="sidebarHelpBtn" class="sidebar-account-action sidebar-help-trigger" type="button" role="menuitem" aria-haspopup="menu" aria-expanded="false" aria-controls="sidebarHelpMenu">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.8 9a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2 1-1.2 1.8" /><path d="M12 17h.01" /></svg>
+              <span>Help</span>
+              <svg class="account-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+            <button id="sidebarSignOutBtn" class="sidebar-account-action sidebar-sign-out" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
+              <span>Log out</span>
+            </button>
+          </div>
+
+          <div id="sidebarHelpMenu" class="sidebar-help-menu" role="menu" aria-label="Tutorly help" hidden>
+            <button id="sidebarHelpBack" class="sidebar-help-back" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+              <span>Help</span>
+            </button>
+            <a class="sidebar-account-action" href="help-center.html" role="menuitem"><span class="menu-letter-icon" aria-hidden="true">?</span><span>Help Center</span></a>
+            <a class="sidebar-account-action" href="release-notes.html" role="menuitem"><span class="menu-letter-icon" aria-hidden="true">N</span><span>Release Notes</span></a>
+            <button id="keyboardShortcutsBtn" class="sidebar-account-action" type="button" role="menuitem"><span class="menu-letter-icon" aria-hidden="true">⌘</span><span>Keyboard Shortcuts</span></button>
+            <div class="sidebar-menu-separator" role="separator"></div>
+            <a class="sidebar-account-action" href="Terms_Conditions.html" role="menuitem"><span class="menu-letter-icon" aria-hidden="true">T</span><span>Terms of Service</span></a>
+            <a class="sidebar-account-action" href="privacy.html" role="menuitem"><span class="menu-letter-icon" aria-hidden="true">P</span><span>Privacy Policy</span></a>
+            <a class="sidebar-account-action" href="contact.html?topic=bug" role="menuitem"><span class="menu-letter-icon" aria-hidden="true">!</span><span>Report a bug</span></a>
+          </div>
         </div>
         <button id="sidebarAccountBtn" class="sidebar-account-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="sidebarAccountMenu">
           <span id="sidebarAccountAvatar" class="sidebar-account-avatar" aria-hidden="true">S</span>
           <span class="sidebar-account-copy side-label">
             <strong id="sidebarAccountName">Student</strong>
-            <small id="sidebarAccountPlan" hidden></small>
+            <span class="account-plan-line"><img id="sidebarAccountCrown" class="premium-inline-crown" src="assets/premium-crown.png" alt="" hidden /><small id="sidebarAccountPlan" hidden></small></span>
           </span>
           <svg class="sidebar-account-chevron side-label" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5" /></svg>
         </button>
@@ -139,7 +182,7 @@
 
         <div class="top-actions">
           <a class="upgrade-plans-btn" href="subscriptions.html" aria-label="Upgrade your Tutorly plan">
-            <span class="upgrade-crown" aria-hidden="true">&#9813;</span>
+            <img class="upgrade-crown" src="assets/premium-crown.png" alt="" aria-hidden="true" />
             <span>Upgrade your plan</span>
           </a>
           <button id="mobileMenu" class="icon-btn mobile-menu" type="button" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">
@@ -316,6 +359,7 @@
     </article>
   </div>
 
+  <script src="shared/tutorly-plans.js"></script>
   <script src="frontend/subscription/premium-guard.js"></script>
   <script src="js/chatbot/chatbot-core.js"></script>
   <script src="js/chatbot/mode-registry.js"></script>

@@ -11,8 +11,10 @@ const {
   getPlan,
   getPublicPlan,
   listPublicPlans,
-  createSubscriptionExpiry
+  createSubscriptionExpiry,
+  CREDIT_COSTS
 } = require("../../payments/plans");
+const sharedPlanConfig = require("../../shared/tutorly-plans");
 const {
   verifyRazorpayPaymentSignature,
   verifyRazorpayWebhookSignature
@@ -24,24 +26,51 @@ function normalizeUserId(userId) {
 
 function publicSubscription(subscription) {
   if (!subscription) {
+    const standardPlan = getPlan("standard");
     return {
-      currentPlan: "casual",
+      currentPlan: "standard",
       status: "free",
       paymentStatus: "free",
       sessionCredits: 0,
+      creditAllowance: standardPlan.monthlyPremiumCredits,
+      premiumCreditsRemaining: standardPlan.monthlyPremiumCredits,
+      creditsResetAt: sharedPlanConfig.nextMonthlyReset(),
+      trialActive: false,
+      trialEligible: true,
       subscriptionStart: null,
       subscriptionExpiry: null
     };
   }
 
+  const currentPlan = sharedPlanConfig.normalizePlanId(subscription.currentPlan);
+  const plan = getPlan(currentPlan);
+  const now = Date.now();
+  const expiryTime = subscription.subscriptionExpiry?.getTime?.() || 0;
+  const expired = currentPlan !== "standard" && expiryTime > 0 && expiryTime <= now;
+  const trialActive = subscription.paymentStatus === "trial" && !expired;
+  const allowance = Number(subscription.creditAllowance) >= 0
+    ? Number(subscription.creditAllowance)
+    : plan.monthlyPremiumCredits;
+  const creditsRemaining = Number(subscription.premiumCreditsRemaining) >= 0
+    ? Math.min(Number(subscription.premiumCreditsRemaining), allowance)
+    : allowance;
+
   return {
     userId: subscription.userId,
-    currentPlan: subscription.currentPlan,
-    status: subscription.status,
+    currentPlan,
+    status: expired ? "expired" : subscription.status,
     paymentStatus: subscription.paymentStatus,
     paymentId: subscription.paymentId || null,
     orderId: subscription.orderId || null,
     sessionCredits: subscription.sessionCredits || 0,
+    creditAllowance: allowance,
+    premiumCreditsRemaining: creditsRemaining,
+    creditsResetAt: subscription.creditsResetAt || subscription.subscriptionExpiry || null,
+    trialActive,
+    trialEligible: !subscription.trialUsedAt,
+    trialPlan: subscription.trialPlan || null,
+    trialStartedAt: subscription.trialStartedAt || null,
+    trialEndsAt: subscription.trialEndsAt || null,
     subscriptionStart: subscription.subscriptionStart || null,
     subscriptionExpiry: subscription.subscriptionExpiry || null,
     premiumActive: subscription.isPremiumActive(),
@@ -68,9 +97,12 @@ async function applySuccessfulPayment(payment, plan) {
       { userId: payment.userId },
       {
         $setOnInsert: {
-          currentPlan: "casual",
+          currentPlan: "standard",
           status: "free",
-          paymentStatus: "free"
+          paymentStatus: "free",
+          creditAllowance: getPlan("standard").monthlyPremiumCredits,
+          premiumCreditsRemaining: getPlan("standard").monthlyPremiumCredits,
+          creditsResetAt: sharedPlanConfig.nextMonthlyReset(now)
         },
         $inc: { sessionCredits: 1 },
         $set: {
@@ -96,13 +128,72 @@ async function applySuccessfulPayment(payment, plan) {
       orderId: payment.orderId,
       subscriptionStart,
       subscriptionExpiry,
+      creditAllowance: plan.monthlyPremiumCredits,
+      premiumCreditsRemaining: plan.monthlyPremiumCredits,
+      creditsResetAt: subscriptionExpiry,
       paymentStatus: "captured",
       status: "active",
+      trialPlan: null,
+      trialStartedAt: null,
+      trialEndsAt: null,
       cancelledAt: null,
       lastPaymentAt: now
     },
     { new: true, upsert: true }
   );
+}
+
+async function startTrial(req, res, next) {
+  try {
+    const userId = normalizeUserId(req.body.userId);
+    const plan = getPlan(req.body.planId);
+    if (!userId) return res.status(400).json({ error: "userId is required" });
+    if (!plan || !plan.premium || !plan.trialDays) {
+      return res.status(400).json({ error: "This plan does not include a trial" });
+    }
+
+    const existing = await Subscription.findOne({ userId });
+    if (existing?.trialUsedAt) {
+      return res.status(409).json({ error: "This account has already used its Tutorly trial" });
+    }
+    if (existing?.isPremiumActive?.()) {
+      return res.status(409).json({ error: "This account already has an active premium plan" });
+    }
+
+    const now = new Date();
+    const trialEndsAt = new Date(now);
+    trialEndsAt.setDate(trialEndsAt.getDate() + plan.trialDays);
+    const subscription = await Subscription.findOneAndUpdate(
+      { userId, $or: [{ trialUsedAt: { $exists: false } }, { trialUsedAt: null }] },
+      {
+        $set: {
+          currentPlan: plan.id,
+          status: "active",
+          paymentStatus: "trial",
+          subscriptionStart: now,
+          subscriptionExpiry: trialEndsAt,
+          creditAllowance: plan.trialCredits,
+          premiumCreditsRemaining: plan.trialCredits,
+          creditsResetAt: trialEndsAt,
+          trialPlan: plan.id,
+          trialStartedAt: now,
+          trialEndsAt,
+          trialUsedAt: now,
+          cancelledAt: null
+        }
+      },
+      { new: true, upsert: true, runValidators: true }
+    );
+    if (!subscription) {
+      return res.status(409).json({ error: "This account is not eligible for another trial" });
+    }
+    return res.status(201).json({ ok: true, subscription: publicSubscription(subscription) });
+  } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ error: "This account is not eligible for another trial" });
+    }
+    return next(error);
+  }
 }
 
 async function createOrder(req, res, next) {
@@ -117,7 +208,7 @@ async function createOrder(req, res, next) {
       return res.status(400).json({ error: "Unknown plan selected" });
     }
     if (plan.amountPaise <= 0) {
-      return res.status(400).json({ error: "Free plan does not need a Razorpay order" });
+      return res.status(400).json({ error: "Standard plan does not need a Razorpay order" });
     }
 
     const razorpay = getRazorpayInstance();
@@ -311,7 +402,8 @@ async function getSubscription(req, res, next) {
     const subscription = await Subscription.findOne({ userId });
     return res.json({
       subscription: publicSubscription(subscription),
-      plans: listPublicPlans()
+      plans: listPublicPlans(),
+      creditCosts: CREDIT_COSTS
     });
   } catch (error) {
     return next(error);
@@ -376,10 +468,16 @@ async function cancelSubscription(req, res, next) {
     const subscription = await Subscription.findOneAndUpdate(
       { userId },
       {
-        currentPlan: "casual",
+        currentPlan: "standard",
         paymentStatus: "free",
-        status: "cancelled",
+        status: "free",
         subscriptionExpiry: new Date(),
+        creditAllowance: getPlan("standard").monthlyPremiumCredits,
+        premiumCreditsRemaining: getPlan("standard").monthlyPremiumCredits,
+        creditsResetAt: sharedPlanConfig.nextMonthlyReset(),
+        trialPlan: null,
+        trialStartedAt: null,
+        trialEndsAt: null,
         cancelledAt: new Date()
       },
       { new: true, upsert: true }
@@ -414,5 +512,6 @@ module.exports = {
   markPaymentFailed,
   cancelSubscription,
   checkPremium,
+  startTrial,
   publicSubscription
 };

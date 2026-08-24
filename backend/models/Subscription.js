@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const subscriptionSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true, unique: true, index: true, trim: true },
-    currentPlan: { type: String, default: "casual", index: true },
+    currentPlan: { type: String, default: "standard", index: true },
     paymentId: { type: String },
     orderId: { type: String },
     subscriptionStart: { type: Date },
@@ -16,6 +16,13 @@ const subscriptionSchema = new mongoose.Schema(
       index: true
     },
     sessionCredits: { type: Number, default: 0 },
+    creditAllowance: { type: Number, default: 100, min: 0 },
+    premiumCreditsRemaining: { type: Number, default: 100, min: 0 },
+    creditsResetAt: { type: Date },
+    trialPlan: { type: String, default: null },
+    trialStartedAt: { type: Date },
+    trialEndsAt: { type: Date },
+    trialUsedAt: { type: Date },
     cancelledAt: { type: Date },
     lastPaymentAt: { type: Date }
   },

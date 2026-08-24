@@ -15,6 +15,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarAccountAvatar = document.getElementById("sidebarAccountAvatar");
   const sidebarAccountName = document.getElementById("sidebarAccountName");
   const sidebarAccountPlan = document.getElementById("sidebarAccountPlan");
+  const accountMenuAvatar = document.getElementById("accountMenuAvatar");
+  const accountMenuName = document.getElementById("accountMenuName");
+  const accountMenuPlan = document.getElementById("accountMenuPlan");
+  const accountMenuCrown = document.getElementById("accountMenuCrown");
+  const sidebarAccountCrown = document.getElementById("sidebarAccountCrown");
+  const sidebarPlanAction = document.getElementById("sidebarPlanAction");
+  const sidebarPlanActionLabel = document.getElementById("sidebarPlanActionLabel");
+  const personalizationBtn = document.getElementById("personalizationBtn");
+  const sidebarHelpBtn = document.getElementById("sidebarHelpBtn");
+  const sidebarHelpMenu = document.getElementById("sidebarHelpMenu");
+  const sidebarHelpBack = document.getElementById("sidebarHelpBack");
+  const keyboardShortcutsBtn = document.getElementById("keyboardShortcutsBtn");
   const sidebarSignOutBtn = document.getElementById("sidebarSignOutBtn");
   const uploadInput = document.getElementById("uploadInput");
   const uploadBtn = document.getElementById("uploadBtn");
@@ -53,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let chatRequestInFlight = false;
   let pendingConfirmAction = null;
   let confirmReturnFocus = null;
+  let shortcutReturnFocus = null;
 
   const TOOL_ROUTE_TITLES = Object.freeze({
     "lessons.html": "Learn",
@@ -74,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ChatMemory = ChatbotCore?.getModule?.("memory") || null;
   const LearningTools = ChatbotCore?.getModule?.("learningTools") || null;
   const GPT = window.TutorlyGPT || null;
+  const PlanConfig = window.TutorlyPlanConfig || null;
   const ResponseContract = window.TutorlyResponseContract || null;
   const MathResponseContract = window.TutorlyMathResponseContract || null;
   const ResponsePolicy = window.TutorlyResponsePolicy || null;
@@ -3532,7 +3546,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function syncSidebarAccount() {
+  function syncAccountAvatar(node, displayName, avatarSource) {
+    if (!node) return;
+    node.textContent = displayName.charAt(0).toUpperCase() || "S";
+    if (/^(?:data:image\/|https?:\/\/)/i.test(avatarSource)) {
+      const image = document.createElement("img");
+      image.src = avatarSource;
+      image.alt = "";
+      node.replaceChildren(image);
+    }
+  }
+
+  function syncSidebarAccount(subscriptionOverride = null) {
     if (!sidebarAccountBtn) return;
     const displayName = readStoredAccountValue([
       "tutorly_name",
@@ -3540,28 +3565,73 @@ document.addEventListener("DOMContentLoaded", () => {
       "tutorly_signup_full_name"
     ]) || "Student";
     const avatarSource = readStoredAccountValue(["tutorly_avatar"]);
-    const subscription = readStoredAccountJson("tutorly_subscription");
-    const planId = readStoredAccountValue(["tutorly_current_plan"])
-      || String(subscription?.currentPlan || "").trim();
-    const planLabels = { casual: "Casual", plus: "Plus", pro: "Pro", prime: "Prime", free: "Free" };
+    const subscription = subscriptionOverride || readStoredAccountJson("tutorly_subscription") || {};
+    const storedPlan = String(subscription.currentPlan || readStoredAccountValue(["tutorly_current_plan"]) || "standard");
+    const planId = PlanConfig?.normalizePlanId?.(storedPlan) || (storedPlan === "casual" ? "standard" : storedPlan);
+    const plan = PlanConfig?.getPlan?.(planId) || {
+      id: planId,
+      name: planId === "plus" ? "Plus" : planId === "pro" ? "Pro" : "Standard",
+      monthlyPremiumCredits: planId === "plus" ? 500 : planId === "pro" ? 1500 : 100,
+      premium: ["plus", "pro"].includes(planId)
+    };
+    const allowance = Number.isFinite(Number(subscription.creditAllowance))
+      ? Math.max(0, Number(subscription.creditAllowance))
+      : plan.monthlyPremiumCredits;
+    const remaining = Number.isFinite(Number(subscription.premiumCreditsRemaining))
+      ? Math.min(allowance, Math.max(0, Number(subscription.premiumCreditsRemaining)))
+      : allowance;
+    const creditLabel = `${PlanConfig?.formatCredits?.(remaining) || remaining.toLocaleString("en-IN")} credits`;
+    const planMeta = `${plan.name} · ${creditLabel}`;
 
     if (sidebarAccountName) sidebarAccountName.textContent = displayName;
     sidebarAccountBtn.title = displayName;
-
-    if (sidebarAccountAvatar) {
-      sidebarAccountAvatar.textContent = displayName.charAt(0).toUpperCase() || "S";
-      if (/^(?:data:image\/|https?:\/\/)/i.test(avatarSource)) {
-        const image = document.createElement("img");
-        image.src = avatarSource;
-        image.alt = "";
-        sidebarAccountAvatar.replaceChildren(image);
-      }
-    }
+    syncAccountAvatar(sidebarAccountAvatar, displayName, avatarSource);
+    syncAccountAvatar(accountMenuAvatar, displayName, avatarSource);
+    if (accountMenuName) accountMenuName.textContent = displayName;
 
     if (sidebarAccountPlan) {
-      const planLabel = planLabels[planId.toLowerCase()] || (planId ? planId.replace(/[_-]+/g, " ") : "");
-      sidebarAccountPlan.textContent = planLabel;
-      sidebarAccountPlan.hidden = !planLabel;
+      sidebarAccountPlan.textContent = planMeta;
+      sidebarAccountPlan.hidden = false;
+    }
+    if (accountMenuPlan) accountMenuPlan.textContent = planMeta;
+    if (accountMenuCrown) accountMenuCrown.hidden = !plan.premium;
+    if (sidebarAccountCrown) sidebarAccountCrown.hidden = !plan.premium;
+    sidebarAccountBtn.classList.toggle("premium-plan", !!plan.premium);
+    if (sidebarPlanAction && sidebarPlanActionLabel) {
+      const managing = !!plan.premium && (subscription.status === "active" || subscription.trialActive);
+      sidebarPlanAction.href = managing ? "billing.html" : "subscriptions.html";
+      sidebarPlanActionLabel.textContent = managing ? "Manage plan" : "Upgrade plan";
+    }
+    document.querySelectorAll(".upgrade-plans-btn").forEach((link) => {
+      const managing = !!plan.premium && (subscription.status === "active" || subscription.trialActive);
+      link.href = managing ? "billing.html" : "subscriptions.html";
+      const label = link.querySelector("span:last-child");
+      if (label) label.textContent = managing ? "Manage your plan" : "Upgrade your plan";
+    });
+  }
+
+  async function syncAuthoritativeAccount() {
+    try {
+      const subscription = await window.TutorlyPremiumGuard?.syncSubscription?.();
+      if (subscription) syncSidebarAccount(subscription);
+    } catch (error) {
+      // Cached account metadata keeps navigation usable while billing is offline.
+    }
+  }
+
+  function setHelpMenuOpen(open, options = {}) {
+    if (!sidebarHelpMenu || !sidebarHelpBtn || !sidebarAccountMenu) return;
+    const shouldOpen = !!open;
+    sidebarHelpMenu.hidden = !shouldOpen;
+    sidebarHelpBtn.setAttribute("aria-expanded", String(shouldOpen));
+    sidebarAccountMenu.classList.toggle("help-open", shouldOpen && isMobileLayout());
+    if (shouldOpen && options.focus !== false) {
+      window.setTimeout(() => {
+        const target = isMobileLayout()
+          ? sidebarHelpBack
+          : sidebarHelpMenu.querySelector('[role="menuitem"]');
+        target?.focus();
+      }, 0);
     }
   }
 
@@ -3571,7 +3641,12 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebarAccountMenu.hidden = !shouldOpen;
     sidebarAccountBtn.setAttribute("aria-expanded", String(shouldOpen));
     sidebarAccount?.classList.toggle("menu-open", shouldOpen);
-    if (shouldOpen) closeSidebarChatMenus();
+    if (shouldOpen) {
+      closeSidebarChatMenus();
+      syncAuthoritativeAccount();
+    } else {
+      setHelpMenuOpen(false, { focus: false });
+    }
   }
 
   function closeAccountMenu() {
@@ -4021,12 +4096,56 @@ document.addEventListener("DOMContentLoaded", () => {
     return overlay;
   }
 
-  function openSettingsPanel() {
+  function openSettingsPanel(options = {}) {
     const overlay = createSettingsPanel();
     overlay.querySelector("#settingsModelSelect").value = getSelectedModelConfig().id;
     overlay.classList.add("show");
     overlay.setAttribute("aria-hidden", "false");
     closeMobileSidebar();
+    const focusId = options.focus === "personalization" ? "#settingsToneSelect" : "#settingsModelSelect";
+    window.setTimeout(() => overlay.querySelector(focusId)?.focus(), 0);
+  }
+
+  function closeKeyboardShortcuts() {
+    const overlay = document.getElementById("keyboardShortcutsOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.hidden = true;
+    shortcutReturnFocus?.focus?.();
+    shortcutReturnFocus = null;
+  }
+
+  function openKeyboardShortcuts() {
+    let overlay = document.getElementById("keyboardShortcutsOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "keyboardShortcutsOverlay";
+      overlay.className = "keyboard-shortcuts-overlay";
+      overlay.hidden = true;
+      overlay.setAttribute("aria-hidden", "true");
+      overlay.innerHTML = `
+        <article class="keyboard-shortcuts-card" role="dialog" aria-modal="true" aria-labelledby="keyboardShortcutsTitle">
+          <header><div><p>Tutorly controls</p><h2 id="keyboardShortcutsTitle">Keyboard shortcuts</h2></div><button type="button" data-shortcuts-close aria-label="Close keyboard shortcuts">&times;</button></header>
+          <dl>
+            <div><dt>Search chats</dt><dd><kbd>Alt</kbd><span>+</span><kbd>K</kbd></dd></div>
+            <div><dt>New chat</dt><dd><kbd>Alt</kbd><span>+</span><kbd>N</kbd></dd></div>
+            <div><dt>Keyboard shortcuts</dt><dd><kbd>Ctrl / Cmd</kbd><span>+</span><kbd>/</kbd></dd></div>
+            <div><dt>Close menu or dialog</dt><dd><kbd>Esc</kbd></dd></div>
+          </dl>
+        </article>`;
+      document.body.appendChild(overlay);
+      overlay.querySelector("[data-shortcuts-close]").addEventListener("click", closeKeyboardShortcuts);
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) closeKeyboardShortcuts();
+      });
+    }
+    shortcutReturnFocus = document.activeElement;
+    closeAccountMenu();
+    overlay.hidden = false;
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden", "false");
+    window.setTimeout(() => overlay.querySelector("[data-shortcuts-close]")?.focus(), 0);
   }
 
   function isMobileLayout() {
@@ -4215,6 +4334,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (sidebarHelpBtn) {
+    sidebarHelpBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setHelpMenuOpen(true);
+    });
+    sidebarHelpBtn.addEventListener("pointerenter", () => {
+      if (!isMobileLayout()) setHelpMenuOpen(true, { focus: false });
+    });
+  }
+
+  sidebarHelpBack?.addEventListener("click", () => {
+    setHelpMenuOpen(false, { focus: false });
+    sidebarHelpBtn?.focus();
+  });
+
+  keyboardShortcutsBtn?.addEventListener("click", openKeyboardShortcuts);
+
   if (sidebarSignOutBtn) {
     sidebarSignOutBtn.addEventListener("click", () => {
       closeAccountMenu();
@@ -4253,6 +4390,15 @@ document.addEventListener("DOMContentLoaded", () => {
       event.stopImmediatePropagation();
       closeAccountMenu();
       openSettingsPanel();
+    }, true);
+  }
+
+  if (personalizationBtn) {
+    personalizationBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      closeAccountMenu();
+      openSettingsPanel({ focus: "personalization" });
     }, true);
   }
 
@@ -4457,7 +4603,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("keydown", (event) => {
+    const target = event.target;
+    const isTyping = target instanceof HTMLElement && !!target.closest("input, textarea, select, [contenteditable='true']");
+    if (!isTyping && event.altKey && !event.ctrlKey && !event.metaKey && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      openHistoryPanel();
+      return;
+    }
+    if (!isTyping && event.altKey && !event.ctrlKey && !event.metaKey && event.key.toLowerCase() === "n") {
+      event.preventDefault();
+      resetChat();
+      return;
+    }
+    if (!isTyping && (event.ctrlKey || event.metaKey) && event.key === "/") {
+      event.preventDefault();
+      openKeyboardShortcuts();
+      return;
+    }
     if (event.key === "Escape") {
+      closeKeyboardShortcuts();
       closeConfirmDialog();
       closeAccountMenu();
       closeSidebarChatMenus();
@@ -4501,6 +4665,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ChatbotCore?.on?.("history:changed", renderSidebarRecents);
   syncSidebarAccount();
+  syncAuthoritativeAccount();
   renderSidebarRecents();
   updateSidebarToggleState();
   updateImageDeviceMode();

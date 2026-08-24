@@ -61,6 +61,7 @@
             <option>Subscriptions</option>
             <option>Tutor Support</option>
             <option>Feedback</option>
+            <option>Bug Report</option>
           </select>
           <textarea class="input" id="message" placeholder="Write your message here..." required></textarea>
           <button class="btn btn-primary" type="submit">Submit Message</button>
@@ -70,6 +71,13 @@
   </main>
 
   <script>
+    (function applyRequestedTopic() {
+      const requestedTopic = new URLSearchParams(window.location.search).get('topic');
+      if (requestedTopic !== 'bug') return;
+      document.getElementById('topic').value = 'Bug Report';
+      document.getElementById('message').placeholder = 'What went wrong? What were you trying to do? Add the page name and any useful details.';
+    })();
+
     document.getElementById('contactForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const topic = document.getElementById('topic').value;

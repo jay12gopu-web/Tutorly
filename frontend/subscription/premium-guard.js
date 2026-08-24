@@ -35,7 +35,7 @@
       const data = await response.json();
       if (response.ok && data.subscription) {
         localStorage.setItem("tutorly_subscription", JSON.stringify(data.subscription));
-        localStorage.setItem("tutorly_current_plan", data.subscription.currentPlan || "casual");
+        localStorage.setItem("tutorly_current_plan", data.subscription.currentPlan || "standard");
         return data.subscription;
       }
     } catch (_error) {

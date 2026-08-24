@@ -1,51 +1,11 @@
+const sharedConfig = require("../shared/tutorly-plans");
+
 const PLAN_CATALOG = Object.freeze({
-  casual: {
-    id: "casual",
-    name: "Casual",
+  ...Object.fromEntries(sharedConfig.listPlans().map((plan) => [plan.id, {
+    ...plan,
     type: "subscription",
-    amountPaise: 0,
-    currency: "INR",
-    interval: "free",
-    premium: false,
-    features: [
-      "Basic workspace access",
-      "Limited AI help",
-      "Free learning tools"
-    ]
-  },
-  plus: {
-    id: "plus",
-    name: "Tutorly",
-    type: "subscription",
-    amountPaise: 49900,
-    currency: "INR",
-    interval: "month",
-    premium: true,
-    productLine: "core",
-    features: [
-      "AI Tutor, lessons, notes, flashcards, and practice quizzes",
-      "Chapter tests, mock exams, rapid fire, and report cards",
-      "Memory tests, concentration tests, and general learning",
-      "School content, intermediate content, college subjects, engineering, medical, commerce, and computer science"
-    ]
-  },
-  pro: {
-    id: "pro",
-    name: "Tutorly Campus",
-    type: "subscription",
-    amountPaise: 99900,
-    currency: "INR",
-    interval: "month",
-    premium: true,
-    productLine: "campus",
-    campus: true,
-    features: [
-      "Everything in Tutorly",
-      "College workspace with semester workspace, credits, attendance, assignments, exams, projects, and labs",
-      "Assignment, project, practical, lab, research, coding, and placement preparation assistants",
-      "CGPA tracker, campus calendar, productivity tools, internship hub, career guidance, and advanced analytics"
-    ]
-  },
+    features: [...plan.features]
+  }])),
   "session-1": {
     id: "session-1",
     name: "1 Tutoring Session",
@@ -63,7 +23,9 @@ const PLAN_CATALOG = Object.freeze({
 });
 
 function getPlan(planId) {
-  return PLAN_CATALOG[String(planId || "").toLowerCase()] || null;
+  const rawId = String(planId || "").toLowerCase();
+  const normalizedId = rawId === "session-1" ? rawId : sharedConfig.normalizePlanId(rawId);
+  return PLAN_CATALOG[normalizedId] || null;
 }
 
 function getPublicPlan(plan) {
@@ -77,6 +39,10 @@ function getPublicPlan(plan) {
     currency: plan.currency,
     interval: plan.interval,
     premium: plan.premium,
+    monthlyPremiumCredits: plan.monthlyPremiumCredits || 0,
+    trialDays: plan.trialDays || 0,
+    trialCredits: plan.trialCredits || 0,
+    recommended: !!plan.recommended,
     productLine: plan.productLine || null,
     campus: !!plan.campus,
     features: plan.features
@@ -101,5 +67,6 @@ module.exports = {
   getPlan,
   getPublicPlan,
   listPublicPlans,
-  createSubscriptionExpiry
+  createSubscriptionExpiry,
+  CREDIT_COSTS: sharedConfig.CREDIT_COSTS
 };

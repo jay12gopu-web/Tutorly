@@ -10,6 +10,7 @@ router.get("/plans", (_req, res) => {
 });
 
 router.post("/create-order", paymentController.createOrder);
+router.post("/start-trial", paymentController.startTrial);
 router.post("/verify-payment", paymentController.verifyPayment);
 router.post("/payment-failed", paymentController.markPaymentFailed);
 router.get("/subscription/:userId", paymentController.getSubscription);

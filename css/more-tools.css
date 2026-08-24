@@ -205,7 +205,8 @@ a { color: inherit; text-decoration: none; }
 .tool-copy { min-width: 0; display: grid; gap: 5px; }
 .tool-copy strong { font-size: 17px; }
 .tool-title-with-crown { display: inline-flex; align-items: center; gap: 7px; }
-.tool-learn-crown { color: #d7a817; font-size: 16px; line-height: 1; text-shadow: 0 1px 4px rgba(111, 75, 0, 0.2); }
+.tool-learn-crown { width: 19px; height: 14px; object-fit: contain; filter: drop-shadow(0 1px 4px rgba(111, 75, 0, 0.2)); }
+.tools-hero-crown { width: 28px; height: 20px; object-fit: contain; }
 .tool-copy small { color: var(--tools-muted); font-size: 13px; line-height: 1.45; }
 .tool-card-featured .tool-copy small { color: rgba(255, 255, 255, 0.78); }
 .tool-arrow { color: #8190ad; font-size: 20px; transition: transform 170ms cubic-bezier(.2,.8,.2,1); }
@@ -273,7 +274,6 @@ body.tools-page[data-theme="dark"] .tool-card-featured .tool-icon {
 
 body.tools-page[data-theme="dark"] .tool-arrow { color: #9aa6bd; }
 body.tools-page[data-theme="dark"] .tool-card-featured .tool-arrow { color: #fff; }
-body.tools-page[data-theme="dark"] .tool-learn-crown { color: #ffd45c; }
 
 @media (max-width: 760px) {
   .tools-header {

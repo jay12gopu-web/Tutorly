@@ -5575,6 +5575,297 @@ body[data-theme="dark"] .sidebar-sign-out:hover {
   }
 }
 
+/* Account, plan, and Help menu */
+.sidebar:has(.sidebar-account.menu-open) {
+  overflow: visible;
+}
+
+.sidebar-account-menu {
+  right: auto;
+  left: 0;
+  width: 276px;
+  padding: 8px;
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(43, 57, 105, 0.2);
+}
+
+.sidebar-account-panel {
+  display: grid;
+}
+
+.sidebar-account-summary {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 11px;
+  color: #2f3748;
+  text-decoration: none;
+}
+
+.sidebar-account-summary:hover,
+.sidebar-account-summary:focus-visible {
+  color: #263a72;
+  background: rgba(79, 124, 255, 0.09);
+}
+
+.sidebar-account-summary .sidebar-account-avatar {
+  width: 38px;
+  height: 38px;
+}
+
+.sidebar-account-summary-copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.sidebar-account-summary-copy strong,
+.sidebar-account-summary-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-account-summary-copy strong {
+  font-size: 13.5px;
+  font-weight: 780;
+}
+
+.sidebar-account-summary-copy small {
+  color: #78839a;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.account-plan-line {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.account-plan-line > span,
+.account-plan-line > small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.premium-inline-crown {
+  width: 13px;
+  height: 10px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.sidebar-menu-separator {
+  height: 1px;
+  margin: 6px 5px;
+  background: rgba(91, 111, 166, 0.14);
+}
+
+.sidebar-account-action {
+  min-height: 42px;
+  grid-template-columns: 26px minmax(0, 1fr);
+  padding: 8px 9px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.sidebar-help-trigger {
+  grid-template-columns: 26px minmax(0, 1fr) 18px;
+}
+
+.account-row-chevron {
+  width: 16px !important;
+  height: 16px !important;
+  color: #7c8598;
+}
+
+.premium-crown-icon {
+  width: 19px !important;
+  height: 15px !important;
+  justify-self: center;
+  object-fit: contain;
+}
+
+.menu-letter-icon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  border-radius: 7px;
+  color: #52679b;
+  background: rgba(79, 124, 255, 0.09);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.sidebar-help-menu[hidden] {
+  display: none;
+}
+
+.sidebar-help-menu {
+  position: absolute;
+  z-index: 20;
+  bottom: 0;
+  left: calc(100% + 9px);
+  width: 252px;
+  padding: 8px;
+  border: 1px solid rgba(91, 111, 166, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.99);
+  box-shadow: 0 20px 48px rgba(43, 57, 105, 0.2);
+}
+
+.sidebar-help-back {
+  display: none;
+}
+
+body[data-theme="dark"] .sidebar-account-summary,
+body[data-theme="dark"] .sidebar-help-menu {
+  color: #e7eaf2;
+}
+
+body[data-theme="dark"] .sidebar-account-summary:hover,
+body[data-theme="dark"] .sidebar-account-summary:focus-visible {
+  color: #fff;
+  background: rgba(129, 140, 248, 0.12);
+}
+
+body[data-theme="dark"] .sidebar-help-menu {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: #20242d;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
+}
+
+body[data-theme="dark"] .sidebar-menu-separator {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+body[data-theme="dark"] .menu-letter-icon {
+  color: #d8def3;
+  background: rgba(129, 140, 248, 0.12);
+}
+
+@media (max-width: 1080px) {
+  .sidebar-account-menu,
+  .sidebar.collapsed .sidebar-account-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    left: 0;
+    width: auto;
+    max-height: min(620px, calc(100dvh - 112px));
+    overflow-y: auto;
+    border-radius: 18px;
+  }
+
+  .sidebar-help-menu {
+    position: static;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sidebar-account-menu.help-open .sidebar-account-panel {
+    display: none;
+  }
+
+  .sidebar-help-back {
+    width: 100%;
+    min-height: 46px;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 8px 9px;
+    border: 0;
+    border-radius: 10px;
+    color: #35405b;
+    background: transparent;
+    font: inherit;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .sidebar-help-back:hover,
+  .sidebar-help-back:focus-visible {
+    background: rgba(79, 124, 255, 0.09);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-account-menu,
+  .sidebar-help-menu {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.keyboard-shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(12, 18, 34, .42);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+.keyboard-shortcuts-overlay[hidden] { display: none; }
+.keyboard-shortcuts-overlay.show { opacity: 1; pointer-events: auto; }
+
+.keyboard-shortcuts-card {
+  width: min(470px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(91,111,166,.2);
+  border-radius: 20px;
+  color: #20283a;
+  background: rgba(255,255,255,.98);
+  box-shadow: 0 28px 70px rgba(26,37,76,.26);
+}
+
+.keyboard-shortcuts-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(91,111,166,.13);
+}
+
+.keyboard-shortcuts-card header p { margin: 0 0 4px; color: #65728c; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.keyboard-shortcuts-card h2 { margin: 0; font-size: 21px; }
+.keyboard-shortcuts-card header button { width: 36px; height: 36px; border: 0; border-radius: 10px; color: #59647b; background: #eef2f8; font-size: 22px; cursor: pointer; }
+.keyboard-shortcuts-card dl { margin: 0; padding: 8px; }
+.keyboard-shortcuts-card dl > div { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 10px; border-radius: 10px; }
+.keyboard-shortcuts-card dl > div:hover { background: rgba(79,124,255,.07); }
+.keyboard-shortcuts-card dt { font-size: 13px; font-weight: 700; }
+.keyboard-shortcuts-card dd { display: flex; align-items: center; gap: 5px; margin: 0; color: #748098; font-size: 11px; }
+.keyboard-shortcuts-card kbd { min-width: 28px; padding: 5px 7px; border: 1px solid rgba(91,111,166,.18); border-radius: 7px; background: #f5f7fb; box-shadow: inset 0 -1px 0 rgba(42,55,91,.1); font: inherit; font-weight: 750; text-align: center; }
+
+body[data-theme="dark"] .keyboard-shortcuts-card { color: #f3f4f7; border-color: rgba(255,255,255,.1); background: #20242d; }
+body[data-theme="dark"] .keyboard-shortcuts-card header { border-color: rgba(255,255,255,.09); }
+body[data-theme="dark"] .keyboard-shortcuts-card header button,
+body[data-theme="dark"] .keyboard-shortcuts-card kbd { color: #e2e5ec; border-color: rgba(255,255,255,.1); background: #303641; }
+
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-shortcuts-overlay { transition-duration: .01ms; }
+}
+
 /* Header upgrade action and destructive confirmations */
 .upgrade-plans-btn {
   min-height: 42px;
@@ -5607,10 +5898,10 @@ body[data-theme="dark"] .sidebar-sign-out:hover {
 }
 
 .upgrade-crown {
-  color: #ffd45c;
-  font-size: 17px;
-  line-height: 1;
-  text-shadow: 0 1px 5px rgba(90, 61, 0, 0.28);
+  width: 20px;
+  height: 15px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 5px rgba(90, 61, 0, 0.28));
 }
 
 .sidebar-chat-menu .sidebar-chat-delete {
@@ -5765,9 +6056,7 @@ body[data-theme="dark"] .sidebar-chat-menu .sidebar-chat-delete {
     font-size: 11.5px;
   }
 
-  .upgrade-crown {
-    font-size: 15px;
-  }
+  .upgrade-crown { width: 18px; height: 14px; }
 
   .confirm-dialog {
     padding: 21px 18px;
@@ -5790,20 +6079,16 @@ body[data-theme="dark"] .sidebar-chat-menu .sidebar-chat-delete {
 }
 
 .learn-crown {
+  width: 17px;
+  height: 13px;
   justify-self: end;
-  color: #d7a817;
-  font-size: 15px;
-  line-height: 1;
-  text-shadow: 0 1px 4px rgba(111, 75, 0, 0.2);
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(111, 75, 0, 0.2));
 }
 
 .workspace-link.active {
   color: #294986;
   background: rgba(79, 124, 255, 0.13);
-}
-
-body[data-theme="dark"] .learn-crown {
-  color: #ffd45c;
 }
 
 body[data-theme="dark"] .workspace-link.active {

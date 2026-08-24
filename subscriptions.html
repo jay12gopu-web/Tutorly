@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <link rel="canonical" href="https://mytutor.co.in/subscriptions.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,18 +12,18 @@
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
   <link rel="stylesheet" href="frontend/subscription/subscription.css" />
-  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-  <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 </head>
 <body data-tutorly-surface="workspace">
-  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
+  <a class="back-home-btn" href="maths_gpt.html" aria-label="Back to Tutorly Chat">Chat</a>
   <header class="shell header-wrap fade-up">
     <div class="topbar">
-      <a class="brand" href="home.html" aria-label="Tutorly Home"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></a>
-      <nav class="nav-links">
-        <a href="home.html">Chat</a>
+      <a class="brand" href="maths_gpt.html" aria-label="Tutorly Chat"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></a>
+      <nav class="nav-links" aria-label="Plan navigation">
+        <a href="maths_gpt.html">Chat</a>
+        <a href="billing.html">Plan &amp; Billing</a>
         <a href="payment-history.html">Payment history</a>
         <a href="contact.html">Support</a>
       </nav>
@@ -32,86 +33,137 @@
   <main class="payment-shell">
     <section class="payment-hero fade-up">
       <div>
-        <span class="payment-kicker">Secure Razorpay payments</span>
-        <h1 class="payment-title">Choose your Tutorly plan.</h1>
-        <p class="payment-sub">Upgrade for premium AI tools, image and voice doubts, and smoother learning support. You can switch plans anytime.</p>
+        <span class="payment-kicker">Tutorly plans</span>
+        <h1 class="payment-title">Pick the plan that fits how you study.</h1>
+        <p class="payment-sub">Normal Tutorly chat stays included. Premium credits are used only for higher-cost tools such as homework photos, Deep Solve, premium models, and Full Voice Chat.</p>
       </div>
-
-    
+      <aside class="subscription-status-card" aria-labelledby="currentPlanHeading">
+        <p class="status-eyebrow">Your current plan</p>
+        <h2 id="currentPlanHeading"><span id="currentPlanName">Standard</span></h2>
+        <p id="currentPlanMeta">100 premium credits each month</p>
+        <div class="credit-meter" aria-label="Premium credit balance">
+          <div class="credit-meter-top"><strong id="currentCredits">100 / 100 credits remaining</strong><span id="creditResetDate">Reset date unavailable</span></div>
+          <div class="credit-meter-track"><span id="creditMeterFill" style="width:100%"></span></div>
+        </div>
+        <a class="pay-action secondary compact" href="billing.html">Plan &amp; Billing</a>
+      </aside>
     </section>
 
-    <section class="plans-grid fade-up d2" aria-label="Subscription plans">
-      <article class="plan-card">
+    <section class="plans-grid fade-up d2" aria-label="Tutorly subscription plans">
+      <article class="plan-card" data-plan-card="standard">
         <div class="plan-top">
           <div>
-            <h2 class="plan-name">Casual</h2>
-            <div class="plan-price">Free</div>
+            <h2 class="plan-name">Standard</h2>
+            <div class="plan-price">₹0</div>
           </div>
-          <span class="current-pill" data-current-for="casual" hidden>Current</span>
+          <span class="current-pill" data-current-for="standard" hidden>Current</span>
         </div>
+        <p class="plan-credit-line"><strong>100</strong> premium credits / month</p>
         <ul class="plan-features">
-          <li>Basic workspace access</li>
-          <li>Limited AI learning help</li>
-          <li>Free tests and quests</li>
+          <li>AI tutoring chat and follow-ups</li>
+          <li>Learn, Practice, Tests, and Progress</li>
+          <li>Math, diagrams, charts, code, and voice dictation</li>
         </ul>
-        <button class="plan-button secondary" type="button" data-plan-button="casual">Use Casual</button>
+        <button class="plan-button secondary" type="button" data-plan-button="standard">Use Standard</button>
       </article>
 
-      <article class="plan-card featured">
-        <span class="plan-ribbon">Recommended</span>
+      <article class="plan-card featured" data-plan-card="plus">
+        <span class="plan-ribbon">Most popular</span>
         <div class="plan-top">
           <div>
-            <h2 class="plan-name">Plus</h2>
-            <div class="plan-price">₹499<small>/month</small></div>
+            <h2 class="plan-name premium-plan-name"><img src="assets/premium-crown.png" alt="" />Plus</h2>
+            <div class="plan-price">₹299<small>/month</small></div>
           </div>
           <span class="current-pill" data-current-for="plus" hidden>Current</span>
         </div>
+        <p class="plan-credit-line"><strong>500</strong> premium credits / month</p>
+        <p class="trial-copy"><strong>7 days free</strong> · 150 trial credits</p>
         <ul class="plan-features">
-          <li>Premium AI doubt support</li>
-          <li>Image and voice doubt tools</li>
-          <li>Priority learning help</li>
+          <li>Everything in Standard</li>
+          <li>Higher premium-tool usage</li>
+          <li>Priority Tutorly access</li>
         </ul>
-        <button class="plan-button" type="button" data-plan-button="plus">Subscribe Plus</button>
+        <div class="plan-actions">
+          <button class="plan-button" type="button" data-trial-button="plus">Start free trial</button>
+          <button class="plan-button secondary" type="button" data-plan-button="plus">Subscribe now</button>
+        </div>
+        <p class="trial-disclosure">7 days free. Then choose ₹299/month to continue. No automatic charge.</p>
       </article>
 
-      <article class="plan-card">
+      <article class="plan-card" data-plan-card="pro">
         <div class="plan-top">
           <div>
-            <h2 class="plan-name">Pro</h2>
-            <div class="plan-price">₹999<small>/month</small></div>
+            <h2 class="plan-name premium-plan-name"><img src="assets/premium-crown.png" alt="" />Pro <small class="pro-label">PRO</small></h2>
+            <div class="plan-price">₹599<small>/month</small></div>
           </div>
           <span class="current-pill" data-current-for="pro" hidden>Current</span>
         </div>
+        <p class="plan-credit-line"><strong>1,500</strong> premium credits / month</p>
+        <p class="trial-copy"><strong>7 days free</strong> · 400 trial credits</p>
         <ul class="plan-features">
           <li>Everything in Plus</li>
-          <li>Advanced AI learning help</li>
-          <li>Best for regular study</li>
+          <li>Highest premium-tool usage</li>
+          <li>Highest priority Tutorly access</li>
         </ul>
-        <button class="plan-button" type="button" data-plan-button="pro">Subscribe Pro</button>
+        <div class="plan-actions">
+          <button class="plan-button" type="button" data-trial-button="pro">Start free trial</button>
+          <button class="plan-button secondary" type="button" data-plan-button="pro">Subscribe now</button>
+        </div>
+        <p class="trial-disclosure">7 days free. Then choose ₹599/month to continue. No automatic charge.</p>
       </article>
     </section>
 
-    <section class="payment-panel fade-up d4">
-      <div class="session-card">
-        <div>
-          <h2>Manage Subscription</h2>
-          <p>Cancel your active paid plan locally and return to Casual. Razorpay order payments remain in your payment history.</p>
-        </div>
-        <div class="panel-actions">
-          <button class="pay-action secondary" id="cancelSubscriptionBtn" type="button">Cancel Subscription</button>
-          <a class="pay-action secondary" href="payment-history.html">View History</a>
-        </div>
+    <section class="payment-panel fade-up d3" aria-labelledby="comparisonTitle">
+      <div class="section-heading">
+        <span class="payment-kicker">Compare</span>
+        <h2 id="comparisonTitle">What every plan includes</h2>
       </div>
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead><tr><th>Feature</th><th>Standard</th><th>Plus</th><th>Pro</th></tr></thead>
+          <tbody>
+            <tr><td>AI tutoring chat</td><td>Included</td><td>Included</td><td>Included</td></tr>
+            <tr><td>Learn / Practice / Tests / Progress</td><td>Included</td><td>Included</td><td>Included</td></tr>
+            <tr><td>Markdown / math / code</td><td>Included</td><td>Included</td><td>Included</td></tr>
+            <tr><td>Mermaid diagrams and charts</td><td>Included</td><td>Included</td><td>Included</td></tr>
+            <tr><td>Premium credits</td><td>100</td><td>500</td><td>1,500</td></tr>
+            <tr><td>Homework images</td><td>Credit-based</td><td>Credit-based</td><td>Credit-based</td></tr>
+            <tr><td>Full Voice Chat</td><td>Credit-based</td><td>Higher usage</td><td>Highest usage</td></tr>
+            <tr><td>Premium models</td><td>Limited / credits</td><td>Available</td><td>Highest access</td></tr>
+            <tr><td>Priority usage</td><td>Standard</td><td>Higher</td><td>Highest</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="payment-panel credits-panel fade-up d4" aria-labelledby="creditsTitle">
+      <div class="section-heading">
+        <span class="payment-kicker">Premium credits</span>
+        <h2 id="creditsTitle">Clear costs before you use a premium tool</h2>
+        <p>Normal text tutoring, follow-ups, math, code, diagrams, charts, Learn, Practice, Tests, Progress, dictation, and regular text-to-speech cost 0 credits.</p>
+      </div>
+      <div id="creditCostsList" class="credit-cost-grid" aria-live="polite"></div>
     </section>
   </main>
 
+  <div id="trialDialog" class="plan-dialog" hidden aria-hidden="true">
+    <article class="plan-dialog-card" role="dialog" aria-modal="true" aria-labelledby="trialDialogTitle">
+      <button id="trialDialogClose" class="plan-dialog-close" type="button" aria-label="Close">&times;</button>
+      <img class="dialog-crown" src="assets/premium-crown.png" alt="" />
+      <h2 id="trialDialogTitle">Start your 7-day trial?</h2>
+      <p id="trialDialogDetails"></p>
+      <div class="plan-dialog-actions">
+        <button id="trialDialogCancel" class="plan-button secondary" type="button">Not now</button>
+        <button id="trialDialogConfirm" class="plan-button" type="button">Start free trial</button>
+      </div>
+    </article>
+  </div>
+
   <div class="payment-toast" id="paymentToast" role="status" aria-live="polite"></div>
+  <script src="shared/tutorly-plans.js"></script>
   <script src="frontend/subscription/subscription.js"></script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
-  <script src="js/campus.js?v=campus-20260629"></script>
   <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
 </body>
 </html>
-
-

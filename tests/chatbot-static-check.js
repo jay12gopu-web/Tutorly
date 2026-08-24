@@ -94,6 +94,13 @@ assert.ok(voiceSource.includes("Auto-detect"), "voice language selection should 
   'id="sidebarAccountBtn"',
   'id="sidebarAccountMenu"',
   'id="sidebarSignOutBtn"',
+  'id="sidebarPlanAction"',
+  'id="personalizationBtn"',
+  'id="sidebarHelpBtn"',
+  'id="keyboardShortcutsBtn"',
+  'href="help-center.html"',
+  'href="release-notes.html"',
+  'href="privacy.html"',
   'href="lessons.html"',
   'href="tests.html"',
   'href="quests.html"',
@@ -138,6 +145,10 @@ assert.ok(chatbotCss.includes("@media (max-width: 1080px)"), "responsive drawer 
   "bookmarks.html"
 ].forEach((route) => assert.ok(moreToolsPage.includes(`href="${route}"`), `More Tools should link to ${route}`));
 assert.ok(moreToolsPage.includes('class="tool-learn-crown"'), "More Tools should show the gold crown beside Learn");
+assert.ok(page.includes('src="assets/premium-crown.png"'), "premium account and learning controls should use the supplied crown asset");
+assert.ok(!page.includes("&#9813;") && !moreToolsPage.includes("&#9813;"), "legacy crown glyphs should be removed");
+assert.ok(!page.includes("Download Apps"), "Download Apps must stay hidden until Tutorly is installable");
+assert.ok(app.includes("syncAuthoritativeAccount"), "account plan and credit copy should sync with the existing backend guard");
 
 let inMemoryHistoryState = null;
 const historyModules = {};

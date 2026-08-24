@@ -1,0 +1,79 @@
+.account-page-shell {
+  width: min(980px, calc(100% - 32px));
+  margin: 18px auto 48px;
+}
+
+.account-page-hero,
+.account-page-card {
+  border: 1px solid rgba(91, 124, 190, .16);
+  background: rgba(255,255,255,.84);
+  box-shadow: 0 22px 56px rgba(42,71,134,.12);
+  backdrop-filter: blur(18px);
+}
+
+.account-page-hero {
+  padding: clamp(28px, 5vw, 52px);
+  border-radius: 30px;
+  background: radial-gradient(circle at 88% 15%, rgba(130,103,255,.16), transparent 35%), rgba(255,255,255,.88);
+}
+
+.account-page-kicker {
+  color: #4d68ba;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.account-page-hero h1 {
+  margin: 12px 0 0;
+  color: #17213a;
+  font-size: clamp(38px, 6vw, 66px);
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+.account-page-hero p,
+.account-page-card p,
+.account-page-card li {
+  color: #60708c;
+  line-height: 1.7;
+}
+
+.account-page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.account-page-card {
+  padding: 24px;
+  border-radius: 22px;
+}
+
+.account-page-card.wide { grid-column: 1 / -1; }
+.account-page-card h2,
+.account-page-card h3 { margin: 0; color: #233d78; letter-spacing: -.025em; }
+.account-page-card p:last-child { margin-bottom: 0; }
+.account-page-card a { color: #365ed8; font-weight: 750; }
+.account-page-card ul { margin: 12px 0 0; padding-left: 20px; }
+
+.release-list { display: grid; gap: 14px; margin-top: 16px; }
+.release-date { margin: 0 0 13px; color: #6f7b91; font-size: 12px; font-weight: 850; text-transform: uppercase; }
+.release-items { display: grid; gap: 14px; }
+.release-item { padding-top: 14px; border-top: 1px solid rgba(91,124,190,.13); }
+.release-item:first-child { padding-top: 0; border-top: 0; }
+.release-item h3 { font-size: 19px; }
+.release-item p { margin: 6px 0 0; }
+
+@media (max-width: 720px) {
+  .account-page-shell { width: min(100% - 20px, 980px); }
+  .account-page-grid { grid-template-columns: 1fr; }
+  .account-page-card.wide { grid-column: auto; }
+  .account-page-hero, .account-page-card { border-radius: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-page-hero, .account-page-card { scroll-behavior: auto; }
+}
