@@ -30,7 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedModelDesc = document.getElementById("selectedModelDesc");
   const modelOptions = document.querySelectorAll(".model-option");
   const chatTitle = document.getElementById("chatTitle");
-  const chatNotificationBtn = document.getElementById("chatNotificationBtn");
+  const confirmOverlay = document.getElementById("confirmOverlay");
+  const confirmTitle = document.getElementById("confirmTitle");
+  const confirmMessage = document.getElementById("confirmMessage");
+  const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+  const confirmActionBtn = document.getElementById("confirmActionBtn");
   const input = document.getElementById("input");
   const sendBtn = document.getElementById("sendBtn");
   const messages = document.getElementById("messages");
@@ -39,6 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const disclaimer = document.querySelector(".disclaimer");
   let speakLiveReply = null;
   let chatRequestInFlight = false;
+  let pendingConfirmAction = null;
+  let confirmReturnFocus = null;
 
   if (!input || !sendBtn || !messages || !chatWindow) {
     return;
@@ -3520,6 +3526,32 @@ document.addEventListener("DOMContentLoaded", () => {
     setAccountMenuOpen(false);
   }
 
+  function closeConfirmDialog(options = {}) {
+    if (!confirmOverlay) return;
+    confirmOverlay.classList.remove("show");
+    confirmOverlay.setAttribute("aria-hidden", "true");
+    confirmOverlay.hidden = true;
+    pendingConfirmAction = null;
+    if (options.restoreFocus !== false && confirmReturnFocus?.isConnected) {
+      confirmReturnFocus.focus();
+    }
+    confirmReturnFocus = null;
+  }
+
+  function openConfirmDialog(options = {}) {
+    if (!confirmOverlay || !confirmActionBtn) return;
+    confirmReturnFocus = options.returnFocus || document.activeElement;
+    pendingConfirmAction = typeof options.onConfirm === "function" ? options.onConfirm : null;
+    if (confirmTitle) confirmTitle.textContent = options.title || "Are you sure?";
+    if (confirmMessage) confirmMessage.textContent = options.message || "Please confirm this action.";
+    confirmActionBtn.textContent = options.confirmLabel || "Confirm";
+    confirmActionBtn.classList.toggle("danger", options.destructive !== false);
+    confirmOverlay.hidden = false;
+    confirmOverlay.classList.add("show");
+    confirmOverlay.setAttribute("aria-hidden", "false");
+    window.setTimeout(() => confirmCancelBtn?.focus(), 0);
+  }
+
   function closeSidebarChatMenus(exceptMenu = null) {
     if (!sidebarRecentChats) return;
     sidebarRecentChats.querySelectorAll(".sidebar-chat-menu").forEach((menu) => {
@@ -3549,6 +3581,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="sidebar-chat-menu" role="menu" hidden>
             <button type="button" role="menuitem" data-sidebar-chat-action="pin">${conversation.pinned ? "Unpin" : "Pin"}</button>
             <button type="button" role="menuitem" data-sidebar-chat-action="archive">Archive</button>
+            <button class="sidebar-chat-delete" type="button" role="menuitem" data-sidebar-chat-action="delete">Delete</button>
           </div>
         </div>
       `;
@@ -4011,6 +4044,30 @@ document.addEventListener("DOMContentLoaded", () => {
         if (conversationId === activeConversationId) resetChat();
         else renderSidebarRecents();
         showToast("Chat archived.");
+        return;
+      }
+
+      if (actionName === "delete") {
+        const conversation = GPT?.getConversation?.(conversationId) || ChatHistory.getConversation(conversationId);
+        const conversationTitle = conversation?.title || "this chat";
+        closeSidebarChatMenus();
+        openConfirmDialog({
+          title: "Delete this chat?",
+          message: `“${conversationTitle}” will be permanently removed from your conversation history. This cannot be undone.`,
+          confirmLabel: "Delete chat",
+          destructive: true,
+          onConfirm: () => {
+            const wasActive = conversationId === activeConversationId;
+            const deleted = GPT?.deleteConversation?.(conversationId) || ChatHistory.deleteConversation(conversationId);
+            if (!deleted) {
+              showToast("Could not delete this chat.");
+              return;
+            }
+            if (wasActive) resetChat();
+            else renderSidebarRecents();
+            showToast("Chat deleted.");
+          }
+        });
       }
     });
   }
@@ -4024,7 +4081,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (sidebarSignOutBtn) {
-    sidebarSignOutBtn.addEventListener("click", signOutFromTutorly);
+    sidebarSignOutBtn.addEventListener("click", () => {
+      closeAccountMenu();
+      openConfirmDialog({
+        title: "Sign out of Tutorly?",
+        message: "You’ll need to sign in again to continue your Tutorly sessions.",
+        confirmLabel: "Sign out",
+        destructive: true,
+        returnFocus: sidebarAccountBtn,
+        onConfirm: signOutFromTutorly
+      });
+    });
+  }
+
+  if (confirmCancelBtn) {
+    confirmCancelBtn.addEventListener("click", () => closeConfirmDialog());
+  }
+
+  if (confirmActionBtn) {
+    confirmActionBtn.addEventListener("click", () => {
+      const action = pendingConfirmAction;
+      closeConfirmDialog({ restoreFocus: false });
+      action?.();
+    });
+  }
+
+  if (confirmOverlay) {
+    confirmOverlay.addEventListener("click", (event) => {
+      if (event.target === confirmOverlay) closeConfirmDialog();
+    });
   }
 
   if (settingsBtn) {
@@ -4569,14 +4654,9 @@ document.addEventListener("DOMContentLoaded", () => {
     mobileMenu.addEventListener("click", () => toggleMobileSidebar());
   }
 
-  if (chatNotificationBtn) {
-    chatNotificationBtn.addEventListener("click", () => {
-      showToast("No notifications right now.");
-    });
-  }
-
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
+      closeConfirmDialog();
       closeAccountMenu();
       closeSidebarChatMenus();
       closeSettingsPanel();

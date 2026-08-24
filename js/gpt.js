@@ -331,6 +331,10 @@
     return history?.archiveConversation?.(conversationId, archived) || null;
   }
 
+  function deleteConversation(conversationId) {
+    return history?.deleteConversation?.(conversationId) || null;
+  }
+
   function clearMemory() {
     memory?.clear?.();
     core.storage.remove("tutorly_response_engine_memory_v1");
@@ -384,6 +388,7 @@
     getStats,
     pinConversation,
     archiveConversation,
+    deleteConversation,
     clearMemory
   };
 })();

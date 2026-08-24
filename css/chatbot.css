@@ -5569,3 +5569,212 @@ body[data-theme="dark"] .sidebar-sign-out:hover {
     transition-duration: 0.01ms;
   }
 }
+
+/* Header upgrade action and destructive confirmations */
+.upgrade-plans-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 17px;
+  border: 1px solid rgba(68, 103, 225, 0.62);
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, #3574e7, #5767dc);
+  box-shadow: 0 9px 22px rgba(53, 91, 208, 0.22);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: transform 170ms cubic-bezier(.2,.8,.2,1), box-shadow 170ms cubic-bezier(.2,.8,.2,1), filter 170ms cubic-bezier(.2,.8,.2,1);
+}
+
+.upgrade-plans-btn:hover {
+  color: #fff;
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(53, 91, 208, 0.28);
+}
+
+.upgrade-plans-btn:focus-visible {
+  outline: 3px solid rgba(79, 124, 255, 0.3);
+  outline-offset: 2px;
+}
+
+.upgrade-crown {
+  color: #ffd45c;
+  font-size: 17px;
+  line-height: 1;
+  text-shadow: 0 1px 5px rgba(90, 61, 0, 0.28);
+}
+
+.sidebar-chat-menu .sidebar-chat-delete {
+  color: #b42332;
+}
+
+.sidebar-chat-menu .sidebar-chat-delete:hover {
+  color: #a31828;
+  background: rgba(202, 48, 61, 0.09);
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(12, 18, 34, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+.confirm-overlay[hidden] {
+  display: none;
+}
+
+.confirm-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.confirm-dialog {
+  width: min(420px, 100%);
+  padding: 24px;
+  border: 1px solid rgba(91, 111, 166, 0.2);
+  border-radius: 20px;
+  color: #20283a;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 28px 70px rgba(26, 37, 76, 0.26);
+  text-align: center;
+  transform: translateY(5px) scale(0.98);
+  transition: transform 200ms cubic-bezier(.2,.8,.2,1);
+}
+
+.confirm-overlay.show .confirm-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.confirm-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 13px;
+  border-radius: 14px;
+  color: #b42332;
+  background: rgba(202, 48, 61, 0.1);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.confirm-dialog h2 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+.confirm-dialog p {
+  margin: 10px auto 20px;
+  color: #687187;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.confirm-actions button {
+  min-height: 43px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(.2,.8,.2,1), background 160ms cubic-bezier(.2,.8,.2,1), box-shadow 160ms cubic-bezier(.2,.8,.2,1);
+}
+
+.confirm-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.confirm-cancel {
+  color: #394359;
+  background: #eef2f8;
+}
+
+.confirm-cancel:hover {
+  background: #e5eaf3;
+}
+
+.confirm-action {
+  color: #fff;
+  background: linear-gradient(135deg, #3574e7, #5767dc);
+  box-shadow: 0 8px 18px rgba(53, 91, 208, 0.2);
+}
+
+.confirm-action.danger {
+  background: linear-gradient(135deg, #c93445, #a91f31);
+  box-shadow: 0 8px 18px rgba(180, 35, 50, 0.2);
+}
+
+.confirm-actions button:focus-visible {
+  outline: 3px solid rgba(79, 124, 255, 0.28);
+  outline-offset: 2px;
+}
+
+body[data-theme="dark"] .confirm-dialog {
+  color: #f3f4f7;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #20242d;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+}
+
+body[data-theme="dark"] .confirm-dialog p {
+  color: #aeb5c2;
+}
+
+body[data-theme="dark"] .confirm-cancel {
+  color: #e2e5ec;
+  background: #303641;
+}
+
+body[data-theme="dark"] .sidebar-chat-menu .sidebar-chat-delete {
+  color: #ff9da7;
+}
+
+@media (max-width: 760px) {
+  .top-actions .upgrade-plans-btn {
+    width: auto;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 15px;
+    font-size: 11.5px;
+  }
+
+  .upgrade-crown {
+    font-size: 15px;
+  }
+
+  .confirm-dialog {
+    padding: 21px 18px;
+    border-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upgrade-plans-btn,
+  .confirm-overlay,
+  .confirm-dialog,
+  .confirm-actions button {
+    transition-duration: 0.01ms;
+  }
+}

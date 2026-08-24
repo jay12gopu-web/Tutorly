@@ -239,6 +239,18 @@
     return updated;
   }
 
+  function deleteConversation(id) {
+    const state = readState();
+    const index = state.conversations.findIndex((conversation) => conversation.id === id);
+    if (index < 0) return null;
+    const [deleted] = state.conversations.splice(index, 1);
+    state.sharedChats = state.sharedChats.filter((share) => share.conversationId !== id);
+    if (state.activeConversationId === id) state.activeConversationId = null;
+    writeState(state);
+    core.emit("history:conversation-deleted", deleted);
+    return deleted;
+  }
+
   function createFolder(name, options = {}) {
     const state = readState();
     const folder = {
@@ -379,6 +391,7 @@
     updateConversation,
     pinConversation,
     archiveConversation,
+    deleteConversation,
     createFolder,
     moveConversation,
     listConversations,

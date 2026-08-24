@@ -9,6 +9,9 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), "u
 const page = read("maths_gpt.html");
 const app = read("js/app.js");
 const chatbotCss = read("css/chatbot.css");
+const chatHistorySource = read("js/chatbot/chat-history-store.js");
+const gptSource = read("js/gpt.js");
+const moreToolsPage = read("more-tools.html");
 const policySource = read("js/chatbot/response-policy.js");
 const visuals = read("js/chatbot/educational-visuals.js");
 
@@ -63,23 +66,71 @@ assert.ok(app.includes("text.match(/[\\s\\S]{1,42}/g)"), "simulated streaming mu
   'id="sidebarAccountMenu"',
   'id="sidebarSignOutBtn"',
   'href="lessons.html"',
-  'href="practice.html"',
   'href="tests.html"',
-  'href="progress.html"',
-  'id="themeToggle"',
-  'id="chatNotificationBtn"'
+  'href="quests.html"',
+  'href="more-tools.html"',
+  'href="subscriptions.html"',
+  'id="confirmOverlay"',
+  'id="confirmActionBtn"'
 ].forEach((marker) => assert.ok(page.includes(marker), `chat shell should preserve ${marker}`));
 assert.ok(!page.includes('<a class="profile-dot" href="profile.html"'), "the redundant top-right profile avatar should be removed");
+assert.ok(!page.includes('id="themeToggle"'), "the top-right theme control should be removed");
+assert.ok(!page.includes('id="chatNotificationBtn"'), "the top-right notification control should be removed");
+assert.ok(!page.includes('id="sidebarViewAllChats"'), "the redundant view-all-conversations button should be removed");
+assert.ok(!page.includes('href="practice.html" title="Practice"'), "Practice should not appear in the compact Study section");
+assert.ok(!page.includes('href="progress.html" title="Progress"'), "Progress should not appear in the compact Study section");
 assert.ok(app.includes("renderSidebarRecents"), "recent chats should render from the existing conversation store");
 assert.ok(app.includes("loadConversation(conversationId)"), "sidebar conversations should reuse the existing loader");
 assert.ok(app.includes("openSettingsPanel()"), "account Settings should reuse the existing settings panel");
 assert.ok(app.includes("signOutFromTutorly"), "account menu should provide the existing logout behavior");
+assert.ok(app.includes('title: "Delete this chat?"'), "chat deletion should require a confirmation dialog");
+assert.ok(app.includes('title: "Sign out of Tutorly?"'), "sign out should require a confirmation dialog");
 assert.ok(app.includes('localStorage.removeItem("tutorly_logged_in")'), "logout should clear the existing authenticated session flag");
 assert.ok(app.includes('ChatbotCore?.on?.("history:changed", renderSidebarRecents)'), "recent chats should stay synced with chat history changes");
+assert.ok(chatHistorySource.includes("function deleteConversation(id)"), "the shared history module should support permanent chat deletion");
+assert.ok(gptSource.includes("deleteConversation,"), "TutorlyGPT should expose shared chat deletion");
 assert.ok(chatbotCss.includes(".sidebar-account"), "profile row should be anchored in the sidebar shell");
 assert.ok(chatbotCss.includes("text-overflow: ellipsis"), "long conversation titles should be truncated cleanly");
 assert.ok(chatbotCss.includes(".chat-shell.sidebar-collapsed"), "desktop collapsed rail styling should exist");
 assert.ok(chatbotCss.includes("@media (max-width: 1080px)"), "responsive drawer styling should remain available");
+[
+  "maths_gpt.html",
+  "lessons.html",
+  "practice.html",
+  "tests.html",
+  "quests.html",
+  "progress.html",
+  "bookmarks.html"
+].forEach((route) => assert.ok(moreToolsPage.includes(`href="${route}"`), `More Tools should link to ${route}`));
+
+let inMemoryHistoryState = null;
+const historyModules = {};
+const historyEvents = [];
+const historyCore = {
+  getModule: (name) => historyModules[name] || null,
+  registerModule: (name, module) => { historyModules[name] = module; },
+  storage: {
+    get: (_key, fallback) => inMemoryHistoryState || fallback,
+    set: (_key, value) => { inMemoryHistoryState = JSON.parse(JSON.stringify(value)); },
+    remove: () => { inMemoryHistoryState = null; }
+  },
+  now: () => 123456,
+  uid: (prefix) => `${prefix}_test`,
+  sanitizeText: (value) => String(value || "").trim(),
+  truncate: (value, length) => String(value || "").slice(0, length),
+  normalizeForSearch: (value) => String(value || "").toLowerCase(),
+  emit: (name, payload) => historyEvents.push({ name, payload })
+};
+const historySandbox = { window: { TutorlyChatbot: historyCore } };
+vm.createContext(historySandbox);
+vm.runInContext(chatHistorySource, historySandbox);
+const historyModule = historyModules.history;
+const disposableConversation = historyModule.createConversation({ seed: "Temporary deletion test" });
+assert.strictEqual(historyModule.getActiveConversationId(), disposableConversation.id);
+assert.ok(historyModule.deleteConversation(disposableConversation.id), "deleteConversation should return the deleted chat");
+assert.strictEqual(historyModule.getConversation(disposableConversation.id), null, "deleted chat should leave the conversation store");
+assert.strictEqual(historyModule.getActiveConversationId(), null, "deleting the active chat should clear its active state");
+assert.ok(historyEvents.some((event) => event.name === "history:conversation-deleted"), "deletion should emit a history event");
 
 const getBotStart = app.indexOf("async function getBotReply");
 const sendStart = app.indexOf("async function sendMessage", getBotStart);

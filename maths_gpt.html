@@ -19,7 +19,7 @@
     })();
   </script>
 
-  <link rel="stylesheet" href="css/chatbot.css?v=sidebar-shell-20260824" />
+  <link rel="stylesheet" href="css/chatbot.css?v=sidebar-tools-20260824" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
@@ -69,14 +69,6 @@
           <span class="side-label">Learn</span>
         </a>
 
-        <a class="side-link" href="practice.html" title="Practice">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 12l2 2 4-5" />
-            <path d="M4 4h16v16H4z" />
-          </svg>
-          <span class="side-label">Practice</span>
-        </a>
-
         <a class="side-link" href="tests.html" title="Tests">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M7 3h10v4H7z" />
@@ -86,24 +78,27 @@
           <span class="side-label">Tests</span>
         </a>
 
-        <a class="side-link" href="progress.html" title="Progress">
+        <a class="side-link" href="quests.html" title="Quests">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+            <path d="m13 2-1 7h6l-8 13 1-8H5l8-12z" />
           </svg>
-          <span class="side-label">Progress</span>
+          <span class="side-label">Quests</span>
+        </a>
+
+        <a class="side-link" href="more-tools.html" title="More Tools">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2" />
+            <rect x="14" y="3" width="7" height="7" rx="2" />
+            <rect x="3" y="14" width="7" height="7" rx="2" />
+            <path d="M17.5 14v7M14 17.5h7" />
+          </svg>
+          <span class="side-label">More Tools</span>
         </a>
 
         <div class="sidebar-conversations side-label">
           <div class="side-section-label">Recent</div>
           <div id="sidebarRecentChats" class="sidebar-recent-list" aria-live="polite"></div>
           <p id="sidebarRecentEmpty" class="sidebar-recent-empty">Your recent chats will appear here.</p>
-          <button id="sidebarViewAllChats" class="side-link sidebar-view-all" type="button" data-open-history>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
-              <path d="M3 3v5h5M12 7v5l3 2" />
-            </svg>
-            <span>View all conversations</span>
-          </button>
         </div>
       </div>
 
@@ -142,15 +137,10 @@
         <div id="chatTitle" class="chat-title">New chat</div>
 
         <div class="top-actions">
-          <button id="themeToggle" class="profile-dot chat-header-icon" type="button" aria-label="Switch color theme" title="Switch color theme">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.1A8 8 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1z" /></svg>
-          </button>
-          <button id="chatNotificationBtn" class="profile-dot chat-header-icon" type="button" aria-label="Notifications" title="Notifications">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-          </button>
+          <a class="upgrade-plans-btn" href="subscriptions.html" aria-label="Upgrade your Tutorly plan">
+            <span class="upgrade-crown" aria-hidden="true">&#9813;</span>
+            <span>Upgrade your plan</span>
+          </a>
           <button id="mobileMenu" class="icon-btn mobile-menu" type="button" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 6h16" />
@@ -274,6 +264,18 @@
 
   </div>
 
+  <div id="confirmOverlay" class="confirm-overlay" aria-hidden="true" hidden>
+    <article class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+      <span class="confirm-icon" aria-hidden="true">!</span>
+      <h2 id="confirmTitle">Are you sure?</h2>
+      <p id="confirmMessage">Please confirm this action.</p>
+      <div class="confirm-actions">
+        <button id="confirmCancelBtn" class="confirm-cancel" type="button">Cancel</button>
+        <button id="confirmActionBtn" class="confirm-action" type="button">Confirm</button>
+      </div>
+    </article>
+  </div>
+
   <script src="frontend/subscription/premium-guard.js"></script>
   <script src="js/chatbot/chatbot-core.js"></script>
   <script src="js/chatbot/mode-registry.js"></script>
@@ -283,7 +285,7 @@
   <script src="js/chatbot/educational-visuals.js"></script>
   <script src="js/chatbot/rich-response-renderer.js?v=rich-response-20260823b"></script>
   <script src="js/chatbot/markdown-renderer.js?v=rich-response-20260823b"></script>
-  <script src="js/app.js?v=sidebar-shell-20260824"></script>
+  <script src="js/app.js?v=sidebar-tools-20260824"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
