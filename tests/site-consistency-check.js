@@ -107,12 +107,14 @@ const appSource = read("js/app.js");
 assert(appSource.includes('return "https://tutorly-api.onrender.com"'), "Production chat API must use the deployed Tutorly backend");
 
 const subscriptions = read("subscriptions.html");
-assert(subscriptions.includes("₹299<small>/month</small>"), "Plus price encoding is incorrect");
-assert(subscriptions.includes("₹599<small>/month</small>"), "Pro price encoding is incorrect");
-assert((subscriptions.match(/class="current-pill"[^>]+hidden/g) || []).length === 3, "All current-plan badges must start hidden");
+assert(subscriptions.includes("<strong>₹299</strong><span>/month</span>"), "Plus price encoding is incorrect");
+assert(subscriptions.includes("<strong>₹599</strong><span>/month</span>"), "Pro price encoding is incorrect");
+assert((subscriptions.match(/data-plan-cta=/g) || []).length === 3, "Each plan must expose one functional plan action");
 const subscriptionJs = read("frontend/subscription/subscription.js");
-assert(subscriptionJs.includes('pill.hidden = pill.getAttribute("data-current-for") !== currentPlanId'), "Current plan badge must be data-driven");
+assert(subscriptionJs.includes('card.dataset.current = card.getAttribute("data-plan-card") === currentPlanId ? "true" : "false"'), "Current plan card state must be data-driven");
 assert(subscriptionJs.includes('button.textContent = "Current plan"'), "Current plan button state must be data-driven");
+assert(subscriptionJs.includes('openTrialDialog(planId, button)'), "Eligible premium CTAs must use the existing trial flow");
+assert(subscriptionJs.includes('startCheckout(planId)'), "Paid plan CTAs must retain the existing checkout entry point");
 
 const profile = read("profile.html");
 for (const emptyState of ["Complete your first test to unlock performance insights.", "No learning activity yet.", "No academic reports yet"]) {

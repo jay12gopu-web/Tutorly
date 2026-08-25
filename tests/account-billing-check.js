@@ -45,10 +45,15 @@ const crown = fs.readFileSync(path.join(root, "assets/premium-crown.png"));
 assert.strictEqual(crown.subarray(1, 4).toString("ascii"), "PNG", "premium crown must be a PNG asset");
 
 const subscriptions = read("subscriptions.html");
-for (const copy of ["Standard", "₹0", "100</strong> premium credits / month", "₹299<small>/month</small>", "500</strong> premium credits / month", "₹599<small>/month</small>", "1,500</strong> premium credits / month", "7 days free"]) {
+for (const copy of ["Standard", "₹0", "100 credits / month", "₹299", "500 credits / month", "₹599", "1,500 credits / month", "7 days free"]) {
   assert(subscriptions.includes(copy), `plans page is missing ${copy}`);
 }
 assert((subscriptions.match(/src="assets\/premium-crown.png"/g) || []).length >= 3, "premium plans and trial dialog should use the crown asset");
+for (const planId of ["standard", "plus", "pro"]) {
+  assert(subscriptions.includes(`data-plan-cta="${planId}"`), `${planId} plan action is missing`);
+}
+assert(subscriptions.includes('id="comparePlansButton"'), "feature comparison control is missing");
+assert(subscriptions.includes('id="trialDialog"'), "trial confirmation dialog is missing");
 
 const controller = read("backend/controllers/paymentController.js");
 assert(controller.includes("async function startTrial"), "server-side trial activation is missing");

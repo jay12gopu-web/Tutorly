@@ -131,44 +131,55 @@
         ? `${currentPlan.name} trial · ends ${formatDate(subscription.trialEndsAt, "soon")}`
         : `${PlanConfig.formatCredits(allowance)} premium credits each month`;
     }
-    if (currentCredits) currentCredits.textContent = `${PlanConfig.formatCredits(remaining)} / ${PlanConfig.formatCredits(allowance)} credits remaining`;
+    if (currentCredits) currentCredits.textContent = PlanConfig.formatCredits(remaining);
     if (creditResetDate) {
       const label = subscription.trialActive ? "Trial ends" : "Credits reset";
       creditResetDate.textContent = `${label} ${formatDate(subscription.trialActive ? subscription.trialEndsAt : subscription.creditsResetAt, "when the next cycle starts")}`;
     }
     if (meter) meter.style.width = `${allowance > 0 ? Math.min(100, Math.max(0, (remaining / allowance) * 100)) : 0}%`;
 
-    document.querySelectorAll("[data-current-for]").forEach((pill) => {
-      pill.hidden = pill.getAttribute("data-current-for") !== currentPlanId;
+    document.querySelectorAll("[data-plan-card]").forEach((card) => {
+      card.dataset.current = card.getAttribute("data-plan-card") === currentPlanId ? "true" : "false";
     });
 
-    document.querySelectorAll("[data-plan-button]").forEach((button) => {
-      const planId = button.getAttribute("data-plan-button");
+    document.querySelectorAll("[data-plan-cta]").forEach((button) => {
+      const planId = button.getAttribute("data-plan-cta");
+      const plan = PlanConfig.getPlan(planId);
       const isCurrent = planId === currentPlanId;
-      const loading = state.loadingKey === `pay:${planId}` || state.loadingKey === `standard:${planId}`;
+      const trialAvailable = plan.premium && subscription.trialEligible !== false && currentPlanId === "standard";
+      const loading = state.loadingKey === `pay:${planId}` ||
+        state.loadingKey === `trial:${planId}` ||
+        state.loadingKey === `standard:${planId}`;
       button.disabled = isCurrent || !!state.loadingKey;
       button.setAttribute("aria-current", isCurrent ? "true" : "false");
-      if (loading) button.innerHTML = '<span class="loading-inline">Processing</span>';
-      else if (isCurrent) button.textContent = "Current plan";
-      else if (planId === "standard") button.textContent = "Switch to Standard";
-      else button.textContent = `Subscribe ${PlanConfig.getPlan(planId).name}`;
-    });
-
-    document.querySelectorAll("[data-trial-button]").forEach((button) => {
-      const planId = button.getAttribute("data-trial-button");
-      const isCurrent = planId === currentPlanId;
-      const loading = state.loadingKey === `trial:${planId}`;
-      const premiumAlreadyActive = currentPlan.premium && !isCurrent;
-      button.disabled = isCurrent || subscription.trialEligible === false || premiumAlreadyActive || !!state.loadingKey;
-      if (loading) button.innerHTML = '<span class="loading-inline">Starting trial</span>';
-      else if (isCurrent) button.textContent = "Current plan";
-      else if (subscription.trialEligible === false) button.textContent = "Trial already used";
-      else if (premiumAlreadyActive) button.textContent = "Manage current plan";
-      else button.textContent = "Start free trial";
+      if (loading) {
+        button.innerHTML = `<span class="loading-inline">${state.loadingKey.startsWith("trial:") ? "Starting trial" : "Processing"}</span>`;
+      } else if (isCurrent) {
+        button.textContent = "Current plan";
+      } else if (planId === "standard") {
+        button.textContent = "Switch to Standard";
+      } else if (trialAvailable) {
+        button.textContent = `Try ${plan.name} free →`;
+      } else {
+        button.textContent = `Choose ${plan.name} →`;
+      }
     });
   }
 
   function renderCreditCosts() {
+    document.querySelectorAll("[data-credit-cost]").forEach((element) => {
+      const key = element.getAttribute("data-credit-cost");
+      const item = PlanConfig.CREDIT_COSTS[key];
+      if (!item) return;
+      element.textContent = item.minCredits
+        ? `${item.minCredits}–${item.maxCredits} credits`
+        : item.perMinutes
+          ? `${item.credits} credit / ${item.perMinutes} min`
+          : key === "shortDocument"
+            ? `${item.credits}+ credits`
+            : `${item.credits} ${item.credits === 1 ? "credit" : "credits"}`;
+    });
+
     const list = document.getElementById("creditCostsList");
     if (!list) return;
     const visibleCosts = Object.values(PlanConfig.CREDIT_COSTS).filter((item) => item.available);
@@ -335,6 +346,20 @@
   }
 
   function bindButtons() {
+    document.querySelectorAll("[data-plan-cta]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const planId = button.getAttribute("data-plan-cta");
+        if (planId === getEffectivePlanId()) return;
+        if (planId === "standard") {
+          if (getEffectivePlanId() === "standard" || confirm("Switch to Standard and end your current paid plan or trial?")) activateStandard();
+          return;
+        }
+        const trialAvailable = state.subscription.trialEligible !== false && getEffectivePlanId() === "standard";
+        if (trialAvailable) openTrialDialog(planId, button);
+        else startCheckout(planId);
+      });
+    });
+
     document.querySelectorAll("[data-plan-button]").forEach((button) => {
       button.addEventListener("click", () => {
         const planId = button.getAttribute("data-plan-button");
@@ -347,6 +372,16 @@
     });
     document.querySelectorAll("[data-trial-button]").forEach((button) => {
       button.addEventListener("click", () => openTrialDialog(button.getAttribute("data-trial-button"), button));
+    });
+
+    document.getElementById("comparePlansButton")?.addEventListener("click", (event) => {
+      const comparison = document.getElementById("planComparison");
+      if (!comparison) return;
+      const expanded = event.currentTarget.getAttribute("aria-expanded") === "true";
+      comparison.hidden = expanded;
+      event.currentTarget.setAttribute("aria-expanded", String(!expanded));
+      event.currentTarget.textContent = expanded ? "Compare every feature ↓" : "Hide comparison ↑";
+      if (!expanded) comparison.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
 
     document.getElementById("trialDialogClose")?.addEventListener("click", closeTrialDialog);
