@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let speakLiveReply = null;
   let activeChatController = null;
   let activeReplyStreamToken = 0;
+  let pendingChatStartTimer = null;
   let voiceSession = null;
   let liveSessionMode = null;
   let chatRequestInFlight = false;
@@ -97,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const EducationalVisuals = window.TutorlyEducationalVisuals || null;
   const RichResponse = window.TutorlyRichResponse || null;
   const MarkdownRenderer = window.TutorlyMarkdownRenderer || null;
+  const ReasoningStatus = window.TutorlyReasoningStatus || null;
   const ENABLE_LEGACY_LOCAL_ROUTER = false;
   const BOT_AVATAR_SRC = "assets/chatbot-star.png";
   const MODEL_STORAGE_KEY = "tutorly_selected_ai_model";
@@ -106,21 +108,21 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Spark",
       icon: "⚡",
       description: "Fast homework help",
-      loading: "Thinking fast..."
+      loading: "Analyzing"
     },
     prime: {
       id: "prime",
       name: "Prime",
       icon: "✦",
       description: "Best for most students",
-      loading: "Tutorly is thinking..."
+      loading: "Assessing"
     },
     lens: {
       id: "lens",
       name: "Lens",
       icon: "◉",
       description: "Solve from photos",
-      loading: "Analyzing image..."
+      loading: "Interpreting"
     }
   };
   if (GPT?.getAppModelConfigs) {
@@ -498,7 +500,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function abortActiveChatRequest() {
     activeReplyStreamToken += 1;
+    if (pendingChatStartTimer) {
+      window.clearTimeout(pendingChatStartTimer);
+      pendingChatStartTimer = null;
+    }
+    const disposableStatuses = Array.from(messages.querySelectorAll(".msg.bot.reasoning-active:not([data-reasoning-preserve='true'])"));
+    ReasoningStatus?.stopAll?.();
+    disposableStatuses.forEach((message) => message.remove());
     activeChatController?.abort();
+    chatRequestInFlight = false;
+    updateSendState();
   }
 
   async function sendTeachingFeedback(payload = {}) {
@@ -2920,31 +2931,43 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
         message.classList.add("loading");
-        content.innerHTML = `<span class="typing-label">Regenerating...</span><span class="typing-dots" aria-label="Tutorly is thinking"></span>`;
-        const freshReply = await getBotReply(prompt, model, context);
-        const subject = context.semanticRoute?.subject || "general";
-        const toolkit = createStudyToolkit(subject, prompt, freshReply, model);
-        GPT?.updateMessage?.(conversationId, messageId, {
-          content: freshReply,
-          model,
-          subject,
-          regeneratedFrom: rawReply.slice(0, 500),
-          tools: toolkit
-        }) || ChatHistory?.updateMessage?.(conversationId, messageId, {
-          content: freshReply,
-          model,
-          subject,
-          regeneratedFrom: rawReply.slice(0, 500),
-          tools: toolkit
-        });
-        streamBotReply(message, freshReply, {
-          ...meta,
-          model,
+        ReasoningStatus?.start?.(message, {
           prompt,
+          model,
           context,
-          toolkit,
-          onDone: () => showToast("Response regenerated.")
+          preserveMessage: true
         });
+        try {
+          const freshReply = await getBotReply(prompt, model, context);
+          const subject = context.semanticRoute?.subject || "general";
+          const toolkit = createStudyToolkit(subject, prompt, freshReply, model);
+          GPT?.updateMessage?.(conversationId, messageId, {
+            content: freshReply,
+            model,
+            subject,
+            regeneratedFrom: rawReply.slice(0, 500),
+            tools: toolkit
+          }) || ChatHistory?.updateMessage?.(conversationId, messageId, {
+            content: freshReply,
+            model,
+            subject,
+            regeneratedFrom: rawReply.slice(0, 500),
+            tools: toolkit
+          });
+          streamBotReply(message, freshReply, {
+            ...meta,
+            model,
+            prompt,
+            context,
+            toolkit,
+            onDone: () => showToast("Response regenerated.")
+          });
+        } catch (error) {
+          ReasoningStatus?.stop?.(message);
+          message.classList.remove("loading");
+          updateBotContent(message, rawReply, meta);
+          if (error?.name !== "AbortError") showToast("I couldn't regenerate that response. Please try again.");
+        }
       }
 
       if (action === "tools") {
@@ -2957,6 +2980,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function streamBotReply(message, markdown, meta = {}) {
+    ReasoningStatus?.stop?.(message);
     const content = message.querySelector(".bot-content");
     const mode = ChatbotModes?.get?.(meta.model || selectedModel);
     const shouldStream = mode ? mode.stream !== false : true;
@@ -3018,18 +3042,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const content = document.createElement("div");
       content.className = "bot-content";
 
-      if (options.loading) {
-        if (options.loadingText) {
-          const label = document.createElement("span");
-          label.className = "typing-label";
-          label.textContent = options.loadingText;
-          content.appendChild(label);
-        }
-        const dots = document.createElement("span");
-        dots.className = "typing-dots";
-        dots.setAttribute("aria-label", "Tutorly is thinking");
-        content.appendChild(dots);
-      } else {
+      if (!options.loading) {
         content.innerHTML = renderMarkdownNote(text);
         RichResponse?.hydrate?.(content);
         hydrateMathLearningCards(message);
@@ -3064,6 +3077,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     messages.appendChild(message);
+    if (type === "bot" && options.loading) {
+      if (ReasoningStatus?.start) {
+        ReasoningStatus.start(message, options.reasoningContext || options);
+      } else {
+        const fallback = document.createElement("span");
+        fallback.className = "reasoning-status-shell";
+        fallback.setAttribute("aria-hidden", "true");
+        fallback.textContent = "Analyzing…";
+        message.querySelector(".bot-content")?.appendChild(fallback);
+      }
+    }
     scrollToBottom();
     return message;
   }
@@ -3438,26 +3462,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loadingMessage = addMessage("", "bot", {
       loading: true,
-      loadingText: hasImage || modelAtSend === "lens"
-        ? MODEL_CONFIGS.lens.loading
-        : MODEL_CONFIGS[modelAtSend].loading,
+      reasoningContext: {
+        prompt: botInputText,
+        model: modelAtSend,
+        context: requestPayload,
+        hasImage
+      },
       conversationId,
       model: modelAtSend,
       prompt: botInputText
     });
 
-    window.setTimeout(async () => {
+    pendingChatStartTimer = window.setTimeout(async () => {
+      pendingChatStartTimer = null;
       let replyText;
       try {
         replyText = await getBotReply(botInputText, modelAtSend, requestPayload);
       } catch (error) {
         if (error?.name === "AbortError") {
+          ReasoningStatus?.stop?.(loadingMessage);
           loadingMessage?.remove();
           chatRequestInFlight = false;
           updateSendState();
           return;
         }
-        throw error;
+        replyText = "I couldn't process that question properly. Please try again.";
       } finally {
         chatRequestInFlight = false;
         updateSendState();
@@ -3524,6 +3553,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resetChat() {
+    abortActiveChatRequest();
     messages.innerHTML = "";
     input.value = "";
     removePendingImage();

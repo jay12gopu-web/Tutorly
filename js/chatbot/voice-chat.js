@@ -35,7 +35,7 @@
   const STATE_COPY = Object.freeze({
     connecting: ["Getting ready…", "Checking your microphone."],
     listening: ["Listening — just talk", "Speak naturally. I’ll respond when you finish."],
-    processing: ["Thinking…", "You can interrupt and ask something else."],
+    processing: ["Processing…", "You can interrupt and ask something else."],
     speaking: ["Tutorly is speaking", "Start talking to interrupt."],
     error: ["Voice unavailable", "Check microphone permission, then try again."],
     closed: ["Voice chat", ""]

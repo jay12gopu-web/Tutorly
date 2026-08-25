@@ -2347,6 +2347,87 @@ body[data-theme="dark"] .edu-grid-line { stroke: rgba(183, 193, 231, 0.14); }
   font-weight: 900;
 }
 
+.reasoning-status-shell {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  margin: 3px 0;
+  color: #6b7487;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.reasoning-status-visual {
+  display: inline-flex;
+  align-items: center;
+  transition:
+    opacity 170ms cubic-bezier(.2,.8,.2,1),
+    transform 170ms cubic-bezier(.2,.8,.2,1);
+}
+
+.reasoning-status-visual.is-changing {
+  opacity: 0.18;
+  transform: translateY(1px);
+}
+
+.reasoning-status-pulse {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6582ea, #8b6be8);
+  box-shadow: 0 0 0 3px rgba(102, 124, 224, 0.08);
+  animation: reasoningStatusPulse 1.65s ease-in-out infinite;
+}
+
+.reasoning-status-word {
+  min-width: 0;
+}
+
+.reasoning-status-ellipsis {
+  width: 1em;
+  display: inline-block;
+  color: #7c8495;
+  animation: reasoningEllipsisFade 1.35s ease-in-out infinite;
+}
+
+body[data-theme="dark"] .reasoning-status-shell {
+  color: #aeb6c7;
+}
+
+body[data-theme="dark"] .reasoning-status-ellipsis {
+  color: #929cad;
+}
+
+.msg.bot.loading .bot-avatar {
+  animation: none;
+}
+
+@keyframes reasoningStatusPulse {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.92; }
+}
+
+@keyframes reasoningEllipsisFade {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reasoning-status-visual {
+    transition-duration: 0.01ms;
+  }
+
+  .reasoning-status-pulse,
+  .reasoning-status-ellipsis {
+    animation: none;
+  }
+}
+
 .disclaimer {
   margin: 14px 0 0;
   color: #555c68;

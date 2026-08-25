@@ -28,7 +28,7 @@
       id: normalizeModel(modelId),
       name: "Prime",
       description: "Best for most students",
-      loading: "Tutorly is thinking...",
+      loading: "Assessing",
       delayMultiplier: 1,
       stream: true
     };
@@ -41,21 +41,21 @@
         name: "Spark",
         icon: "S",
         description: "Fast homework help",
-        loading: "Thinking fast..."
+        loading: "Analyzing"
       },
       prime: {
         id: "prime",
         name: "Prime",
         icon: "*",
         description: "Best for most students",
-        loading: "Tutorly is thinking..."
+        loading: "Assessing"
       },
       lens: {
         id: "lens",
         name: "Lens",
         icon: "O",
         description: "Solve from photos",
-        loading: "Analyzing image..."
+        loading: "Interpreting"
       }
     };
   }

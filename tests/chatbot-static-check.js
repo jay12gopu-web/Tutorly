@@ -15,6 +15,7 @@ const moreToolsPage = read("more-tools.html");
 const policySource = read("js/chatbot/response-policy.js");
 const visuals = read("js/chatbot/educational-visuals.js");
 const voiceSource = read("js/chatbot/voice-chat.js");
+const reasoningStatusSource = read("js/chatbot/reasoning-status.js");
 
 [
   "js/chatbot/chatbot-core.js",
@@ -23,6 +24,7 @@ const voiceSource = read("js/chatbot/voice-chat.js");
   "js/chatbot/learning-tools.js",
   "js/chatbot/response-policy.js",
   "js/chatbot/educational-visuals.js",
+  "js/chatbot/reasoning-status.js",
   "js/chatbot/rich-response-renderer.js",
   "js/chatbot/markdown-renderer.js",
   "js/chatbot/voice-chat.js",
@@ -61,6 +63,21 @@ assert.ok(app.includes("renderDisplayMath"), "inline and multiline display math 
 assert.ok(app.includes("RichResponse?.hydrate?.(content)"), "rich response blocks should hydrate inside existing messages");
 assert.ok(app.includes("MarkdownRenderer.render(markdown"), "chat should use the shared failure-isolated Markdown renderer");
 assert.ok(app.includes("text.match(/[\\s\\S]{1,42}/g)"), "simulated streaming must preserve every response character");
+assert.ok(app.includes("ReasoningStatus?.stop?.(message)"), "visible answer streaming should stop the reasoning status immediately");
+assert.ok(app.includes("ReasoningStatus?.stopAll?.()"), "request cancellation should clear every reasoning-status timer");
+assert.ok(app.includes("pendingChatStartTimer"), "new-chat cancellation should clear delayed request startup");
+assert.ok(chatbotCss.includes(".reasoning-status-visual.is-changing"), "reasoning words should use a subtle fade transition");
+assert.ok(chatbotCss.includes("prefers-reduced-motion: reduce"), "reasoning status motion should respect reduced-motion preferences");
+assert.ok(!app.includes("Tutorly is thinking") && !reasoningStatusSource.includes("Tutorly is thinking"), "the live chat must not show the old generic thinking phrase");
+
+const reasoningSandbox = { window: {} };
+vm.runInNewContext(reasoningStatusSource, reasoningSandbox);
+const reasoningStatus = reasoningSandbox.window.TutorlyReasoningStatus;
+assert.deepStrictEqual(Array.from(reasoningStatus.sequenceFor({ subject: "mathematics" })), ["Analyzing", "Formulating", "Verifying", "Refining"]);
+assert.deepStrictEqual(Array.from(reasoningStatus.sequenceFor({ subject: "english", intent: "writing_help" })), ["Interpreting", "Structuring", "Refining", "Reviewing"]);
+assert.deepStrictEqual(Array.from(reasoningStatus.sequenceFor({ intent: "concept_explanation" })), ["Assessing", "Clarifying", "Structuring", "Refining"]);
+assert.deepStrictEqual(Array.from(reasoningStatus.sequenceFor({ model: "deep" })), ["Analyzing", "Evaluating", "Synthesizing", "Verifying"]);
+assert.deepStrictEqual(Array.from(reasoningStatus.sequenceFor({ prompt: "Tell me something useful" })), ["Analyzing", "Assessing", "Refining"]);
 assert.ok(page.includes('id="voiceChatOverlay"'), "Tutorly should include the full Voice Chat dialog");
 assert.ok(page.includes('id="speechTextBtn" class="tool-btn speech-text-btn"'), "speech-to-text should have its own visible composer button");
 assert.ok(page.includes('aria-label="Open Tutorly Voice Chat"'), "Voice Chat should have a separate, clearly labelled composer button");

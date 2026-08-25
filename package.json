@@ -9,6 +9,7 @@
     "payments:dev": "nodemon backend/server.js",
     "check:payments": "node --check backend/server.js",
     "check:chatbot": "node tests/chatbot-static-check.js",
+    "check:reasoning-status": "node tests/reasoning-status-check.js",
     "check:rich-response": "node tests/rich-response-renderer-check.js",
     "check:chatbot:backend": "python tests/chatbot_backend_smoke.py",
     "check:chatbot:live": "python tests/semantic_router_live.py --show-answers",
