@@ -9,8 +9,9 @@
     subjectId: "",
     chapterId: "",
     zoom: 1,
-    theme: localStorage.getItem("tutorly_theme") || localStorage.getItem("tutorly_lessons_theme") || "light",
+    theme: localStorage.getItem("tutorly_lessons_theme") || "light",
     searchTerm: "",
+    librarySearch: "",
     quickRevision: false
   };
 
@@ -60,6 +61,10 @@
       state.searchTerm = event.target.value.trim();
       renderLesson();
     });
+    $("subjectSearch")?.addEventListener("input", (event) => {
+      state.librarySearch = event.target.value.trim().toLowerCase();
+      renderSubjects();
+    });
     window.addEventListener("scroll", saveScrollProgress, { passive: true });
   }
 
@@ -67,6 +72,7 @@
     $("subjectsView").hidden = view !== "home";
     $("chaptersView").hidden = view !== "chapters";
     $("readerView").hidden = view !== "reader";
+    if (view === "home") renderLearnHome();
   }
 
   function getProgress() {
@@ -91,17 +97,76 @@
     return entries[0]?.chapter.title || "Not started";
   }
 
+  function latestLesson() {
+    const saved = readJson(LAST_KEY, null);
+    if (!saved?.subjectId || !saved?.chapterId) return null;
+    const subject = Data.subjects.find((item) => item.id === saved.subjectId);
+    const chapter = subject?.chapters.find((item) => item.id === saved.chapterId);
+    if (!subject || !chapter) return null;
+    return {
+      subject,
+      chapter,
+      openedAt: getProgressFor(subject.id, chapter.id).lastOpened || saved.openedAt || ""
+    };
+  }
+
+  function curriculumLabel() {
+    const board = String(localStorage.getItem("tutorly_board") || "").trim();
+    const grade = String(localStorage.getItem("tutorly_grade") || "").trim();
+    const details = [board, grade ? `Grade ${grade}` : ""].filter(Boolean);
+    return details.length ? details.join(" · ") : "Set your grade and board in Profile";
+  }
+
+  function renderContinueCard() {
+    const latest = latestLesson();
+    const button = $("continueLessonBtn");
+    if (!button) return;
+
+    if (!latest) {
+      $("continueLabel").textContent = "Start learning";
+      $("continueTitle").textContent = "Choose your first chapter";
+      $("continueMeta").textContent = "Pick a subject below to begin.";
+      button.textContent = "Browse subjects";
+      button.onclick = () => $("subjectGrid")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    const opened = latest.openedAt
+      ? `Last studied ${new Date(latest.openedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
+      : "Ready to continue";
+    $("continueLabel").textContent = "Continue learning";
+    $("continueTitle").textContent = latest.chapter.title;
+    $("continueMeta").textContent = `${latest.subject.name} · ${latest.chapter.minutes} min lesson · ${opened}`;
+    button.textContent = "Continue chapter →";
+    button.onclick = () => openChapter(latest.subject.id, latest.chapter.id);
+  }
+
+  function renderLearnHome() {
+    if ($("curriculumStatus")) $("curriculumStatus").textContent = curriculumLabel();
+    if ($("subjectCount")) $("subjectCount").textContent = `${Data.subjects.length} subjects available`;
+    renderContinueCard();
+    renderSubjects();
+  }
+
   function renderSubjects() {
-    $("subjectGrid").innerHTML = Data.subjects.map((subject) => `
-      <button class="subject-card tone-${subject.color}" type="button" data-subject="${subject.id}">
-        <span class="subject-icon">${escapeHtml(subject.icon)}</span>
+    const latest = latestLesson();
+    const filteredSubjects = Data.subjects.filter((subject) => {
+      if (!state.librarySearch) return true;
+      return subject.name.toLowerCase().includes(state.librarySearch)
+        || subject.chapters.some((chapter) => chapter.title.toLowerCase().includes(state.librarySearch));
+    });
+    $("subjectGrid").innerHTML = filteredSubjects.map((subject) => `
+      <button class="learn-subject-card tone-${subject.color}${latest?.subject.id === subject.id ? " featured" : ""}" type="button" data-subject="${subject.id}">
+        <span class="learn-subject-icon">${escapeHtml(subject.icon)}</span>
         <strong>${escapeHtml(subject.name)}</strong>
-        <small>${subject.chapters.length} chapters</small>
-        <div class="mini-progress"><span style="width:${subjectProgress(subject)}%"></span></div>
-        <p>${subjectProgress(subject)}% complete</p>
-        <em>Last studied: ${escapeHtml(lastStudied(subject))}</em>
+        <span class="learn-subject-meta">${subject.chapters.length} ${subject.chapters.length === 1 ? "chapter" : "chapters"}</span>
+        <span class="learn-subject-foot">
+          <span>Last studied: ${escapeHtml(lastStudied(subject))}</span>
+          <b>${latest?.subject.id === subject.id ? "Continue →" : "Open subject →"}</b>
+        </span>
       </button>
     `).join("");
+    if ($("subjectSearchEmpty")) $("subjectSearchEmpty").hidden = filteredSubjects.length > 0;
     document.querySelectorAll("[data-subject]").forEach((button) => {
       button.addEventListener("click", () => openSubject(button.dataset.subject));
     });
@@ -461,7 +526,7 @@
 
   function toggleTheme() {
     state.theme = state.theme === "dark" ? "light" : "dark";
-    localStorage.setItem("tutorly_theme", state.theme);
+    localStorage.setItem("tutorly_lessons_theme", state.theme);
     document.body.classList.toggle("lesson-dark", state.theme === "dark");
     syncActionButtons();
   }

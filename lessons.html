@@ -608,6 +608,422 @@
       .lesson-figure svg { min-width: 420px; }
       .textbook-document { padding: 14px; border-radius: 18px; }
     }
+
+    /* Tutorly Learn landing — aligned with the Plans design language. */
+    body.lessons-page {
+      margin: 0;
+      color: #182039;
+      background: #f7f9ff;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.lessons-page::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(79,124,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,124,255,.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 45%);
+    }
+
+    .learn-page-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 52px));
+      margin: 0 auto;
+      padding: 22px 0 58px;
+    }
+
+    .learn-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 34px;
+    }
+
+    .learn-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #182039;
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: -.03em;
+      text-decoration: none;
+    }
+
+    .learn-brand-mark {
+      width: 28px;
+      height: 28px;
+      display: block;
+      overflow: hidden;
+    }
+
+    .learn-brand-mark img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      transform: scale(1.65);
+    }
+
+    .learn-back {
+      border: 1px solid #e6e9f2;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #3d4866;
+      background: rgba(255,255,255,.82);
+      font-weight: 750;
+      text-decoration: none;
+      transition: border-color 170ms cubic-bezier(.2,.8,.2,1), background 170ms cubic-bezier(.2,.8,.2,1), transform 170ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .learn-back:hover {
+      border-color: #cfd8ef;
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .learn-page-shell .lessons-shell {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0 0 32px;
+    }
+
+    .learn-hero {
+      max-width: 800px;
+      margin: 8px auto 28px;
+      text-align: center;
+    }
+
+    .learn-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border: 1px solid #dfe5ff;
+      border-radius: 999px;
+      color: #586582;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .learn-hero h1 {
+      margin: 16px 0 12px;
+      color: #182039;
+      font-family: Inter, sans-serif;
+      font-size: clamp(38px, 5.2vw, 62px);
+      font-weight: 850;
+      line-height: 1.03;
+      letter-spacing: -.055em;
+    }
+
+    .learn-hero p {
+      max-width: 650px;
+      margin: 0 auto;
+      color: #66708a;
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .learn-status {
+      margin: 24px auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: #53607d;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .learn-status b { color: #27304c; }
+
+    .learn-status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #adb5c8;
+    }
+
+    .learn-continue-card {
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      padding: 22px;
+      border: 1px solid #e6e9f2;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(33,48,94,.045);
+    }
+
+    .learn-continue-copy {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .learn-continue-icon {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #4861cc;
+      background: #eef2ff;
+    }
+
+    .learn-continue-icon svg {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .learn-continue-card small {
+      display: block;
+      color: #7e879b;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .learn-continue-card h2 {
+      margin: 5px 0 4px;
+      color: #182039;
+      font-size: 19px;
+      letter-spacing: -.025em;
+    }
+
+    .learn-continue-card p {
+      margin: 0;
+      color: #66708a;
+      font-size: 12px;
+    }
+
+    .learn-primary-btn {
+      min-height: 44px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 13px;
+      color: #fff;
+      background: linear-gradient(135deg, #4f7cff, #7a5cff);
+      box-shadow: 0 11px 23px rgba(79,124,255,.18);
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 170ms cubic-bezier(.2,.8,.2,1), box-shadow 170ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .learn-primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(79,124,255,.24);
+    }
+
+    .learn-library {
+      padding: 20px;
+      border: 1px solid #e6e9f2;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(33,48,94,.045);
+    }
+
+    .learn-section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .learn-section-head h2 {
+      margin: 0;
+      color: #182039;
+      font-size: 20px;
+      letter-spacing: -.025em;
+    }
+
+    .learn-section-head p {
+      margin: 4px 0 0;
+      color: #66708a;
+      font-size: 12px;
+    }
+
+    .learn-search-label { width: min(300px, 100%); }
+
+    .learn-search-label > .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .learn-search {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #e6e9f2;
+      border-radius: 12px;
+      padding: 0 12px;
+      color: #34405e;
+      background: #fbfcff;
+    }
+
+    .learn-subjects {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .learn-subject-card {
+      position: relative;
+      min-height: 184px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border: 1px solid #e6e9f2;
+      border-radius: 18px;
+      color: #182039;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(33,48,94,.045);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 170ms cubic-bezier(.2,.8,.2,1), border-color 170ms cubic-bezier(.2,.8,.2,1), box-shadow 170ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .learn-subject-card:hover {
+      transform: translateY(-3px);
+      border-color: #cfd8ef;
+      box-shadow: 0 16px 36px rgba(33,48,94,.085);
+    }
+
+    .learn-subject-card.featured {
+      border: 1.5px solid #8068ff;
+      box-shadow: 0 16px 42px rgba(99,73,225,.10);
+    }
+
+    .learn-subject-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: #4861cc;
+      background: #eef2ff;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .learn-subject-card.tone-green .learn-subject-icon { color: #147c60; background: #eaf8f2; }
+    .learn-subject-card.tone-violet .learn-subject-icon { color: #6a4fd2; background: #f2efff; }
+    .learn-subject-card.tone-amber .learn-subject-icon { color: #94660d; background: #fff4da; }
+    .learn-subject-card.tone-slate .learn-subject-icon { color: #327b9c; background: #edf8fd; }
+
+    .learn-subject-card strong {
+      display: block;
+      color: #182039;
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: -.025em;
+    }
+
+    .learn-subject-meta {
+      margin-top: 5px;
+      color: #66708a;
+      font-size: 12px;
+    }
+
+    .learn-subject-foot {
+      margin-top: auto;
+      padding-top: 18px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .learn-subject-foot span {
+      overflow: hidden;
+      color: #9099aa;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .learn-subject-foot b {
+      flex: 0 0 auto;
+      color: #5366b9;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .learn-empty {
+      margin: 16px 0 0;
+      padding: 24px;
+      border-radius: 14px;
+      color: #66708a;
+      background: #f7f9ff;
+      text-align: center;
+    }
+
+    body.lesson-dark .learn-page-shell,
+    body.lesson-dark .learn-brand,
+    body.lesson-dark .learn-hero h1,
+    body.lesson-dark .learn-continue-card h2,
+    body.lesson-dark .learn-section-head h2,
+    body.lesson-dark .learn-subject-card,
+    body.lesson-dark .learn-subject-card strong {
+      color: #eef2ff;
+    }
+
+    body.lesson-dark .learn-continue-card,
+    body.lesson-dark .learn-library,
+    body.lesson-dark .learn-subject-card,
+    body.lesson-dark .learn-back,
+    body.lesson-dark .learn-eyebrow {
+      border-color: rgba(154,169,229,.16);
+      background: rgba(17,24,39,.92);
+    }
+
+    @media (max-width: 900px) {
+      .learn-page-shell { width: min(100% - 36px, 1180px); padding-top: 18px; }
+      .learn-subjects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .learn-hero h1 { font-size: 42px; }
+    }
+
+    @media (max-width: 620px) {
+      .learn-page-shell { width: min(100% - 24px, 1180px); padding-top: 14px; }
+      .learn-topbar { margin-bottom: 24px; }
+      .learn-hero { text-align: left; }
+      .learn-hero h1 { font-size: clamp(36px, 11vw, 44px); }
+      .learn-status { justify-content: flex-start; }
+      .learn-continue-card { grid-template-columns: 1fr; }
+      .learn-primary-btn { width: 100%; }
+      .learn-section-head { align-items: stretch; flex-direction: column; }
+      .learn-search-label { width: 100%; }
+      .learn-subjects { grid-template-columns: 1fr; }
+      .learn-library { padding: 15px; }
+    }
   </style>
   <style id="lessonPrintStyles">
     @page {
@@ -697,43 +1113,60 @@
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body class="lessons-page" data-tutorly-surface="workspace">
-  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
-
-  <header class="shell header-wrap fade-up">
-    <div class="topbar">
-      <a class="brand" href="home.html" aria-label="Go to Tutorly home">
-        <img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" />
+<body class="lessons-page" data-tutorly-surface="workspace" data-theme="light">
+  <div class="learn-page-shell">
+    <header class="learn-topbar fade-up">
+      <a class="learn-brand" href="maths_gpt.html" target="_top" aria-label="Tutorly chat home">
+        <span class="learn-brand-mark" aria-hidden="true"><img src="assets/brand-star.png" alt="" /></span>
+        <span>Tutorly</span>
       </a>
-      <nav class="nav-links">
-        <a href="home.html">Chat</a>
-        <a href="tests.html">Tests</a>
-        <a href="maths_gpt.html">AI Tutor</a>
-      </nav>
-    </div>
-  </header>
+      <a class="learn-back" href="maths_gpt.html" target="_top">Back to chat</a>
+    </header>
 
-  <main class="shell lessons-shell">
-    <section class="lessons-hero fade-up d2">
-      <div>
-        <span class="lesson-kicker">Digital Textbook Library</span>
-        <h1 class="lessons-title">Lessons</h1>
-        <p class="lessons-sub">Read premium revision chapters with diagrams, formula cards, worked examples, bookmarks, offline saves, print support, and PDF-ready layouts.</p>
-      </div>
-      <span class="hero-chip">Modern revision notebook</span>
-    </section>
+    <main class="lessons-shell">
+      <section id="subjectsView">
+        <section class="learn-hero fade-up d2">
+          <span class="learn-eyebrow">Your syllabus, organized for you</span>
+          <h1>Learn one chapter at a time.</h1>
+          <p>Lessons, notes, revision, examples and diagrams — matched to the grade and board saved in your Tutorly profile.</p>
+          <div class="learn-status">
+            <span>Curriculum: <b id="curriculumStatus">Your saved curriculum</b></span>
+            <span class="learn-status-dot" aria-hidden="true"></span>
+            <span><b id="subjectCount">Subjects available</b></span>
+          </div>
+        </section>
 
-    <section class="view-panel fade-up d3" id="subjectsView">
-      <div class="panel-head">
-        <div>
-          <h2>Subjects</h2>
-          <p>Choose a subject to open its textbook chapters.</p>
-        </div>
-      </div>
-      <div class="subject-grid" id="subjectGrid"></div>
-    </section>
+        <section class="learn-continue-card fade-up d3" id="continueCard" aria-label="Continue learning">
+          <div class="learn-continue-copy">
+            <div class="learn-continue-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H7a3 3 0 0 0-3 3V5.5Z"/><path d="M9 8h7M9 12h5"/></svg>
+            </div>
+            <div>
+              <small id="continueLabel">Continue learning</small>
+              <h2 id="continueTitle">Choose your first chapter</h2>
+              <p id="continueMeta">Pick a subject below to begin.</p>
+            </div>
+          </div>
+          <button class="learn-primary-btn" id="continueLessonBtn" type="button">Browse subjects</button>
+        </section>
 
-    <section class="view-panel fade-up d3" id="chaptersView" hidden>
+        <section class="learn-library fade-up d3">
+          <div class="learn-section-head">
+            <div>
+              <h2>Your subjects</h2>
+              <p>Open a subject to see every Tutorly chapter available for it.</p>
+            </div>
+            <label class="learn-search-label">
+              <span class="sr-only">Search subjects or chapters</span>
+              <input id="subjectSearch" class="learn-search" type="search" placeholder="Search subjects or chapters" autocomplete="off" />
+            </label>
+          </div>
+          <div class="learn-subjects" id="subjectGrid"></div>
+          <p class="learn-empty" id="subjectSearchEmpty" hidden>No matching subjects or chapters found.</p>
+        </section>
+      </section>
+
+      <section class="view-panel fade-up d3" id="chaptersView" hidden>
       <div class="panel-head">
         <div>
           <span class="lesson-kicker">Chapter Library</span>
@@ -743,9 +1176,9 @@
         <button class="btn btn-soft" id="backToSubjects" type="button">Back to Subjects</button>
       </div>
       <div class="chapter-grid" id="chapterGrid"></div>
-    </section>
+      </section>
 
-    <section class="view-panel fade-up d3" id="readerView" hidden>
+      <section class="view-panel fade-up d3" id="readerView" hidden>
       <div class="reader-layout">
         <aside class="reader-sidebar" aria-label="Lesson contents">
           <h3>Contents</h3>
@@ -783,11 +1216,12 @@
           <div class="lesson-content" id="lessonContent"></div>
         </div>
       </div>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 
   <script src="js/lessons/lesson-data.js?v=lessons-20260616"></script>
-  <script src="js/lessons/lesson-module.js?v=lessons-20260616"></script>
+  <script src="js/lessons/lesson-module.js?v=learn-redesign-20260825"></script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/mobile-app.js?v=mobile-first-20260623"></script>
