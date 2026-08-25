@@ -691,93 +691,122 @@
   </style>
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/tests-flow.css?v=tests-flow-20260825" />
 </head>
 <body class="exam-page" data-tutorly-surface="workspace">
-  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
-
-  <header class="shell header-wrap fade-up">
-    <div class="topbar">
-      <a class="brand" href="home.html" aria-label="Go to Tutorly home">
-        <img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" />
-      </a>
-      <nav class="nav-links">
-        <a href="home.html">Chat</a>
-        <a href="profile.html">Profile</a>
-        <a href="maths_gpt.html">AI Tutor</a>
-      </nav>
-    </div>
+  <header class="test-flow-topbar fade-up">
+    <a class="test-flow-brand" href="home.html" aria-label="Go to Tutorly chat">
+      <span class="test-flow-brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3.5 14.1 9l5.4 2.1-5.4 2.1L12 18.5l-2.1-5.3-5.4-2.1L9.9 9 12 3.5Z"/></svg>
+      </span>
+      Tutorly
+    </a>
+    <a class="test-flow-ghost" href="home.html">
+      <span aria-hidden="true">&#8592;</span>
+      <span>Back to chat</span>
+    </a>
   </header>
 
   <main class="shell exam-shell">
-    <section class="exam-hero fade-up d2">
+    <section class="test-flow-header fade-up d2">
       <div>
-        <span class="exam-kicker">Personalized Exams</span>
-        <h1 class="exam-title">Syllabus-aware testing</h1>
-        <p class="exam-subtitle">Tutorly uses your saved academic profile, selected subject, and selected chapters before building a test.</p>
+        <span class="exam-kicker" id="flowKicker">Create a test paper</span>
+        <h1 class="exam-title" id="flowTitle">What are you studying?</h1>
+        <p class="exam-subtitle" id="flowLead">Choose one subject. Tutorly will load the chapters that match your saved grade and board.</p>
       </div>
-      <span class="profile-pill" id="profilePill">Grade 9 | CBSE</span>
+      <span class="profile-pill" id="profilePill">Grade 9 &middot; CBSE</span>
     </section>
-
-    <section class="recommendation fade-up d3" id="recommendationBox" aria-label="Recommended test"></section>
 
     <section class="setup-panel fade-up d3" id="setupPanel">
       <div class="stepper" aria-label="Exam setup steps">
-        <span data-step="subject" class="active">1. Subject</span>
-        <span data-step="chapter">2. Chapter</span>
-        <span data-step="mode">3. Test Type</span>
+        <button type="button" data-step="subject" class="active"><b>1</b> Subject</button>
+        <button type="button" data-step="chapter" disabled><b>2</b> Chapters</button>
+        <button type="button" data-step="mode" disabled><b>3</b> Paper setup</button>
       </div>
 
-      <div id="subjectStep">
-        <div class="step-head">
+      <section class="content-card" id="subjectStep">
+        <div class="content-head">
           <div>
-            <h2>Select Subject</h2>
-            <p>Loaded automatically from your grade and board.</p>
+            <h2>Select a subject</h2>
+            <p>You can change it later before generating your paper.</p>
           </div>
+          <span class="mini-note" id="subjectAvailability">Subjects available</span>
         </div>
         <div class="subject-grid" id="subjectGrid"></div>
-      </div>
-
-      <div id="chapterStep" hidden>
-        <div class="step-head">
-          <div>
-            <h2>Select Chapter</h2>
-            <p id="subjectSummary">CBSE Grade 9 | Mathematics</p>
-          </div>
-          <span class="profile-pill" id="chapterCount">0 selected</span>
+        <div class="footer-actions">
+          <span class="helper">Selected: <strong id="selectedSubjectLabel">Choose a subject</strong></span>
+          <button class="primary-btn" id="continueToChapters" type="button" disabled>
+            Continue to chapters <span aria-hidden="true">&#8594;</span>
+          </button>
         </div>
-        <div class="chapter-tools">
-          <input class="input" id="chapterSearch" type="search" placeholder="Search chapters" />
-          <label class="check-row"><input id="selectAllChapters" type="checkbox" /> Select All</label>
-          <button class="btn btn-soft" id="backToSubjects" type="button">Back</button>
+      </section>
+
+      <section class="content-card" id="chapterStep" hidden>
+        <div class="content-head">
+          <div>
+            <h2>Choose what goes into the paper</h2>
+            <p id="subjectSummary">Select as many chapters as you want.</p>
+          </div>
+          <span class="mini-note">Only selected chapters are used</span>
+        </div>
+        <div class="chapter-toolbar">
+          <label class="chapter-search" for="chapterSearch">
+            <span aria-hidden="true">&#128269;</span>
+            <input id="chapterSearch" type="search" placeholder="Search chapters" />
+          </label>
+          <button class="secondary-btn" id="selectAllChapters" type="button" aria-pressed="false">Select all</button>
+          <div class="selection-counter"><strong id="chapterCount">0</strong> selected</div>
         </div>
         <div class="chapter-grid" id="chapterGrid"></div>
-        <div class="setup-actions">
-          <span class="empty-note">Single or multiple chapter selection is supported.</span>
-          <button class="btn btn-primary" id="continueToModes" type="button" disabled>Continue</button>
+        <div class="footer-actions">
+          <button class="secondary-btn" id="backToSubjects" type="button">&#8592; Back</button>
+          <button class="primary-btn" id="continueToModes" type="button" disabled>Continue to paper setup &#8594;</button>
         </div>
-      </div>
+      </section>
 
-      <div id="modeStep" hidden>
-        <div class="step-head">
-          <div>
-            <h2>Choose Test Type</h2>
-            <p id="modeSummary">Mathematics | Number Systems</p>
-          </div>
-          <button class="btn btn-soft" id="backToChapters" type="button">Back</button>
+      <section class="setup-layout" id="modeStep" hidden>
+        <div class="setup-main">
+          <section class="setup-section">
+            <h2>Choose the paper style</h2>
+            <p>Pick the format that best matches what you want to practise.</p>
+            <p class="visually-hidden" id="modeSummary">Selected subject and chapters</p>
+            <div class="mode-grid" id="modeGrid"></div>
+          </section>
+
+          <section class="setup-section">
+            <h2>Paper details</h2>
+            <p>Set the size, timing, and difficulty of your test.</p>
+            <div class="mode-options" id="modeOptions"></div>
+          </section>
+
+          <button class="secondary-btn setup-back" id="backToChapters" type="button">&#8592; Back to chapters</button>
         </div>
-        <div class="mode-grid" id="modeGrid"></div>
-        <div class="mode-options" id="modeOptions"></div>
-        <div class="setup-actions">
-          <span class="empty-note">Questions are generated only from selected chapters.</span>
-          <button class="btn btn-primary" id="startExamBtn" type="button">Start Test</button>
-        </div>
-      </div>
+
+        <aside class="summary-card">
+          <span class="summary-badge">Paper summary</span>
+          <h3>Ready to generate</h3>
+          <p>Review the setup before Tutorly builds your test.</p>
+          <dl class="summary-list">
+            <div><dt>Subject</dt><dd id="summarySubject">&mdash;</dd></div>
+            <div><dt>Chapters</dt><dd id="summaryChapters">&mdash;</dd></div>
+            <div><dt>Style</dt><dd id="summaryMode">Quick Check</dd></div>
+            <div><dt>Questions</dt><dd id="summaryQuestions">10</dd></div>
+            <div><dt>Difficulty</dt><dd id="summaryDifficulty">Easy</dd></div>
+            <div><dt>Subjective</dt><dd id="summarySubjective">No</dd></div>
+            <div><dt>Timer</dt><dd id="summaryTime">No limit</dd></div>
+          </dl>
+          <button class="primary-btn generate-paper" id="startExamBtn" type="button">Generate test paper &#8594;</button>
+          <p class="generation-note">Questions are generated only from your selected chapters.</p>
+        </aside>
+      </section>
     </section>
+
+    <section class="recommendation" id="recommendationBox" aria-label="Recommended test" hidden></section>
 
     <section class="exam-view fade-up" id="examView" hidden>
       <div class="exam-top">
         <div>
-          <h2 id="examTitle">Practice Quiz</h2>
+          <h2 id="examTitle">Quick Check</h2>
           <p id="examSubtitle">Mathematics | Number Systems</p>
         </div>
         <span class="timer-badge">Time: <b id="timerText">No limit</b></span>
@@ -877,10 +906,10 @@
         </select>
         <select class="select" id="historyFilter">
           <option value="all">All Types</option>
-          <option value="practice">Practice Quiz</option>
+          <option value="practice">Quick Check</option>
           <option value="chapter">Chapter Test</option>
-          <option value="mock">Mock Exam</option>
-          <option value="rapid">Rapid Fire</option>
+          <option value="mock">Exam Mode</option>
+          <option value="rapid">Challenge</option>
         </select>
       </div>
       <div class="history-list" id="historyList"></div>
@@ -888,7 +917,7 @@
   </main>
 
   <script src="js/exams/syllabus-config.js?v=exam-redesign-20260616"></script>
-  <script src="js/exams/exam-system.js?v=exam-redesign-20260616"></script>
+  <script src="js/exams/exam-system.js?v=tests-flow-20260825"></script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/mobile-app.js?v=mobile-first-20260623"></script>

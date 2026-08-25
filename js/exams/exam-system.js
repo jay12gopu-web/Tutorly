@@ -6,44 +6,44 @@
 
   const MODE_CONFIG = {
     practice: {
-      label: "Practice Quiz",
-      description: "Learn while practicing with instant feedback and explanations.",
+      label: "Quick Check",
+      description: "Short and focused for a fast revision session.",
       counts: [5, 10, 15, 20],
+      defaultCount: 10,
       times: ["No Limit", "5 Minutes", "10 Minutes", "15 Minutes", "Custom"],
-      difficulty: "Easy-Medium",
+      defaultDifficulty: "Easy",
       hints: true,
       instant: true
     },
     chapter: {
       label: "Chapter Test",
-      description: "Test understanding of selected chapter work with detailed analytics.",
-      counts: [10, 20, 30, 40, 50],
+      description: "Balanced coverage across the chapters you chose.",
+      counts: [10, 15, 20, 30, 40],
+      defaultCount: 20,
       times: ["10 Minutes", "20 Minutes", "30 Minutes", "45 Minutes", "60 Minutes", "Custom"],
-      difficulty: "Medium-Hard",
+      defaultDifficulty: "Moderate",
       hints: false,
       instant: false
     },
     mock: {
-      label: "Mock Exam",
-      description: "Simulate a real school examination with strict timing.",
-      examTypes: {
-        "Unit Test": { count: 25, minutes: 30 },
-        "Quarterly Exam": { count: 50, minutes: 75 },
-        "Half-Yearly Exam": { count: 70, minutes: 105 },
-        "Final Exam": { count: 90, minutes: 150 }
-      },
-      difficulty: "Mixed-Hard",
+      label: "Exam Mode",
+      description: "A timed paper that feels closer to a real exam.",
+      counts: [15, 20, 30, 40],
+      defaultCount: 20,
+      times: ["15 Minutes", "30 Minutes", "45 Minutes", "60 Minutes", "90 Minutes", "Custom"],
+      defaultDifficulty: "Moderate",
       hints: false,
       instant: false
     },
     rapid: {
-      label: "Rapid Fire",
-      description: "Improve speed and recall with quick MCQs.",
-      counts: [10, 20, 30],
-      perQuestion: [5, 10, 15],
-      difficulty: "Easy-Medium",
+      label: "Challenge",
+      description: "Harder reasoning with more mixed-concept questions.",
+      counts: [10, 15, 20, 30, 40],
+      defaultCount: 15,
+      times: ["No Limit", "20 Minutes", "30 Minutes", "45 Minutes", "60 Minutes", "Custom"],
+      defaultDifficulty: "Hard",
       hints: false,
-      instant: true
+      instant: false
     }
   };
 
@@ -61,7 +61,9 @@
     questionStartedAt: 0,
     timerId: null,
     remainingSeconds: null,
-    currentReport: null
+    currentReport: null,
+    difficulty: "Easy",
+    includeSubjective: false
   };
 
   const $ = (id) => document.getElementById(id);
@@ -86,7 +88,7 @@
       name: localStorage.getItem("tutorly_name") || localStorage.getItem("math-bot-name") || "Student"
     };
 
-    $("profilePill").textContent = `Grade ${state.profile.grade} | ${state.profile.board}`;
+    $("profilePill").textContent = `Grade ${state.profile.grade} · ${state.profile.board}`;
     renderSubjects();
     renderRecommendation();
     renderHistory();
@@ -96,10 +98,16 @@
 
   function bindStaticEvents() {
     $("chapterSearch").addEventListener("input", renderChapters);
-    $("selectAllChapters").addEventListener("change", (event) => {
-      state.selectedChapters = event.target.checked ? state.chapters.map((chapter) => chapter.id) : [];
+    $("selectAllChapters").addEventListener("click", () => {
+      const allSelected = state.selectedChapters.length === state.chapters.length;
+      state.selectedChapters = allSelected ? [] : state.chapters.map((chapter) => chapter.id);
       renderChapters();
       renderModeCards();
+    });
+    $("continueToChapters").addEventListener("click", () => {
+      if (!state.subject) return;
+      renderChapters();
+      showSetupStep("chapter");
     });
     $("backToSubjects").addEventListener("click", () => showSetupStep("subject"));
     $("backToChapters").addEventListener("click", () => showSetupStep("chapter"));
@@ -133,22 +141,54 @@
         renderQuestionReview(button.dataset.reviewFilter);
       });
     });
+    document.querySelectorAll(".stepper [data-step]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.disabled) return;
+        showSetupStep(button.dataset.step);
+      });
+    });
   }
 
   function showSetupStep(step) {
+    const copy = {
+      subject: {
+        title: "What are you studying?",
+        lead: "Choose one subject. Tutorly will load the chapters that match your saved grade and board.",
+        pill: `Grade ${state.profile.grade} · ${state.profile.board}`
+      },
+      chapter: {
+        title: "Pick the chapters.",
+        lead: "Choose one chapter or combine several. Tutorly will build the paper only from what you select.",
+        pill: state.subject?.name || "Choose a subject"
+      },
+      mode: {
+        title: "Shape the paper your way.",
+        lead: "Choose the test style, difficulty, question count, and timing. This is the final step before Tutorly generates the paper.",
+        pill: "Final step"
+      }
+    };
     ["subject", "chapter", "mode"].forEach((name) => {
       $(`${name}Step`).hidden = name !== step;
-      document.querySelector(`[data-step="${name}"]`)?.classList.toggle("active", name === step);
+      const button = document.querySelector(`[data-step="${name}"]`);
+      const order = { subject: 0, chapter: 1, mode: 2 };
+      button?.classList.toggle("active", name === step);
+      button?.classList.toggle("done", order[name] < order[step]);
+      if (button) button.disabled = name === "chapter" ? !state.subject : name === "mode" ? state.selectedChapters.length === 0 : false;
     });
+    $("flowTitle").textContent = copy[step].title;
+    $("flowLead").textContent = copy[step].lead;
+    $("profilePill").textContent = copy[step].pill;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function renderSubjects() {
     const subjects = Syllabus.getSubjects(state.profile.grade, state.profile.board);
+    $("subjectAvailability").textContent = `${subjects.length} subjects available`;
     $("subjectGrid").innerHTML = subjects.map((subject) => `
-      <button class="exam-card subject-card accent-${subject.accent}" type="button" data-subject="${subject.id}">
-        <span class="card-icon">${subject.name.slice(0, 1)}</span>
+      <button class="exam-card subject-card accent-${subject.accent} ${state.subject?.id === subject.id ? "selected" : ""}" type="button" data-subject="${subject.id}" aria-pressed="${state.subject?.id === subject.id}">
+        <span class="card-icon">${subject.name === "English" ? "Aa" : subject.name === "Hindi" ? "हि" : escapeHtml(subject.name.slice(0, 1))}</span>
         <strong>${escapeHtml(subject.name)}</strong>
-        <small>Grade ${escapeHtml(state.profile.grade)} ${escapeHtml(state.profile.board)}</small>
+        <small>${subjectDescription(subject.id)}</small>
       </button>
     `).join("");
 
@@ -165,10 +205,23 @@
     state.chapters = Syllabus.getChapters(state.profile.grade, state.profile.board, subject.id);
     state.selectedChapters = [];
     state.settings = {};
-    $("subjectSummary").textContent = `${state.profile.board} Grade ${state.profile.grade} | ${subject.name}`;
-    $("selectAllChapters").checked = false;
+    $("subjectSummary").textContent = `Select as many ${subject.name} chapters as you want.`;
+    $("selectedSubjectLabel").textContent = subject.name;
+    $("continueToChapters").disabled = false;
+    $("selectAllChapters").setAttribute("aria-pressed", "false");
+    $("selectAllChapters").textContent = "Select all";
+    renderSubjects();
     renderChapters();
-    showSetupStep("chapter");
+  }
+
+  function subjectDescription(subjectId) {
+    return ({
+      mathematics: "Algebra, geometry, mensuration and statistics.",
+      science: "Physics, chemistry and biology across your syllabus.",
+      english: "Grammar, literature, reading comprehension and writing.",
+      "social-studies": "History, geography, civics and economics.",
+      hindi: "व्याकरण, साहित्य, पठन और लेखन कौशल."
+    })[subjectId] || `Grade ${state.profile.grade} ${state.profile.board} syllabus.`;
   }
 
   function renderChapters() {
@@ -176,6 +229,7 @@
     const visibleChapters = state.chapters.filter((chapter) => chapter.name.toLowerCase().includes(search));
     $("chapterGrid").innerHTML = visibleChapters.map((chapter) => {
       const checked = state.selectedChapters.includes(chapter.id);
+      const chapterNumber = state.chapters.findIndex((item) => item.id === chapter.id) + 1;
       return `
         <label class="chapter-option ${checked ? "selected" : ""}">
           <input type="checkbox" value="${chapter.id}" ${checked ? "checked" : ""} />
@@ -183,6 +237,7 @@
             <strong>${escapeHtml(chapter.name)}</strong>
             <small>${chapter.concepts.map(escapeHtml).join(" | ")}</small>
           </span>
+          <span class="chapter-number">CH ${chapterNumber}</span>
         </label>
       `;
     }).join("");
@@ -195,13 +250,15 @@
           state.selectedChapters = state.selectedChapters.filter((id) => id !== input.value);
         }
         state.settings = {};
-        $("selectAllChapters").checked = state.selectedChapters.length === state.chapters.length;
         renderChapters();
         renderModeCards();
       });
     });
 
-    $("chapterCount").textContent = `${state.selectedChapters.length} selected`;
+    const allSelected = state.chapters.length > 0 && state.selectedChapters.length === state.chapters.length;
+    $("chapterCount").textContent = state.selectedChapters.length;
+    $("selectAllChapters").setAttribute("aria-pressed", String(allSelected));
+    $("selectAllChapters").textContent = allSelected ? "Clear all" : "Select all";
     $("continueToModes").disabled = state.selectedChapters.length === 0;
     $("continueToModes").onclick = () => {
       renderModeCards();
@@ -214,9 +271,8 @@
     $("modeSummary").textContent = `${state.subject?.name || "Subject"} | ${selectedNames || "No chapters selected"}`;
     $("modeGrid").innerHTML = Object.entries(MODE_CONFIG).map(([id, mode]) => `
       <button class="exam-card mode-card ${state.mode === id ? "selected" : ""}" type="button" data-mode="${id}">
-        <span class="card-icon">${id === "practice" ? "P" : id === "chapter" ? "T" : id === "mock" ? "M" : "R"}</span>
-        <strong>${mode.label}</strong>
-        <small>${mode.description}</small>
+        <span class="card-icon">${id === "practice" ? "✓" : id === "chapter" ? "▤" : id === "mock" ? "◷" : "★"}</span>
+        <span><strong>${mode.label}</strong><small>${mode.description}</small></span>
       </button>
     `).join("");
 
@@ -224,8 +280,8 @@
       button.addEventListener("click", () => {
         state.mode = button.dataset.mode;
         state.settings = {};
+        state.difficulty = MODE_CONFIG[state.mode].defaultDifficulty;
         renderModeCards();
-        renderModeOptions();
       });
     });
     renderModeOptions();
@@ -233,28 +289,58 @@
 
   function renderModeOptions() {
     const mode = MODE_CONFIG[state.mode];
-    let html = "";
-    if (state.mode === "mock") {
-      html = `
-        <label>Exam Type<select id="examTypeSelect" class="select">${Object.keys(mode.examTypes).map((type) => `<option>${type}</option>`).join("")}</select></label>
-        <p class="setup-note">Question count and duration are generated automatically from the selected exam type.</p>
-      `;
-    } else if (state.mode === "rapid") {
-      html = `
-        <label>Questions<select id="questionCountSelect" class="select">${mode.counts.map((count) => `<option>${count}</option>`).join("")}</select></label>
-        <label>Time Per Question<select id="perQuestionSelect" class="select">${mode.perQuestion.map((sec) => `<option value="${sec}">${sec} Seconds</option>`).join("")}</select></label>
-      `;
-    } else {
-      html = `
-        <label>Questions<select id="questionCountSelect" class="select">${mode.counts.map((count) => `<option>${count}</option>`).join("")}</select></label>
-        <label>Time<select id="timeLimitSelect" class="select">${mode.times.map((time) => `<option>${time}</option>`).join("")}</select></label>
-        <label id="customTimeWrap" hidden>Custom Minutes<input id="customMinutesInput" class="input" type="number" min="1" max="180" value="20" /></label>
-      `;
-    }
-    $("modeOptions").innerHTML = html;
+    const difficultyValue = { Easy: 1, Moderate: 2, Hard: 3 }[state.difficulty || mode.defaultDifficulty] || 1;
+    $("modeOptions").innerHTML = `
+      <div class="settings-grid">
+        <label class="paper-field">Number of questions
+          <select id="questionCountSelect">${mode.counts.map((count) => `<option ${count === mode.defaultCount ? "selected" : ""}>${count}</option>`).join("")}</select>
+        </label>
+        <label class="paper-field">Time limit
+          <select id="timeLimitSelect">${mode.times.map((time, index) => `<option ${index === 0 ? "selected" : ""}>${time}</option>`).join("")}</select>
+        </label>
+        <label class="paper-field" id="customTimeWrap" hidden>Custom minutes
+          <input id="customMinutesInput" type="number" min="1" max="180" value="20" />
+        </label>
+        <div class="difficulty-setting">
+          <div class="difficulty-head"><span>Difficulty</span><strong class="difficulty-value" id="difficultyControlValue">${state.difficulty || mode.defaultDifficulty}</strong></div>
+          <input class="difficulty-slider" id="difficultySlider" type="range" min="1" max="3" step="1" value="${difficultyValue}" aria-label="Test difficulty" />
+          <div class="difficulty-labels" aria-hidden="true"><span>Easy</span><span>Moderate</span><span>Hard</span></div>
+        </div>
+        <label class="subjective-toggle">
+          <input id="includeSubjective" type="checkbox" ${state.includeSubjective ? "checked" : ""} />
+          <span><strong>Add subjective questions as well</strong><small>Include short written-answer questions with the objective questions.</small></span>
+        </label>
+      </div>
+    `;
     $("timeLimitSelect")?.addEventListener("change", (event) => {
       $("customTimeWrap").hidden = event.target.value !== "Custom";
+      updatePaperSummary();
     });
+    $("questionCountSelect").addEventListener("change", updatePaperSummary);
+    $("customMinutesInput").addEventListener("input", updatePaperSummary);
+    $("difficultySlider").addEventListener("input", (event) => {
+      state.difficulty = ["Easy", "Moderate", "Hard"][Number(event.target.value) - 1];
+      $("difficultyControlValue").textContent = state.difficulty;
+      updatePaperSummary();
+    });
+    $("includeSubjective").addEventListener("change", (event) => {
+      state.includeSubjective = event.target.checked;
+      updatePaperSummary();
+    });
+    updatePaperSummary();
+  }
+
+  function updatePaperSummary() {
+    if (!state.subject) return;
+    const timeValue = $("timeLimitSelect")?.value || "No Limit";
+    const timer = timeValue === "Custom" ? `${Number($("customMinutesInput")?.value || 20)} Minutes` : timeValue;
+    $("summarySubject").textContent = state.subject.name;
+    $("summaryChapters").textContent = getSelectedChapters().map((chapter) => chapter.name).join(", ");
+    $("summaryMode").textContent = MODE_CONFIG[state.mode].label;
+    $("summaryQuestions").textContent = $("questionCountSelect")?.value || MODE_CONFIG[state.mode].defaultCount;
+    $("summaryDifficulty").textContent = state.difficulty || MODE_CONFIG[state.mode].defaultDifficulty;
+    $("summarySubjective").textContent = state.includeSubjective ? "Yes" : "No";
+    $("summaryTime").textContent = timer.replace("Minutes", "minutes");
   }
 
   function getSelectedChapters() {
@@ -262,20 +348,10 @@
   }
 
   function collectSettings() {
-    const mode = MODE_CONFIG[state.mode];
-    if (state.mode === "mock") {
-      const examType = $("examTypeSelect").value;
-      return { examType, questionCount: mode.examTypes[examType].count, timeLimit: mode.examTypes[examType].minutes };
-    }
-    if (state.mode === "rapid") {
-      const count = Number($("questionCountSelect").value || 10);
-      const perQuestion = Number($("perQuestionSelect").value || 10);
-      return { questionCount: count, perQuestion, timeLimit: Math.ceil((count * perQuestion) / 60) };
-    }
     const count = Number($("questionCountSelect").value || 10);
     const timeValue = $("timeLimitSelect").value;
     const timeLimit = timeValue === "No Limit" ? null : timeValue === "Custom" ? Number($("customMinutesInput").value || 20) : Number(timeValue.match(/\d+/)?.[0] || 20);
-    return { questionCount: count, timeLimit };
+    return { questionCount: count, timeLimit, difficulty: state.difficulty, includeSubjective: state.includeSubjective };
   }
 
   function startExam(usePresetSettings = false) {
@@ -288,14 +364,14 @@
       chapters: getSelectedChapters(),
       testType: MODE_CONFIG[state.mode].label,
       questionCount: state.settings.questionCount,
-      timeLimit: state.settings.timeLimit
+      timeLimit: state.settings.timeLimit,
+      difficulty: state.settings.difficulty,
+      includeSubjective: state.settings.includeSubjective
     });
     state.answers = state.questions.map(() => ({ selected: null, status: "unattempted", time: 0 }));
     state.index = 0;
     state.startedAt = Date.now();
-    state.remainingSeconds = state.mode === "rapid"
-      ? state.settings.perQuestion
-      : state.settings.timeLimit ? state.settings.timeLimit * 60 : null;
+    state.remainingSeconds = state.settings.timeLimit ? state.settings.timeLimit * 60 : null;
     $("setupPanel").hidden = true;
     $("reportView").hidden = true;
     $("examView").hidden = false;
@@ -311,9 +387,32 @@
     for (let i = 0; i < config.questionCount; i += 1) {
       const chapter = selected[i % selected.length];
       const concept = chapter.concepts[Math.floor(i / selected.length) % chapter.concepts.length];
-      questions.push(makeQuestion(chapter, concept, i, config));
+      const useWrittenAnswer = config.includeSubjective && (i + 1) % 4 === 0;
+      questions.push(useWrittenAnswer ? makeSubjectiveQuestion(chapter, concept, i, config) : makeQuestion(chapter, concept, i, config));
     }
     return questions;
+  }
+
+  function makeSubjectiveQuestion(chapter, concept, index, config) {
+    const prompts = [
+      `Explain ${concept} in your own words and connect it to ${chapter.name}.`,
+      `Write a short answer showing why ${concept} matters in ${chapter.name}.`,
+      `Give one correct example of ${concept} from ${chapter.name} and explain it.`
+    ];
+    return {
+      id: `q_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      type: "subjective",
+      question: prompts[index % prompts.length],
+      options: [],
+      answer: null,
+      correctText: `A good answer should accurately explain ${concept}, connect it to ${chapter.name}, and include a relevant example when asked.`,
+      chapterId: chapter.id,
+      chapterName: chapter.name,
+      concept,
+      explanation: `The response should show a clear understanding of ${concept} in the context of ${chapter.name}.`,
+      hint: `Define ${concept} first, then connect it to ${chapter.name}.`,
+      difficulty: config.difficulty || "Moderate"
+    };
   }
 
   function makeQuestion(chapter, concept, index, config) {
@@ -403,6 +502,7 @@
     }
     return {
       id: `q_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      type: "objective",
       question: question.q,
       options: options.map((option) => option.text),
       answer: options.findIndex((option) => option.originalIndex === question.answer),
@@ -411,7 +511,8 @@
       chapterName: chapter.name,
       concept: question.concept,
       explanation: question.explanation,
-      hint: `Focus on ${question.concept} inside ${chapter.name}. Eliminate options that belong to another chapter.`
+      hint: `Focus on ${question.concept} inside ${chapter.name}. Eliminate options that belong to another chapter.`,
+      difficulty: config.difficulty || "Moderate"
     };
   }
 
@@ -423,11 +524,7 @@
       state.remainingSeconds -= 1;
       paintTimer();
       if (state.remainingSeconds <= 0) {
-        if (state.mode === "rapid" && state.index < state.questions.length - 1) {
-          submitAnswer(null);
-        } else {
-          finishExam();
-        }
+        finishExam();
       }
     }, 1000);
   }
@@ -444,10 +541,6 @@
   function renderQuestion() {
     const question = state.questions[state.index];
     state.questionStartedAt = Date.now();
-    if (state.mode === "rapid") {
-      state.remainingSeconds = state.settings.perQuestion;
-      startTimer();
-    }
     $("progressText").textContent = `Question ${state.index + 1} of ${state.questions.length}`;
     $("progressFill").style.width = `${pct(state.index, state.questions.length)}%`;
     $("questionMeta").textContent = `${question.chapterName} | ${question.concept}`;
@@ -456,31 +549,46 @@
     $("hintBox").textContent = question.hint;
     $("hintBtn").hidden = !MODE_CONFIG[state.mode].hints;
     $("hintBtn").onclick = () => { $("hintBox").hidden = false; };
-    $("answerGrid").innerHTML = question.options.map((option, index) => `
-      <button class="answer-option" type="button" data-answer="${index}">
-        <b>${String.fromCharCode(65 + index)}</b>
-        <span>${escapeHtml(option)}</span>
-      </button>
-    `).join("");
-    $("answerGrid").querySelectorAll("[data-answer]").forEach((button) => {
-      button.addEventListener("click", () => {
-        $("answerGrid").querySelectorAll(".answer-option").forEach((item) => item.classList.remove("selected"));
-        button.classList.add("selected");
-        state.answers[state.index].selected = Number(button.dataset.answer);
+    if (question.type === "subjective") {
+      $("answerGrid").innerHTML = `<textarea class="written-answer" id="writtenAnswer" placeholder="Write your answer here..." aria-label="Written answer"></textarea>`;
+      $("answerGrid").classList.add("written");
+      $("writtenAnswer").value = typeof state.answers[state.index].selected === "string" ? state.answers[state.index].selected : "";
+      $("writtenAnswer").addEventListener("input", (event) => { state.answers[state.index].selected = event.target.value; });
+    } else {
+      $("answerGrid").classList.remove("written");
+      $("answerGrid").innerHTML = question.options.map((option, index) => `
+        <button class="answer-option" type="button" data-answer="${index}">
+          <b>${String.fromCharCode(65 + index)}</b>
+          <span>${escapeHtml(option)}</span>
+        </button>
+      `).join("");
+      $("answerGrid").querySelectorAll("[data-answer]").forEach((button) => {
+        button.addEventListener("click", () => {
+          $("answerGrid").querySelectorAll(".answer-option").forEach((item) => item.classList.remove("selected"));
+          button.classList.add("selected");
+          state.answers[state.index].selected = Number(button.dataset.answer);
+        });
       });
-    });
+    }
   }
 
   function submitAnswer(answerIndex) {
     const elapsed = (Date.now() - state.questionStartedAt) / 1000;
     const question = state.questions[state.index];
     const selected = answerIndex === null ? null : state.answers[state.index].selected;
-    const status = selected === null ? "unattempted" : selected === question.answer ? "correct" : "incorrect";
+    let status;
+    if (question.type === "subjective") {
+      const response = String(selected || "").trim().toLowerCase();
+      const conceptWords = String(question.concept).toLowerCase().split(/\s+/).filter((word) => word.length > 3);
+      status = !response ? "unattempted" : conceptWords.some((word) => response.includes(word)) && response.length >= 18 ? "correct" : "incorrect";
+    } else {
+      status = selected === null ? "unattempted" : selected === question.answer ? "correct" : "incorrect";
+    }
     state.answers[state.index] = { selected, status, time: elapsed };
 
     if (MODE_CONFIG[state.mode].instant) {
       showMiniFeedback(question, status);
-      window.setTimeout(nextQuestionOrFinish, state.mode === "rapid" ? 300 : 850);
+      window.setTimeout(nextQuestionOrFinish, 850);
     } else {
       nextQuestionOrFinish();
     }
@@ -557,7 +665,7 @@
       averageTime,
       completionRate: pct(correct + incorrect, total),
       speedRating: averageTime <= 35 ? "Fast" : averageTime <= 70 ? "Balanced" : "Slow",
-      difficulty: MODE_CONFIG[state.mode].difficulty,
+      difficulty: state.settings.difficulty || MODE_CONFIG[state.mode].defaultDifficulty,
       questions: state.questions,
       answers: state.answers,
       topics,
@@ -627,9 +735,12 @@
       state.chapters = Syllabus.getChapters(report.grade, report.board, report.subject.id);
       state.selectedChapters = report.chapterIds.slice();
       state.mode = report.percentage < 70 ? "practice" : report.averageTime > 60 ? "rapid" : "chapter";
-      state.settings = state.mode === "rapid"
-        ? { questionCount: 10, perQuestion: 10, timeLimit: 2 }
-        : { questionCount: 20, timeLimit: 20 };
+      state.settings = {
+        questionCount: state.mode === "practice" ? 10 : 20,
+        timeLimit: state.mode === "practice" ? null : 20,
+        difficulty: state.mode === "rapid" ? "Hard" : state.mode === "practice" ? "Easy" : "Moderate",
+        includeSubjective: false
+      };
       startExam(true);
     });
     renderQuestionReview("all");
@@ -638,7 +749,7 @@
   function buildFeedback(report) {
     const strong = report.topics.filter((topic) => topic.percentage >= 80).map((topic) => topic.concept).slice(0, 3);
     const weak = report.weakAreas.slice(0, 3);
-    const nextMode = report.percentage >= 85 && report.averageTime > 60 ? "Rapid Fire" : report.percentage < 70 ? "Practice Quiz" : "Chapter Test";
+    const nextMode = report.percentage >= 85 && report.averageTime > 60 ? "Challenge" : report.percentage < 70 ? "Quick Check" : "Chapter Test";
     return `
       <p><b>Great work, ${escapeHtml(state.profile.name)}.</b> Your accuracy is ${report.percentage}% and your completion rate is ${report.completionRate}%.</p>
       <p>${strong.length ? `You are strong in ${strong.map(escapeHtml).join(", ")}.` : "You are building a foundation across the selected concepts."}</p>
@@ -657,7 +768,9 @@
     const items = report.questions.map((question, index) => ({ question, answer: report.answers[index], index }))
       .filter((item) => filter === "all" || item.answer.status === filter);
     $("questionReview").innerHTML = items.map(({ question, answer, index }) => {
-      const selectedText = answer.selected === null ? "Unattempted" : question.options[answer.selected];
+      const selectedText = answer.selected === null || answer.selected === ""
+        ? "Unattempted"
+        : question.type === "subjective" ? answer.selected : question.options[answer.selected];
       return `
         <details class="review-item ${answer.status}">
           <summary>
@@ -668,7 +781,7 @@
           <p>${escapeHtml(question.question)}</p>
           <dl>
             <dt>Your Answer</dt><dd>${escapeHtml(selectedText)}</dd>
-            <dt>Correct Answer</dt><dd>${escapeHtml(question.correctText)}</dd>
+            <dt>${question.type === "subjective" ? "Answer Guide" : "Correct Answer"}</dt><dd>${escapeHtml(question.correctText)}</dd>
             <dt>Concept</dt><dd>${escapeHtml(question.concept)}</dd>
           </dl>
           <div class="explanation">
@@ -687,7 +800,7 @@
     const weak = Object.values(readJson(WEAK_AREAS_KEY, {})).slice(0, 3);
     const lowMastery = mastery.sort((a, b) => a.mastery - b.mastery).slice(0, 2);
     const weakText = weak.length ? weak.map((item) => item.concept).join(", ") : lowMastery.map((item) => item.chapter).join(", ") || "Start with your current chapter";
-    const recommendation = history[0]?.percentage < 70 ? "Practice Quiz" : history[0]?.averageTime > 65 ? "Rapid Fire" : "Chapter Test";
+    const recommendation = history[0]?.percentage < 70 ? "Quick Check" : history[0]?.averageTime > 65 ? "Challenge" : "Chapter Test";
     $("recommendationBox").innerHTML = `
       <div>
         <span class="section-kicker">Recommended For You</span>
@@ -696,7 +809,7 @@
       </div>
       <div class="recommendation-meta">
         <span>20 Questions</span>
-        <span>${recommendation === "Rapid Fire" ? "10 sec each" : "20 Minutes"}</span>
+        <span>${recommendation === "Quick Check" ? "No time limit" : "20 Minutes"}</span>
       </div>
     `;
   }
