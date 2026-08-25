@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const MarkdownRenderer = window.TutorlyMarkdownRenderer || null;
   const ReasoningStatus = window.TutorlyReasoningStatus || null;
   const ENABLE_LEGACY_LOCAL_ROUTER = false;
-  const BOT_AVATAR_SRC = "assets/chatbot-star.png";
+  const BOT_AVATAR_SRC = "assets/brand-star.png";
   const MODEL_STORAGE_KEY = "tutorly_selected_ai_model";
   const MODEL_CONFIGS = {
     spark: {
@@ -2939,6 +2939,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         try {
           const freshReply = await getBotReply(prompt, model, context);
+          ReasoningStatus?.setStage?.(message, "structuring");
           const subject = context.semanticRoute?.subject || "general";
           const toolkit = createStudyToolkit(subject, prompt, freshReply, model);
           GPT?.updateMessage?.(conversationId, messageId, {
@@ -3478,6 +3479,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let replyText;
       try {
         replyText = await getBotReply(botInputText, modelAtSend, requestPayload);
+        ReasoningStatus?.setStage?.(loadingMessage, "structuring");
       } catch (error) {
         if (error?.name === "AbortError") {
           ReasoningStatus?.stop?.(loadingMessage);

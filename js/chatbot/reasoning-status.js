@@ -1,15 +1,21 @@
 (function () {
   if (window.TutorlyReasoningStatus) return;
 
-  const SEQUENCES = Object.freeze({
-    math: Object.freeze(["Analyzing", "Formulating", "Verifying", "Refining"]),
-    writing: Object.freeze(["Interpreting", "Structuring", "Refining", "Reviewing"]),
-    concept: Object.freeze(["Assessing", "Clarifying", "Structuring", "Refining"]),
-    deep: Object.freeze(["Analyzing", "Evaluating", "Synthesizing", "Verifying"]),
-    general: Object.freeze(["Analyzing", "Assessing", "Refining"])
-  });
-  const ROTATION_DELAYS = Object.freeze([1900, 2150, 1800, 2250]);
   const activeStatuses = new Map();
+  const STAGE_WORDS = Object.freeze({
+    analyzing: "Analyzing",
+    assessing: "Assessing",
+    interpreting: "Interpreting",
+    evaluating: "Evaluating",
+    structuring: "Structuring",
+    formulating: "Formulating",
+    refining: "Refining",
+    clarifying: "Clarifying",
+    verifying: "Verifying",
+    synthesizing: "Synthesizing",
+    reviewing: "Reviewing",
+    processing: "Processing"
+  });
 
   function normalized(value) {
     return String(value || "").trim().toLowerCase();
@@ -23,63 +29,49 @@
       || options.classification
       || {};
     return {
-      prompt: String(options.prompt || context.studentQuestion || context.message || ""),
       model: normalized(options.model || context.model || context.mode?.id),
       subject: normalized(options.subject || route.subject),
       intent: normalized(options.intent || route.intent),
       responseType: normalized(options.responseType || route.response_type || route.responseType),
       mode: normalized(options.mode || context.mode?.id || context.mode),
-      hasImage: !!(options.hasImage || context.hasImage)
+      hasImage: !!(options.hasImage || context.hasImage),
+      regenerate: !!options.preserveMessage
     };
   }
 
   function inferCategory(options = {}) {
     const meta = unwrapContext(options);
-    const combinedIntent = `${meta.intent} ${meta.responseType}`;
+    const intent = `${meta.intent} ${meta.responseType}`;
 
-    if (meta.model === "deep" || meta.mode === "deep" || /advanced_reasoning|deep_solve/.test(combinedIntent)) {
-      return "deep";
-    }
-    if (/math|mathematics|algebra|geometry|trigonometry|calculus|statistics|probability/.test(meta.subject)) {
-      return "math";
-    }
-    if (/english|language|literature|writing/.test(meta.subject)
-      || /writing|grammar|literature|poetry|vocabulary|editing/.test(combinedIntent)
-      || meta.model === "creative" || meta.mode === "creative") {
-      return "writing";
-    }
-    if (/definition|concept|explanation|why_question|how_question|summarize/.test(combinedIntent)) {
-      return "concept";
-    }
-
-    // These hints affect presentation only. They never route the AI request or
-    // alter its prompt, and the general sequence remains the safe fallback.
-    if (/(?:\d+|\b[a-z])\s*(?:=|\+|\*|\/|\^|[−-])\s*(?:\d+|[a-z]\b)|√\s*\d+|\b(?:solve|calculate|factor|differentiate|integrate)\b/i.test(meta.prompt)) {
-      return "math";
-    }
-    if (/\b(?:write|rewrite|essay|paragraph|speech|letter|grammar|sentence|poem|metaphor)\b/i.test(meta.prompt)) {
-      return "writing";
-    }
-    if (/^\s*(?:what|why|how|explain|define|describe)\b/i.test(meta.prompt) || meta.hasImage) {
-      return "concept";
-    }
-    return "general";
+    if (meta.regenerate) return "refining";
+    if (meta.hasImage) return "interpreting";
+    if (meta.model === "deep" || meta.mode === "deep" || /advanced_reasoning|deep_solve/.test(intent)) return "evaluating";
+    if (/writing|grammar|literature|poetry|vocabulary|editing/.test(intent)) return "interpreting";
+    if (/definition|concept|explanation|why_question|how_question|summarize/.test(intent)) return "assessing";
+    if (/math|mathematics|algebra|geometry|trigonometry|calculus|statistics|probability/.test(meta.subject)) return "analyzing";
+    return "analyzing";
   }
 
-  function sequenceFor(options = {}) {
-    return SEQUENCES[inferCategory(options)] || SEQUENCES.general;
+  function wordFor(stage, options = {}) {
+    const normalizedStage = normalized(stage);
+    if (!normalizedStage || normalizedStage === "request") {
+      return STAGE_WORDS[inferCategory(options)] || STAGE_WORDS.analyzing;
+    }
+    return STAGE_WORDS[normalizedStage] || STAGE_WORDS.processing;
   }
 
-  function clearTimer(timer) {
-    if (timer) window.clearTimeout(timer);
+  function applyWord(controller, nextWord) {
+    if (!controller || controller.stopped || controller.word.textContent === nextWord) return;
+    controller.word.textContent = nextWord;
+    controller.shell.dataset.reasoningStage = normalized(nextWord);
+    // The live region announces the initial cue once. It is intentionally not
+    // updated for later application stages, avoiding repetitive announcements.
   }
 
   function stop(message, options = {}) {
     const controller = activeStatuses.get(message);
     if (!controller) return;
     controller.stopped = true;
-    clearTimer(controller.rotationTimer);
-    clearTimer(controller.transitionTimer);
     activeStatuses.delete(message);
     message?.classList?.remove("reasoning-active");
     if (message?.dataset) delete message.dataset.reasoningPreserve;
@@ -96,9 +88,10 @@
     const content = message.querySelector?.(".bot-content");
     if (!content) return null;
 
-    const sequence = sequenceFor(options);
+    const initialWord = wordFor("request", options);
     const shell = document.createElement("span");
     shell.className = "reasoning-status-shell";
+    shell.dataset.reasoningStage = normalized(initialWord);
 
     const visual = document.createElement("span");
     visual.className = "reasoning-status-visual";
@@ -109,7 +102,7 @@
 
     const word = document.createElement("span");
     word.className = "reasoning-status-word";
-    word.textContent = sequence[0];
+    word.textContent = initialWord;
 
     const ellipsis = document.createElement("span");
     ellipsis.className = "reasoning-status-ellipsis";
@@ -119,7 +112,7 @@
     announcement.className = "sr-only reasoning-status-announcement";
     announcement.setAttribute("role", "status");
     announcement.setAttribute("aria-live", "polite");
-    announcement.textContent = "Tutorly is preparing a response.";
+    announcement.textContent = `${initialWord}…`;
 
     visual.append(pulse, word, ellipsis);
     shell.append(visual, announcement);
@@ -127,53 +120,23 @@
     message.classList.add("reasoning-active");
     if (options.preserveMessage) message.dataset.reasoningPreserve = "true";
 
-    const controller = {
-      shell,
-      visual,
-      word,
-      sequence,
-      index: 0,
-      rotationTimer: null,
-      transitionTimer: null,
-      reducedMotion: !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches,
-      stopped: false
-    };
+    const controller = { shell, word, stopped: false, options };
     activeStatuses.set(message, controller);
+    return controller;
+  }
 
-    const schedule = () => {
-      if (controller.stopped || !message.isConnected) {
-        stop(message);
-        return;
-      }
-      const delay = ROTATION_DELAYS[controller.index % ROTATION_DELAYS.length];
-      controller.rotationTimer = window.setTimeout(changeWord, delay);
-    };
-
-    const changeWord = () => {
-      if (controller.stopped) return;
-      controller.index = (controller.index + 1) % controller.sequence.length;
-      if (controller.reducedMotion) {
-        controller.word.textContent = controller.sequence[controller.index];
-        schedule();
-        return;
-      }
-      controller.visual.classList.add("is-changing");
-      controller.transitionTimer = window.setTimeout(() => {
-        if (controller.stopped) return;
-        controller.word.textContent = controller.sequence[controller.index];
-        controller.visual.classList.remove("is-changing");
-        schedule();
-      }, 170);
-    };
-
-    schedule();
+  function setStage(message, stage) {
+    const controller = activeStatuses.get(message);
+    if (!controller) return null;
+    applyWord(controller, wordFor(stage, controller.options));
     return controller;
   }
 
   window.TutorlyReasoningStatus = Object.freeze({
     inferCategory,
-    sequenceFor,
+    wordFor,
     start,
+    setStage,
     stop,
     stopAll
   });

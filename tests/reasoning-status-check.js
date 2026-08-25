@@ -64,29 +64,15 @@ class FakeElement {
   }
 }
 
-let nextTimerId = 1;
-const timers = new Map();
-let prefersReducedMotion = false;
+let timerCalls = 0;
 const fakeWindow = {
-  setTimeout(callback, delay) {
-    const id = nextTimerId++;
-    timers.set(id, { callback, delay });
-    return id;
-  },
-  clearTimeout(id) { timers.delete(id); },
-  matchMedia() { return { matches: prefersReducedMotion }; }
+  setTimeout() { timerCalls += 1; throw new Error("reasoning states must not use a rotation timer"); },
+  clearTimeout() {}
 };
 const fakeDocument = { createElement: (tagName) => new FakeElement(tagName) };
-const sandbox = { window: fakeWindow, document: fakeDocument };
-vm.runInNewContext(source, sandbox);
+vm.runInNewContext(source, { window: fakeWindow, document: fakeDocument });
 
 const status = fakeWindow.TutorlyReasoningStatus;
-const runNextTimer = () => {
-  const next = [...timers.entries()].sort((a, b) => a[1].delay - b[1].delay)[0];
-  assert.ok(next, "a status transition timer should exist");
-  timers.delete(next[0]);
-  next[1].callback();
-};
 
 function createMessage() {
   const message = new FakeElement("div");
@@ -100,42 +86,41 @@ const math = createMessage();
 status.start(math.message, { subject: "mathematics" });
 assert.equal(math.content.querySelector(".reasoning-status-word").textContent, "Analyzing");
 assert.equal(math.content.querySelector(".reasoning-status-visual").getAttribute("aria-hidden"), "true");
-assert.equal(math.content.querySelector(".reasoning-status-announcement").textContent, "Tutorly is preparing a response.");
-assert.equal(timers.size, 1, "one rotation timer should be active per status");
+assert.equal(math.content.querySelector(".reasoning-status-announcement").textContent, "Analyzing…");
+assert.ok(!math.content.querySelector(".reasoning-status-announcement").textContent.includes("Tutorly is"));
+assert.equal(timerCalls, 0, "status words must represent real stages instead of rotating on a timer");
 
-runNextTimer();
-assert.ok(math.content.querySelector(".reasoning-status-visual").classList.contains("is-changing"));
-runNextTimer();
-assert.equal(math.content.querySelector(".reasoning-status-word").textContent, "Formulating");
-assert.equal(timers.size, 1, "the next word should schedule one replacement timer only");
+status.setStage(math.message, "structuring");
+assert.equal(math.content.querySelector(".reasoning-status-word").textContent, "Structuring");
+assert.equal(math.content.querySelector(".reasoning-status-announcement").textContent, "Analyzing…", "screen readers should not announce every stage update");
+
+status.setStage(math.message, "verifying");
+assert.equal(math.content.querySelector(".reasoning-status-word").textContent, "Verifying");
+assert.equal(timerCalls, 0);
 
 const writing = createMessage();
 status.start(writing.message, { subject: "english", intent: "writing_help" });
 assert.equal(writing.content.querySelector(".reasoning-status-word").textContent, "Interpreting");
-assert.equal(timers.size, 2, "separate messages may each own one timer");
+
+const image = createMessage();
+status.start(image.message, { hasImage: true });
+assert.equal(image.content.querySelector(".reasoning-status-word").textContent, "Interpreting");
+
+const deep = createMessage();
+status.start(deep.message, { model: "deep" });
+assert.equal(deep.content.querySelector(".reasoning-status-word").textContent, "Evaluating");
+
+const regenerated = createMessage();
+status.start(regenerated.message, { preserveMessage: true });
+assert.equal(regenerated.content.querySelector(".reasoning-status-word").textContent, "Refining");
+assert.equal(regenerated.message.dataset.reasoningPreserve, "true");
 
 status.stopAll();
-assert.equal(timers.size, 0, "stopAll must clear rotation and fade timers");
-assert.ok(!math.message.classList.contains("reasoning-active"));
-assert.ok(!writing.message.classList.contains("reasoning-active"));
-assert.equal(math.content.querySelector(".reasoning-status-shell"), null);
-assert.equal(writing.content.querySelector(".reasoning-status-shell"), null);
+for (const fixture of [math, writing, image, deep, regenerated]) {
+  assert.ok(!fixture.message.classList.contains("reasoning-active"));
+  assert.equal(fixture.content.querySelector(".reasoning-status-shell"), null);
+}
+assert.equal(regenerated.message.dataset.reasoningPreserve, undefined);
+assert.equal(timerCalls, 0);
 
-const preserved = createMessage();
-status.start(preserved.message, { model: "deep", preserveMessage: true });
-assert.equal(preserved.message.dataset.reasoningPreserve, "true");
-status.stop(preserved.message);
-assert.equal(preserved.message.dataset.reasoningPreserve, undefined);
-assert.equal(timers.size, 0);
-
-prefersReducedMotion = true;
-const reduced = createMessage();
-status.start(reduced.message, { intent: "concept_explanation" });
-runNextTimer();
-assert.equal(reduced.content.querySelector(".reasoning-status-word").textContent, "Clarifying");
-assert.ok(!reduced.content.querySelector(".reasoning-status-visual").classList.contains("is-changing"));
-assert.equal(timers.size, 1, "reduced motion should skip the fade timer and schedule only the next word");
-status.stopAll();
-assert.equal(timers.size, 0);
-
-console.log("Tutorly reasoning-status sequence, accessibility, rotation, and cleanup checks passed.");
+console.log("Tutorly stage-driven reasoning status, accessibility, and cleanup checks passed.");
