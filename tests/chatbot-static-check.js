@@ -103,7 +103,8 @@ assert.ok(voiceSource.includes('speak(mode === "vision"'), "the headset action s
 assert.ok(voiceSource.includes('utterance.addEventListener("boundary"'), "the microphone orb should pulse gently with Tutorly's spoken cadence");
 assert.ok(voiceSource.includes("speakerEchoFloor * 2.15"), "barge-in should distinguish a nearby user from Tutorly's own speaker echo");
 assert.ok(app.includes("speechTextBtn.hidden = false"), "speech-to-text should remain visible when the composer contains text");
-assert.ok(app.includes("voiceBtn.hidden = !locked && hasReadyContent"), "Voice Chat should be replaced completely when the composer has sendable content");
+assert.ok(app.includes("voiceBtn.hidden = hasReadyContent"), "Voice Chat should be replaced completely when the composer has sendable content");
+assert.ok(app.includes("sendBtn.hidden = !hasReadyContent"), "Send should appear only when text or an attachment is ready");
 assert.ok(chatbotCss.includes(".voice-chat-btn[hidden]"), "hidden Voice Chat controls should not occupy composer space on mobile");
 assert.ok(!app.includes("openLiveActionSheet") && !app.includes("data-live-mode"), "Voice Chat should not show the old mode picker");
 assert.ok(chatbotCss.includes("body.composer-ready #voiceBtn"), "Voice Chat should collapse when the composer is ready to send");

@@ -6716,3 +6716,279 @@ body[data-theme="dark"] .voice-session-footnote {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Clean two-row Tutorly study composer */
+.composer-wrap {
+  width: min(960px, 100%);
+}
+
+.composer-wrap::before {
+  display: none;
+}
+
+.composer-panel {
+  display: grid;
+  grid-template-columns: 48px max-content minmax(0, 1fr) 44px 48px;
+  grid-template-rows: minmax(74px, auto) 48px;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 8px;
+  padding: 18px 18px 14px;
+  border: 1px solid rgba(113, 130, 170, 0.24);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 44px rgba(49, 65, 112, 0.1);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.composer-panel:focus-within {
+  border-color: rgba(79, 124, 255, 0.42);
+  box-shadow:
+    0 0 0 3px rgba(79, 124, 255, 0.08),
+    0 18px 44px rgba(49, 65, 112, 0.12);
+  transform: none;
+}
+
+.composer-panel .composer {
+  display: contents;
+}
+
+.composer-panel #input {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 74px;
+  max-height: 170px;
+  margin: 0;
+  padding: 8px 8px 4px;
+  border: 0;
+  border-radius: 0;
+  color: #20283d;
+  background: transparent;
+  box-shadow: none;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  resize: none;
+}
+
+.composer-panel #input::placeholder {
+  color: #9aa4ba;
+  font-weight: 500;
+  opacity: 1;
+}
+
+.composer-panel #uploadBtn {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.composer-panel .model-selector {
+  position: relative;
+  z-index: 24;
+  grid-column: 2;
+  grid-row: 2;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.composer-panel .model-selector-btn,
+body.model-prime .composer-panel .model-selector-btn {
+  width: auto;
+  min-width: 118px;
+  min-height: 42px;
+  padding: 5px 9px 5px 5px;
+  border: 0;
+  border-radius: 13px;
+  color: #29386b;
+  background: transparent;
+  box-shadow: none;
+}
+
+.composer-panel .model-selector-btn:hover,
+.composer-panel .model-selector.open .model-selector-btn,
+body.model-prime .composer-panel .model-selector-btn:hover {
+  border: 0;
+  background: rgba(79, 124, 255, 0.07);
+  box-shadow: none;
+  transform: none;
+}
+
+.composer-panel .model-selector-btn::after {
+  display: none;
+}
+
+.composer-panel .model-selected-copy strong {
+  font-size: 15px;
+}
+
+.composer-panel .model-menu {
+  top: auto;
+  bottom: calc(100% + 10px);
+  left: 0;
+}
+
+.composer-panel .camera-btn {
+  display: none !important;
+}
+
+.composer-panel #speechTextBtn {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+.composer-panel #voiceBtn,
+.composer-panel #sendBtn {
+  grid-column: 5;
+  grid-row: 2;
+}
+
+.composer-panel :where(#uploadBtn, #speechTextBtn) {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border: 0;
+  color: #667085;
+  background: transparent;
+  box-shadow: none;
+}
+
+.composer-panel :where(#uploadBtn, #speechTextBtn):hover,
+.composer-panel :where(#uploadBtn, #speechTextBtn):focus-visible {
+  color: #4357a5;
+  background: rgba(79, 124, 255, 0.08);
+  box-shadow: none;
+}
+
+.composer-panel :where(#voiceBtn, #sendBtn) {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  border-radius: 15px;
+}
+
+.composer-panel #voiceBtn {
+  padding: 3px;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(72, 84, 136, 0.12);
+}
+
+.composer-panel #voiceBtn .voice-chat-wave-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
+.composer-panel #sendBtn.active {
+  display: grid;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  color: #fff;
+  background: linear-gradient(135deg, #4f7cff, #765cff);
+  box-shadow: 0 10px 24px rgba(79, 92, 235, 0.25);
+}
+
+#sendBtn[hidden],
+#voiceBtn[hidden],
+body:not(.composer-ready) .composer-panel #sendBtn,
+body.composer-ready .composer-panel #voiceBtn {
+  display: none !important;
+}
+
+body:not(.composer-ready) .composer-panel #voiceBtn,
+body.composer-ready .composer-panel #sendBtn {
+  display: grid;
+}
+
+.composer-panel .voice-wave {
+  top: 50px;
+  right: 24px;
+  left: 24px;
+}
+
+body[data-theme="dark"] .composer-panel {
+  border-color: rgba(146, 163, 214, 0.2);
+  background: rgba(25, 35, 63, 0.96);
+  box-shadow: 0 18px 44px rgba(5, 10, 26, 0.24);
+}
+
+body[data-theme="dark"] .composer-panel #input {
+  color: #eef2ff;
+}
+
+body[data-theme="dark"] .composer-panel #input::placeholder {
+  color: #8490aa;
+}
+
+body[data-theme="dark"] .composer-panel .model-selector-btn,
+body[data-theme="dark"].model-prime .composer-panel .model-selector-btn {
+  color: #e2e8ff;
+  background: transparent;
+}
+
+body[data-theme="dark"] .composer-panel .model-selector-btn:hover,
+body[data-theme="dark"] .composer-panel .model-selector.open .model-selector-btn {
+  background: rgba(139, 125, 255, 0.1);
+}
+
+@media (max-width: 760px) {
+  .composer-panel {
+    grid-template-columns: 42px max-content minmax(0, 1fr) 40px 44px;
+    grid-template-rows: minmax(58px, auto) 44px;
+    column-gap: 5px;
+    row-gap: 5px;
+    padding: 12px 11px 10px;
+    border-radius: 25px;
+  }
+
+  .composer-panel #input {
+    min-height: 58px;
+    max-height: 128px;
+    padding: 5px 5px 2px;
+    font-size: 16px;
+  }
+
+  .composer-panel .model-selector-btn,
+  body.model-prime .composer-panel .model-selector-btn {
+    min-width: 104px;
+    min-height: 40px;
+  }
+
+  .composer-panel .model-selected-copy strong {
+    font-size: 13px;
+  }
+
+  .composer-panel :where(#uploadBtn, #speechTextBtn) {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .composer-panel :where(#voiceBtn, #sendBtn) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    border-radius: 14px;
+  }
+
+  .composer-panel #voiceBtn .voice-chat-wave-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+  }
+}

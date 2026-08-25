@@ -3097,19 +3097,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const locked = isWelcomeTrial && (welcomeTrialLocked || getWelcomeTrialCount() >= WELCOME_TRIAL_LIMIT);
     const hasReadyContent = input.value.trim().length > 0 || !!pendingImage;
     sendBtn.disabled = locked || chatRequestInFlight || !hasReadyContent;
+    sendBtn.hidden = !hasReadyContent;
     sendBtn.classList.toggle("active", !locked && !chatRequestInFlight && hasReadyContent);
     if (voiceBtn) {
-      voiceBtn.hidden = !locked && hasReadyContent;
+      voiceBtn.hidden = hasReadyContent;
       voiceBtn.disabled = locked || chatRequestInFlight;
       voiceBtn.classList.toggle("active", !locked && !chatRequestInFlight && !hasReadyContent);
-      voiceBtn.setAttribute("aria-hidden", String(!locked && !chatRequestInFlight && hasReadyContent));
+      voiceBtn.setAttribute("aria-hidden", String(hasReadyContent));
     }
     if (speechTextBtn) {
       speechTextBtn.hidden = false;
       speechTextBtn.disabled = locked;
       speechTextBtn.setAttribute("aria-hidden", "false");
     }
-    body.classList.toggle("composer-ready", !locked && hasReadyContent);
+    body.classList.toggle("composer-ready", hasReadyContent);
   }
 
   function appendToInput(text) {
