@@ -143,6 +143,20 @@ def _smtp_config() -> dict[str, object]:
     }
 
 
+def _email_delivery_configured() -> bool:
+    required = (
+        os.getenv("SMTP_HOST", "").strip(),
+        os.getenv("SMTP_USERNAME", "").strip(),
+        os.getenv("SMTP_PASSWORD", "").strip(),
+        os.getenv("SMTP_FROM_EMAIL", "").strip(),
+    )
+    try:
+        port_valid = int(os.getenv("SMTP_PORT", "587")) > 0
+    except ValueError:
+        port_valid = False
+    return all(required) and port_valid and len(os.getenv("TUTORLY_OTP_SECRET", "").strip()) >= 24
+
+
 def _send_otp_email(email: str, code: str) -> None:
     config = _smtp_config()
     message = EmailMessage()
@@ -175,6 +189,16 @@ def _create_session(connection: sqlite3.Connection, user_id: int) -> str:
         (user_id, _hash_session(token), now, now + SESSION_TTL_SECONDS),
     )
     return token
+
+
+@router.get("/health")
+def auth_health():
+    """Report auth deployment readiness without exposing credentials or user data."""
+    return {
+        "status": "ok",
+        "auth_routes": "ready",
+        "email_delivery": "configured" if _email_delivery_configured() else "configuration_required",
+    }
 
 
 def _session_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, object]:

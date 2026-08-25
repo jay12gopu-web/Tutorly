@@ -90,10 +90,12 @@ assert(!login.includes("Demo OTP code") && !login.includes("generatedOtp"), "Dem
 const authClient = read("js/auth-client.js");
 assert(authClient.includes('request("/api/auth/request-otp"'), "Auth client must use the server OTP endpoint");
 assert(authClient.includes('request("/api/auth/verify-otp"'), "Auth client must use the server OTP verification endpoint");
+assert(authClient.includes('response.status === 404 && path.startsWith("/api/auth/")'), "Missing deployed auth routes must show a friendly error");
 const backendEnvExample = read("backend/.env.example");
 for (const variable of ["SMTP_HOST", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_FROM_EMAIL", "TUTORLY_OTP_SECRET"]) {
   assert(backendEnvExample.includes(`${variable}=`), `Backend OTP configuration is missing ${variable}`);
 }
+assert(backendEnvExample.includes("SMTP_HOST=smtp.gmail.com"), "Gmail SMTP host must be documented for OTP delivery");
 
 const contact = read("contact.html");
 assert(contact.includes("mailto:jay12.gopu@gmail.com"), "Support email link is missing");

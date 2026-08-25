@@ -33,6 +33,9 @@
     }
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
+      if (response.status === 404 && path.startsWith("/api/auth/")) {
+        throw new Error("Tutorly's login service is updating. Please try again in a few minutes.");
+      }
       throw new Error(String(payload.detail || payload.error || "Tutorly couldn't complete that request."));
     }
     return payload;

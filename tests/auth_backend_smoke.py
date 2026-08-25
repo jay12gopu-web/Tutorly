@@ -35,6 +35,11 @@ def main() -> None:
         app.include_router(auth_routes.router)
         client = TestClient(app)
 
+        health = client.get("/api/auth/health")
+        assert health.status_code == 200, health.text
+        assert health.json()["auth_routes"] == "ready"
+        assert health.json()["email_delivery"] == "configured"
+
         request = client.post("/api/auth/request-otp", json={"email": "student@example.com"})
         assert request.status_code == 200, request.text
         assert request.json()["sent"] is True
