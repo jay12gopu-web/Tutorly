@@ -1,5 +1,8 @@
 .env
 .env.local
+*.p8
+*.pem
+*.key
 node_modules/
 __pycache__/
 *.py[cod]

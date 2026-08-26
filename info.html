@@ -54,7 +54,7 @@
         <option>Cambridge</option>
       </select>
 
-      <input class="input" id="school" type="text" placeholder="School Name" required />
+      <input class="input" id="school" type="text" placeholder="School Name (optional)" />
 
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
         <a class="btn btn-soft" href="sign_up.html">Back</a>
@@ -63,22 +63,29 @@
     </form>
   </main>
 
+  <script src="js/auth-client.js?v=social-auth-20260825"></script>
   <script>
-    document.getElementById('profileForm').addEventListener('submit', function (e) {
+    document.getElementById('profileForm').addEventListener('submit', async function (e) {
+      if (this.dataset.campusEnhanced === 'true') return;
       e.preventDefault();
       const grade = document.getElementById('grade').value;
       const board = document.getElementById('board').value;
       const school = document.getElementById('school').value.trim();
 
-      if (!grade || !board || !school) {
-        alert('Please complete all profile details before continuing.');
+      if (!grade || !board) {
+        alert('Please select your grade and board before continuing.');
         return;
       }
 
       localStorage.setItem('tutorly_grade', grade);
       localStorage.setItem('tutorly_board', board);
       localStorage.setItem('tutorly_school', school);
-      window.location.href = 'maths_gpt.html';
+      try {
+        await window.TutorlyAuth.updateAcademicProfile(grade, board, school);
+        window.location.href = 'maths_gpt.html';
+      } catch (error) {
+        alert(error.message);
+      }
     });
   </script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>

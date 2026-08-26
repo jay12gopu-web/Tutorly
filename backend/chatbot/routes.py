@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
+import os
 from pathlib import Path
 from time import perf_counter
 
-from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
+import httpx
+from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse
 
 try:
     from backend.activity_store import activity_store
+    from backend.auth_routes import authenticated_user_context
 except ImportError:
     from activity_store import activity_store
+    from auth_routes import authenticated_user_context
 
 from .orchestrator import ChatbotOrchestrator
 from .rate_limit import SlidingWindowRateLimiter
@@ -24,6 +29,8 @@ orchestrator = ChatbotOrchestrator()
 teaching_success = TeachingSuccessScore()
 chat_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=15, requests_per_hour=150)
 voice_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=20, requests_per_hour=180)
+voice_session_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=60)
+LOGGER = logging.getLogger("tutorly.voice")
 
 _VOICE_MIME_TYPES = {
     "audio/flac": ".flac",
@@ -38,6 +45,7 @@ _VOICE_MIME_TYPES = {
 }
 _VOICE_EXTENSIONS = {".flac", ".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".ogg", ".wav", ".webm"}
 _MAX_VOICE_BYTES = 10 * 1024 * 1024
+_ELEVENLABS_TOKEN_URL = "https://api.elevenlabs.io/v1/convai/conversation/token"
 
 
 def _rate_limit_key(request: ChatbotRequest) -> str:
@@ -69,6 +77,91 @@ async def chatbot_health() -> dict:
         "routing": "semantic_llm",
         "modes": [strategy.mode.value for strategy in orchestrator.modes.all()],
         "transcription": "groq_whisper",
+    }
+
+
+def _elevenlabs_configuration() -> tuple[str, str]:
+    return (
+        os.getenv("ELEVENLABS_API_KEY", "").strip(),
+        os.getenv("ELEVENLABS_AGENT_ID", "").strip(),
+    )
+
+
+@router.get("/voice/config")
+async def voice_configuration() -> dict:
+    api_key, agent_id = _elevenlabs_configuration()
+    return {
+        "enabled": bool(api_key and agent_id),
+        "provider": "elevenlabs" if api_key and agent_id else "tutorly",
+        "transport": "webrtc" if api_key and agent_id else "existing_voice_pipeline",
+    }
+
+
+@router.post("/voice/session")
+async def create_voice_session(
+    request: Request,
+    authorization: str | None = Header(default=None),
+):
+    """Issue a short-lived ElevenLabs WebRTC token without exposing provider secrets."""
+    account = authenticated_user_context(authorization)
+    client_host = request.client.host if request.client else "unknown"
+    limit_key = f"{client_host}:user-{account['id']}"
+    decision = voice_session_rate_limiter.check(limit_key)
+    if not decision.allowed:
+        raise HTTPException(
+            status_code=429,
+            detail="Voice Chat is busy for a moment. Please wait and try again.",
+            headers={"Retry-After": str(decision.retry_after_seconds)},
+        )
+
+    api_key, agent_id = _elevenlabs_configuration()
+    if not api_key or not agent_id:
+        raise HTTPException(status_code=503, detail="Live Voice Chat is temporarily unavailable.")
+
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(12.0, connect=6.0)) as client:
+            response = await client.get(
+                _ELEVENLABS_TOKEN_URL,
+                params={
+                    "agent_id": agent_id,
+                    "environment": os.getenv("ELEVENLABS_ENVIRONMENT", "production").strip() or "production",
+                    "participant_name": f"tutorly_user_{account['id']}",
+                },
+                headers={"xi-api-key": api_key, "Accept": "application/json"},
+            )
+    except httpx.TimeoutException:
+        LOGGER.warning("ElevenLabs token request failed category=timeout user_id=%s", account["id"])
+        raise HTTPException(status_code=504, detail="Live Voice Chat took too long to start. Please try again.") from None
+    except httpx.HTTPError:
+        LOGGER.warning("ElevenLabs token request failed category=network user_id=%s", account["id"])
+        raise HTTPException(status_code=502, detail="Live Voice Chat couldn't start. Please try again.") from None
+
+    if response.status_code == 429:
+        LOGGER.warning("ElevenLabs token request rejected category=rate_limit user_id=%s", account["id"])
+        raise HTTPException(status_code=429, detail="Live Voice Chat is busy for a moment. Please try again shortly.")
+    if not response.is_success:
+        LOGGER.warning(
+            "ElevenLabs token request rejected category=provider status=%s user_id=%s",
+            response.status_code,
+            account["id"],
+        )
+        raise HTTPException(status_code=502, detail="Live Voice Chat couldn't start. Please try again.")
+
+    try:
+        payload = response.json()
+    except (TypeError, ValueError):
+        payload = {}
+    token = str(payload.get("token") or "").strip() if isinstance(payload, dict) else ""
+    conversation_id = str(payload.get("conversation_id") or "").strip() if isinstance(payload, dict) else ""
+    if not token or len(token) > 20_000:
+        LOGGER.warning("ElevenLabs token response rejected category=invalid_payload user_id=%s", account["id"])
+        raise HTTPException(status_code=502, detail="Live Voice Chat couldn't start. Please try again.")
+
+    return {
+        "conversation_token": token,
+        "conversation_id": conversation_id[:200],
+        "provider": "elevenlabs",
+        "transport": "webrtc",
     }
 
 

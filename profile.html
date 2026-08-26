@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/auth-social.css?v=social-auth-20260825" />
   <style>
     :root {
       --profile-bg: #f5f8fd;
@@ -1336,6 +1337,17 @@
           </form>
         </article>
 
+        <article class="profile-card pad" data-connected-accounts-card hidden>
+          <div class="section-head">
+            <div>
+              <h2>Connected Accounts</h2>
+              <p>Use another verified provider to sign in to this Tutorly account.</p>
+            </div>
+            <span class="icon-box"><span data-icon="lock"></span></span>
+          </div>
+          <div class="connected-accounts-list" data-connected-accounts></div>
+        </article>
+
         <article class="profile-card pad">
           <div class="section-head">
             <div>
@@ -1746,7 +1758,7 @@
       drawLineChart(score, values);
     }
 
-    function saveProfile(event) {
+    async function saveProfile(event) {
       event.preventDefault();
       profile.name = $('nameInput').value.trim() || fallbackName;
       profile.email = $('emailInput').value.trim();
@@ -1766,6 +1778,15 @@
       localStorage.setItem('tutorly_phone', profile.phone);
       localStorage.setItem('tutorly_language', profile.language);
       localStorage.setItem('tutorly_timezone', profile.timezone);
+
+      if (window.TutorlyAuth?.getSessionToken?.() && profile.grade && profile.board) {
+        try {
+          await window.TutorlyAuth.updateAcademicProfile(profile.grade, profile.board, profile.school);
+        } catch (error) {
+          showToast(error.message || 'Profile could not be saved.');
+          return;
+        }
+      }
 
       paintProfile();
       showToast('Profile saved successfully.');
@@ -1824,6 +1845,7 @@
       drawCharts.timer = setTimeout(drawCharts, 120);
     });
   </script>
+  <script src="js/connected-accounts.js?v=social-auth-20260825"></script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/campus.js?v=campus-20260629"></script>

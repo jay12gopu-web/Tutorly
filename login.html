@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/auth-social.css?v=social-auth-20260825" />
   <style>
     .login-mode {
       display: inline-flex;
@@ -192,6 +193,8 @@
       <h1 class="page-title" style="font-size:36px; margin-top:8px;">Continue with Tutorly</h1>
       <p class="page-sub" style="margin-bottom:16px;">Your learning space is ready.</p>
 
+      <section class="social-auth" data-social-auth="login" aria-label="Social sign-in options" hidden></section>
+
       <div class="login-mode">
         <button class="mode-btn active" type="button" data-mode="password">Password</button>
         <button class="mode-btn" type="button" data-mode="otp">OTP</button>
@@ -234,7 +237,8 @@
     </div>
   </div>
 
-  <script src="js/auth-client.js"></script>
+  <script src="js/auth-client.js?v=social-auth-20260825"></script>
+  <script src="js/social-auth-ui.js?v=social-auth-20260825"></script>
   <script>
     const loginForm = document.getElementById('loginForm');
     const otpModal = document.getElementById('otpModal');
@@ -294,8 +298,9 @@
       return otpInputs.map((i) => i.value).join('');
     }
 
-    function completeLogin() {
-      window.location.href = 'maths_gpt.html';
+    async function completeLogin(payload) {
+      const destination = await window.TutorlyAuth.authenticatedDestination(payload);
+      window.location.href = destination;
     }
 
     modeButtons.forEach((btn) => {
@@ -359,8 +364,8 @@
       loginSubmit.disabled = true;
       loginSubmit.textContent = 'Logging in…';
       try {
-        await window.TutorlyAuth.passwordLogin(email, password);
-        completeLogin();
+        const payload = await window.TutorlyAuth.passwordLogin(email, password);
+        await completeLogin(payload);
       } catch (error) {
         alert(error.message);
       } finally {
@@ -383,10 +388,10 @@
       verifyButton.disabled = true;
       otpStatus.textContent = 'Verifying…';
       try {
-        await window.TutorlyAuth.verifyOtp(document.getElementById('email').value.trim(), userOtp);
+        const payload = await window.TutorlyAuth.verifyOtp(document.getElementById('email').value.trim(), userOtp);
         otpStatus.textContent = 'OTP verified successfully.';
         closeOtpModal();
-        completeLogin();
+        await completeLogin(payload);
       } catch (error) {
         otpStatus.textContent = error.message;
       } finally {

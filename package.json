@@ -10,6 +10,7 @@
     "check:payments": "node --check backend/server.js",
     "check:chatbot": "node tests/chatbot-static-check.js",
     "check:reasoning-status": "node tests/reasoning-status-check.js",
+    "check:voice": "node tests/elevenlabs-voice-ui-check.js && python tests/elevenlabs_voice_backend_smoke.py",
     "check:rich-response": "node tests/rich-response-renderer-check.js",
     "check:chatbot:backend": "python tests/chatbot_backend_smoke.py",
     "check:chatbot:live": "python tests/semantic_router_live.py --show-answers",
@@ -20,6 +21,7 @@
     "check:auth": "python tests/auth_backend_smoke.py"
   },
   "dependencies": {
+    "@elevenlabs/client": "^1.22.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.18.3",

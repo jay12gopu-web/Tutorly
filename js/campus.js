@@ -126,7 +126,7 @@
           <select class="select" id="board" required>
             <option value="">Select Board</option>${optionList(["CBSE", "ICSE", "State Board", "IB", "Cambridge"], localStorage.getItem("tutorly_board") || "")}
           </select>
-          <input class="input" id="school" type="text" placeholder="School Name" value="${localStorage.getItem("tutorly_school") || ""}" required />
+          <input class="input" id="school" type="text" placeholder="School Name (optional)" value="${localStorage.getItem("tutorly_school") || ""}" />
         `;
         return;
       }
@@ -135,7 +135,7 @@
           <select class="select" id="intermediateStream" required>
             <option value="">Select Stream</option>${optionList(["MPC", "BiPC", "MEC", "CEC", "HEC", "Other"], data.intermediateStream)}
           </select>
-          <input class="input" id="school" type="text" placeholder="College / Junior College Name" value="${localStorage.getItem("tutorly_school") || ""}" required />
+          <input class="input" id="school" type="text" placeholder="College / Junior College Name (optional)" value="${localStorage.getItem("tutorly_school") || ""}" />
           <select class="select" id="board" required>
             <option value="">Select Board</option>${optionList(["State Board", "CBSE", "ICSE", "IB", "Cambridge"], localStorage.getItem("tutorly_board") || "")}
           </select>
@@ -189,22 +189,31 @@
 
     renderFields();
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       event.stopImmediatePropagation();
       const level = $("#campusEducationLevel").value;
+      let academicGrade = "";
+      let academicBoard = "";
+      let academicSchool = "";
       saveProfile({ educationLevel: level });
       if (level === "school") {
-        if (!$("#grade").value || !$("#board").value || !$("#school").value.trim()) return alert("Please complete all school details.");
+        if (!$("#grade").value || !$("#board").value) return alert("Please select your class and board.");
         localStorage.setItem("tutorly_grade", $("#grade").value);
         localStorage.setItem("tutorly_board", $("#board").value);
         localStorage.setItem("tutorly_school", $("#school").value.trim());
+        academicGrade = $("#grade").value;
+        academicBoard = $("#board").value;
+        academicSchool = $("#school").value.trim();
       } else if (level === "intermediate") {
-        if (!$("#intermediateStream").value || !$("#board").value || !$("#school").value.trim()) return alert("Please complete intermediate details.");
+        if (!$("#intermediateStream").value || !$("#board").value) return alert("Please select your stream and board.");
         saveProfile({ intermediateStream: $("#intermediateStream").value });
         localStorage.setItem("tutorly_grade", "11");
         localStorage.setItem("tutorly_board", $("#board").value);
         localStorage.setItem("tutorly_school", $("#school").value.trim());
+        academicGrade = "11";
+        academicBoard = $("#board").value;
+        academicSchool = $("#school").value.trim();
       } else {
         const required = ["collegeProgram", "collegeCourseGroup", "collegeCourse", "collegeYear", "collegeSemester", "collegeName", "university"];
         if (!required.every((id) => $(id).value.trim())) return alert("Please complete required college details.");
@@ -225,6 +234,15 @@
         localStorage.setItem("tutorly_grade", $("#collegeYear").value);
         localStorage.setItem("tutorly_board", $("#university").value.trim());
         localStorage.setItem("tutorly_school", $("#collegeName").value.trim());
+        academicGrade = $("#collegeYear").value;
+        academicBoard = $("#university").value.trim();
+        academicSchool = $("#collegeName").value.trim();
+      }
+      try {
+        await window.TutorlyAuth.updateAcademicProfile(academicGrade, academicBoard, academicSchool);
+      } catch (error) {
+        alert(error.message);
+        return;
       }
       location.href = "home.html";
     }, true);

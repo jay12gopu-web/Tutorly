@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeReplyStreamToken = 0;
   let pendingChatStartTimer = null;
   let voiceSession = null;
+  let voiceLastUserRecord = null;
   let liveSessionMode = null;
   let chatRequestInFlight = false;
   let pendingConfirmAction = null;
@@ -4630,17 +4631,94 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    function getVoiceConversationContext() {
+      const conversation = activeConversationId
+        ? (GPT?.getConversation?.(activeConversationId) || ChatHistory?.getConversation?.(activeConversationId))
+        : null;
+      const recent = (conversation?.messages || [])
+        .filter((item) => item?.role === "user" || item?.role === "assistant")
+        .slice(-8)
+        .map((item) => `${item.role === "user" ? "Student" : "Tutorly"}: ${String(item.content || "").slice(0, 1200)}`)
+        .join("\n");
+      let grade = "";
+      try { grade = localStorage.getItem("tutorly_grade") || ""; }
+      catch (error) {}
+      return [
+        "You are continuing a Tutorly study conversation. Be a concise, patient study friend.",
+        grade ? `Student grade: ${grade}.` : "",
+        recent ? `Recent conversation:\n${recent}` : "No earlier text-chat context is available."
+      ].filter(Boolean).join("\n");
+    }
+
+    function recordProviderVoiceMessage({ role, text }) {
+      const content = String(text || "").trim();
+      if (!content) return;
+      if (role === "user") {
+        const conversation = ensureActiveConversation(content);
+        const conversationId = conversation?.id || null;
+        if (!conversationId) return;
+        activeConversationId = conversationId;
+        GPT?.setActiveConversation?.(conversationId) || ChatHistory?.setActiveConversation?.(conversationId);
+        voiceLastUserRecord = GPT?.recordUserMessage?.({
+          conversationId,
+          content,
+          model: selectedModel,
+          subject: "general",
+          metadata: { source: "elevenlabs_voice", voice: true }
+        }) || ChatHistory?.appendMessage?.(conversationId, {
+          role: "user",
+          content,
+          model: selectedModel,
+          subject: "general",
+          metadata: { source: "elevenlabs_voice", voice: true }
+        });
+        addMessage(content, "user", {
+          conversationId,
+          messageId: voiceLastUserRecord?.id,
+          model: selectedModel
+        });
+      } else if (voiceLastUserRecord && activeConversationId) {
+        const assistantRecord = GPT?.recordAssistantMessage?.({
+          conversationId: activeConversationId,
+          content,
+          model: selectedModel,
+          subject: "general",
+          parentId: voiceLastUserRecord.id,
+          metadata: { source: "elevenlabs_voice", voice: true }
+        }) || ChatHistory?.appendMessage?.(activeConversationId, {
+          role: "assistant",
+          content,
+          model: selectedModel,
+          subject: "general",
+          parentId: voiceLastUserRecord.id,
+          metadata: { source: "elevenlabs_voice", voice: true }
+        });
+        addMessage(content, "bot", {
+          conversationId: activeConversationId,
+          messageId: assistantRecord?.id,
+          prompt: voiceLastUserRecord.content || "",
+          model: selectedModel
+        });
+        voiceLastUserRecord = null;
+      }
+      renderSidebarRecents();
+    }
+
     voiceSession = window.TutorlyVoiceChat?.create?.({
       overlay: document.getElementById("voiceChatOverlay"),
       inline: false,
       getTranscriptionEndpoint: () => getBackendEndpoint("/api/transcribe"),
+      getVoiceConfigEndpoint: () => getBackendEndpoint("/api/voice/config"),
+      getVoiceSessionEndpoint: () => getBackendEndpoint("/api/voice/session"),
       getSessionId: () => activeConversationId || getChatUserId(),
+      getConversationContext: getVoiceConversationContext,
       getLanguage: getVoiceLanguage,
       setLanguage: (language) => setStoredValue("tutorly_voice_language", normalizeVoiceLanguage(language)),
       onNotice: showToast,
       onPhoto: () => uploadInput?.click(),
       onInterrupt: abortActiveChatRequest,
       onTranscript: submitLiveTranscript,
+      onProviderMessage: recordProviderVoiceMessage,
       onStateChange: (state, copy = {}) => {
         const listening = state === "listening";
         const thinking = state === "connecting" || state === "processing";
@@ -4658,6 +4736,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       onClose: () => {
         liveSessionMode = null;
+        voiceLastUserRecord = null;
         voiceBtn?.classList.remove("listening", "thinking", "speaking", "voice-error");
         voiceBtn?.setAttribute("aria-pressed", "false");
         if (voiceBtn) {

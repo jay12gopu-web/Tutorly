@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/auth-social.css?v=social-auth-20260825" />
   <style>
     .role-switch {
       width: fit-content;
@@ -134,6 +135,8 @@
       <h1 class="page-title" style="font-size:36px; margin-top:8px;">Create your Tutorly account</h1>
       <p class="page-sub" style="margin-bottom:16px;">Learn smarter with Tutorly.</p>
 
+      <section class="social-auth" data-social-auth="signup" aria-label="Social sign-up options" hidden></section>
+
       <input id="accountRole" type="hidden" value="student" />
 
       <div class="grid" style="gap:10px;">
@@ -151,7 +154,8 @@
     </form>
   </div>
 
-  <script src="js/auth-client.js"></script>
+  <script src="js/auth-client.js?v=social-auth-20260825"></script>
+  <script src="js/social-auth-ui.js?v=social-auth-20260825"></script>
   <script>
     const signupParams = new URLSearchParams(window.location.search);
     const chatbotSignupOnly = signupParams.get('intent') === 'chatbot';

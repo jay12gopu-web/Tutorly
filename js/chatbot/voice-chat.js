@@ -150,6 +150,8 @@
     let speakerEchoFloor = 0.008;
     let detectedLanguage = "en";
     let returnFocus = null;
+    let providerSession = null;
+    let providerVolumeFrame = null;
 
     function notify(message) {
       if (typeof options.onNotice === "function") options.onNotice(message);
@@ -219,6 +221,29 @@
       frequencyData = null;
     }
 
+    function stopProviderSession() {
+      if (providerVolumeFrame) root.cancelAnimationFrame(providerVolumeFrame);
+      providerVolumeFrame = null;
+      const session = providerSession;
+      providerSession = null;
+      if (session) Promise.resolve(session.end?.()).catch(() => {});
+      orb?.style.setProperty("--voice-level", "0");
+      orb?.style.setProperty("--speech-level", "0");
+    }
+
+    async function updateProviderVolume() {
+      if (!open || !providerSession) return;
+      try {
+        const [inputLevel, outputLevel] = await Promise.all([
+          Promise.resolve(providerSession.getInputVolume?.() || 0),
+          Promise.resolve(providerSession.getOutputVolume?.() || 0)
+        ]);
+        orb?.style.setProperty("--voice-level", Math.max(0, Math.min(1, Number(inputLevel) || 0)).toFixed(3));
+        orb?.style.setProperty("--speech-level", Math.max(0, Math.min(1, Number(outputLevel) || 0)).toFixed(3));
+      } catch (error) {}
+      if (open && providerSession) providerVolumeFrame = root.requestAnimationFrame(updateProviderVolume);
+    }
+
     function close() {
       if (!open && overlay.hidden) return;
       open = false;
@@ -226,6 +251,7 @@
       cancelResponseTimer();
       cancelTranscription();
       cancelSpeech();
+      stopProviderSession();
       releaseAudio();
       overlay.classList.remove("show");
       overlay.setAttribute("aria-hidden", "true");
@@ -435,7 +461,7 @@
 
     async function openSession(nextMode = "voice", trigger = null) {
       if (open) return;
-      if (!navigator.mediaDevices?.getUserMedia || !root.MediaRecorder || !(root.AudioContext || root.webkitAudioContext)) {
+      if (!navigator.mediaDevices?.getUserMedia) {
         notify("Full voice chat is not supported in this browser. You can still dictate into the composer.");
         return;
       }
@@ -452,6 +478,53 @@
       setReply("");
       setState("connecting");
       try {
+        const liveProvider = await root.TutorlyElevenLabsVoice?.start?.({
+          configEndpoint: options.getVoiceConfigEndpoint?.(),
+          sessionEndpoint: options.getVoiceSessionEndpoint?.(),
+          context: options.getConversationContext?.() || "",
+          onConnect: () => {
+            if (open) setState("listening", "Just talk — Tutorly will reply when you finish.");
+          },
+          onStatusChange: (status) => {
+            if (!open) return;
+            if (status === "connecting") setState("connecting", "Starting secure voice chat…");
+          },
+          onModeChange: (providerMode) => {
+            if (!open) return;
+            speaking = providerMode === "speaking";
+            setState(speaking ? "speaking" : "listening");
+          },
+          onMessage: ({ role, text, eventId }) => {
+            if (!open) return;
+            if (role === "user") setTranscript(text);
+            else setReply(text);
+            options.onProviderMessage?.({ role, text, eventId });
+          },
+          onInterruption: () => {
+            if (open) setState("listening", "Go ahead — I’m listening.");
+          },
+          onDisconnect: ({ intentional } = {}) => {
+            if (open && !intentional) setState("error", "Voice Chat disconnected. Close and try again.");
+          },
+          onError: () => {
+            if (open) setState("error", "Voice Chat hit a problem. Close and try again.");
+          },
+          onFallback: (message, status) => {
+            if (status !== 401 && status !== 503) notify(message);
+          }
+        });
+        if (!open) {
+          await liveProvider?.end?.();
+          return;
+        }
+        if (liveProvider) {
+          providerSession = liveProvider;
+          providerVolumeFrame = root.requestAnimationFrame(updateProviderVolume);
+          return;
+        }
+        if (!root.MediaRecorder || !(root.AudioContext || root.webkitAudioContext)) {
+          throw Object.assign(new Error("standard_voice_unsupported"), { name: "NotSupportedError" });
+        }
         const requestedStream = await navigator.mediaDevices.getUserMedia({
           audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
         });

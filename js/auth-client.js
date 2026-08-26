@@ -21,13 +21,12 @@
     const headers = { "Content-Type": "application/json" };
     const token = getSessionToken();
     if (options.auth && token) headers.Authorization = `Bearer ${token}`;
+    const method = String(options.method || "POST").toUpperCase();
+    const requestOptions = { method, headers };
+    if (method !== "GET" && method !== "HEAD") requestOptions.body = JSON.stringify(body || {});
     let response;
     try {
-      response = await fetch(`${backendOrigin()}${path}`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body || {})
-      });
+      response = await fetch(`${backendOrigin()}${path}`, requestOptions);
     } catch (error) {
       throw new Error("Tutorly's login service is unavailable. Please try again.");
     }
@@ -58,6 +57,12 @@
       localStorage.setItem("tutorly_signup_email", user.email);
     }
     if (user.full_name) localStorage.setItem("tutorly_signup_full_name", user.full_name);
+    if (user.grade) localStorage.setItem("tutorly_grade", user.grade);
+    if (user.board) localStorage.setItem("tutorly_board", user.board);
+    if (typeof user.school === "string") localStorage.setItem("tutorly_school", user.school);
+    if (user.avatar_url && !localStorage.getItem("tutorly_avatar")) {
+      localStorage.setItem("tutorly_avatar", user.avatar_url);
+    }
     localStorage.setItem("tutorly_bot_try_count", "0");
     return payload;
   }
@@ -77,6 +82,27 @@
     clearSession();
   }
 
+  function socialStartUrl(provider, flow = "login") {
+    const safeProvider = ["google", "microsoft", "apple"].includes(provider) ? provider : "";
+    const safeFlow = flow === "signup" ? "signup" : "login";
+    if (!safeProvider) throw new Error("That sign-in provider is not supported.");
+    return `${backendOrigin()}/api/auth/oauth/${safeProvider}/start?flow=${safeFlow}`;
+  }
+
+  async function authenticatedDestination(payload, fallback = "maths_gpt.html") {
+    if (!payload?.onboarding_required) return fallback;
+    const grade = localStorage.getItem("tutorly_grade") || "";
+    const board = localStorage.getItem("tutorly_board") || "";
+    const school = localStorage.getItem("tutorly_school") || "";
+    if (!grade || !board) return "info.html";
+    try {
+      await request("/api/auth/profile", { grade, board, school }, { auth: true });
+      return fallback;
+    } catch (error) {
+      return "info.html";
+    }
+  }
+
   root.TutorlyAuth = Object.freeze({
     backendOrigin,
     getSessionToken,
@@ -86,6 +112,27 @@
     verifyOtp: (email, code) => request("/api/auth/verify-otp", { email, code }).then(saveSession),
     passwordLogin: (email, password) => request("/api/auth/password-login", { email, password }).then(saveSession),
     register: (fullName, email, password) => request("/api/auth/register", { full_name: fullName, email, password }).then(saveSession),
+    getProviders: () => request("/api/auth/providers", null, { method: "GET" }),
+    completeOAuth: (resultCode) => request("/api/auth/oauth/complete", { result_code: resultCode }).then(saveSession),
+    socialStartUrl,
+    authenticatedDestination,
+    currentUser: () => request("/api/auth/me", null, { method: "GET", auth: true }),
+    updateAcademicProfile: (grade, board, school = "") => request(
+      "/api/auth/profile",
+      { grade, board, school },
+      { auth: true }
+    ),
+    connectedAccounts: () => request("/api/auth/connected-accounts", null, { method: "GET", auth: true }),
+    connectProvider: (provider) => request(
+      `/api/auth/oauth/${encodeURIComponent(provider)}/connect-start`,
+      {},
+      { auth: true }
+    ),
+    disconnectProvider: (provider) => request(
+      `/api/auth/connected-accounts/${encodeURIComponent(provider)}`,
+      {},
+      { method: "DELETE", auth: true }
+    ),
     logout
   });
 })(window);
