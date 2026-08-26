@@ -14,6 +14,7 @@ assert(html.indexOf("js/chatbot/elevenlabs-voice.js") < html.indexOf("js/chatbot
 
 assert(adapter.includes('connectionType: "webrtc"'));
 assert(adapter.includes("conversationToken"));
+assert(adapter.includes("agent_0201m0wydx9bft0tn09q0ex0ghm0"), "The requested public ElevenLabs agent must be the direct fallback");
 assert(adapter.includes("js/vendor/elevenlabs-client.js"), "The locally hosted SDK must be loaded on demand");
 assert(adapter.includes("TutorlyAuth?.getSessionToken"));
 assert(!adapter.includes("ELEVENLABS_API_KEY"), "Provider secrets must never appear in frontend JavaScript");

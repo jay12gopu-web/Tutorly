@@ -2,6 +2,7 @@
   "use strict";
 
   const FRIENDLY_START_ERROR = "Live Voice Chat couldn't start, so Tutorly switched to its standard voice mode.";
+  const PUBLIC_AGENT_ID = "agent_0201m0wydx9bft0tn09q0ex0ghm0";
   let sdkLoadPromise = null;
 
   function loadSdk(url = "js/vendor/elevenlabs-client.js?v=1.22.0") {
@@ -34,13 +35,20 @@
     catch (error) { return {}; }
   }
 
-  async function requestConversationToken(options) {
-    const configResponse = await fetch(options.configEndpoint, {
-      method: "GET",
-      headers: { Accept: "application/json" }
-    });
+  async function requestConversationAccess(options) {
+    let configResponse;
+    try {
+      configResponse = await fetch(options.configEndpoint, {
+        method: "GET",
+        headers: { Accept: "application/json" }
+      });
+    } catch (error) {
+      return { agentId: PUBLIC_AGENT_ID, conversationId: "" };
+    }
     const config = await readJson(configResponse);
-    if (!configResponse.ok || !config.enabled) return null;
+    if (!configResponse.ok || !config.enabled) {
+      return { agentId: PUBLIC_AGENT_ID, conversationId: "" };
+    }
 
     const response = await fetch(options.sessionEndpoint, {
       method: "POST",
@@ -51,6 +59,9 @@
     });
     const payload = await readJson(response);
     if (!response.ok) {
+      if ([401, 404, 503].includes(response.status)) {
+        return { agentId: PUBLIC_AGENT_ID, conversationId: "" };
+      }
       const error = new Error("voice_session_unavailable");
       error.status = response.status;
       throw error;
@@ -81,16 +92,18 @@
     if (!options.configEndpoint || !options.sessionEndpoint) return null;
 
     try {
-      const session = await requestConversationToken(options);
-      if (!session) return null;
+      const session = await requestConversationAccess(options);
       const sdk = await loadSdk(options.sdkUrl);
       const Conversation = sdk?.Conversation;
       if (!Conversation) throw new Error("voice_sdk_invalid");
       await confirmMicrophoneAccess();
 
       let intentionalEnd = false;
+      const connection = session.conversationToken
+        ? { conversationToken: session.conversationToken }
+        : { agentId: session.agentId || PUBLIC_AGENT_ID };
       const conversation = await Conversation.startSession({
-        conversationToken: session.conversationToken,
+        ...connection,
         connectionType: "webrtc",
         onConnect: ({ conversationId } = {}) => options.onConnect?.({
           conversationId: String(conversationId || session.conversationId || "")

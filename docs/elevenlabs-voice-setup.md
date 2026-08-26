@@ -34,6 +34,8 @@ Tutorly headset button
 
 If ElevenLabs is not configured or temporarily unavailable, Tutorly keeps the existing Groq-transcription/browser-speech voice path available as a graceful fallback.
 
+The requested agent is also configured as the public-agent fallback. When the backend token route is unavailable, the official SDK starts `agent_0201m0wydx9bft0tn09q0ex0ghm0` directly. Keep that agent public and restrict its allowed domains to Tutorly until the private server-token setup is deployed.
+
 ## Verification
 
 Run:
