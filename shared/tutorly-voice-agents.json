@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "voices": [
+    {
+      "key": "miles",
+      "name": "Miles",
+      "description": "Calm, intelligent and precise",
+      "agentId": "agent_3501m0yj8ngff3vtgr1bgxjvsyqt",
+      "genderGroup": "boy",
+      "colors": ["#2377ff", "#694cff", "#25c6ff"]
+    },
+    {
+      "key": "theo",
+      "name": "Theo",
+      "description": "Friendly, clear and relaxed",
+      "agentId": "agent_2101m0ykd29nekysy1mr97dmzawb",
+      "genderGroup": "boy",
+      "colors": ["#3a86ff", "#5874ed", "#35d4c8"]
+    },
+    {
+      "key": "leo",
+      "name": "Leo",
+      "description": "Bright, energetic and expressive",
+      "agentId": "agent_2801m0ykmd19fjyt6nx3cdrw9qva",
+      "genderGroup": "boy",
+      "colors": ["#3478ff", "#a347ff", "#40d7ff"]
+    },
+    {
+      "key": "ethan",
+      "name": "Ethan",
+      "description": "Soft, patient and reassuring",
+      "agentId": "agent_5001m0ykrb2cfghb1f6jzaw4b103",
+      "genderGroup": "boy",
+      "colors": ["#4669db", "#7864ef", "#62b8ff"]
+    },
+    {
+      "key": "aria",
+      "name": "Aria",
+      "description": "Warm, natural and friendly",
+      "agentId": "agent_2201m0ykz0mke59aqy8emera0ms9",
+      "genderGroup": "girl",
+      "colors": ["#456dff", "#9a53ea", "#56d4ef"]
+    },
+    {
+      "key": "clara",
+      "name": "Clara",
+      "description": "Clear, confident and composed",
+      "agentId": "agent_6401m0ym3vdgefyrm47g997bgeve",
+      "genderGroup": "girl",
+      "colors": ["#2f7bff", "#6256d9", "#66d7ff"]
+    },
+    {
+      "key": "luna",
+      "name": "Luna",
+      "description": "Gentle, calm and soothing",
+      "agentId": "agent_8101m0ymkf8bebf8b6ne3ja8zkqk",
+      "genderGroup": "girl",
+      "colors": ["#4f67d8", "#8d5cea", "#72c8ff"]
+    },
+    {
+      "key": "nova",
+      "name": "Nova",
+      "description": "Lively, upbeat and expressive",
+      "agentId": "agent_7101m0ymxhh0eq0aqczv11atjf16",
+      "genderGroup": "girl",
+      "colors": ["#1f8aff", "#a443ff", "#1ed7e7"]
+    }
+  ]
+}

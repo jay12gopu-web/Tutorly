@@ -10,6 +10,7 @@ COPY backend/requirements.txt backend/requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
 COPY backend backend
+COPY shared/tutorly-voice-agents.json shared/tutorly-voice-agents.json
 RUN mkdir -p uploads && chown -R tutorly:tutorly /app
 
 USER tutorly

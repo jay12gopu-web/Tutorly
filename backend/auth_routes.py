@@ -23,8 +23,10 @@ from pydantic import BaseModel
 
 try:
     from backend.oauth_providers import OAuthProviderError, pkce_challenge, provider_configs
+    from backend.voice_agents import voice_agent
 except ImportError:
     from oauth_providers import OAuthProviderError, pkce_challenge, provider_configs
+    from voice_agents import voice_agent
 
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
@@ -71,6 +73,11 @@ class AcademicProfileRequest(BaseModel):
     grade: str
     board: str
     school: str = ""
+
+
+class VoicePreferenceRequest(BaseModel):
+    preferred_voice_agent: str
+    voice_onboarding_completed: bool = True
 
 
 @contextmanager
@@ -168,6 +175,8 @@ def _ensure_user_columns(connection: sqlite3.Connection) -> None:
         "school": "TEXT NOT NULL DEFAULT ''",
         "avatar_url": "TEXT NOT NULL DEFAULT ''",
         "academic_onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
+        "preferred_voice_agent": "TEXT NOT NULL DEFAULT ''",
+        "voice_onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
     }
     for name, definition in additions.items():
         if name not in columns:
@@ -426,8 +435,48 @@ def current_user(authorization: str | None = Header(default=None)):
                 "school": user["school"],
                 "avatar_url": user["avatar_url"],
                 "connected_providers": sorted(connected),
+                "preferred_voice_agent": user["preferred_voice_agent"],
+                "voice_onboarding_completed": bool(user["voice_onboarding_completed"]),
             },
         }
+
+
+@router.get("/voice-preferences")
+def get_voice_preferences(authorization: str | None = Header(default=None)):
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        voice_key = str(user["preferred_voice_agent"] or "").strip().lower()
+        valid = voice_agent(voice_key) is not None
+        return {
+            "preferred_voice_agent": voice_key if valid else "",
+            "voice_onboarding_completed": bool(user["voice_onboarding_completed"] and valid),
+        }
+
+
+@router.put("/voice-preferences")
+def update_voice_preferences(
+    payload: VoicePreferenceRequest,
+    authorization: str | None = Header(default=None),
+):
+    voice_key = str(payload.preferred_voice_agent or "").strip().lower()
+    if voice_agent(voice_key) is None:
+        raise HTTPException(status_code=400, detail="Choose a valid Tutorly voice.")
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        completed = 1 if payload.voice_onboarding_completed else 0
+        connection.execute(
+            """
+            UPDATE tutorly_users
+            SET preferred_voice_agent = ?, voice_onboarding_completed = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (voice_key, completed, int(time.time()), user["id"]),
+        )
+    return {
+        "saved": True,
+        "preferred_voice_agent": voice_key,
+        "voice_onboarding_completed": bool(completed),
+    }
 
 
 @router.post("/profile")

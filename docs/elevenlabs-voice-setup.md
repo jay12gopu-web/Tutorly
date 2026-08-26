@@ -1,53 +1,32 @@
-# Tutorly ElevenLabs Voice Chat setup
+# Tutorly ElevenLabs Voice Chat
 
-Tutorly uses its existing full-screen Voice Chat interface with the official `@elevenlabs/client` SDK. The browser connects over WebRTC using a short-lived conversation token issued by Tutorly's backend.
+Tutorly Voice Chat uses the eight approved agents in:
 
-## Render environment variables
+`shared/tutorly-voice-agents.json`
 
-Add these to the `tutorly-api` Render web service, then save and redeploy:
+That shared registry is the only source for voice order, display metadata, stable voice keys, and ElevenLabs agent IDs. The browser stores only a stable key such as `miles` or `luna` as the student's preference.
 
-```text
-ELEVENLABS_API_KEY=<your ElevenLabs server API key>
-ELEVENLABS_AGENT_ID=agent_0201m0wydx9bft0tn09q0ex0ghm0
-ELEVENLABS_ENVIRONMENT=production
+## Production configuration
+
+Configure this server-side Render environment variable:
+
+```env
+ELEVENLABS_API_KEY=your-server-side-key
 ```
 
-Never add the API key to frontend JavaScript, HTML, GitHub, or a public environment variable. Tutorly sends it only from the backend to ElevenLabs' token endpoint. The frontend receives only a short-lived conversation token.
+Do not put the key in HTML, frontend JavaScript, localStorage, or GitHub.
 
-## ElevenLabs dashboard
+The authenticated browser sends an approved voice key to `POST /api/voice/session`. Tutorly's backend validates that key against the shared registry, resolves the known agent ID, requests a short-lived ElevenLabs conversation token, and returns only that token. The client then starts the session over WebRTC.
 
-1. Open **My Agent** in ElevenLabs.
-2. Confirm the Agent ID is `agent_0201m0wydx9bft0tn09q0ex0ghm0`.
-3. Enable the client events used by Tutorly: user transcript, agent response, interruption, and conversation metadata.
-4. Configure the agent's Tutorly tutoring prompt, language support, voice, and turn-taking in ElevenLabs.
-5. Restrict the agent to Tutorly's production domain in the agent Security allowlist where applicable.
+## Public-agent fallback
 
-## Runtime flow
+If the server token service is not configured, the frontend can try the selected registry agent directly. This works only when that ElevenLabs agent allows public client connections and the Tutorly domain is allowed. Production should use the backend token flow.
 
-```text
-Tutorly headset button
-  -> POST /api/voice/session with the existing Tutorly session
-  -> Tutorly backend requests a WebRTC token from ElevenLabs
-  -> @elevenlabs/client starts the voice conversation
-  -> transcript and agent replies update the existing Tutorly overlay and chat history
-```
+## Preferences
 
-If ElevenLabs is not configured or temporarily unavailable, Tutorly keeps the existing Groq-transcription/browser-speech voice path available as a graceful fallback.
+Authenticated users persist:
 
-The requested agent is also configured as the public-agent fallback. When the backend token route is unavailable, the official SDK starts `agent_0201m0wydx9bft0tn09q0ex0ghm0` directly. Keep that agent public and restrict its allowed domains to Tutorly until the private server-token setup is deployed.
+- `preferred_voice_agent`
+- `voice_onboarding_completed`
 
-## Verification
-
-Run:
-
-```text
-npm run check:voice
-```
-
-Production verification still requires the real Render environment variables, a microphone-enabled HTTPS browser, and an enabled ElevenLabs agent.
-
-Official references:
-
-- https://elevenlabs.io/docs/eleven-agents/libraries/java-script
-- https://elevenlabs.io/docs/eleven-agents/api-reference/conversations/get-webrtc-token
-- https://elevenlabs.io/docs/eleven-agents/customization/authentication
+through `/api/auth/voice-preferences`. Local storage is only the guest/offline fallback.

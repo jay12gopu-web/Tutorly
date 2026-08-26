@@ -117,6 +117,12 @@
     socialStartUrl,
     authenticatedDestination,
     currentUser: () => request("/api/auth/me", null, { method: "GET", auth: true }),
+    getVoicePreferences: () => request("/api/auth/voice-preferences", null, { method: "GET", auth: true }),
+    saveVoicePreferences: (preferredVoiceAgent, completed = true) => request(
+      "/api/auth/voice-preferences",
+      { preferred_voice_agent: preferredVoiceAgent, voice_onboarding_completed: !!completed },
+      { method: "PUT", auth: true }
+    ),
     updateAcademicProfile: (grade, board, school = "") => request(
       "/api/auth/profile",
       { grade, board, school },

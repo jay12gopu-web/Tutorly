@@ -1,8 +1,7 @@
 (function (root) {
   "use strict";
 
-  const FRIENDLY_START_ERROR = "Live Voice Chat couldn't start, so Tutorly switched to its standard voice mode.";
-  const PUBLIC_AGENT_ID = "agent_0201m0wydx9bft0tn09q0ex0ghm0";
+  const FRIENDLY_START_ERROR = "Live Voice Chat couldn't connect. Please try again.";
   let sdkLoadPromise = null;
 
   function loadSdk(url = "js/vendor/elevenlabs-client.js?v=1.22.0") {
@@ -36,6 +35,11 @@
   }
 
   async function requestConversationAccess(options) {
+    const voiceKey = String(options.voice?.key || "").trim().toLowerCase();
+    const selectedAgentId = String(options.voice?.agentId || "").trim();
+    if (!voiceKey || !/^agent_[a-z0-9]+$/.test(selectedAgentId)) {
+      throw new Error("voice_agent_invalid");
+    }
     let configResponse;
     try {
       configResponse = await fetch(options.configEndpoint, {
@@ -43,24 +47,26 @@
         headers: { Accept: "application/json" }
       });
     } catch (error) {
-      return { agentId: PUBLIC_AGENT_ID, conversationId: "" };
+      return { agentId: selectedAgentId, conversationId: "", voice: voiceKey };
     }
     const config = await readJson(configResponse);
     if (!configResponse.ok || !config.enabled) {
-      return { agentId: PUBLIC_AGENT_ID, conversationId: "" };
+      return { agentId: selectedAgentId, conversationId: "", voice: voiceKey };
     }
 
     const response = await fetch(options.sessionEndpoint, {
       method: "POST",
       headers: {
         Accept: "application/json",
+        "Content-Type": "application/json",
         ...authHeaders()
-      }
+      },
+      body: JSON.stringify({ voice: voiceKey })
     });
     const payload = await readJson(response);
     if (!response.ok) {
       if ([401, 404, 503].includes(response.status)) {
-        return { agentId: PUBLIC_AGENT_ID, conversationId: "" };
+        return { agentId: selectedAgentId, conversationId: "", voice: voiceKey };
       }
       const error = new Error("voice_session_unavailable");
       error.status = response.status;
@@ -68,7 +74,7 @@
     }
     const conversationToken = String(payload.conversation_token || "").trim();
     if (!conversationToken) throw new Error("voice_session_invalid");
-    return { conversationToken, conversationId: String(payload.conversation_id || "") };
+    return { conversationToken, conversationId: String(payload.conversation_id || ""), voice: voiceKey };
   }
 
   async function confirmMicrophoneAccess() {
@@ -101,7 +107,7 @@
       let intentionalEnd = false;
       const connection = session.conversationToken
         ? { conversationToken: session.conversationToken }
-        : { agentId: session.agentId || PUBLIC_AGENT_ID };
+        : { agentId: session.agentId };
       const conversation = await Conversation.startSession({
         ...connection,
         connectionType: "webrtc",
@@ -142,6 +148,7 @@
     } catch (error) {
       if (error?.name === "NotAllowedError") throw error;
       options.onFallback?.(FRIENDLY_START_ERROR, error?.status || 0);
+      if (options.strictAgent) throw error;
       return null;
     }
   }

@@ -4649,17 +4649,22 @@ document.addEventListener("DOMContentLoaded", () => {
         .join("\n");
       let grade = "";
       let board = "";
+      let firstName = "";
       let curriculum = null;
       try {
         grade = localStorage.getItem("tutorly_grade") || "";
         board = localStorage.getItem("tutorly_board") || "";
+        firstName = readStoredAccountValue(["tutorly_name", "math-bot-name", "tutorly_signup_full_name"])
+          .trim().split(/\s+/, 1)[0] || "";
         curriculum = window.TutorlyCurriculum?.getActiveContext?.() || null;
       }
       catch (error) {}
       return [
         "You are continuing a Tutorly study conversation. Be a concise, patient study friend.",
+        firstName ? `Student first name: ${firstName}.` : "",
         grade ? `Student grade: ${grade}.` : "",
         board ? `Student board: ${board}.` : "",
+        `Preferred voice language: ${getVoiceLanguage()}.`,
         curriculum?.subject ? `Current subject: ${curriculum.subject}.` : "",
         curriculum?.book ? `Current book: ${curriculum.book}.` : "",
         curriculum?.chapter ? `Current chapter: ${curriculum.chapter}.` : "",
@@ -4727,6 +4732,14 @@ document.addEventListener("DOMContentLoaded", () => {
       getTranscriptionEndpoint: () => getBackendEndpoint("/api/transcribe"),
       getVoiceConfigEndpoint: () => getBackendEndpoint("/api/voice/config"),
       getVoiceSessionEndpoint: () => getBackendEndpoint("/api/voice/session"),
+      getVoicePreference: async () => {
+        if (!window.TutorlyAuth?.getSessionToken?.()) return null;
+        return window.TutorlyAuth.getVoicePreferences();
+      },
+      saveVoicePreference: async (voiceKey, completed) => {
+        if (!window.TutorlyAuth?.getSessionToken?.()) return { saved: true };
+        return window.TutorlyAuth.saveVoicePreferences(voiceKey, completed);
+      },
       getSessionId: () => activeConversationId || getChatUserId(),
       getConversationContext: getVoiceConversationContext,
       getStudentName: () => readStoredAccountValue([

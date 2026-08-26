@@ -1,16 +1,9 @@
 (function (root) {
   "use strict";
 
-  const VOICES = Object.freeze([
-    Object.freeze({ key: "miles", name: "Miles", description: "Calm, intelligent and precise", agentId: null, colors: ["#2377ff", "#694cff", "#25c6ff"] }),
-    Object.freeze({ key: "theo", name: "Theo", description: "Friendly, clear and relaxed", agentId: null, colors: ["#3a86ff", "#5874ed", "#35d4c8"] }),
-    Object.freeze({ key: "leo", name: "Leo", description: "Bright, energetic and expressive", agentId: null, colors: ["#3478ff", "#a347ff", "#40d7ff"] }),
-    Object.freeze({ key: "evan", name: "Evan", description: "Soft, patient and reassuring", agentId: null, colors: ["#4669db", "#7864ef", "#62b8ff"] }),
-    Object.freeze({ key: "aria", name: "Aria", description: "Warm, natural and friendly", agentId: null, colors: ["#456dff", "#9a53ea", "#56d4ef"] }),
-    Object.freeze({ key: "clara", name: "Clara", description: "Clear, confident and composed", agentId: null, colors: ["#2f7bff", "#6256d9", "#66d7ff"] }),
-    Object.freeze({ key: "luna", name: "Luna", description: "Gentle, calm and soothing", agentId: null, colors: ["#4f67d8", "#8d5cea", "#72c8ff"] }),
-    Object.freeze({ key: "nova", name: "Nova", description: "Lively, upbeat and expressive", agentId: null, colors: ["#1f8aff", "#a443ff", "#1ed7e7"] })
-  ]);
+  const VOICES = [];
+  const REGISTRY_URL = "shared/tutorly-voice-agents.json";
+  const ALLOWED_KEYS = Object.freeze(["miles", "theo", "leo", "ethan", "aria", "clara", "luna", "nova"]);
 
   const INTELLIGENCE = Object.freeze([
     Object.freeze({ key: "standard", label: "Standard", model: "prime" }),
@@ -18,9 +11,51 @@
   ]);
 
   const STORAGE_KEYS = Object.freeze({
-    voice: "tutorly_voice_personality",
+    voice: "tutorly_preferred_voice_agent",
+    onboarding: "tutorly_voice_onboarding_completed",
     intelligence: "tutorly_voice_intelligence"
   });
+
+  let registryPromise = null;
+
+  function validateRegistry(payload) {
+    const entries = Array.isArray(payload?.voices) ? payload.voices : [];
+    if (entries.length !== ALLOWED_KEYS.length) throw new Error("voice_registry_invalid");
+    return entries.map((entry, index) => {
+      const key = String(entry?.key || "").trim().toLowerCase();
+      const agentId = String(entry?.agentId || "").trim();
+      if (key !== ALLOWED_KEYS[index] || !/^agent_[a-z0-9]+$/.test(agentId)) {
+        throw new Error("voice_registry_invalid");
+      }
+      return Object.freeze({
+        key,
+        name: String(entry.name || "").trim(),
+        description: String(entry.description || "").trim(),
+        agentId,
+        genderGroup: entry.genderGroup === "girl" ? "girl" : "boy",
+        colors: Object.freeze(Array.isArray(entry.colors) ? entry.colors.slice(0, 3) : [])
+      });
+    });
+  }
+
+  function ready() {
+    if (VOICES.length) return Promise.resolve(VOICES);
+    if (registryPromise) return registryPromise;
+    registryPromise = fetch(REGISTRY_URL, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("voice_registry_unavailable");
+        return response.json();
+      })
+      .then((payload) => {
+        VOICES.splice(0, VOICES.length, ...validateRegistry(payload));
+        return VOICES;
+      })
+      .catch((error) => {
+        registryPromise = null;
+        throw error;
+      });
+    return registryPromise;
+  }
 
   function safeStoredValue(key, fallback) {
     try { return String(root.localStorage?.getItem(key) || fallback); }
@@ -29,7 +64,7 @@
 
   function normalizeVoice(value) {
     const key = String(value || "").trim().toLowerCase();
-    return VOICES.some((voice) => voice.key === key) ? key : VOICES[0].key;
+    return VOICES.some((voice) => voice.key === key) ? key : "";
   }
 
   function normalizeIntelligence(value) {
@@ -37,9 +72,9 @@
     return INTELLIGENCE.some((mode) => mode.key === key) ? key : INTELLIGENCE[0].key;
   }
 
-  function getVoice(key = safeStoredValue(STORAGE_KEYS.voice, VOICES[0].key)) {
+  function getVoice(key = safeStoredValue(STORAGE_KEYS.voice, "")) {
     const safeKey = normalizeVoice(key);
-    return VOICES.find((voice) => voice.key === safeKey) || VOICES[0];
+    return VOICES.find((voice) => voice.key === safeKey) || null;
   }
 
   function getIntelligence(key = safeStoredValue(STORAGE_KEYS.intelligence, INTELLIGENCE[0].key)) {
@@ -49,8 +84,22 @@
 
   function saveVoice(value) {
     const key = normalizeVoice(value);
+    if (!key) return null;
     try { root.localStorage?.setItem(STORAGE_KEYS.voice, key); } catch (_error) {}
     return getVoice(key);
+  }
+
+  function getLocalPreference() {
+    const voice = getVoice();
+    const completed = safeStoredValue(STORAGE_KEYS.onboarding, "false") === "true";
+    return { preferred_voice_agent: voice?.key || "", voice_onboarding_completed: completed && !!voice };
+  }
+
+  function saveLocalPreference(value, completed = true) {
+    const voice = saveVoice(value);
+    if (!voice) return getLocalPreference();
+    try { root.localStorage?.setItem(STORAGE_KEYS.onboarding, completed ? "true" : "false"); } catch (_error) {}
+    return getLocalPreference();
   }
 
   function saveIntelligence(value) {
@@ -59,15 +108,18 @@
     return getIntelligence(key);
   }
 
-  // Agent IDs intentionally remain null until Tutorly's eight production agents exist.
-  // The current live ElevenLabs agent continues to be resolved by the existing backend/adapter.
   root.TutorlyVoiceConfig = Object.freeze({
     VOICES,
+    ALLOWED_KEYS,
+    REGISTRY_URL,
     INTELLIGENCE,
     STORAGE_KEYS,
+    ready,
     normalizeVoice,
     normalizeIntelligence,
     getVoice,
+    getLocalPreference,
+    saveLocalPreference,
     getIntelligence,
     saveVoice,
     saveIntelligence

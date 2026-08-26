@@ -10,13 +10,16 @@ from time import perf_counter
 import httpx
 from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 try:
     from backend.activity_store import activity_store
     from backend.auth_routes import authenticated_user_context
+    from backend.voice_agents import voice_agent, voice_agents
 except ImportError:
     from activity_store import activity_store
     from auth_routes import authenticated_user_context
+    from voice_agents import voice_agent, voice_agents
 
 from .orchestrator import ChatbotOrchestrator
 from .rate_limit import SlidingWindowRateLimiter
@@ -80,25 +83,28 @@ async def chatbot_health() -> dict:
     }
 
 
-def _elevenlabs_configuration() -> tuple[str, str]:
-    return (
-        os.getenv("ELEVENLABS_API_KEY", "").strip(),
-        os.getenv("ELEVENLABS_AGENT_ID", "").strip(),
-    )
+def _elevenlabs_configuration() -> str:
+    return os.getenv("ELEVENLABS_API_KEY", "").strip()
+
+
+class VoiceSessionRequest(BaseModel):
+    voice: str
 
 
 @router.get("/voice/config")
 async def voice_configuration() -> dict:
-    api_key, agent_id = _elevenlabs_configuration()
+    api_key = _elevenlabs_configuration()
     return {
-        "enabled": bool(api_key and agent_id),
-        "provider": "elevenlabs" if api_key and agent_id else "tutorly",
-        "transport": "webrtc" if api_key and agent_id else "existing_voice_pipeline",
+        "enabled": bool(api_key),
+        "provider": "elevenlabs" if api_key else "tutorly",
+        "transport": "webrtc" if api_key else "direct_agent_if_public",
+        "voices": list(voice_agents().keys()),
     }
 
 
 @router.post("/voice/session")
 async def create_voice_session(
+    payload: VoiceSessionRequest,
     request: Request,
     authorization: str | None = Header(default=None),
 ):
@@ -114,9 +120,13 @@ async def create_voice_session(
             headers={"Retry-After": str(decision.retry_after_seconds)},
         )
 
-    api_key, agent_id = _elevenlabs_configuration()
-    if not api_key or not agent_id:
+    selected_voice = voice_agent(payload.voice)
+    if selected_voice is None:
+        raise HTTPException(status_code=400, detail="Choose a valid Tutorly voice.")
+    api_key = _elevenlabs_configuration()
+    if not api_key:
         raise HTTPException(status_code=503, detail="Live Voice Chat is temporarily unavailable.")
+    agent_id = str(selected_voice["agent_id"])
 
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(12.0, connect=6.0)) as client:
@@ -162,6 +172,7 @@ async def create_voice_session(
         "conversation_id": conversation_id[:200],
         "provider": "elevenlabs",
         "transport": "webrtc",
+        "voice": str(selected_voice["key"]),
     }
 
 

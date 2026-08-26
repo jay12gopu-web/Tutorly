@@ -122,6 +122,7 @@
     const errorActions = overlay.querySelector("#voiceSessionErrorActions");
     const enableMicButton = overlay.querySelector("#voiceSessionEnableMic");
     const retryButton = overlay.querySelector("#voiceSessionRetry");
+    const chooseVoiceButton = overlay.querySelector("#voiceSessionChooseVoice");
     const exitButton = overlay.querySelector("#voiceSessionExit");
     const settingsOpenButton = overlay.querySelector("#voiceSettingsOpen");
     const settingsBackdrop = overlay.querySelector("#voiceSettingsBackdrop");
@@ -133,7 +134,14 @@
     const voicePrevious = overlay.querySelector("#voiceSelectorPrevious");
     const voiceNext = overlay.querySelector("#voiceSelectorNext");
     const voiceDots = overlay.querySelector("#voiceSelectorDots");
+    const voiceSelectorNote = overlay.querySelector("#voiceSelectorNote");
     const intelligenceSelect = overlay.querySelector("#voiceIntelligenceSelect");
+    const onboardingBackdrop = overlay.querySelector("#voiceOnboardingBackdrop");
+    const onboardingModal = overlay.querySelector("#voiceOnboardingModal");
+    const onboardingGrid = overlay.querySelector("#voiceOnboardingGrid");
+    const onboardingContinue = overlay.querySelector("#voiceOnboardingContinue");
+    const onboardingExit = overlay.querySelector("#voiceOnboardingExit");
+    const onboardingSaveError = overlay.querySelector("#voiceOnboardingSaveError");
 
     if (languageSelect && !languageSelect.options.length) {
       LANGUAGES.forEach((item) => {
@@ -178,7 +186,10 @@
     let muted = false;
     let settingsOpen = false;
     let settingsReturnFocus = null;
-    let voiceIndex = Math.max(0, (VOICE_CONFIG?.VOICES || []).findIndex((voice) => voice.key === VOICE_CONFIG?.getVoice?.().key));
+    let voiceIndex = 0;
+    let activeVoice = null;
+    let pendingOnboardingVoice = null;
+    let onboardingOpen = false;
     let errorKind = "connection";
 
     function notify(message) {
@@ -216,16 +227,17 @@
       options.onStateChange?.(safeNext, { label, hint });
     }
 
-    function showError(kind = "connection", hint = "") {
+    function showError(kind = "connection", hint = "", title = "") {
       errorKind = kind;
       const permission = kind === "microphone";
       const microphoneUnavailable = kind === "microphone-unavailable";
       if (enableMicButton) enableMicButton.hidden = !permission;
       if (retryButton) retryButton.hidden = permission;
+      if (chooseVoiceButton) chooseVoiceButton.hidden = kind !== "connection" || !activeVoice;
       setState(
         "error",
         hint || (permission ? "Allow microphone access to start Voice Chat." : microphoneUnavailable ? "Connect a microphone and try again." : "Check your connection and try again."),
-        permission ? "Microphone access is off." : microphoneUnavailable ? "Microphone unavailable." : "Couldn’t connect to Voice Chat."
+        title || (permission ? "Microphone access is off." : microphoneUnavailable ? "Microphone unavailable." : "Couldn’t connect to Voice Chat.")
       );
     }
 
@@ -248,7 +260,12 @@
             dot.classList.toggle("active", index === voiceIndex);
           });
         }
-        VOICE_CONFIG?.saveVoice?.(voice.key);
+        if (voiceSelectorNote) {
+          voiceSelectorNote.textContent = activeVoice?.key === voice.key
+            ? "Current voice"
+            : `Selected for your next session${activeVoice ? ` · ${activeVoice.name} is speaking now` : ""}`;
+        }
+        if (options.save) saveVoicePreference(voice.key, true, { notifyFailure: true });
         if (options.announce !== false) announce(`Voice selected: ${voice.name}`);
         voiceSelector?.classList.remove("is-changing");
       };
@@ -261,6 +278,8 @@
 
     function initializeVoiceSettings() {
       const voices = VOICE_CONFIG?.VOICES || [];
+      const preferred = VOICE_CONFIG?.getVoice?.();
+      voiceIndex = Math.max(0, voices.findIndex((voice) => voice.key === preferred?.key));
       if (voiceDots && !voiceDots.children.length) {
         voices.forEach((voice, index) => {
           const dot = document.createElement("span");
@@ -279,6 +298,120 @@
         if (deepOption && deepCost?.available && Number.isFinite(Number(deepCost.credits))) {
           deepOption.textContent = `${deepCost.label} · ${deepCost.credits} credits`;
         }
+      }
+    }
+
+    async function loadVoicePreference() {
+      try {
+        const preference = await options.getVoicePreference?.();
+        const key = VOICE_CONFIG?.normalizeVoice?.(preference?.preferred_voice_agent);
+        if (key && preference?.voice_onboarding_completed === true) {
+          VOICE_CONFIG?.saveLocalPreference?.(key, true);
+          return { preferred_voice_agent: key, voice_onboarding_completed: true };
+        }
+        if (preference) return { preferred_voice_agent: "", voice_onboarding_completed: false };
+      } catch (_error) {
+        notify("Tutorly couldn’t load your saved voice. You can choose it again.");
+      }
+      return VOICE_CONFIG?.getLocalPreference?.() || { preferred_voice_agent: "", voice_onboarding_completed: false };
+    }
+
+    async function saveVoicePreference(key, completed = true, saveOptions = {}) {
+      const voice = VOICE_CONFIG?.getVoice?.(key);
+      if (!voice) return { saved: false, voice: null };
+      VOICE_CONFIG?.saveLocalPreference?.(voice.key, completed);
+      try {
+        await options.saveVoicePreference?.(voice.key, completed);
+        return { saved: true, voice };
+      } catch (_error) {
+        if (saveOptions.notifyFailure) {
+          notify(`${voice.name} will be used now, but Tutorly couldn’t save it to your account.`);
+        }
+        return { saved: false, voice };
+      }
+    }
+
+    function selectOnboardingVoice(key, focus = false) {
+      const voice = VOICE_CONFIG?.getVoice?.(key);
+      if (!voice) return;
+      pendingOnboardingVoice = voice;
+      onboardingGrid?.querySelectorAll(".voice-onboarding-card").forEach((card) => {
+        const selected = card.dataset.voice === voice.key;
+        const cardVoice = VOICE_CONFIG?.getVoice?.(card.dataset.voice);
+        card.setAttribute("aria-checked", String(selected));
+        if (cardVoice) card.setAttribute("aria-label", `${cardVoice.name}. ${cardVoice.description}. ${selected ? "Selected" : "Not selected"}.`);
+        card.tabIndex = selected ? 0 : -1;
+        if (selected && focus) card.focus();
+      });
+      if (onboardingContinue) {
+        onboardingContinue.disabled = false;
+        onboardingContinue.textContent = `Continue with ${voice.name}`;
+        onboardingContinue.setAttribute("aria-label", `Continue with ${voice.name}`);
+      }
+      if (onboardingSaveError) onboardingSaveError.hidden = true;
+      announce(`${voice.name} selected`);
+    }
+
+    function renderOnboardingGrid() {
+      const voices = VOICE_CONFIG?.VOICES || [];
+      if (!onboardingGrid || onboardingGrid.children.length || !voices.length) return;
+      [{ key: "boy", label: "Boys" }, { key: "girl", label: "Girls" }].forEach((group) => {
+        const section = document.createElement("section");
+        section.className = "voice-onboarding-group";
+        const label = document.createElement("p");
+        label.className = "voice-onboarding-group-label";
+        label.textContent = group.label;
+        const grid = document.createElement("div");
+        grid.className = "voice-onboarding-group-grid";
+        voices.filter((voice) => voice.genderGroup === group.key).forEach((voice) => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "voice-onboarding-card";
+          card.dataset.voice = voice.key;
+          card.setAttribute("role", "radio");
+          card.setAttribute("aria-checked", "false");
+          card.setAttribute("aria-label", `${voice.name}. ${voice.description}. Not selected.`);
+          card.tabIndex = -1;
+          const colors = voice.colors || [];
+          card.innerHTML = `<span class="voice-onboarding-card-check" aria-hidden="true">✓</span><span class="voice-onboarding-avatar" aria-hidden="true" style="--voice-color-a:${colors[0] || "#2377ff"};--voice-color-b:${colors[1] || "#694cff"};--voice-color-c:${colors[2] || "#25c6ff"}"></span><strong>${voice.name}</strong><small>${voice.description}</small>`;
+          card.addEventListener("click", () => selectOnboardingVoice(voice.key));
+          card.addEventListener("keydown", (event) => {
+            if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+            event.preventDefault();
+            const current = voices.findIndex((item) => item.key === voice.key);
+            const delta = ["ArrowLeft", "ArrowUp"].includes(event.key) ? -1 : 1;
+            selectOnboardingVoice(voices[(current + delta + voices.length) % voices.length].key, true);
+          });
+          grid.appendChild(card);
+        });
+        section.append(label, grid);
+        onboardingGrid.appendChild(section);
+      });
+      const firstCard = onboardingGrid.querySelector(".voice-onboarding-card");
+      if (firstCard) firstCard.tabIndex = 0;
+    }
+
+    function setOnboardingOpen(next) {
+      if (!onboardingBackdrop) return;
+      onboardingOpen = !!next;
+      overlay.classList.toggle("voice-onboarding-open", onboardingOpen);
+      onboardingBackdrop.hidden = !onboardingOpen;
+      onboardingBackdrop.setAttribute("aria-hidden", String(!onboardingOpen));
+      [closeButton, muteButton, settingsOpenButton].forEach((button) => { if (button) button.disabled = onboardingOpen; });
+      if (onboardingOpen) {
+        setSettingsOpen(false);
+        pendingOnboardingVoice = null;
+        if (onboardingContinue) {
+          onboardingContinue.disabled = true;
+          onboardingContinue.textContent = "Choose a voice to continue";
+        }
+        onboardingGrid?.querySelectorAll(".voice-onboarding-card").forEach((card, index) => {
+          const cardVoice = VOICE_CONFIG?.getVoice?.(card.dataset.voice);
+          card.setAttribute("aria-checked", "false");
+          if (cardVoice) card.setAttribute("aria-label", `${cardVoice.name}. ${cardVoice.description}. Not selected.`);
+          card.tabIndex = index === 0 ? 0 : -1;
+        });
+        root.setTimeout(() => onboardingModal?.focus(), 30);
       }
     }
 
@@ -424,6 +557,7 @@
     function close() {
       if (!open && overlay.hidden) return;
       open = false;
+      setOnboardingOpen(false);
       setSettingsOpen(false);
       muted = false;
       if (muteButton) {
@@ -437,6 +571,7 @@
       cancelSpeech();
       stopProviderSession();
       releaseAudio();
+      activeVoice = null;
       overlay.classList.remove("show");
       overlay.setAttribute("aria-hidden", "true");
       document.body.classList.remove("voice-session-open");
@@ -657,28 +792,8 @@
       speakerEchoFloor = noiseFloor;
     }
 
-    async function openSession(nextMode = "voice", trigger = null) {
-      if (open) return;
-      if (!navigator.mediaDevices?.getUserMedia) {
-        notify("Full voice chat is not supported in this browser. You can still dictate into the composer.");
-        return;
-      }
-      open = true;
-      muted = false;
-      errorKind = "connection";
-      if (muteButton) {
-        muteButton.setAttribute("aria-pressed", "false");
-        muteButton.setAttribute("aria-label", "Mute microphone");
-        muteButton.title = "Mute microphone";
-      }
-      mode = nextMode === "vision" ? "vision" : "voice";
-      returnFocus = trigger || document.activeElement;
-      if (!inline) {
-        overlay.hidden = false;
-        overlay.setAttribute("aria-hidden", "false");
-        document.body.classList.add("voice-session-open");
-        root.requestAnimationFrame(() => overlay.classList.add("show"));
-      }
+    async function startVoiceTransport() {
+      if (!open || !activeVoice) return;
       setTranscript("");
       setReply("");
       setState("connecting");
@@ -686,6 +801,8 @@
         const liveProvider = await root.TutorlyElevenLabsVoice?.start?.({
           configEndpoint: options.getVoiceConfigEndpoint?.(),
           sessionEndpoint: options.getVoiceSessionEndpoint?.(),
+          voice: activeVoice,
+          strictAgent: true,
           context: options.getConversationContext?.() || "",
           onConnect: () => {
             if (open) setState("listening");
@@ -718,10 +835,10 @@
             if (open) setState("listening", "Go ahead — I’m listening to the interruption.");
           },
           onDisconnect: ({ intentional } = {}) => {
-            if (open && !intentional) showError("connection", "Voice Chat disconnected. Try connecting again.");
+            if (open && !intentional) showError("connection", `${activeVoice.name} disconnected. Try connecting again.`, `Couldn’t connect to ${activeVoice.name}.`);
           },
           onError: () => {
-            if (open) showError("connection", "Voice Chat hit a problem. Try connecting again.");
+            if (open) showError("connection", "Voice Chat hit a problem. Try connecting again.", `Couldn’t connect to ${activeVoice.name}.`);
           },
           onFallback: (message, status) => {
             if (status !== 401 && status !== 503) notify(message);
@@ -773,12 +890,66 @@
         stopProviderSession();
         releaseAudio();
         const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+        const microphoneUnavailable = error?.name === "NotSupportedError" || error?.name === "NotFoundError";
         const message = denied
           ? "Allow microphone access in your browser, then choose Enable microphone."
-          : "No working microphone was found. You can still type your question.";
-        showError(denied ? "microphone" : "microphone-unavailable", message);
+          : microphoneUnavailable
+            ? "No working microphone was found. You can still type your question."
+            : `Tutorly couldn’t connect to ${activeVoice.name}. Try again or choose another voice.`;
+        showError(
+          denied ? "microphone" : microphoneUnavailable ? "microphone-unavailable" : "connection",
+          message,
+          denied ? "Microphone access is off." : microphoneUnavailable ? "Microphone unavailable." : `Couldn’t connect to ${activeVoice.name}.`
+        );
         notify(message);
       }
+    }
+
+    async function openSession(nextMode = "voice", trigger = null) {
+      if (open) return;
+      if (!navigator.mediaDevices?.getUserMedia) {
+        notify("Full voice chat is not supported in this browser. You can still dictate into the composer.");
+        return;
+      }
+      open = true;
+      muted = false;
+      errorKind = "connection";
+      if (muteButton) {
+        muteButton.setAttribute("aria-pressed", "false");
+        muteButton.setAttribute("aria-label", "Mute microphone");
+        muteButton.title = "Mute microphone";
+      }
+      mode = nextMode === "vision" ? "vision" : "voice";
+      returnFocus = trigger || document.activeElement;
+      if (!inline) {
+        overlay.hidden = false;
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("voice-session-open");
+        root.requestAnimationFrame(() => overlay.classList.add("show"));
+      }
+      setState("connecting", "Loading your Tutorly voices…");
+      try {
+        await VOICE_CONFIG?.ready?.();
+        renderOnboardingGrid();
+        initializeVoiceSettings();
+      } catch (_error) {
+        showError("connection", "Tutorly couldn’t load the voice list. Check your connection and try again.");
+        return;
+      }
+      if (!open) return;
+      const preference = await loadVoicePreference();
+      if (!open) return;
+      const selected = preference?.voice_onboarding_completed
+        ? VOICE_CONFIG?.getVoice?.(preference.preferred_voice_agent)
+        : null;
+      if (!selected) {
+        setOnboardingOpen(true);
+        return;
+      }
+      activeVoice = selected;
+      voiceIndex = Math.max(0, (VOICE_CONFIG?.VOICES || []).findIndex((voice) => voice.key === activeVoice.key));
+      renderVoiceSelection({ animate: false, announce: false });
+      await startVoiceTransport();
     }
 
     async function retrySession() {
@@ -792,6 +963,26 @@
       releaseAudio();
       open = false;
       await openSession(currentMode, trigger);
+    }
+
+    async function continueVoiceOnboarding() {
+      const selected = pendingOnboardingVoice;
+      if (!open || !onboardingOpen || !selected) return;
+      if (onboardingContinue) {
+        onboardingContinue.disabled = true;
+        onboardingContinue.textContent = "Saving…";
+      }
+      const result = await saveVoicePreference(selected.key, true, { notifyFailure: true });
+      if (!open) return;
+      activeVoice = selected;
+      voiceIndex = Math.max(0, (VOICE_CONFIG?.VOICES || []).findIndex((voice) => voice.key === selected.key));
+      if (!result.saved && onboardingSaveError) {
+        onboardingSaveError.textContent = `${selected.name} will be used for this session, but the account preference could not be saved.`;
+        onboardingSaveError.hidden = false;
+      }
+      setOnboardingOpen(false);
+      renderVoiceSelection({ animate: false, announce: false });
+      await startVoiceTransport();
     }
 
     function speak(markdown, spokenAnswer = "") {
@@ -863,7 +1054,10 @@
         announce(`Voice language: ${languageSelect.options[languageSelect.selectedIndex]?.text || "Auto-detect"}`);
       });
     }
-    initializeVoiceSettings();
+    VOICE_CONFIG?.ready?.().then(() => {
+      renderOnboardingGrid();
+      initializeVoiceSettings();
+    }).catch(() => {});
     intelligenceSelect?.addEventListener("change", () => {
       const intelligence = VOICE_CONFIG?.saveIntelligence?.(intelligenceSelect.value);
       intelligenceSelect.value = intelligence?.key || "standard";
@@ -872,11 +1066,11 @@
     });
     voicePrevious?.addEventListener("click", () => {
       voiceIndex -= 1;
-      renderVoiceSelection();
+      renderVoiceSelection({ save: true });
     });
     voiceNext?.addEventListener("click", () => {
       voiceIndex += 1;
-      renderVoiceSelection();
+      renderVoiceSelection({ save: true });
     });
     settingsOpenButton?.addEventListener("click", () => setSettingsOpen(true));
     settingsCloseButton?.addEventListener("click", () => setSettingsOpen(false));
@@ -886,13 +1080,43 @@
     closeButton?.addEventListener("click", close);
     muteButton?.addEventListener("click", () => setMuted(!muted));
     retryButton?.addEventListener("click", retrySession);
+    chooseVoiceButton?.addEventListener("click", () => {
+      stopProviderSession();
+      releaseAudio();
+      setOnboardingOpen(true);
+    });
     enableMicButton?.addEventListener("click", retrySession);
     exitButton?.addEventListener("click", close);
+    onboardingContinue?.addEventListener("click", continueVoiceOnboarding);
+    onboardingExit?.addEventListener("click", close);
     photoButton?.addEventListener("click", () => {
       setSettingsOpen(false);
       options.onPhoto?.();
     });
     document.addEventListener("keydown", (event) => {
+      if (open && onboardingOpen) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          return;
+        }
+        if (event.key === "Tab" && onboardingModal) {
+          const focusable = Array.from(onboardingModal.querySelectorAll('button:not([disabled]), [tabindex="0"]'))
+            .filter((element) => !element.hidden && element.getAttribute("aria-hidden") !== "true");
+          if (focusable.length) {
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first.focus();
+            }
+          }
+        }
+        return;
+      }
       if (open && settingsOpen && event.key === "Escape") {
         event.preventDefault();
         event.stopImmediatePropagation();

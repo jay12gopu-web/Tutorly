@@ -14,6 +14,7 @@ if str(PROJECT_DIR) not in sys.path:
 
 from backend import auth_routes
 from backend.chatbot import routes as chatbot_routes
+from backend.voice_agents import voice_agents
 
 
 class FakeResponse:
@@ -47,7 +48,6 @@ def main() -> None:
         auth_routes.DATABASE_PATH = Path(directory) / "voice-auth-test.db"
         os.environ["TUTORLY_OTP_SECRET"] = "test-only-secret-with-at-least-24-characters"
         os.environ.pop("ELEVENLABS_API_KEY", None)
-        os.environ["ELEVENLABS_AGENT_ID"] = "agent_0201m0wydx9bft0tn09q0ex0ghm0"
 
         app = FastAPI()
         app.include_router(auth_routes.router)
@@ -58,7 +58,7 @@ def main() -> None:
         assert disabled.status_code == 200
         assert disabled.json()["enabled"] is False
 
-        unauthenticated = client.post("/api/voice/session")
+        unauthenticated = client.post("/api/voice/session", json={"voice": "miles"})
         assert unauthenticated.status_code == 401
 
         registered = client.post(
@@ -71,31 +71,53 @@ def main() -> None:
         os.environ["ELEVENLABS_API_KEY"] = "server-secret-test-key"
         configured = client.get("/api/voice/config")
         assert configured.status_code == 200
-        assert configured.json() == {
-            "enabled": True,
-            "provider": "elevenlabs",
-            "transport": "webrtc",
+        assert configured.json()["enabled"] is True
+        assert configured.json()["provider"] == "elevenlabs"
+        assert configured.json()["transport"] == "webrtc"
+        assert configured.json()["voices"] == list(voice_agents().keys())
+
+        empty_preference = client.get(
+            "/api/auth/voice-preferences",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert empty_preference.json() == {
+            "preferred_voice_agent": "",
+            "voice_onboarding_completed": False,
         }
+        invalid_preference = client.put(
+            "/api/auth/voice-preferences",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"preferred_voice_agent": "unknown", "voice_onboarding_completed": True},
+        )
+        assert invalid_preference.status_code == 400
+        saved_preference = client.put(
+            "/api/auth/voice-preferences",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"preferred_voice_agent": "luna", "voice_onboarding_completed": True},
+        )
+        assert saved_preference.status_code == 200
+        assert saved_preference.json()["preferred_voice_agent"] == "luna"
 
         original_client = chatbot_routes.httpx.AsyncClient
         chatbot_routes.httpx.AsyncClient = FakeAsyncClient
         try:
-            issued = client.post(
-                "/api/voice/session",
-                headers={"Authorization": f"Bearer {token}"},
-            )
+            for voice_key, voice in voice_agents().items():
+                issued = client.post(
+                    "/api/voice/session",
+                    headers={"Authorization": f"Bearer {token}"},
+                    json={"voice": voice_key},
+                )
+                assert issued.status_code == 200, issued.text
+                payload = issued.json()
+                assert payload["conversation_token"] == "short-lived-conversation-token"
+                assert payload["transport"] == "webrtc"
+                assert payload["voice"] == voice_key
+                assert "server-secret-test-key" not in issued.text
+                assert FakeAsyncClient.last_request["params"]["agent_id"] == voice["agent_id"]
+                assert FakeAsyncClient.last_request["headers"]["xi-api-key"] == "server-secret-test-key"
         finally:
             chatbot_routes.httpx.AsyncClient = original_client
             os.environ.pop("ELEVENLABS_API_KEY", None)
-
-        assert issued.status_code == 200, issued.text
-        payload = issued.json()
-        assert payload["conversation_token"] == "short-lived-conversation-token"
-        assert payload["transport"] == "webrtc"
-        assert "server-secret-test-key" not in issued.text
-        assert FakeAsyncClient.last_request["params"]["agent_id"] == "agent_0201m0wydx9bft0tn09q0ex0ghm0"
-        assert FakeAsyncClient.last_request["headers"]["xi-api-key"] == "server-secret-test-key"
-
     print("Tutorly ElevenLabs authenticated WebRTC-token endpoint checks passed.")
 
 
