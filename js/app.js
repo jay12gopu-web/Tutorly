@@ -4729,8 +4729,23 @@ document.addEventListener("DOMContentLoaded", () => {
       getVoiceSessionEndpoint: () => getBackendEndpoint("/api/voice/session"),
       getSessionId: () => activeConversationId || getChatUserId(),
       getConversationContext: getVoiceConversationContext,
+      getStudentName: () => readStoredAccountValue([
+        "tutorly_name",
+        "math-bot-name",
+        "tutorly_signup_full_name"
+      ]),
       getLanguage: getVoiceLanguage,
       setLanguage: (language) => setStoredValue("tutorly_voice_language", normalizeVoiceLanguage(language)),
+      onIntelligenceChange: (intelligence = {}) => {
+        const model = intelligence.model === "deep" ? "deep" : "prime";
+        setSelectedModel(model, { announce: true });
+        if (intelligence.creditAction) {
+          const cost = PlanConfig?.CREDIT_COSTS?.[intelligence.creditAction];
+          if (cost?.available && Number.isFinite(Number(cost.credits))) {
+            showToast(`${cost.label} uses ${cost.credits} credits when used.`);
+          }
+        }
+      },
       onNotice: showToast,
       onPhoto: () => uploadInput?.click(),
       onInterrupt: abortActiveChatRequest,

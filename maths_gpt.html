@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="css/mobile-app.css?v=mobile-first-20260623" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
   <link rel="stylesheet" href="css/chatbot-mobile-polish.css?v=study-composer-20260825" />
+  <link rel="stylesheet" href="css/voice-chat.css?v=immersive-voice-20260826" />
 </head>
 
 <body data-tutorly-surface="workspace">
@@ -300,39 +301,96 @@
 
   </div>
 
-  <div id="voiceChatOverlay" class="voice-session-overlay" aria-hidden="true" hidden>
+  <div id="voiceChatOverlay" class="voice-session-overlay" data-voice-state="idle" aria-hidden="true" hidden>
     <section class="voice-session-panel" role="dialog" aria-modal="true" aria-labelledby="voiceSessionTitle" aria-describedby="voiceSessionHint">
       <header class="voice-session-header">
         <div class="voice-session-brand">
           <span class="voice-session-brand-mark" aria-hidden="true"><img src="assets/brand-star.png" alt="" /></span>
           <h2 id="voiceSessionTitle">Voice chat with Tutorly</h2>
         </div>
-        <div class="voice-session-actions">
-          <button id="voiceSessionPhoto" class="voice-session-control" type="button" aria-label="Attach a homework image">Photo</button>
-          <label class="voice-session-language">
-            <span class="sr-only">Voice language</span>
-            <select id="voiceSessionLanguage" aria-label="Voice language"></select>
-          </label>
-          <button id="voiceSessionClose" class="voice-session-end" type="button" aria-label="End Voice Chat">End</button>
-        </div>
+        <button id="voiceSettingsOpen" class="voice-session-settings-button" type="button" aria-label="Open Voice Settings" aria-haspopup="dialog" aria-expanded="false" title="Voice Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.05.05-2.12 2.12-.05-.05a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.1 1.65V20.5h-3v-.09a1.8 1.8 0 0 0-1.1-1.65 1.8 1.8 0 0 0-2 .36l-.05.05-2.12-2.12.05-.05a1.8 1.8 0 0 0 .36-2A1.8 1.8 0 0 0 5 13.9H4.9v-3H5a1.8 1.8 0 0 0 1.65-1.1 1.8 1.8 0 0 0-.36-2l-.05-.05 2.12-2.12.05.05a1.8 1.8 0 0 0 2 .36A1.8 1.8 0 0 0 11.5 4.4V4.3h3v.1a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 2-.36l.05-.05 2.12 2.12-.05.05a1.8 1.8 0 0 0-.36 2A1.8 1.8 0 0 0 21 10.9h.1v3H21A1.8 1.8 0 0 0 19.4 15Z"/></svg>
+        </button>
       </header>
 
       <div class="voice-session-content">
         <div class="voice-session-orb" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
-            <path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v3M8 21h8" />
-          </svg>
+          <span class="voice-orb-atmosphere"></span>
+          <span class="voice-orb-core"></span>
+          <span class="voice-orb-highlight"></span>
+          <span class="voice-orb-wave"></span>
         </div>
-        <div class="voice-session-copy" aria-live="polite">
+        <div class="voice-session-copy">
           <h3 id="voiceSessionState">Getting ready…</h3>
           <p id="voiceSessionHint">Checking your microphone.</p>
           <p id="voiceSessionImageStatus" class="voice-session-image-status" hidden></p>
-          <p id="voiceSessionTranscript" class="voice-session-transcript" hidden></p>
-          <p id="voiceSessionReply" class="voice-session-reply" hidden></p>
+          <p id="voiceSessionTranscript" class="voice-session-transcript sr-only" hidden></p>
+          <p id="voiceSessionReply" class="voice-session-reply sr-only" hidden></p>
+          <div id="voiceSessionErrorActions" class="voice-session-error-actions" hidden>
+            <button id="voiceSessionEnableMic" type="button" hidden>Enable microphone</button>
+            <button id="voiceSessionRetry" type="button">Try again</button>
+            <button id="voiceSessionExit" type="button">Exit</button>
+          </div>
+        </div>
+
+        <div class="voice-session-control-pill" aria-label="Voice Chat controls">
+          <button id="voiceSessionClose" class="voice-session-end" type="button" aria-label="End Voice Chat" title="End voice chat">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+          </button>
+          <span class="voice-control-divider" aria-hidden="true"></span>
+          <button id="voiceSessionMute" class="voice-session-mute" type="button" aria-label="Mute microphone" aria-pressed="false" title="Mute microphone">
+            <svg class="voice-mic-on" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6"/></svg>
+            <svg class="voice-mic-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 4 16 16M9 9v2a3 3 0 0 0 5.1 2.14M15 9V6a3 3 0 0 0-5.68-1.36M6 11a6 6 0 0 0 10.66 3.78M18 11a6 6 0 0 1-.32 1.94M12 17v4M9 21h6"/></svg>
+          </button>
         </div>
       </div>
-      <p class="voice-session-footnote">Speak naturally. Tutorly pauses when you talk and replies when you stop.</p>
+      <p class="voice-session-footnote">Speak naturally. You can interrupt Tutorly anytime.</p>
+
+      <div id="voiceSettingsBackdrop" class="voice-settings-backdrop" aria-hidden="true" hidden>
+        <section class="voice-settings-modal" role="dialog" aria-modal="true" aria-labelledby="voiceSettingsTitle">
+          <header class="voice-settings-header">
+            <div><p>VOICE CHAT</p><h2 id="voiceSettingsTitle">Settings</h2></div>
+            <button id="voiceSettingsClose" class="voice-settings-close" type="button" aria-label="Close Voice Settings" title="Close settings">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+            </button>
+          </header>
+
+          <div class="voice-selector" aria-label="Tutorly voice personality selector">
+            <div id="voiceSelectorVisual" class="voice-selector-visual" aria-hidden="true"><span></span></div>
+            <div class="voice-selector-copy">
+              <h3 id="voiceSelectorName">Miles</h3>
+              <p id="voiceSelectorDescription">Calm, intelligent and precise</p>
+            </div>
+            <div class="voice-selector-navigation">
+              <button id="voiceSelectorPrevious" type="button" aria-label="Previous voice" title="Previous voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+              <button id="voiceSelectorNext" type="button" aria-label="Next voice" title="Next voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+            </div>
+            <div id="voiceSelectorDots" class="voice-selector-dots" aria-label="Voice 1 of 8"></div>
+            <p class="voice-selector-note">Your selection is saved for a future session. Tutorly’s current live voice remains active for now.</p>
+          </div>
+
+          <div class="voice-settings-rows">
+            <label class="voice-setting-row" for="voiceIntelligenceSelect">
+              <span class="voice-setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 4.5A3.5 3.5 0 0 0 4.5 9a3.5 3.5 0 0 0 .5 6.5A3.5 3.5 0 0 0 9 20M15 4.5A3.5 3.5 0 0 1 19.5 9a3.5 3.5 0 0 1-.5 6.5A3.5 3.5 0 0 1 15 20M9 4v16M15 4v16M9 9h2M13 15h2"/></svg></span>
+              <span class="voice-setting-label">Intelligence</span>
+              <select id="voiceIntelligenceSelect" aria-label="Voice Chat intelligence"><option value="standard">Standard</option><option value="deep">Deep Solve</option></select>
+              <svg class="voice-setting-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </label>
+            <label class="voice-setting-row" for="voiceSessionLanguage">
+              <span class="voice-setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
+              <span class="voice-setting-label">Language</span>
+              <select id="voiceSessionLanguage" aria-label="Voice language"></select>
+              <svg class="voice-setting-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </label>
+            <button id="voiceSessionPhoto" class="voice-setting-row voice-photo-action" type="button" aria-label="Attach a homework image">
+              <span class="voice-setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="4"/></svg></span>
+              <span class="voice-setting-label">Attach homework photo</span>
+              <svg class="voice-setting-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        </section>
+      </div>
+      <p id="voiceSessionAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></p>
     </section>
   </div>
 
@@ -362,8 +420,9 @@
   <script src="js/chatbot/rich-response-renderer.js?v=voice-english-20260824"></script>
   <script src="js/chatbot/markdown-renderer.js?v=voice-english-20260824"></script>
   <script src="js/chatbot/elevenlabs-voice.js?v=elevenlabs-agent-20260826b"></script>
-  <script src="js/chatbot/voice-chat.js?v=elevenlabs-agent-20260826b"></script>
-  <script src="js/app.js?v=elevenlabs-agent-20260826b"></script>
+  <script src="js/chatbot/voice-config.js?v=immersive-voice-20260826"></script>
+  <script src="js/chatbot/voice-chat.js?v=immersive-voice-20260826"></script>
+  <script src="js/app.js?v=immersive-voice-20260826"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=embedded-tools-20260824"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>

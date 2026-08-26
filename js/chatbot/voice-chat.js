@@ -1,6 +1,8 @@
 (function (root) {
   "use strict";
 
+  const VOICE_CONFIG = root.TutorlyVoiceConfig || null;
+
   const LANGUAGES = Object.freeze([
     { value: "auto", label: "Auto-detect", bcp: "" },
     { value: "en-US", label: "English", bcp: "en-US" },
@@ -33,11 +35,14 @@
   });
 
   const STATE_COPY = Object.freeze({
+    idle: ["Voice Chat", ""],
     connecting: ["Getting ready…", "Checking your microphone."],
-    listening: ["Listening — just talk", "Speak naturally. I’ll respond when you finish."],
-    processing: ["Processing…", "You can interrupt and ask something else."],
-    speaking: ["Tutorly is speaking", "Start talking to interrupt."],
-    error: ["Voice unavailable", "Check microphone permission, then try again."],
+    listening: ["I’m listening…", "What’s on your mind?"],
+    "user-speaking": ["I’m listening…", "Go ahead — I’m with you."],
+    processing: ["Thinking…", "Working through that."],
+    speaking: ["Speaking…", "You can interrupt anytime."],
+    muted: ["You’re muted.", "Turn your mic back on when you’re ready."],
+    error: ["Couldn’t connect to Voice Chat.", "Please try again."],
     closed: ["Voice chat", ""]
   });
 
@@ -109,9 +114,26 @@
     const replyNode = overlay.querySelector("#voiceSessionReply");
     const languageSelect = overlay.querySelector("#voiceSessionLanguage");
     const closeButton = overlay.querySelector("#voiceSessionClose");
+    const muteButton = overlay.querySelector("#voiceSessionMute");
     const photoButton = overlay.querySelector("#voiceSessionPhoto");
     const imageStatus = overlay.querySelector("#voiceSessionImageStatus");
     const orb = overlay.querySelector(".voice-session-orb");
+    const announcer = overlay.querySelector("#voiceSessionAnnouncer");
+    const errorActions = overlay.querySelector("#voiceSessionErrorActions");
+    const enableMicButton = overlay.querySelector("#voiceSessionEnableMic");
+    const retryButton = overlay.querySelector("#voiceSessionRetry");
+    const exitButton = overlay.querySelector("#voiceSessionExit");
+    const settingsOpenButton = overlay.querySelector("#voiceSettingsOpen");
+    const settingsBackdrop = overlay.querySelector("#voiceSettingsBackdrop");
+    const settingsCloseButton = overlay.querySelector("#voiceSettingsClose");
+    const voiceSelector = overlay.querySelector(".voice-selector");
+    const voiceVisual = overlay.querySelector("#voiceSelectorVisual");
+    const voiceName = overlay.querySelector("#voiceSelectorName");
+    const voiceDescription = overlay.querySelector("#voiceSelectorDescription");
+    const voicePrevious = overlay.querySelector("#voiceSelectorPrevious");
+    const voiceNext = overlay.querySelector("#voiceSelectorNext");
+    const voiceDots = overlay.querySelector("#voiceSelectorDots");
+    const intelligenceSelect = overlay.querySelector("#voiceIntelligenceSelect");
 
     if (languageSelect && !languageSelect.options.length) {
       LANGUAGES.forEach((item) => {
@@ -152,21 +174,135 @@
     let returnFocus = null;
     let providerSession = null;
     let providerVolumeFrame = null;
+    let providerQuietFrames = 0;
+    let muted = false;
+    let settingsOpen = false;
+    let settingsReturnFocus = null;
+    let voiceIndex = Math.max(0, (VOICE_CONFIG?.VOICES || []).findIndex((voice) => voice.key === VOICE_CONFIG?.getVoice?.().key));
+    let errorKind = "connection";
 
     function notify(message) {
       if (typeof options.onNotice === "function") options.onNotice(message);
     }
 
-    function setState(next, hintOverride = "") {
-      state = next;
-      overlay.dataset.voiceState = next;
-      const copy = STATE_COPY[next] || STATE_COPY.error;
-      if (stateLabel) stateLabel.textContent = copy[0];
-      if (stateHint) stateHint.textContent = hintOverride || copy[1];
-      options.onStateChange?.(next, {
-        label: copy[0],
-        hint: hintOverride || copy[1]
-      });
+    function announce(message) {
+      if (!announcer || !message || announcer.textContent === message) return;
+      announcer.textContent = "";
+      root.setTimeout(() => { if (announcer) announcer.textContent = message; }, 20);
+    }
+
+    function studentFirstName() {
+      const value = String(options.getStudentName?.() || "").trim().split(/\s+/, 1)[0] || "";
+      return /^[\p{L}'-]{1,32}$/u.test(value) ? value : "";
+    }
+
+    function setState(next, hintOverride = "", titleOverride = "") {
+      const safeNext = muted && !["closed", "connecting", "error"].includes(next) ? "muted" : next;
+      const previous = state;
+      state = safeNext;
+      overlay.dataset.voiceState = safeNext;
+      const copy = STATE_COPY[safeNext] || STATE_COPY.error;
+      const listeningName = safeNext === "listening" ? studentFirstName() : "";
+      const label = titleOverride || (listeningName ? `I’m listening, ${listeningName}…` : copy[0]);
+      const hint = hintOverride || copy[1];
+      if (stateLabel) stateLabel.textContent = label;
+      if (stateHint) stateHint.textContent = hint;
+      if (errorActions) errorActions.hidden = safeNext !== "error";
+      if (safeNext !== "error") {
+        if (enableMicButton) enableMicButton.hidden = true;
+        if (retryButton) retryButton.hidden = false;
+      }
+      if (previous !== safeNext && !["idle", "closed"].includes(safeNext)) announce(label);
+      options.onStateChange?.(safeNext, { label, hint });
+    }
+
+    function showError(kind = "connection", hint = "") {
+      errorKind = kind;
+      const permission = kind === "microphone";
+      const microphoneUnavailable = kind === "microphone-unavailable";
+      if (enableMicButton) enableMicButton.hidden = !permission;
+      if (retryButton) retryButton.hidden = permission;
+      setState(
+        "error",
+        hint || (permission ? "Allow microphone access to start Voice Chat." : microphoneUnavailable ? "Connect a microphone and try again." : "Check your connection and try again."),
+        permission ? "Microphone access is off." : microphoneUnavailable ? "Microphone unavailable." : "Couldn’t connect to Voice Chat."
+      );
+    }
+
+    function renderVoiceSelection(options = {}) {
+      const voices = VOICE_CONFIG?.VOICES || [];
+      if (!voices.length) return;
+      voiceIndex = (voiceIndex + voices.length) % voices.length;
+      const voice = voices[voiceIndex];
+      const apply = () => {
+        if (voiceName) voiceName.textContent = voice.name;
+        if (voiceDescription) voiceDescription.textContent = voice.description;
+        if (voiceVisual) {
+          voiceVisual.style.setProperty("--voice-color-a", voice.colors?.[0] || "#2377ff");
+          voiceVisual.style.setProperty("--voice-color-b", voice.colors?.[1] || "#694cff");
+          voiceVisual.style.setProperty("--voice-color-c", voice.colors?.[2] || "#25c6ff");
+        }
+        if (voiceDots) {
+          voiceDots.setAttribute("aria-label", `Voice ${voiceIndex + 1} of ${voices.length}: ${voice.name}`);
+          voiceDots.querySelectorAll(".voice-selector-dot").forEach((dot, index) => {
+            dot.classList.toggle("active", index === voiceIndex);
+          });
+        }
+        VOICE_CONFIG?.saveVoice?.(voice.key);
+        if (options.announce !== false) announce(`Voice selected: ${voice.name}`);
+        voiceSelector?.classList.remove("is-changing");
+      };
+      if (options.animate === false) apply();
+      else {
+        voiceSelector?.classList.add("is-changing");
+        root.setTimeout(apply, 120);
+      }
+    }
+
+    function initializeVoiceSettings() {
+      const voices = VOICE_CONFIG?.VOICES || [];
+      if (voiceDots && !voiceDots.children.length) {
+        voices.forEach((voice, index) => {
+          const dot = document.createElement("span");
+          dot.className = "voice-selector-dot";
+          dot.setAttribute("aria-hidden", "true");
+          dot.dataset.voice = voice.key;
+          if (index === voiceIndex) dot.classList.add("active");
+          voiceDots.appendChild(dot);
+        });
+      }
+      renderVoiceSelection({ animate: false, announce: false });
+      if (intelligenceSelect) {
+        intelligenceSelect.value = VOICE_CONFIG?.getIntelligence?.().key || "standard";
+        const deepOption = intelligenceSelect.querySelector('option[value="deep"]');
+        const deepCost = root.TutorlyPlanConfig?.CREDIT_COSTS?.deepSolve;
+        if (deepOption && deepCost?.available && Number.isFinite(Number(deepCost.credits))) {
+          deepOption.textContent = `${deepCost.label} · ${deepCost.credits} credits`;
+        }
+      }
+    }
+
+    function setSettingsOpen(next) {
+      if (!settingsBackdrop || !settingsOpenButton) return;
+      const shouldOpen = !!next;
+      if (settingsOpen === shouldOpen) return;
+      settingsOpen = shouldOpen;
+      settingsOpenButton.setAttribute("aria-expanded", String(shouldOpen));
+      if (shouldOpen) {
+        settingsReturnFocus = document.activeElement;
+        settingsBackdrop.hidden = false;
+        settingsBackdrop.setAttribute("aria-hidden", "false");
+        root.requestAnimationFrame(() => settingsBackdrop.classList.add("show"));
+        root.setTimeout(() => settingsCloseButton?.focus(), 30);
+        announce("Settings opened");
+      } else {
+        settingsBackdrop.classList.remove("show");
+        settingsBackdrop.setAttribute("aria-hidden", "true");
+        root.setTimeout(() => { if (!settingsOpen) settingsBackdrop.hidden = true; }, 210);
+        announce("Settings closed");
+        settingsReturnFocus?.focus?.();
+        settingsReturnFocus = null;
+      }
     }
 
     function setTranscript(text) {
@@ -224,11 +360,38 @@
     function stopProviderSession() {
       if (providerVolumeFrame) root.cancelAnimationFrame(providerVolumeFrame);
       providerVolumeFrame = null;
+      providerQuietFrames = 0;
       const session = providerSession;
       providerSession = null;
       if (session) Promise.resolve(session.end?.()).catch(() => {});
       orb?.style.setProperty("--voice-level", "0");
       orb?.style.setProperty("--speech-level", "0");
+    }
+
+    async function setMuted(next) {
+      if (!open) return;
+      const shouldMute = !!next;
+      if (muted === shouldMute) return;
+      muted = shouldMute;
+      if (muteButton) {
+        muteButton.setAttribute("aria-pressed", String(muted));
+        muteButton.setAttribute("aria-label", muted ? "Unmute microphone" : "Mute microphone");
+        muteButton.title = muted ? "Unmute microphone" : "Mute microphone";
+      }
+      try { stream?.getAudioTracks?.().forEach((track) => { track.enabled = !muted; }); } catch (_error) {}
+      try { await Promise.resolve(providerSession?.setMicMuted?.(muted)); } catch (_error) {
+        notify("Tutorly couldn’t change the microphone state. Please try again.");
+      }
+      if (muted) {
+        stopRecorder();
+        startFrameCount = 0;
+        bargeFrameCount = 0;
+        setState("muted");
+        announce("Microphone muted");
+      } else {
+        setState(speaking ? "speaking" : "listening");
+        announce("Microphone active");
+      }
     }
 
     async function updateProviderVolume() {
@@ -238,8 +401,22 @@
           Promise.resolve(providerSession.getInputVolume?.() || 0),
           Promise.resolve(providerSession.getOutputVolume?.() || 0)
         ]);
-        orb?.style.setProperty("--voice-level", Math.max(0, Math.min(1, Number(inputLevel) || 0)).toFixed(3));
-        orb?.style.setProperty("--speech-level", Math.max(0, Math.min(1, Number(outputLevel) || 0)).toFixed(3));
+        const input = Math.max(0, Math.min(1, Number(inputLevel) || 0));
+        const output = Math.max(0, Math.min(1, Number(outputLevel) || 0));
+        orb?.style.setProperty("--voice-level", (muted ? 0 : input).toFixed(3));
+        orb?.style.setProperty("--speech-level", output.toFixed(3));
+        if (!muted && !speaking && ["listening", "user-speaking"].includes(state)) {
+          if (input >= 0.075) {
+            providerQuietFrames = 0;
+            if (state !== "user-speaking") setState("user-speaking");
+          } else if (state === "user-speaking") {
+            providerQuietFrames += 1;
+            if (providerQuietFrames >= 10) {
+              providerQuietFrames = 0;
+              setState("listening");
+            }
+          }
+        }
       } catch (error) {}
       if (open && providerSession) providerVolumeFrame = root.requestAnimationFrame(updateProviderVolume);
     }
@@ -247,6 +424,13 @@
     function close() {
       if (!open && overlay.hidden) return;
       open = false;
+      setSettingsOpen(false);
+      muted = false;
+      if (muteButton) {
+        muteButton.setAttribute("aria-pressed", "false");
+        muteButton.setAttribute("aria-label", "Mute microphone");
+        muteButton.title = "Mute microphone";
+      }
       setState("closed");
       cancelResponseTimer();
       cancelTranscription();
@@ -301,7 +485,7 @@
 
     function updateOrb(features) {
       if (!orb) return;
-      const strength = Math.max(0, Math.min(1, (features.rms - noiseFloor) / Math.max(speechThreshold * 2, 0.04)));
+      const strength = muted ? 0 : Math.max(0, Math.min(1, (features.rms - noiseFloor) / Math.max(speechThreshold * 2, 0.04)));
       orb.style.setProperty("--voice-level", strength.toFixed(3));
     }
 
@@ -354,13 +538,13 @@
     }
 
     function startRecorder() {
-      if (!open || !stream || recorder?.state === "recording") return;
+      if (!open || muted || !stream || recorder?.state === "recording") return;
       const types = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus", "audio/mp4"];
       const mimeType = types.find((type) => root.MediaRecorder?.isTypeSupported?.(type)) || "";
       try {
         recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       } catch (error) {
-        setState("error", "This browser cannot record audio for voice chat.");
+        showError("microphone-unavailable", "This browser cannot record microphone audio for Voice Chat.");
         return;
       }
       chunks = [];
@@ -378,6 +562,10 @@
         recorder = null;
         startFrameCount = 0;
         if (!open) return;
+        if (muted) {
+          setState("muted");
+          return;
+        }
         if (!enoughVoice || duration < CONFIG.minimumUtteranceMs || blob.size < 1500) {
           setState("listening", "I’m waiting for your voice—not just background noise.");
           return;
@@ -388,6 +576,7 @@
     }
 
     function interruptCurrentTurn(now) {
+      if (muted) return;
       cancelSpeech();
       cancelResponseTimer();
       cancelTranscription();
@@ -403,6 +592,10 @@
       if (!open) return;
       const features = audioFeatures();
       updateOrb(features);
+      if (muted) {
+        animationFrame = root.requestAnimationFrame(tick);
+        return;
+      }
       const now = performance.now();
       const processingThreshold = Math.max(bargeThreshold, noiseFloor * 5.2);
       const speakingThreshold = Math.max(bargeThreshold, speakerEchoFloor * 2.15);
@@ -420,22 +613,27 @@
         }
         bargeFrameCount = echoGuardPassed && isVoice ? bargeFrameCount + 1 : 0;
         if (bargeFrameCount >= CONFIG.bargeFrames) interruptCurrentTurn(now);
-      } else if (state === "listening") {
+      } else if (state === "listening" || state === "user-speaking") {
         if (!recorder) {
           startFrameCount = isVoice ? startFrameCount + 1 : 0;
           if (startFrameCount >= CONFIG.startFrames) {
             startRecorder();
             utteranceVoiceFrames = CONFIG.startFrames;
             lastVoiceAt = now;
+            setState("user-speaking");
           }
         } else if (recorder.state === "recording") {
           if (isVoice) {
             utteranceVoiceFrames += 1;
             lastVoiceAt = now;
+            if (state !== "user-speaking") setState("user-speaking");
           }
           const silence = now - lastVoiceAt;
           const duration = now - utteranceStartedAt;
-          if (silence >= CONFIG.silenceMs || duration >= CONFIG.maxUtteranceMs) stopRecorder();
+          if (silence >= CONFIG.silenceMs || duration >= CONFIG.maxUtteranceMs) {
+            setState("listening");
+            stopRecorder();
+          }
         }
       }
 
@@ -466,6 +664,13 @@
         return;
       }
       open = true;
+      muted = false;
+      errorKind = "connection";
+      if (muteButton) {
+        muteButton.setAttribute("aria-pressed", "false");
+        muteButton.setAttribute("aria-label", "Mute microphone");
+        muteButton.title = "Mute microphone";
+      }
       mode = nextMode === "vision" ? "vision" : "voice";
       returnFocus = trigger || document.activeElement;
       if (!inline) {
@@ -483,7 +688,7 @@
           sessionEndpoint: options.getVoiceSessionEndpoint?.(),
           context: options.getConversationContext?.() || "",
           onConnect: () => {
-            if (open) setState("listening", "Just talk — Tutorly will reply when you finish.");
+            if (open) setState("listening");
           },
           onStatusChange: (status) => {
             if (!open) return;
@@ -492,22 +697,31 @@
           onModeChange: (providerMode) => {
             if (!open) return;
             speaking = providerMode === "speaking";
-            setState(speaking ? "speaking" : "listening");
+            if (speaking) setState("speaking");
+            else if (state !== "processing") setState("listening");
           },
           onMessage: ({ role, text, eventId }) => {
             if (!open) return;
-            if (role === "user") setTranscript(text);
-            else setReply(text);
+            if (role === "user") {
+              setTranscript(text);
+              setState("processing");
+            } else {
+              setReply(text);
+              if (state === "processing") {
+                speaking = true;
+                setState("speaking");
+              }
+            }
             options.onProviderMessage?.({ role, text, eventId });
           },
           onInterruption: () => {
-            if (open) setState("listening", "Go ahead — I’m listening.");
+            if (open) setState("listening", "Go ahead — I’m listening to the interruption.");
           },
           onDisconnect: ({ intentional } = {}) => {
-            if (open && !intentional) setState("error", "Voice Chat disconnected. Close and try again.");
+            if (open && !intentional) showError("connection", "Voice Chat disconnected. Try connecting again.");
           },
           onError: () => {
-            if (open) setState("error", "Voice Chat hit a problem. Close and try again.");
+            if (open) showError("connection", "Voice Chat hit a problem. Try connecting again.");
           },
           onFallback: (message, status) => {
             if (status !== 401 && status !== 503) notify(message);
@@ -519,6 +733,7 @@
         }
         if (liveProvider) {
           providerSession = liveProvider;
+          if (muted) await Promise.resolve(providerSession.setMicMuted?.(true));
           providerVolumeFrame = root.requestAnimationFrame(updateProviderVolume);
           return;
         }
@@ -555,13 +770,28 @@
         const greeting = GREETINGS[greetingLanguage] || GREETINGS["en-US"];
         speak(mode === "vision" ? `${greeting} Your homework image is ready too.` : greeting);
       } catch (error) {
+        stopProviderSession();
         releaseAudio();
-        const message = error?.name === "NotAllowedError"
-          ? "Microphone permission was denied. Allow it in your browser and reopen Voice Chat."
+        const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+        const message = denied
+          ? "Allow microphone access in your browser, then choose Enable microphone."
           : "No working microphone was found. You can still type your question.";
-        setState("error", message);
+        showError(denied ? "microphone" : "microphone-unavailable", message);
         notify(message);
       }
+    }
+
+    async function retrySession() {
+      if (!open) return;
+      const trigger = returnFocus;
+      const currentMode = mode;
+      cancelResponseTimer();
+      cancelTranscription();
+      cancelSpeech();
+      stopProviderSession();
+      releaseAudio();
+      open = false;
+      await openSession(currentMode, trigger);
     }
 
     function speak(markdown, spokenAnswer = "") {
@@ -630,17 +860,54 @@
       languageSelect.addEventListener("change", () => {
         languageSelect.value = normalizeLanguage(languageSelect.value);
         options.setLanguage?.(languageSelect.value);
+        announce(`Voice language: ${languageSelect.options[languageSelect.selectedIndex]?.text || "Auto-detect"}`);
       });
     }
+    initializeVoiceSettings();
+    intelligenceSelect?.addEventListener("change", () => {
+      const intelligence = VOICE_CONFIG?.saveIntelligence?.(intelligenceSelect.value);
+      intelligenceSelect.value = intelligence?.key || "standard";
+      options.onIntelligenceChange?.(intelligence || { key: intelligenceSelect.value, model: "prime" });
+      announce(`Intelligence: ${intelligence?.label || "Standard"}`);
+    });
+    voicePrevious?.addEventListener("click", () => {
+      voiceIndex -= 1;
+      renderVoiceSelection();
+    });
+    voiceNext?.addEventListener("click", () => {
+      voiceIndex += 1;
+      renderVoiceSelection();
+    });
+    settingsOpenButton?.addEventListener("click", () => setSettingsOpen(true));
+    settingsCloseButton?.addEventListener("click", () => setSettingsOpen(false));
+    settingsBackdrop?.addEventListener("click", (event) => {
+      if (event.target === settingsBackdrop) setSettingsOpen(false);
+    });
     closeButton?.addEventListener("click", close);
-    photoButton?.addEventListener("click", () => options.onPhoto?.());
+    muteButton?.addEventListener("click", () => setMuted(!muted));
+    retryButton?.addEventListener("click", retrySession);
+    enableMicButton?.addEventListener("click", retrySession);
+    exitButton?.addEventListener("click", close);
+    photoButton?.addEventListener("click", () => {
+      setSettingsOpen(false);
+      options.onPhoto?.();
+    });
     document.addEventListener("keydown", (event) => {
-      if (open && event.key === "Escape") close();
+      if (open && settingsOpen && event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setSettingsOpen(false);
+      }
     });
 
     return {
       open: openSession,
       close,
+      retry: retrySession,
+      setMuted,
+      isMuted: () => muted,
+      openSettings: () => setSettingsOpen(true),
+      closeSettings: () => setSettingsOpen(false),
       speak,
       isOpen: () => open,
       getState: () => state,
