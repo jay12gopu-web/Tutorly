@@ -81,19 +81,33 @@
   };
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[char]));
 
-  function init() {
+  async function init() {
+    const academicProfile = await window.TutorlyCurriculum?.currentProfile?.() || {};
     state.profile = {
-      grade: localStorage.getItem("tutorly_grade") || "9",
-      board: localStorage.getItem("tutorly_board") || "CBSE",
+      grade: academicProfile.grade || localStorage.getItem("tutorly_grade") || "",
+      board: academicProfile.board || localStorage.getItem("tutorly_board") || "",
       name: localStorage.getItem("tutorly_name") || localStorage.getItem("math-bot-name") || "Student"
     };
 
-    $("profilePill").textContent = `Grade ${state.profile.grade} · ${state.profile.board}`;
+    $("profilePill").textContent = state.profile.grade && state.profile.board
+      ? `Grade ${state.profile.grade} · ${state.profile.board}`
+      : "Academic profile required";
+    bindStaticEvents();
+    await Syllabus.load(state.profile.grade, state.profile.board);
     renderSubjects();
+    const requestedSubjectId = localStorage.getItem("tutorly_practice_subject_id") || "";
+    const requestedSubjectName = localStorage.getItem("tutorly_practice_subject") || "";
+    const requestedSubject = Syllabus.getSubjects().find((subject) =>
+      subject.id === requestedSubjectId || subject.name === requestedSubjectName
+    );
+    const practiceEntry = new URLSearchParams(window.location.search).get("mode") === "practice";
+    if (requestedSubject && practiceEntry) {
+      state.mode = "practice";
+      chooseSubject(requestedSubject);
+    }
     renderRecommendation();
     renderHistory();
-    showSetupStep("subject");
-    bindStaticEvents();
+    showSetupStep(requestedSubject && practiceEntry ? "chapter" : "subject");
   }
 
   function bindStaticEvents() {
@@ -183,14 +197,17 @@
 
   function renderSubjects() {
     const subjects = Syllabus.getSubjects(state.profile.grade, state.profile.board);
-    $("subjectAvailability").textContent = `${subjects.length} subjects available`;
+    const syllabus = Syllabus.getSyllabus();
+    $("subjectAvailability").textContent = subjects.length
+      ? `${subjects.length} subjects available`
+      : syllabus.message;
     $("subjectGrid").innerHTML = subjects.map((subject) => `
       <button class="exam-card subject-card accent-${subject.accent} ${state.subject?.id === subject.id ? "selected" : ""}" type="button" data-subject="${subject.id}" aria-pressed="${state.subject?.id === subject.id}">
         <span class="card-icon">${subject.name === "English" ? "Aa" : subject.name === "Hindi" ? "हि" : escapeHtml(subject.name.slice(0, 1))}</span>
         <strong>${escapeHtml(subject.name)}</strong>
-        <small>${subjectDescription(subject.id)}</small>
+        <small>${subjectDescription(subject)}</small>
       </button>
-    `).join("");
+    `).join("") || `<div class="empty-state"><strong>Curriculum unavailable</strong><p>${escapeHtml(syllabus.message)}</p></div>`;
 
     document.querySelectorAll("[data-subject]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -210,18 +227,24 @@
     $("continueToChapters").disabled = false;
     $("selectAllChapters").setAttribute("aria-pressed", "false");
     $("selectAllChapters").textContent = "Select all";
+    window.TutorlyCurriculum?.setActiveContext({
+      board: state.profile.board,
+      grade: state.profile.grade,
+      subject_id: subject.id,
+      subject: subject.name
+    });
     renderSubjects();
     renderChapters();
   }
 
-  function subjectDescription(subjectId) {
+  function subjectDescription(subject) {
     return ({
       mathematics: "Algebra, geometry, mensuration and statistics.",
       science: "Physics, chemistry and biology across your syllabus.",
       english: "Grammar, literature, reading comprehension and writing.",
       "social-studies": "History, geography, civics and economics.",
       hindi: "व्याकरण, साहित्य, पठन और लेखन कौशल."
-    })[subjectId] || `Grade ${state.profile.grade} ${state.profile.board} syllabus.`;
+    })[String(subject.name || "").toLowerCase().replace(/\s+/g, "-")] || `Verified ${state.profile.board} textbook chapters.`;
   }
 
   function renderChapters() {
@@ -229,15 +252,15 @@
     const visibleChapters = state.chapters.filter((chapter) => chapter.name.toLowerCase().includes(search));
     $("chapterGrid").innerHTML = visibleChapters.map((chapter) => {
       const checked = state.selectedChapters.includes(chapter.id);
-      const chapterNumber = state.chapters.findIndex((item) => item.id === chapter.id) + 1;
+      const chapterNumber = chapter.number;
       return `
         <label class="chapter-option ${checked ? "selected" : ""}">
           <input type="checkbox" value="${chapter.id}" ${checked ? "checked" : ""} />
           <span>
             <strong>${escapeHtml(chapter.name)}</strong>
-            <small>${chapter.concepts.map(escapeHtml).join(" | ")}</small>
+            <small>${escapeHtml([chapter.bookTitle, chapter.partLabel].filter(Boolean).join(" · "))}</small>
           </span>
-          <span class="chapter-number">CH ${chapterNumber}</span>
+          <span class="chapter-number">CH ${escapeHtml(chapterNumber)}</span>
         </label>
       `;
     }).join("");
@@ -246,6 +269,20 @@
       input.addEventListener("change", () => {
         if (input.checked) {
           state.selectedChapters = Array.from(new Set([...state.selectedChapters, input.value]));
+          const chapter = state.chapters.find((item) => item.id === input.value);
+          if (chapter) {
+            window.TutorlyCurriculum?.setActiveContext({
+              board: state.profile.board,
+              grade: state.profile.grade,
+              subject_id: state.subject?.id,
+              subject: state.subject?.name,
+              book_id: chapter.bookId,
+              book: chapter.bookTitle,
+              chapter_id: chapter.id,
+              chapter: chapter.name,
+              source_url: chapter.sourceUrl
+            });
+          }
         } else {
           state.selectedChapters = state.selectedChapters.filter((id) => id !== input.value);
         }

@@ -24,17 +24,18 @@
   const lessonKey = (subjectId, chapterId) => `${subjectId}:${chapterId}`;
   const todayLabel = () => new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 
-  function init() {
+  async function init() {
     if (!Data) return;
     document.body.classList.toggle("lesson-dark", state.theme === "dark");
     bindEvents();
+    await Data.load();
     renderSubjects();
     const params = new URLSearchParams(window.location.search);
     const subjectId = params.get("subject");
     const chapterId = params.get("chapter");
-    if (subjectId && chapterId) {
+    if (subjectId && chapterId && Data.getChapter(subjectId, chapterId)) {
       openChapter(subjectId, chapterId);
-    } else if (subjectId) {
+    } else if (subjectId && Data.getSubject(subjectId)) {
       openSubject(subjectId);
     } else {
       showView("home");
@@ -113,7 +114,7 @@
   function curriculumLabel() {
     const board = String(localStorage.getItem("tutorly_board") || "").trim();
     const grade = String(localStorage.getItem("tutorly_grade") || "").trim();
-    const details = [board, grade ? `Grade ${grade}` : ""].filter(Boolean);
+    const details = [grade ? `Grade ${grade}` : "", board].filter(Boolean);
     return details.length ? details.join(" · ") : "Set your grade and board in Profile";
   }
 
@@ -124,9 +125,10 @@
 
     if (!latest) {
       $("continueLabel").textContent = "Start learning";
-      $("continueTitle").textContent = "Choose your first chapter";
-      $("continueMeta").textContent = "Pick a subject below to begin.";
+      $("continueTitle").textContent = Data.subjects.length ? "Choose your first chapter" : "Curriculum unavailable";
+      $("continueMeta").textContent = Data.subjects.length ? "Pick a subject below to begin." : Data.message;
       button.textContent = "Browse subjects";
+      button.disabled = !Data.subjects.length;
       button.onclick = () => $("subjectGrid")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
@@ -136,14 +138,16 @@
       : "Ready to continue";
     $("continueLabel").textContent = "Continue learning";
     $("continueTitle").textContent = latest.chapter.title;
-    $("continueMeta").textContent = `${latest.subject.name} · ${latest.chapter.minutes} min lesson · ${opened}`;
+    $("continueMeta").textContent = `${latest.subject.name} · ${latest.chapter.bookTitle} · ${opened}`;
     button.textContent = "Continue chapter →";
     button.onclick = () => openChapter(latest.subject.id, latest.chapter.id);
   }
 
   function renderLearnHome() {
     if ($("curriculumStatus")) $("curriculumStatus").textContent = curriculumLabel();
-    if ($("subjectCount")) $("subjectCount").textContent = `${Data.subjects.length} subjects available`;
+    if ($("subjectCount")) $("subjectCount").textContent = Data.subjects.length
+      ? `${Data.subjects.length} subjects available`
+      : Data.message;
     renderContinueCard();
     renderSubjects();
   }
@@ -165,7 +169,7 @@
           <b>${latest?.subject.id === subject.id ? "Continue →" : "Open subject →"}</b>
         </span>
       </button>
-    `).join("");
+    `).join("") || `<div class="learn-empty"><strong>Curriculum unavailable</strong><p>${escapeHtml(Data.message)}</p></div>`;
     if ($("subjectSearchEmpty")) $("subjectSearchEmpty").hidden = filteredSubjects.length > 0;
     document.querySelectorAll("[data-subject]").forEach((button) => {
       button.addEventListener("click", () => openSubject(button.dataset.subject));
@@ -175,20 +179,20 @@
   function openSubject(subjectId) {
     state.subjectId = subjectId;
     const subject = Data.getSubject(subjectId);
+    if (!subject) return;
     $("chapterSubjectName").textContent = subject.name;
     $("chapterSubjectMeta").textContent = `${subject.chapters.length} textbook chapters`;
     $("chapterGrid").innerHTML = subject.chapters.map((chapter) => {
       const progress = getProgressFor(subject.id, chapter.id);
       return `
         <button class="chapter-card" type="button" data-chapter="${chapter.id}">
-          <span>${escapeHtml(chapter.difficulty)}</span>
+          <span>${escapeHtml(chapter.partLabel || chapter.bookTitle)}</span>
           <strong>${escapeHtml(chapter.title)}</strong>
-          <p>${escapeHtml(chapter.concepts.slice(0, 4).join(", "))}</p>
+          <p>${escapeHtml(chapter.bookTitle)}</p>
           <div class="chapter-stats">
-            <b>${chapter.minutes} min</b>
-            <b>${progress.percent || 0}% read</b>
+            <b>Chapter ${escapeHtml(chapter.number)}</b>
+            <b>${progress.lastOpened ? "Continue" : "Start"}</b>
           </div>
-          <div class="mini-progress"><span style="width:${progress.percent || 0}%"></span></div>
           <em>Last opened: ${progress.lastOpened ? new Date(progress.lastOpened).toLocaleDateString() : "Never"}</em>
         </button>
       `;
@@ -200,11 +204,27 @@
   }
 
   function openChapter(subjectId, chapterId) {
+    const subject = Data.getSubject(subjectId);
+    const chapter = Data.getChapter(subjectId, chapterId);
+    if (!subject || !chapter) return;
     state.subjectId = subjectId;
     state.chapterId = chapterId;
     state.searchTerm = "";
     $("lessonSearch").value = "";
     markOpened(subjectId, chapterId);
+    window.TutorlyCurriculum?.setActiveContext({
+      board: Data.catalog?.board,
+      grade: Data.catalog?.grade,
+      academic_year: Data.catalog?.academic_year,
+      medium: Data.catalog?.medium,
+      subject_id: subject.id,
+      subject: subject.name,
+      book_id: chapter.bookId,
+      book: chapter.bookTitle,
+      chapter_id: chapter.id,
+      chapter: chapter.title,
+      source_url: chapter.sourceUrl
+    });
     renderLesson();
     showView("reader");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -335,7 +355,7 @@
         <header class="lesson-cover">
           <span>${escapeHtml(subject.name)}</span>
           <h1>${escapeHtml(chapter.title)}</h1>
-          <p>Grade ${escapeHtml(localStorage.getItem("tutorly_grade") || "9")} | 5 Minute Revision | Updated ${todayLabel()}</p>
+          <p>Grade ${escapeHtml(localStorage.getItem("tutorly_grade") || "")} | Quick Revision | Updated ${todayLabel()}</p>
         </header>
         <section id="intro">
           <h2>Quick Revision Snapshot</h2>
@@ -374,7 +394,7 @@
         <header class="lesson-cover">
           <span>${escapeHtml(subject.name)}</span>
           <h1>${escapeHtml(chapter.title)}</h1>
-          <p>Grade ${escapeHtml(localStorage.getItem("tutorly_grade") || "9")} | ${chapter.minutes} Minute Revision | Updated ${todayLabel()}</p>
+          <p>Grade ${escapeHtml(localStorage.getItem("tutorly_grade") || "")} | ${escapeHtml(chapter.bookTitle)} | Updated ${todayLabel()}</p>
         </header>
 
         <section id="intro">
@@ -488,8 +508,9 @@
   function renderLesson() {
     const subject = Data.getSubject(state.subjectId);
     const chapter = Data.getChapter(state.subjectId, state.chapterId);
+    if (!subject || !chapter) return;
     $("readerTitle").textContent = chapter.title;
-    $("readerMeta").textContent = `${subject.name} | ${chapter.minutes} min read | ${chapter.difficulty}`;
+    $("readerMeta").textContent = `${subject.name} | ${chapter.bookTitle} | Verified curriculum chapter`;
     $("lessonProgressText").textContent = `${getProgressFor(subject.id, chapter.id).percent || 0}% read`;
     $("lessonContent").style.setProperty("--reader-zoom", state.zoom);
     $("lessonContent").innerHTML = highlight(state.quickRevision ? quickRevisionHtml(subject, chapter) : lessonHtml(subject, chapter), state.searchTerm);

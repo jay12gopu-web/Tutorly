@@ -388,6 +388,7 @@ class SemanticTutorService:
         history = self._history_payload(conversation_context, student_question)
         profile_payload = {
             "grade": profile.grade or "unknown",
+            "board": profile.board or "unknown",
             "learning_style": profile.learning_style or "unknown",
             "preferred_explanation_style": profile.preferred_explanation_style or "unknown",
             "exam_goal": profile.exam_goal or "unknown",
@@ -409,6 +410,12 @@ class SemanticTutorService:
             "delivery_context": {
                 "voice_mode": bool(client_context.get("voice_mode")),
                 "voice_language": str(client_context.get("voice_language") or "auto")[:20],
+            },
+            "curriculum_context": {
+                key: str((client_context.get("curriculum") or {}).get(key) or "")[:240]
+                for key in (
+                    "board", "grade", "academic_year", "medium", "subject", "book", "chapter"
+                )
             },
         }
         return [
@@ -466,6 +473,7 @@ Answer-generation rules:
 - Never append a practice problem, quiz, revision task, or question unless explicitly requested.
 - Answer facts immediately; define terms plainly; explain why-questions from the cause; show only necessary maths working and bold the result; number real processes; use compact tables for comparisons and fenced code for debugging.
 - Respect the supplied grade. Use correct units, balanced equations where relevant, school-level biology, concise literary analysis, jurisdiction-neutral civics, and clear causes/effects for humanities.
+- When verified curriculum context is supplied, treat its Board, Grade, Subject, Book, and Chapter as the current study scope for follow-ups. Do not repeat those labels to the student unless useful.
 - Continue follow-ups naturally without restarting or repeating the lesson. If a visual was selected, explain what to notice without exposing the route.
 - Use `$...$` for inline mathematics and `$$...$$` for display mathematics. Keep delimiters balanced and JSON-escape every literal backslash in the raw structured response.
 - In equations, use adjacency or `\\cdot` for multiplication. Never use a comma as multiplication or visual spacing, and avoid optional spacing commands when adjacency is clearer.

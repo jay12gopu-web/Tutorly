@@ -5,6 +5,11 @@ import json
 import uuid
 from typing import AsyncIterator, Dict, List
 
+try:
+    from backend.curriculum_store import resolve_context as resolve_curriculum_context
+except ImportError:
+    from curriculum_store import resolve_context as resolve_curriculum_context
+
 from .ai import GroqProvider, SemanticClassification, SemanticTutorService, TutorlyIntent
 from .analytics_engine import AnalyticsEngine
 from .conversation_context import ConversationContextStore
@@ -65,6 +70,20 @@ class ChatbotOrchestrator:
     async def _build_response(self, request: ChatbotRequest) -> ChatbotResponse:
         conversation_id = request.conversation_id or f"chat_{uuid.uuid4().hex[:16]}"
         profile = request.profile or LearnerProfile(user_id=request.user_id)
+        requested_curriculum = request.client_context.get("curriculum")
+        if isinstance(requested_curriculum, dict):
+            try:
+                request.client_context["curriculum"] = resolve_curriculum_context(
+                    board=profile.board or requested_curriculum.get("board"),
+                    grade=profile.grade or requested_curriculum.get("grade"),
+                    subject_id=str(requested_curriculum.get("subject_id") or ""),
+                    book_id=str(requested_curriculum.get("book_id") or ""),
+                    chapter_id=str(requested_curriculum.get("chapter_id") or ""),
+                    academic_year=str(requested_curriculum.get("academic_year") or "2026-27"),
+                    medium=str(requested_curriculum.get("medium") or "English"),
+                )
+            except (TypeError, ValueError):
+                request.client_context["curriculum"] = {}
         recent_context = self.conversations.recent(conversation_id, request.history)
         semantic_result = await self.semantic_tutor.route_and_answer(
             student_question=request.message,

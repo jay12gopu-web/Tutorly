@@ -40,6 +40,14 @@
     document.getElementById('progressChats').textContent = String(savedChats.length);
     document.getElementById('progressStreak').textContent = String(streak);
     document.getElementById('progressEmpty').hidden = completed + savedChats.length + streak > 0;
+    const curriculumStatus = document.getElementById('progressCurriculumStatus');
+    if (curriculumStatus && window.TutorlyCurriculum) {
+      window.TutorlyCurriculum.load().then(function (catalog) {
+        curriculumStatus.textContent = catalog.available
+          ? `Current curriculum: Grade ${catalog.grade} · ${catalog.board} · ${catalog.academic_year}`
+          : catalog.message;
+      });
+    }
   }
 
 })();

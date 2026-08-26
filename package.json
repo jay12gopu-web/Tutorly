@@ -18,7 +18,8 @@
     "check:chatbot:stress:dry": "python tests/semantic_stress_live.py --dry-run",
     "check:site": "node tests/site-consistency-check.js",
     "check:account-billing": "node tests/account-billing-check.js",
-    "check:auth": "python tests/auth_backend_smoke.py"
+    "check:auth": "python tests/auth_backend_smoke.py",
+    "check:curriculum": "python tests/curriculum_smoke.py"
   },
   "dependencies": {
     "@elevenlabs/client": "^1.22.0",

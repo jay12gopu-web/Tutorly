@@ -1,0 +1,2214 @@
+{
+  "board": "CBSE",
+  "academic_year": "2026-27",
+  "medium": "English",
+  "generated_at": "2026-08-26T08:18:34+00:00",
+  "scope": "official NCERT core English-medium textbooks",
+  "copyright_note": "Only curriculum metadata and source references are stored; textbook prose and artwork are not copied.",
+  "counts": {
+    "grades": 12,
+    "subjects": 63,
+    "books": 97,
+    "chapters": 851,
+    "verified_chapters": 381,
+    "needs_review_chapters": 470,
+    "topics": 0,
+    "diagram_candidates_needing_review": 323,
+    "chapter_titles_from_official_contents": 390
+  },
+  "validation": {
+    "conflicts": [],
+    "conflict_count": 124,
+    "uncertain_records_are_withheld": true,
+    "source_disagreements": [
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "It is Fun",
+          "2. Welcome to My World It is Fun"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "A Show of Clouds",
+          "My Name"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-9",
+        "chapter_number": "9",
+        "candidates": [
+          "My Name",
+          "The Crow"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-10",
+        "chapter_number": "10",
+        "candidates": [
+          "The Crow",
+          "The Smart Monkey"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-11",
+        "chapter_number": "11",
+        "candidates": [
+          "The Smart Monkey",
+          "3. Going Places Come Back Soon"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-12",
+        "chapter_number": "12",
+        "candidates": [
+          "Little Drops of Water",
+          "Between Home and School"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:english:bemr1:ch-13",
+        "chapter_number": "13",
+        "candidates": [
+          "We are all Indians",
+          "This is My Town"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g2:en:mathematics:bejm1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "‘Shadow Story’ and ‘Hide and Seek’ in Chapter",
+          "Shapes Around Us 16 (3D Shapes)"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g9:en:english:iebe1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Sudha Murty, Acclaimed Writer and Educationist",
+          "Winds of Change 69 Canvas of Soil"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g9:en:english:iebe1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Shankar Mahadevan, Music Maestro, Mumbai",
+          "Twin Melodies 169 A Friend Found in Music"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g9:en:english:iebe1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "U. Vimal Kumar , Director , Prakash Padukone Badminton Academy, Bengaluru",
+          "Carrier of Words 203 Words"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g9:en:english:iebe1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "Surina Rajan, IAS (Retd.), Haryana, Former Director General , HIPA 9. Chamu Krishna Shastri, Chairperson, Bharatiya Bhasha Samiti, Ministry of Education",
+          "Follow That Dream 231 Believe in Yourself 245 Appendix 259 Constitution of India Fundamental Duties"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g9:en:science:iesc1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "Journey Inside the Atom",
+          "Atoms"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g10:en:social-science:jess3:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Age of Industrialisation",
+          "IV. The Age of Industrialisation"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Introduction to Accounting",
+          "Introduction to Accounting 1 1.1 Meaning of Accounting"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Theory Base of Accounting",
+          "Theory Base of Accounting 25 2.1 Generally Accepted Accounting Principles"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Recording of Transactions - I",
+          "Recording of Transactions - I 46 3.1 Business Transactions and Source Document"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Recording of Transactions - II",
+          "Recording of Transactions - II 99 4.1 Cash Book"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "Bank Reconciliation Statement",
+          "Bank Reconciliation Statement 160 5.1 Need for Reconciliation"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Trial Balance and Rectification of Errors",
+          "Trial Balance and Rectification of Errors 180 6.1 Meaning of Trial Balance"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:accountancy:keac1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "Depreciation, Provisions and Reserves",
+          "Depreciation, Provisions and Reserves 226 7.1 Depreciation"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "The Living W orld",
+          "The Living World"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Animal Kingdom",
+          "Animal Kingdom 37 U NIT"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "Morphology of Flowering Plants",
+          "Morphology of"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "Structural Organisation in Animals",
+          "Structural Organisation in Animals 79 U NIT"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-10",
+        "chapter_number": "10",
+        "candidates": [
+          "Cell Cycle and Cell Division",
+          "Cell Cycle and Cell Division 120 U NIT"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-11",
+        "chapter_number": "11",
+        "candidates": [
+          "Photosynthesis in Higher Plants",
+          "Photosynthesis in Higher"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-13",
+        "chapter_number": "13",
+        "candidates": [
+          "Plant Growth and Development",
+          "Plant Growth and Development 166 U NIT"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:biology:kebo1:ch-14",
+        "chapter_number": "14",
+        "candidates": [
+          "Breathing and Exchange of Gases",
+          "Breathing and Exchange"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:business-studies:kebs1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Forms of Business Organisation",
+          "Forms oF Business"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:business-studies:kebs1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Social Responsibilities of Business",
+          "Social Responsibilities of Business and Business Ethics"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:business-studies:kebs1:ch-11",
+        "chapter_number": "11",
+        "candidates": [
+          "International Business",
+          "International Business 245 Form no. InC-1 Application for reservation of Name"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "CoMpuTer sysTeM",
+          "CoMpuTer sysTeM 1 1.1 Introduction to Computer System"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "enCodIng sCheMes and nuMber sysTeM",
+          "enCodIng sCheMes and nuMber sysTeM 27 2.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "eMergIng Trends",
+          "eMergIng Trends 45 3.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "InTroduCTIon To probleM solvIng",
+          "InTroduCTIon To probleM solvIng 61 4.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "geTTIng sTarTed wITh pyThon",
+          "geTTIng sTarTed wITh pyThon 87 5.1 Introduction to Python"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "flow of ConTrol",
+          "flow of ConTrol 121 6.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "funCTIons",
+          "funCTIons 143 7.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "sTrIngs",
+          "sTrIngs 175 8.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-9",
+        "chapter_number": "9",
+        "candidates": [
+          "lIsTs",
+          "lIsTs 189 9.1 Introduction to List"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-10",
+        "chapter_number": "10",
+        "candidates": [
+          "Tuples and dICTIonarIes",
+          "Tuples and dICTIonarIes 207 10.1 Introduction to Tuples"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:computer-science:kecs1:ch-11",
+        "chapter_number": "11",
+        "candidates": [
+          "soCIeTal IMpaCT",
+          "soCIeTal IMpaCT 229 11.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "INDIAN ECONOMY 1950-1990",
+          "INDIAN ECONOMY 1950-1990 16 – T HE GOALS OF FIVE YEAR PLANS"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "L IBERALISATION, PRIVATISATION AND GLOBALISATION: AN APPRAISAL",
+          "L IBERALISATION, PRIVATISATION AND GLOBALISATION: AN APPRAISAL 38 – BACKGROUND"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "HUMAN CAPITAL FORMATION IN INDIA",
+          "HUMAN CAPITAL FORMATION IN INDIA 58 – WHAT IS HUMAN CAPITAL?"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "RURAL DEVELOPMENT",
+          "RURAL DEVELOPMENT 75–91 – WHAT IS RURAL DEVELOPMENT?"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "E MPLOYMENT: GROWTH, INFORMALISATION AND OTHER ISSUES",
+          "E MPLOYMENT: GROWTH, INFORMALISATION AND OTHER ISSUES 92–114 – WORKERS AND EMPLOYMENT"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "ENVIRONMENT AND SUSTAINABLE DEVELOPMENT",
+          "ENVIRONMENT AND SUSTAINABLE DEVELOPMENT 115–131 – ENVIRONMENT — DEFINITION AND FUNCTIONS"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:economics:keec1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "COMPARATIVE DEVELOPMENT EXPERIENCES OF",
+          "COMPARATIVE DEVELOPMENT EXPERIENCES OF 134 INDIA AND ITS NEIGHBOURS"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Computer SyStem",
+          "Computer SyStem 1 1.1 Introduction to Computer System"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "emerging trendS",
+          "emerging trendS 15 2.1 Introduction to Emerging Trends"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Brief overview of python",
+          "Brief overview of python 31 3.1 Introduction to Python"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "working with LiStS and diCtionarieS",
+          "working with LiStS and diCtionarieS 55 4.1 Introduction to List"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "undersTandIng daTa",
+          "undersTandIng daTa 81 5.1 Introduction to Data"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "InTroduCTIon To nuMpy",
+          "InTroduCTIon To nuMpy 95 6.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "daTabase ConCepTs",
+          "daTabase ConCepTs 123 7.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:informatics-practices:keip1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "InTroduCTIon To sTruCTured Query language (sQl)",
+          "InTroduCTIon To sTruCTured Query language (sQl) 143 8.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:physics:keph2:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "MOTION IN A PLANE",
+          "Thermal Properties Of Matter"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:physics:keph2:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "GRAVITATION",
+          "Waves"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Rights In The Indian Constitution Introduction",
+          "RIGHTS IN THE INDIAN CONSTITUTION"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Executive Introduction",
+          "EXECUTIVE"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "Legislature Introduction",
+          "LEGISLATURE"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Judiciary Introduction",
+          "JUDICIARY"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "Federalism Introduction",
+          "FEDERALISM"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "Local Governments Introduction",
+          "LOCAL GOVERNMENTS"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:political-science:keps2:ch-9",
+        "chapter_number": "9",
+        "candidates": [
+          "Constitution As A Living Document Introduction",
+          "CONSTITUTION AS A LIVING DOCUMENT"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy1:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Sociology And S Ociety Introduction",
+          "SOCIOLOGY AND S OCIETY"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Terms, Concepts And Their Use In Sociology Introduction",
+          "TERMS, CONCEPTS AND THEIR USE IN SOCIOLOGY"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Understanding S Ocial I Nstitutions Introduction",
+          "UNDERSTANDING S OCIAL I NSTITUTIONS"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy1:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Culture And Socialisation",
+          "CULTURE AND S OCIALISATION"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Social Change And Social Order In Rural And Urban Society",
+          "SOCIAL PROCESSES IN SOCIETY 2. SOCIAL CHANGE AND SOCIAL ORDER"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy2:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Environment And Society",
+          "IN RURAL AND URBAN SOCIETY 3. ENVIRONMENT AND SOCIETY"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g11:en:sociology:kesy2:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Introducing Western Sociologists",
+          "4. INTRODUCING WESTERN SOCIOLOGISTS"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac1:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Accounting for Partnership: Basic Concepts",
+          "Accounting for Partnership: Basic Concepts 1 1.1 Nature of Partnership"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Reconstitution of a Partnership Firm – Admission",
+          "Reconstitution of a Partnership Firm – Admission 48 of a Partner"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Reconstitution of a Partnership Firm",
+          "Reconstitution of a Partnership Firm – 107 Retirement/Death of a Partner"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac2:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Accounting for Share Capital",
+          "Accounting for Share Capital 1 1.1 Features of a Company"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Issue and Redemption of Debentures",
+          "Issue and Redemption of Debentures 75 2.1 Meaning of Debentures"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac2:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Financial Statements of a Company",
+          "Financial Statements of a Company 144 3.1 Meaning of Financial Statements"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leac2:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "Accounting Ratios",
+          "Accounting Ratios 194 5.1 Meaning of Accounting Ratios"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leca1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "SPREADSHEET",
+          "SPREADSHEET 17 2.1 Basic Concepts of Spreadsheet"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:accountancy:leca1:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "USE OF SPREADSHEET IN BUSINESS APPLICATIONS",
+          "USE OF SPREADSHEET IN BUSINESS APPLICATIONS 87 3.1 Payroll Accounting"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:biology:lebo1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "Human Health and Disease",
+          "UNIT VIII BIOLOGY IN HUMAN WELFARE 127-160 Chapter 7 : Human Health and Disease"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:biology:lebo1:ch-9",
+        "chapter_number": "9",
+        "candidates": [
+          "Biotechnology : Principles and Processes",
+          "UNIT IX BIOTECHNOLOGY 161-187 Chapter 9 : Biotechnology : Principles and Processes"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:biology:lebo1:ch-11",
+        "chapter_number": "11",
+        "candidates": [
+          "Organisms and Populations",
+          "XII UNIT X ECOLOGY 188-227 Chapter 11 : Organisms and Populations"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:business-studies:lebs2:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "Business environMent",
+          "Business environMent 69 ChapTer 4 Planning"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "sorTIng",
+          "sorTIng 67 5.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "searChIng",
+          "searChIng 81 6.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "undersTandIng daTa",
+          "undersTandIng daTa 97 7.1 Introduction to Data"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "daTabase ConCepTs",
+          "daTabase ConCepTs 111 8.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-9",
+        "chapter_number": "9",
+        "candidates": [
+          "sTruCTured Query language (sQl)",
+          "sTruCTured Query language (sQl) 131 9.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-10",
+        "chapter_number": "10",
+        "candidates": [
+          "CoMpuTer neTworks",
+          "CoMpuTer neTworks 181 10.1 Introduction to Computer Networks"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-11",
+        "chapter_number": "11",
+        "candidates": [
+          "daTa CoMMunICaTIon",
+          "daTa CoMMunICaTIon 203 11.1 Concept of Communication"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-12",
+        "chapter_number": "12",
+        "candidates": [
+          "seCurITy aspeCTs",
+          "seCurITy aspeCTs 223 12.1 Threats and Prevention"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:computer-science:lecs1:ch-13",
+        "chapter_number": "13",
+        "candidates": [
+          "projeCT based learnIng",
+          "projeCT based learnIng 241 13.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:geography:legy2:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Population : Distribution, Density, Growth and Composition 1-14 Unit",
+          "Population"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:geography:legy2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Human Settlements 15-20 Unit",
+          "Human Settlements"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:geography:legy2:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Water Resour ces",
+          "Water Resources"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:geography:legy2:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Planning and Sustainable Development in Indian Context 66-74 Unit",
+          "Planning And Sustainable Development In Indian Context"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:geography:legy2:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "International T rade 86-94 Unit",
+          "International Trade"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:informatics-practices:leip1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "InTerneT and Web",
+          "InTerneT and Web 137 5.1 Introduction to Computer Networks"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:informatics-practices:leip1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "soCIeTal IMpaCTs",
+          "soCIeTal IMpaCTs 167 6.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:informatics-practices:leip1:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "projeCT based learnIng",
+          "projeCT based learnIng 195 7.1 Introduction"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:mathematics:lemh2:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "Relations and Functions",
+          "Integrals"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:mathematics:lemh2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Inverse Trigonometric Functions",
+          "Application Of Integrals"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:mathematics:lemh2:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "Determinants",
+          "Vector Algebra"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:mathematics:lemh2:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Application of Derivatives",
+          "Linear Programming"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:physics:leph2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "ELECTROSTATIC POTENTIAL AND CAPACITANCE",
+          "Wave Optics"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:physics:leph2:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "CURRENT ELECTRICITY",
+          "Dual Nature Of Radiation And Matter"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:physics:leph2:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "MOVING CHARGES AND MAGNETISM",
+          "Atoms"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:physics:leph2:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "MAGNETISM AND MATTER",
+          "Nuclei"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:physics:leph2:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "ELECTROMAGNETIC INDUCTION",
+          "Semiconductor Electronics: Materials, Devices And Simple Circuits"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:political-science:leps1:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "Contemporary Centres of Power",
+          "Contemporary"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:political-science:leps1:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "Security in the Contemporary World",
+          "Security in the"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:political-science:leps1:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "Environment and Natural Resources",
+          "Environment and"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-1",
+        "chapter_number": "1",
+        "candidates": [
+          "1–14",
+          "1–14 Structural Change"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-2",
+        "chapter_number": "2",
+        "candidates": [
+          "15–30",
+          "15–30 Cultural Change"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-3",
+        "chapter_number": "3",
+        "candidates": [
+          "31–40",
+          "31–40 The Constitution and Social Change"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-4",
+        "chapter_number": "4",
+        "candidates": [
+          "41–58",
+          "41–58 Change and Development in Rural Society"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-5",
+        "chapter_number": "5",
+        "candidates": [
+          "59–70",
+          "59–70 Change and Development in Industrial Society"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-6",
+        "chapter_number": "6",
+        "candidates": [
+          "71–88",
+          "71–88 Globalisation and Social Change"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-7",
+        "chapter_number": "7",
+        "candidates": [
+          "89–108",
+          "89–108 Mass Media and Communications"
+        ]
+      },
+      {
+        "chapter_id": "cbse:2026-27:g12:en:sociology:lesy2:ch-8",
+        "chapter_number": "8",
+        "candidates": [
+          "109–128",
+          "109–128 Social Movements"
+        ]
+      }
+    ],
+    "source_disagreement_count": 124
+  },
+  "database_records_processed": {
+    "subjects": 63,
+    "books": 97,
+    "chapters": 851,
+    "topics": 0,
+    "diagrams": 323,
+    "changes": {
+      "new": 1336,
+      "updated": 0,
+      "unchanged": 0,
+      "needs_review": 831,
+      "conflicts": 124
+    }
+  },
+  "inventory": [
+    {
+      "board": "CBSE",
+      "grade": 1,
+      "subject": "English",
+      "book": "Mridang",
+      "book_code": "aemr1",
+      "chapters_discovered": 9,
+      "chapters_verified": 9,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 1,
+      "subject": "Mathematics",
+      "book": "Joyful-Mathematics (English)",
+      "book_code": "aejm1",
+      "chapters_discovered": 13,
+      "chapters_verified": 13,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 2,
+      "subject": "English",
+      "book": "Mridang",
+      "book_code": "bemr1",
+      "chapters_discovered": 13,
+      "chapters_verified": 4,
+      "chapters_needing_review": 9,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 2,
+      "subject": "Mathematics",
+      "book": "Joyful-Mathematics (English)",
+      "book_code": "bejm1",
+      "chapters_discovered": 11,
+      "chapters_verified": 1,
+      "chapters_needing_review": 10,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 3,
+      "subject": "English",
+      "book": "Santoor",
+      "book_code": "cesa1",
+      "chapters_discovered": 12,
+      "chapters_verified": 2,
+      "chapters_needing_review": 10,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 3,
+      "subject": "Mathematics",
+      "book": "Maths Mela",
+      "book_code": "cemm1",
+      "chapters_discovered": 14,
+      "chapters_verified": 0,
+      "chapters_needing_review": 14,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 3,
+      "subject": "The World Around Us",
+      "book": "Our Wondrous World",
+      "book_code": "ceev1",
+      "chapters_discovered": 12,
+      "chapters_verified": 12,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 4,
+      "subject": "English",
+      "book": "Santoor",
+      "book_code": "desa1",
+      "chapters_discovered": 12,
+      "chapters_verified": 2,
+      "chapters_needing_review": 10,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 4,
+      "subject": "Mathematics",
+      "book": "Math-Mela",
+      "book_code": "demm1",
+      "chapters_discovered": 14,
+      "chapters_verified": 0,
+      "chapters_needing_review": 14,
+      "topics_discovered": 0,
+      "diagrams_discovered": 2
+    },
+    {
+      "board": "CBSE",
+      "grade": 4,
+      "subject": "The World Around Us",
+      "book": "Our Wonderous World",
+      "book_code": "deev1",
+      "chapters_discovered": 10,
+      "chapters_verified": 10,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 5,
+      "subject": "English",
+      "book": "Santoor",
+      "book_code": "eesa1",
+      "chapters_discovered": 10,
+      "chapters_verified": 10,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 5,
+      "subject": "Mathematics",
+      "book": "Math-Mela",
+      "book_code": "eemm1",
+      "chapters_discovered": 15,
+      "chapters_verified": 1,
+      "chapters_needing_review": 14,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 5,
+      "subject": "The World Around Us",
+      "book": "Our Wonderous World",
+      "book_code": "eeev1",
+      "chapters_discovered": 10,
+      "chapters_verified": 10,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 6,
+      "subject": "English",
+      "book": "Poorvi",
+      "book_code": "fepr1",
+      "chapters_discovered": 5,
+      "chapters_verified": 5,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 6,
+      "subject": "Mathematics",
+      "book": "Ganita Prakash",
+      "book_code": "fegp1",
+      "chapters_discovered": 10,
+      "chapters_verified": 10,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 6,
+      "subject": "Science",
+      "book": "Curiosity",
+      "book_code": "fecu1",
+      "chapters_discovered": 12,
+      "chapters_verified": 12,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 6,
+      "subject": "Social Science",
+      "book": "Exploring Society India and Beyond",
+      "book_code": "fees1",
+      "chapters_discovered": 14,
+      "chapters_verified": 2,
+      "chapters_needing_review": 12,
+      "topics_discovered": 0,
+      "diagrams_discovered": 10
+    },
+    {
+      "board": "CBSE",
+      "grade": 7,
+      "subject": "English",
+      "book": "Poorvi",
+      "book_code": "gepr1",
+      "chapters_discovered": 5,
+      "chapters_verified": 0,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 7,
+      "subject": "Mathematics",
+      "book": "Ganita Prakash",
+      "book_code": "gegp1",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 7,
+      "subject": "Mathematics",
+      "book": "Ganita Prakash-II",
+      "book_code": "gegp2",
+      "chapters_discovered": 7,
+      "chapters_verified": 7,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 7,
+      "subject": "Science",
+      "book": "Curiosity",
+      "book_code": "gecu1",
+      "chapters_discovered": 12,
+      "chapters_verified": 12,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 7,
+      "subject": "Social Science",
+      "book": "Exploring Society India and Beyond Part-I",
+      "book_code": "gees1",
+      "chapters_discovered": 12,
+      "chapters_verified": 1,
+      "chapters_needing_review": 11,
+      "topics_discovered": 0,
+      "diagrams_discovered": 26
+    },
+    {
+      "board": "CBSE",
+      "grade": 7,
+      "subject": "Social Science",
+      "book": "Exploring Society India and Beyond Part-II",
+      "book_code": "gees2",
+      "chapters_discovered": 8,
+      "chapters_verified": 2,
+      "chapters_needing_review": 6,
+      "topics_discovered": 0,
+      "diagrams_discovered": 12
+    },
+    {
+      "board": "CBSE",
+      "grade": 8,
+      "subject": "English",
+      "book": "Poorvi",
+      "book_code": "hepr1",
+      "chapters_discovered": 5,
+      "chapters_verified": 0,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 8,
+      "subject": "Mathematics",
+      "book": "Ganita Prakash Part-I",
+      "book_code": "hegp1",
+      "chapters_discovered": 7,
+      "chapters_verified": 7,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 8,
+      "subject": "Mathematics",
+      "book": "Ganita Prakash Part-II",
+      "book_code": "hegp2",
+      "chapters_discovered": 7,
+      "chapters_verified": 7,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 8,
+      "subject": "Science",
+      "book": "Curiosity",
+      "book_code": "hecu1",
+      "chapters_discovered": 13,
+      "chapters_verified": 13,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 8,
+      "subject": "Social Science",
+      "book": "Exploring Society India and Beyond Part-I",
+      "book_code": "hees1",
+      "chapters_discovered": 7,
+      "chapters_verified": 1,
+      "chapters_needing_review": 6,
+      "topics_discovered": 0,
+      "diagrams_discovered": 16
+    },
+    {
+      "board": "CBSE",
+      "grade": 8,
+      "subject": "Social Science",
+      "book": "Exploring Society India and Beyond Part-II",
+      "book_code": "hees2",
+      "chapters_discovered": 8,
+      "chapters_verified": 1,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 15
+    },
+    {
+      "board": "CBSE",
+      "grade": 9,
+      "subject": "English",
+      "book": "Kaveri",
+      "book_code": "iebe1",
+      "chapters_discovered": 8,
+      "chapters_verified": 4,
+      "chapters_needing_review": 4,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 9,
+      "subject": "Mathematics",
+      "book": "Ganita Manjari",
+      "book_code": "iemh1",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 9,
+      "subject": "Science",
+      "book": "Exploration",
+      "book_code": "iesc1",
+      "chapters_discovered": 13,
+      "chapters_verified": 12,
+      "chapters_needing_review": 1,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 9,
+      "subject": "Social Science",
+      "book": "Understanding Society India and Beyond PART-I",
+      "book_code": "iest1",
+      "chapters_discovered": 9,
+      "chapters_verified": 9,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 14
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "English",
+      "book": "First Flight",
+      "book_code": "jeff1",
+      "chapters_discovered": 9,
+      "chapters_verified": 0,
+      "chapters_needing_review": 9,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "English",
+      "book": "Foot Prints Without feet Supp. Reader",
+      "book_code": "jefp1",
+      "chapters_discovered": 9,
+      "chapters_verified": 0,
+      "chapters_needing_review": 9,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "English",
+      "book": "Words and Expressions  2",
+      "book_code": "jewe2",
+      "chapters_discovered": 9,
+      "chapters_verified": 1,
+      "chapters_needing_review": 8,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Mathematics",
+      "book": "Mathematics",
+      "book_code": "jemh1",
+      "chapters_discovered": 14,
+      "chapters_verified": 2,
+      "chapters_needing_review": 12,
+      "topics_discovered": 0,
+      "diagrams_discovered": 45
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Science",
+      "book": "Science",
+      "book_code": "jesc1",
+      "chapters_discovered": 13,
+      "chapters_verified": 13,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Social Science",
+      "book": "Contemporary India",
+      "book_code": "jess1",
+      "chapters_discovered": 7,
+      "chapters_verified": 0,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 10
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Social Science",
+      "book": "Understanding Economic Development",
+      "book_code": "jess2",
+      "chapters_discovered": 5,
+      "chapters_verified": 5,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Social Science",
+      "book": "India and the Contemporary World-II",
+      "book_code": "jess3",
+      "chapters_discovered": 5,
+      "chapters_verified": 1,
+      "chapters_needing_review": 4,
+      "topics_discovered": 0,
+      "diagrams_discovered": 6
+    },
+    {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Social Science",
+      "book": "Democratic Politics",
+      "book_code": "jess4",
+      "chapters_discovered": 5,
+      "chapters_verified": 5,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Accountancy",
+      "book": "Financial Accounting-I",
+      "book_code": "keac1",
+      "chapters_discovered": 7,
+      "chapters_verified": 0,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Accountancy",
+      "book": "Accountancy-II",
+      "book_code": "keac2",
+      "chapters_discovered": 2,
+      "chapters_verified": 0,
+      "chapters_needing_review": 2,
+      "topics_discovered": 0,
+      "diagrams_discovered": 2
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Biology",
+      "book": "Biology",
+      "book_code": "kebo1",
+      "chapters_discovered": 19,
+      "chapters_verified": 7,
+      "chapters_needing_review": 12,
+      "topics_discovered": 0,
+      "diagrams_discovered": 6
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Business Studies",
+      "book": "Business Studies",
+      "book_code": "kebs1",
+      "chapters_discovered": 11,
+      "chapters_verified": 8,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Chemistry",
+      "book": "Chemistry Part-I",
+      "book_code": "kech1",
+      "chapters_discovered": 6,
+      "chapters_verified": 0,
+      "chapters_needing_review": 6,
+      "topics_discovered": 0,
+      "diagrams_discovered": 9
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Chemistry",
+      "book": "Chemistry Part II",
+      "book_code": "kech2",
+      "chapters_discovered": 3,
+      "chapters_verified": 0,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 2
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Computer Science",
+      "book": "Computer Science",
+      "book_code": "kecs1",
+      "chapters_discovered": 11,
+      "chapters_verified": 0,
+      "chapters_needing_review": 11,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Economics",
+      "book": "Indian Economic Development",
+      "book_code": "keec1",
+      "chapters_discovered": 8,
+      "chapters_verified": 1,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Economics",
+      "book": "Statistics for Economics",
+      "book_code": "kest1",
+      "chapters_discovered": 8,
+      "chapters_verified": 7,
+      "chapters_needing_review": 1,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "English",
+      "book": "Hornbill",
+      "book_code": "kehb1",
+      "chapters_discovered": 14,
+      "chapters_verified": 0,
+      "chapters_needing_review": 14,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "English",
+      "book": "Snapshots Suppl.Reader English",
+      "book_code": "kesp1",
+      "chapters_discovered": 5,
+      "chapters_verified": 0,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "English",
+      "book": "Woven Words",
+      "book_code": "keww1",
+      "chapters_discovered": 27,
+      "chapters_verified": 0,
+      "chapters_needing_review": 27,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Geography",
+      "book": "India Physical Environment",
+      "book_code": "kegy1",
+      "chapters_discovered": 6,
+      "chapters_verified": 2,
+      "chapters_needing_review": 4,
+      "topics_discovered": 0,
+      "diagrams_discovered": 4
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Geography",
+      "book": "Fundamental of Physical Geography",
+      "book_code": "kegy2",
+      "chapters_discovered": 14,
+      "chapters_verified": 3,
+      "chapters_needing_review": 11,
+      "topics_discovered": 0,
+      "diagrams_discovered": 10
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Geography",
+      "book": "Pratical Work in Geography",
+      "book_code": "kegy3",
+      "chapters_discovered": 6,
+      "chapters_verified": 6,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "History",
+      "book": "Themes in World History",
+      "book_code": "kehs1",
+      "chapters_discovered": 7,
+      "chapters_verified": 0,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 1
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Informatics Practices",
+      "book": "Informatics Practices",
+      "book_code": "keip1",
+      "chapters_discovered": 8,
+      "chapters_verified": 0,
+      "chapters_needing_review": 8,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Mathematics",
+      "book": "Mathematics",
+      "book_code": "kemh1",
+      "chapters_discovered": 14,
+      "chapters_verified": 5,
+      "chapters_needing_review": 9,
+      "topics_discovered": 0,
+      "diagrams_discovered": 20
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Physics",
+      "book": "Physics Part-I",
+      "book_code": "keph1",
+      "chapters_discovered": 7,
+      "chapters_verified": 6,
+      "chapters_needing_review": 1,
+      "topics_discovered": 0,
+      "diagrams_discovered": 29
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Physics",
+      "book": "Physics Part-II",
+      "book_code": "keph2",
+      "chapters_discovered": 7,
+      "chapters_verified": 5,
+      "chapters_needing_review": 2,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Political Science",
+      "book": "Political Theory",
+      "book_code": "keps1",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Political Science",
+      "book": "India Constitution at Work",
+      "book_code": "keps2",
+      "chapters_discovered": 10,
+      "chapters_verified": 3,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Psychology",
+      "book": "Introduction to Psychology",
+      "book_code": "kepy1",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Sociology",
+      "book": "Introducing Sociology",
+      "book_code": "kesy1",
+      "chapters_discovered": 5,
+      "chapters_verified": 0,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 11,
+      "subject": "Sociology",
+      "book": "Understanding Society",
+      "book_code": "kesy2",
+      "chapters_discovered": 5,
+      "chapters_verified": 2,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Accountancy",
+      "book": "Accountancy-I",
+      "book_code": "leac1",
+      "chapters_discovered": 4,
+      "chapters_verified": 1,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Accountancy",
+      "book": "Accountancy Part-II",
+      "book_code": "leac2",
+      "chapters_discovered": 6,
+      "chapters_verified": 2,
+      "chapters_needing_review": 4,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Accountancy",
+      "book": "Computerised Accounting System",
+      "book_code": "leca1",
+      "chapters_discovered": 4,
+      "chapters_verified": 2,
+      "chapters_needing_review": 2,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Biology",
+      "book": "Biology",
+      "book_code": "lebo1",
+      "chapters_discovered": 13,
+      "chapters_verified": 10,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Business Studies",
+      "book": "Business Studies-I",
+      "book_code": "lebs1",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Business Studies",
+      "book": "Business Studies-II",
+      "book_code": "lebs2",
+      "chapters_discovered": 3,
+      "chapters_verified": 2,
+      "chapters_needing_review": 1,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Chemistry",
+      "book": "Chemistry-I",
+      "book_code": "lech1",
+      "chapters_discovered": 5,
+      "chapters_verified": 0,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 6
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Chemistry",
+      "book": "Chemistry-II",
+      "book_code": "lech2",
+      "chapters_discovered": 5,
+      "chapters_verified": 0,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 2
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Computer Science",
+      "book": "Computer Science",
+      "book_code": "lecs1",
+      "chapters_discovered": 13,
+      "chapters_verified": 1,
+      "chapters_needing_review": 12,
+      "topics_discovered": 0,
+      "diagrams_discovered": 11
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Economics",
+      "book": "Introductory Macroeconomics",
+      "book_code": "leec1",
+      "chapters_discovered": 6,
+      "chapters_verified": 2,
+      "chapters_needing_review": 4,
+      "topics_discovered": 0,
+      "diagrams_discovered": 1
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Economics",
+      "book": "Introductory Microeconomics",
+      "book_code": "leec2",
+      "chapters_discovered": 5,
+      "chapters_verified": 2,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 3
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "English",
+      "book": "Flamingo",
+      "book_code": "lefl1",
+      "chapters_discovered": 13,
+      "chapters_verified": 0,
+      "chapters_needing_review": 13,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "English",
+      "book": "Kaliedoscope",
+      "book_code": "lekl1",
+      "chapters_discovered": 21,
+      "chapters_verified": 0,
+      "chapters_needing_review": 21,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "English",
+      "book": "Vistas",
+      "book_code": "levt1",
+      "chapters_discovered": 6,
+      "chapters_verified": 0,
+      "chapters_needing_review": 6,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Geography",
+      "book": "Fundamentals of Human Geography",
+      "book_code": "legy1",
+      "chapters_discovered": 8,
+      "chapters_verified": 1,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 8
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Geography",
+      "book": "India -People And Economy",
+      "book_code": "legy2",
+      "chapters_discovered": 9,
+      "chapters_verified": 4,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Geography",
+      "book": "Practical Work in Geography Part II",
+      "book_code": "legy3",
+      "chapters_discovered": 4,
+      "chapters_verified": 4,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "History",
+      "book": "Themes in Indian History-I",
+      "book_code": "lehs1",
+      "chapters_discovered": 4,
+      "chapters_verified": 2,
+      "chapters_needing_review": 2,
+      "topics_discovered": 0,
+      "diagrams_discovered": 9
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "History",
+      "book": "Themes in Indian History-II",
+      "book_code": "lehs2",
+      "chapters_discovered": 4,
+      "chapters_verified": 1,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 5
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "History",
+      "book": "Themes in Indian History-III",
+      "book_code": "lehs3",
+      "chapters_discovered": 4,
+      "chapters_verified": 2,
+      "chapters_needing_review": 2,
+      "topics_discovered": 0,
+      "diagrams_discovered": 9
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Informatics Practices",
+      "book": "Informatics Practices",
+      "book_code": "leip1",
+      "chapters_discovered": 7,
+      "chapters_verified": 0,
+      "chapters_needing_review": 7,
+      "topics_discovered": 0,
+      "diagrams_discovered": 4
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Mathematics",
+      "book": "Mathematics Part-I",
+      "book_code": "lemh1",
+      "chapters_discovered": 6,
+      "chapters_verified": 6,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 2
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Mathematics",
+      "book": "Mathematics Part-II",
+      "book_code": "lemh2",
+      "chapters_discovered": 7,
+      "chapters_verified": 3,
+      "chapters_needing_review": 4,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Physics",
+      "book": "Physics Part-I",
+      "book_code": "leph1",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 24
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Physics",
+      "book": "Physics Part-II",
+      "book_code": "leph2",
+      "chapters_discovered": 6,
+      "chapters_verified": 1,
+      "chapters_needing_review": 5,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Political Science",
+      "book": "Contemporary World Politics",
+      "book_code": "leps1",
+      "chapters_discovered": 7,
+      "chapters_verified": 4,
+      "chapters_needing_review": 3,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Political Science",
+      "book": "Politics in India Since Independence",
+      "book_code": "leps2",
+      "chapters_discovered": 8,
+      "chapters_verified": 8,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Psychology",
+      "book": "Psychology",
+      "book_code": "lepy1",
+      "chapters_discovered": 7,
+      "chapters_verified": 7,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Sociology",
+      "book": "Indian Society",
+      "book_code": "lesy1",
+      "chapters_discovered": 7,
+      "chapters_verified": 7,
+      "chapters_needing_review": 0,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    },
+    {
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "Sociology",
+      "book": "Social Change and Development in India",
+      "book_code": "lesy2",
+      "chapters_discovered": 8,
+      "chapters_verified": 0,
+      "chapters_needing_review": 8,
+      "topics_discovered": 0,
+      "diagrams_discovered": 0
+    }
+  ],
+  "grades_requested": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "records_needing_review_are_not_returned_by_student_apis": true
+}

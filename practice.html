@@ -17,13 +17,12 @@
     <div class="foundation-actions"><button id="foundationTheme" class="foundation-icon" type="button" aria-label="Switch color theme">☾</button><a class="foundation-button-secondary" href="maths_gpt.html">Back to chat</a></div>
   </div></header>
   <main class="foundation-main">
-    <section class="foundation-hero"><p class="foundation-eyebrow">Practice</p><h1>Build confidence one question at a time.</h1><p>Choose a subject and start a focused practice session. Tutorly will use your latest choice when opening the test workspace.</p></section>
-    <section class="foundation-grid">
-      <article class="foundation-card"><h2>Mathematics</h2><p>Equations, arithmetic, geometry, and problem solving.</p><button class="foundation-button" data-practice-subject="Mathematics" type="button">Start practice</button></article>
-      <article class="foundation-card"><h2>Science</h2><p>Physics, chemistry, and biology concept checks.</p><button class="foundation-button" data-practice-subject="Science" type="button">Start practice</button></article>
-      <article class="foundation-card"><h2>English</h2><p>Grammar, comprehension, vocabulary, and writing.</p><button class="foundation-button" data-practice-subject="English" type="button">Start practice</button></article>
-    </section>
+    <section class="foundation-hero"><p class="foundation-eyebrow">Practice</p><h1>Build confidence one question at a time.</h1><p>Choose a subject from your saved Grade and Board curriculum.</p><p id="practiceCurriculumStatus" aria-live="polite">Loading your curriculum…</p></section>
+    <section class="foundation-grid" id="practiceSubjectGrid"></section>
   </main>
+  <script src="js/auth-client.js?v=curriculum-20260826"></script>
+  <script src="js/curriculum-client.js?v=curriculum-20260826"></script>
   <script src="js/tutorly-foundation.js"></script>
+  <script src="js/practice-curriculum.js?v=curriculum-20260826"></script>
 </body>
 </html>

@@ -17,7 +17,7 @@
     <div class="foundation-actions"><button id="foundationTheme" class="foundation-icon" type="button" aria-label="Switch color theme">☾</button><a class="foundation-button-secondary" href="maths_gpt.html">Back to chat</a></div>
   </div></header>
   <main class="foundation-main">
-    <section class="foundation-hero"><p class="foundation-eyebrow">Progress</p><h1>See the work that is moving you forward.</h1><p>This foundation reads your locally saved Tutorly activity and will expand into subject trends, goals, and skill-level insights.</p></section>
+    <section class="foundation-hero"><p class="foundation-eyebrow">Progress</p><h1>See the work that is moving you forward.</h1><p>Your activity remains attached to the curriculum version where you completed it.</p><p id="progressCurriculumStatus" aria-live="polite">Loading your current curriculum…</p></section>
     <section class="foundation-grid">
       <article class="foundation-card"><span class="metric-label">Tests completed</span><strong id="progressTests" class="metric-value">0</strong></article>
       <article class="foundation-card"><span class="metric-label">Average score</span><strong id="progressScore" class="metric-value">0%</strong></article>
@@ -26,6 +26,8 @@
     </section>
     <p class="tutorly-empty-state" id="progressEmpty"><strong>No learning activity yet.</strong>Start a chat, lesson, or test to see progress here.</p>
   </main>
+  <script src="js/auth-client.js?v=curriculum-20260826"></script>
+  <script src="js/curriculum-client.js?v=curriculum-20260826"></script>
   <script src="js/tutorly-foundation.js"></script>
 </body>
 </html>

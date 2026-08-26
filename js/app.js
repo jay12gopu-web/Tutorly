@@ -291,8 +291,12 @@ document.addEventListener("DOMContentLoaded", () => {
       .map((item) => ({ role: item.role, content: String(item.content || "").slice(0, 5000) }));
     const learner = context.memoryContext?.learner || {};
     let savedGrade = learner.grade || "";
+    let savedBoard = "";
+    let curriculumContext = null;
     try {
       savedGrade = savedGrade || localStorage.getItem("tutorly_grade") || "";
+      savedBoard = localStorage.getItem("tutorly_board") || "";
+      curriculumContext = window.TutorlyCurriculum?.getActiveContext?.() || null;
     } catch (error) {
       // Grade is optional; the semantic tutor will infer conservatively when unavailable.
     }
@@ -305,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
       profile: {
         user_id: getChatUserId(),
         grade: savedGrade || null,
+        board: savedBoard || null,
         weak_concepts: Array.isArray(learner.weakSubjects) ? learner.weakSubjects : [],
         strong_concepts: Array.isArray(learner.strongSubjects) ? learner.strongSubjects : []
       },
@@ -323,7 +328,8 @@ document.addEventListener("DOMContentLoaded", () => {
         adaptiveContext: context.adaptiveContext || null,
         hasImage: !!context.hasImage,
         voice_mode: !!context.voiceMode,
-        voice_language: context.voiceLanguage || "auto"
+        voice_language: context.voiceLanguage || "auto",
+        curriculum: curriculumContext
       }
     };
   }
@@ -3558,6 +3564,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetChat() {
     abortActiveChatRequest();
+    window.TutorlyCurriculum?.clearActiveContext?.();
     messages.innerHTML = "";
     input.value = "";
     removePendingImage();
@@ -4641,11 +4648,21 @@ document.addEventListener("DOMContentLoaded", () => {
         .map((item) => `${item.role === "user" ? "Student" : "Tutorly"}: ${String(item.content || "").slice(0, 1200)}`)
         .join("\n");
       let grade = "";
-      try { grade = localStorage.getItem("tutorly_grade") || ""; }
+      let board = "";
+      let curriculum = null;
+      try {
+        grade = localStorage.getItem("tutorly_grade") || "";
+        board = localStorage.getItem("tutorly_board") || "";
+        curriculum = window.TutorlyCurriculum?.getActiveContext?.() || null;
+      }
       catch (error) {}
       return [
         "You are continuing a Tutorly study conversation. Be a concise, patient study friend.",
         grade ? `Student grade: ${grade}.` : "",
+        board ? `Student board: ${board}.` : "",
+        curriculum?.subject ? `Current subject: ${curriculum.subject}.` : "",
+        curriculum?.book ? `Current book: ${curriculum.book}.` : "",
+        curriculum?.chapter ? `Current chapter: ${curriculum.chapter}.` : "",
         recent ? `Recent conversation:\n${recent}` : "No earlier text-chat context is available."
       ].filter(Boolean).join("\n");
     }

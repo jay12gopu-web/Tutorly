@@ -90,6 +90,7 @@ class Attachment(BaseModel):
 class LearnerProfile(BaseModel):
     user_id: str = "guest"
     grade: Optional[str] = None
+    board: Optional[str] = None
     learning_style: Optional[str] = None
     preferred_explanation_style: Optional[str] = None
     exam_goal: Optional[str] = None
