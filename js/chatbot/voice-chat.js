@@ -127,6 +127,7 @@
     const settingsOpenButton = overlay.querySelector("#voiceSettingsOpen");
     const settingsBackdrop = overlay.querySelector("#voiceSettingsBackdrop");
     const settingsCloseButton = overlay.querySelector("#voiceSettingsClose");
+    const settingsSaveButton = overlay.querySelector("#voiceSettingsSave");
     const voiceSelector = overlay.querySelector(".voice-selector");
     const voiceVisual = overlay.querySelector("#voiceSelectorVisual");
     const voiceName = overlay.querySelector("#voiceSelectorName");
@@ -190,6 +191,8 @@
     let activeVoice = null;
     let pendingOnboardingVoice = null;
     let onboardingOpen = false;
+    let settingsDirty = false;
+    let committedLanguage = normalizeLanguage(options.getLanguage?.() || "auto");
     let errorKind = "connection";
 
     function notify(message) {
@@ -265,7 +268,6 @@
             ? "Current voice"
             : `Selected for your next session${activeVoice ? ` · ${activeVoice.name} is speaking now` : ""}`;
         }
-        if (options.save) saveVoicePreference(voice.key, true, { notifyFailure: true });
         if (options.announce !== false) announce(`Voice selected: ${voice.name}`);
         voiceSelector?.classList.remove("is-changing");
       };
@@ -298,6 +300,28 @@
         if (deepOption && deepCost?.available && Number.isFinite(Number(deepCost.credits))) {
           deepOption.textContent = `${deepCost.label} · ${deepCost.credits} credits`;
         }
+      }
+    }
+
+    function markSettingsDirty() {
+      settingsDirty = true;
+      if (settingsSaveButton) {
+        settingsSaveButton.disabled = false;
+        settingsSaveButton.textContent = "Save Changes";
+      }
+    }
+
+    function resetSettingsDrafts() {
+      const voices = VOICE_CONFIG?.VOICES || [];
+      const preferred = VOICE_CONFIG?.getVoice?.() || activeVoice || voices[0] || null;
+      voiceIndex = Math.max(0, voices.findIndex((voice) => voice.key === preferred?.key));
+      renderVoiceSelection({ animate: false, announce: false });
+      if (intelligenceSelect) intelligenceSelect.value = VOICE_CONFIG?.getIntelligence?.().key || "standard";
+      if (languageSelect) languageSelect.value = committedLanguage;
+      settingsDirty = false;
+      if (settingsSaveButton) {
+        settingsSaveButton.disabled = true;
+        settingsSaveButton.textContent = "Save Changes";
       }
     }
 
@@ -422,6 +446,7 @@
       settingsOpen = shouldOpen;
       settingsOpenButton.setAttribute("aria-expanded", String(shouldOpen));
       if (shouldOpen) {
+        resetSettingsDrafts();
         settingsReturnFocus = document.activeElement;
         settingsBackdrop.hidden = false;
         settingsBackdrop.setAttribute("aria-hidden", "false");
@@ -435,7 +460,27 @@
         announce("Settings closed");
         settingsReturnFocus?.focus?.();
         settingsReturnFocus = null;
+        resetSettingsDrafts();
       }
+    }
+
+    async function saveSettingsChanges() {
+      if (!settingsDirty || !settingsSaveButton) return;
+      const selectedVoice = (VOICE_CONFIG?.VOICES || [])[voiceIndex] || activeVoice;
+      settingsSaveButton.disabled = true;
+      settingsSaveButton.textContent = "Saving…";
+      if (selectedVoice) await saveVoicePreference(selectedVoice.key, true, { notifyFailure: true });
+      const intelligence = VOICE_CONFIG?.saveIntelligence?.(intelligenceSelect?.value || "standard");
+      options.onIntelligenceChange?.(intelligence || { key: "standard", model: "prime" });
+      committedLanguage = normalizeLanguage(languageSelect?.value || committedLanguage);
+      options.setLanguage?.(committedLanguage);
+      settingsDirty = false;
+      settingsSaveButton.textContent = "Saved";
+      announce("Voice settings saved");
+      notify("Voice settings saved. Voice changes apply next time you start Voice Chat.");
+      root.setTimeout(() => {
+        if (open && settingsOpen) setSettingsOpen(false);
+      }, 420);
     }
 
     function setTranscript(text) {
@@ -633,7 +678,7 @@
       const form = new FormData();
       const extension = mimeType.includes("ogg") ? "ogg" : mimeType.includes("mp4") ? "mp4" : "webm";
       form.append("audio", blob, `voice.${extension}`);
-      form.append("language", shortLanguage(languageSelect?.value || "auto"));
+      form.append("language", shortLanguage(committedLanguage));
       form.append("session_id", String(options.getSessionId?.() || "voice-guest"));
       try {
         const response = await fetch(options.getTranscriptionEndpoint(), {
@@ -648,7 +693,7 @@
           setState("listening", "I didn’t catch words there. Try again when you’re ready.");
           return;
         }
-        if (languageSelect?.value === "auto" && payload.language) {
+        if (committedLanguage === "auto" && payload.language) {
           detectedLanguage = String(payload.language).toLowerCase().split("-", 1)[0];
         }
         setTranscript(text);
@@ -659,7 +704,7 @@
         }, CONFIG.thinkingTimeoutMs);
         await Promise.resolve(options.onTranscript?.(text, {
           mode,
-          language: languageSelect?.value || "auto",
+          language: committedLanguage,
           detectedLanguage
         }));
       } catch (error) {
@@ -882,7 +927,7 @@
         animationFrame = root.requestAnimationFrame(tick);
         await calibrate();
         if (!open) return;
-        const selectedLanguage = normalizeLanguage(languageSelect?.value || "auto");
+        const selectedLanguage = committedLanguage;
         const greetingLanguage = selectedLanguage === "auto" ? "en-US" : selectedLanguage;
         const greeting = GREETINGS[greetingLanguage] || GREETINGS["en-US"];
         speak(mode === "vision" ? `${greeting} Your homework image is ready too.` : greeting);
@@ -997,7 +1042,7 @@
       }
       const token = speechToken;
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = speechLanguage(languageSelect?.value || "auto", detectedLanguage);
+      utterance.lang = speechLanguage(committedLanguage, detectedLanguage);
       utterance.rate = 1;
       utterance.pitch = 1;
       const voices = root.speechSynthesis.getVoices?.() || [];
@@ -1047,11 +1092,11 @@
     }
 
     if (languageSelect) {
-      languageSelect.value = normalizeLanguage(options.getLanguage?.() || "auto");
+      languageSelect.value = committedLanguage;
       languageSelect.addEventListener("change", () => {
         languageSelect.value = normalizeLanguage(languageSelect.value);
-        options.setLanguage?.(languageSelect.value);
-        announce(`Voice language: ${languageSelect.options[languageSelect.selectedIndex]?.text || "Auto-detect"}`);
+        markSettingsDirty();
+        announce(`Selected language: ${languageSelect.options[languageSelect.selectedIndex]?.text || "Auto-detect"}`);
       });
     }
     VOICE_CONFIG?.ready?.().then(() => {
@@ -1059,21 +1104,24 @@
       initializeVoiceSettings();
     }).catch(() => {});
     intelligenceSelect?.addEventListener("change", () => {
-      const intelligence = VOICE_CONFIG?.saveIntelligence?.(intelligenceSelect.value);
-      intelligenceSelect.value = intelligence?.key || "standard";
-      options.onIntelligenceChange?.(intelligence || { key: intelligenceSelect.value, model: "prime" });
-      announce(`Intelligence: ${intelligence?.label || "Standard"}`);
+      intelligenceSelect.value = VOICE_CONFIG?.normalizeIntelligence?.(intelligenceSelect.value) || "standard";
+      markSettingsDirty();
+      const intelligence = (VOICE_CONFIG?.INTELLIGENCE || []).find((item) => item.key === intelligenceSelect.value);
+      announce(`Selected intelligence: ${intelligence?.label || "Standard"}`);
     });
     voicePrevious?.addEventListener("click", () => {
       voiceIndex -= 1;
-      renderVoiceSelection({ save: true });
+      renderVoiceSelection();
+      markSettingsDirty();
     });
     voiceNext?.addEventListener("click", () => {
       voiceIndex += 1;
-      renderVoiceSelection({ save: true });
+      renderVoiceSelection();
+      markSettingsDirty();
     });
     settingsOpenButton?.addEventListener("click", () => setSettingsOpen(true));
     settingsCloseButton?.addEventListener("click", () => setSettingsOpen(false));
+    settingsSaveButton?.addEventListener("click", saveSettingsChanges);
     settingsBackdrop?.addEventListener("click", (event) => {
       if (event.target === settingsBackdrop) setSettingsOpen(false);
     });
@@ -1136,7 +1184,7 @@
       isOpen: () => open,
       getState: () => state,
       getMode: () => mode,
-      getEffectiveLanguage: () => speechLanguage(languageSelect?.value || "auto", detectedLanguage),
+      getEffectiveLanguage: () => speechLanguage(committedLanguage, detectedLanguage),
       setImageReady,
       config: CONFIG
     };
