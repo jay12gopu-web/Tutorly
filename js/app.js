@@ -2163,6 +2163,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return window.location.protocol === "file:" ? "http://127.0.0.1:8000/upload-image" : "/upload-image";
   }
 
+  function getVisionEndpoint() {
+    return getBackendEndpoint("/api/vision/extract");
+  }
+
   function requirePremiumFeature(featureName) {
     if (!window.TutorlyPremiumGuard) return true;
     return window.TutorlyPremiumGuard.requirePremium(featureName);
@@ -2344,6 +2348,43 @@ document.addEventListener("DOMContentLoaded", () => {
     return max - min < 5;
   }
 
+  function cleanExtractedImageText(value) {
+    return String(value || "")
+      .replace(/\r\n?/g, "\n")
+      .replace(/\u0000/g, "")
+      .replace(/[ \t]+$/gm, "")
+      .replace(/\n{4,}/g, "\n\n\n")
+      .trim();
+  }
+
+  function getVisionLanguage() {
+    const supported = new Set([
+      "as-IN", "bn-IN", "brx-IN", "doi-IN", "en-IN", "gu-IN", "hi-IN", "kn-IN",
+      "kok-IN", "ks-IN", "mai-IN", "ml-IN", "mni-IN", "mr-IN", "ne-IN", "od-IN",
+      "pa-IN", "sa-IN", "sat-IN", "sd-IN", "ta-IN", "te-IN", "ur-IN"
+    ]);
+    const selected = getVoiceLanguage();
+    if (supported.has(selected)) return selected;
+    const browserLanguage = String(navigator.language || "en-IN");
+    if (supported.has(browserLanguage)) return browserLanguage;
+    const prefix = browserLanguage.toLowerCase().split("-", 1)[0];
+    const matched = [...supported].find((code) => code.toLowerCase().startsWith(`${prefix}-`));
+    return matched || "en-IN";
+  }
+
+  async function extractImageTextWithSarvam(file) {
+    const form = new FormData();
+    form.append("image", file, file.name || "tutorly-homework.jpg");
+    form.append("language", getVisionLanguage());
+    form.append("session_id", getChatUserId());
+    const response = await fetch(getVisionEndpoint(), { method: "POST", body: form });
+    if (!response.ok) throw new Error("Sarvam Vision unavailable");
+    const payload = await response.json();
+    const text = cleanExtractedImageText(payload?.text);
+    if (!text) throw new Error("Sarvam Vision found no readable text");
+    return { text, language: payload?.language || getVisionLanguage() };
+  }
+
   function loadTesseract() {
     if (window.Tesseract) return Promise.resolve(window.Tesseract);
     if (tesseractLoaderPromise) return tesseractLoaderPromise;
@@ -2362,25 +2403,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function runOcrForPendingImage() {
     if (!pendingImage) return;
-    pendingImage.ocrRunning = true;
+    const imageRequest = pendingImage;
+    imageRequest.ocrRunning = true;
     setPreviewStatus("Reading text from image... 0%", 2);
 
     try {
-      const ocrFile = await compressImageForOcr(pendingImage.file);
-      pendingImage.uploadFile = ocrFile;
-      const Tesseract = await loadTesseract();
-      const result = await Tesseract.recognize(ocrFile, "eng", {
-        logger: (event) => {
-          if (event.status === "recognizing text" && Number.isFinite(event.progress)) {
-            const percent = Math.round(event.progress * 100);
-            setPreviewStatus(`Reading text from image... ${percent}%`, percent);
+      const ocrFile = await compressImageForOcr(imageRequest.file);
+      if (pendingImage !== imageRequest) return;
+      imageRequest.uploadFile = ocrFile;
+      let extracted = "";
+      let provider = "sarvam-vision";
+      try {
+        setPreviewStatus("Reading the document structure...", 12);
+        const result = await extractImageTextWithSarvam(ocrFile);
+        extracted = result.text;
+      } catch (sarvamError) {
+        provider = "tesseract";
+        setPreviewStatus("Online reading unavailable. Trying the backup reader...", 18);
+        const Tesseract = await loadTesseract();
+        const result = await Tesseract.recognize(ocrFile, "eng", {
+          logger: (event) => {
+            if (event.status === "recognizing text" && Number.isFinite(event.progress)) {
+              const percent = Math.round(event.progress * 100);
+              setPreviewStatus(`Reading text from image... ${percent}%`, percent);
+            }
           }
-        }
-      });
+        });
+        extracted = cleanExtractedImageText(result?.data?.text);
+      }
 
-      const extracted = (result?.data?.text || "").replace(/\s+\n/g, "\n").replace(/[ \t]+/g, " ").trim();
-      pendingImage.ocrRunning = false;
-      pendingImage.extractedText = extracted;
+      if (pendingImage !== imageRequest) return;
+      imageRequest.ocrRunning = false;
+      imageRequest.extractedText = extracted;
+      imageRequest.ocrProvider = provider;
 
       if (!extracted) {
         setPreviewStatus("No readable text found. You can type the question manually.", 100);

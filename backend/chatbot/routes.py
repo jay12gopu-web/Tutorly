@@ -23,6 +23,7 @@ except ImportError:
 
 from .orchestrator import ChatbotOrchestrator
 from .rate_limit import SlidingWindowRateLimiter
+from .sarvam_vision import SarvamVisionError, sarvam_vision
 from .schemas import ChatbotRequest, ResponseStage, StreamEvent, TeachingFeedbackRequest
 from .teaching_success import TeachingSuccessScore
 
@@ -33,7 +34,9 @@ teaching_success = TeachingSuccessScore()
 chat_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=15, requests_per_hour=150)
 voice_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=20, requests_per_hour=180)
 voice_session_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=60)
+vision_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=80)
 LOGGER = logging.getLogger("tutorly.voice")
+VISION_LOGGER = logging.getLogger("tutorly.vision")
 
 _VOICE_MIME_TYPES = {
     "audio/flac": ".flac",
@@ -49,6 +52,9 @@ _VOICE_MIME_TYPES = {
 _VOICE_EXTENSIONS = {".flac", ".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".ogg", ".wav", ".webm"}
 _MAX_VOICE_BYTES = 10 * 1024 * 1024
 _ELEVENLABS_TOKEN_URL = "https://api.elevenlabs.io/v1/convai/conversation/token"
+_VISION_MIME_TYPES = {"image/jpeg", "image/jpg", "image/png"}
+_VISION_EXTENSIONS = {".jpg", ".jpeg", ".png"}
+_MAX_VISION_BYTES = 12 * 1024 * 1024
 
 
 def _rate_limit_key(request: ChatbotRequest) -> str:
@@ -233,6 +239,69 @@ async def transcribe_audio(
     if not text:
         raise HTTPException(status_code=422, detail="I couldn't hear that clearly. Please try saying it again.")
     return {"text": text[:5000], "language": str(result.get("language") or normalized_language or "")[:12]}
+
+
+@router.post("/vision/extract")
+async def extract_homework_image(
+    request: Request,
+    image: UploadFile = File(...),
+    language: str = Form("en-IN"),
+    session_id: str = Form("guest"),
+):
+    """Read a homework image with Sarvam Vision; Tutorly's existing AI still teaches from the text."""
+    client_host = request.client.host if request.client else "unknown"
+    limit_key = f"{client_host}:{(session_id or 'guest').strip()[:100]}"
+    decision = vision_rate_limiter.check(limit_key)
+    if not decision.allowed:
+        raise HTTPException(
+            status_code=429,
+            detail="Image reading is busy for a moment. Tutorly will try the backup reader.",
+            headers={"Retry-After": str(decision.retry_after_seconds)},
+        )
+
+    mime_type = (image.content_type or "").split(";", 1)[0].strip().lower()
+    filename = Path(image.filename or "homework.jpg").name
+    suffix = Path(filename).suffix.lower()
+    if mime_type not in _VISION_MIME_TYPES or suffix not in _VISION_EXTENSIONS:
+        await image.close()
+        raise HTTPException(
+            status_code=400,
+            detail="That image format is not supported. Please use PNG or JPG.",
+        )
+
+    payload = await image.read(_MAX_VISION_BYTES + 1)
+    await image.close()
+    if not payload:
+        raise HTTPException(status_code=400, detail="That image is empty. Please choose another image.")
+    if len(payload) > _MAX_VISION_BYTES:
+        raise HTTPException(status_code=413, detail="That image is too large. Please upload a smaller image.")
+
+    try:
+        result = await sarvam_vision.extract(
+            image=payload,
+            filename=filename,
+            mime_type="image/jpeg" if mime_type == "image/jpg" else mime_type,
+            language=language,
+        )
+    except SarvamVisionError as error:
+        status_code = {
+            "invalid_image": 422,
+            "rate_limited": 429,
+            "timeout": 504,
+            "not_configured": 503,
+        }.get(error.status, 502)
+        VISION_LOGGER.warning("Sarvam Vision failed category=%s", error.status)
+        raise HTTPException(
+            status_code=status_code,
+            detail="Tutorly couldn't read that image online. It will try the backup image reader.",
+        ) from None
+
+    return {
+        "text": result.text,
+        "language": result.language,
+        "provider": "sarvam-vision",
+        "partial": result.partial,
+    }
 
 
 @router.options("/chat")
