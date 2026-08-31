@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 import sqlite3
 import uuid
@@ -15,6 +16,16 @@ from pydantic import BaseModel
 BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BACKEND_DIR.parent
 load_dotenv(BACKEND_DIR / ".env")
+
+STARTUP_LOGGER = logging.getLogger("tutorly.startup")
+REQUIRED_PROVIDER_KEYS = {
+    "SARVAM_API_KEY": "Sarvam Vision homework-image reading",
+    "ELEVENLABS_API_KEY": "ElevenLabs secure Voice Chat",
+}
+
+
+def missing_provider_keys() -> tuple[str, ...]:
+    return tuple(name for name in REQUIRED_PROVIDER_KEYS if not os.getenv(name, "").strip())
 
 try:
     from backend.auth_routes import router as auth_router
@@ -39,6 +50,16 @@ app.include_router(chatbot_router)
 app.include_router(auth_router)
 app.include_router(curriculum_router)
 teaching_success_engine = TeachingSuccessScore()
+
+
+@app.on_event("startup")
+async def report_missing_provider_keys() -> None:
+    for variable_name in missing_provider_keys():
+        STARTUP_LOGGER.error(
+            "Tutorly backend configuration is missing %s; %s is unavailable until it is set in the backend environment.",
+            variable_name,
+            REQUIRED_PROVIDER_KEYS[variable_name],
+        )
 
 UPLOAD_DIR = PROJECT_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

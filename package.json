@@ -12,6 +12,7 @@
     "check:reasoning-status": "node tests/reasoning-status-check.js",
     "check:voice": "node tests/elevenlabs-voice-ui-check.js && python tests/elevenlabs_voice_backend_smoke.py",
     "check:vision": "python tests/sarvam_vision_smoke.py",
+    "check:backend-secrets": "python tests/backend_secret_config_smoke.py",
     "check:rich-response": "node tests/rich-response-renderer-check.js",
     "check:chatbot:backend": "python tests/chatbot_backend_smoke.py",
     "check:chatbot:live": "python tests/semantic_router_live.py --show-answers",
