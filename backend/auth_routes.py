@@ -73,11 +73,55 @@ class AcademicProfileRequest(BaseModel):
     grade: str
     board: str
     school: str = ""
+    full_name: str | None = None
 
 
 class VoicePreferenceRequest(BaseModel):
     preferred_voice_agent: str
     voice_onboarding_completed: bool = True
+
+
+class PersonalizationRequest(BaseModel):
+    teaching_style: str = "friendly"
+    answer_detail: str = "balanced"
+    learning_approach: str = "explain_first"
+    use_examples: bool = True
+    show_diagrams: bool = True
+    show_formulas: bool = True
+    suggest_follow_ups: bool = False
+    quick_answers: bool = True
+    language: str = "auto"
+    voice_language: str = "auto"
+    voice_intelligence: str = "standard"
+
+
+DEFAULT_PERSONALIZATION = {
+    "teaching_style": "friendly",
+    "answer_detail": "balanced",
+    "learning_approach": "explain_first",
+    "use_examples": True,
+    "show_diagrams": True,
+    "show_formulas": True,
+    "suggest_follow_ups": False,
+    "quick_answers": True,
+    "language": "auto",
+    "voice_language": "auto",
+    "voice_intelligence": "standard",
+}
+PERSONALIZATION_OPTIONS = {
+    "teaching_style": {"friendly", "encouraging", "direct", "calm"},
+    "answer_detail": {"short", "balanced", "detailed"},
+    "learning_approach": {"explain_first", "step_by_step", "ask_questions", "challenge_me"},
+    "language": {
+        "auto", "en-US", "en-IN", "en-GB", "hi-IN", "te-IN", "ta-IN",
+        "bn-IN", "mr-IN", "es-ES", "fr-FR", "de-DE",
+    },
+    "voice_language": {
+        "auto", "en-US", "en-IN", "en-GB", "hi-IN", "te-IN", "ta-IN",
+        "bn-IN", "mr-IN", "es-ES", "fr-FR", "de-DE",
+    },
+    "voice_intelligence": {"standard", "deep"},
+}
 
 
 @contextmanager
@@ -177,6 +221,7 @@ def _ensure_user_columns(connection: sqlite3.Connection) -> None:
         "academic_onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
         "preferred_voice_agent": "TEXT NOT NULL DEFAULT ''",
         "voice_onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
+        "personalization_json": "TEXT NOT NULL DEFAULT '{}'",
     }
     for name, definition in additions.items():
         if name not in columns:
@@ -286,6 +331,45 @@ def _clean_profile_value(value: str, *, required: bool, max_length: int, label: 
     return cleaned
 
 
+def _personalization_from_value(value: object) -> dict[str, object]:
+    source: dict[str, object] = {}
+    if isinstance(value, str) and value.strip():
+        try:
+            decoded = json.loads(value)
+            if isinstance(decoded, dict):
+                source = decoded
+        except (TypeError, ValueError, json.JSONDecodeError):
+            source = {}
+    elif isinstance(value, dict):
+        source = value
+
+    preferences = dict(DEFAULT_PERSONALIZATION)
+    for key, allowed in PERSONALIZATION_OPTIONS.items():
+        candidate = str(source.get(key, preferences[key]) or "").strip()
+        if candidate in allowed:
+            preferences[key] = candidate
+    for key in ("use_examples", "show_diagrams", "show_formulas", "suggest_follow_ups", "quick_answers"):
+        if key in source and isinstance(source[key], bool):
+            preferences[key] = source[key]
+    return preferences
+
+
+def _personalization_from_user(user: sqlite3.Row) -> dict[str, object]:
+    try:
+        value = user["personalization_json"]
+    except (IndexError, KeyError):
+        value = ""
+    return _personalization_from_value(value)
+
+
+def _validated_personalization(value: dict[str, object]) -> dict[str, object]:
+    for key, allowed in PERSONALIZATION_OPTIONS.items():
+        candidate = str(value.get(key, DEFAULT_PERSONALIZATION[key]) or "").strip()
+        if candidate not in allowed:
+            raise HTTPException(status_code=400, detail=f"Choose a valid {key.replace('_', ' ')}.")
+    return _personalization_from_value(value)
+
+
 def _smtp_config() -> dict[str, object]:
     host = os.getenv("SMTP_HOST", "").strip()
     username = os.getenv("SMTP_USERNAME", "").strip()
@@ -374,7 +458,8 @@ def _session_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, 
     user = connection.execute(
         """
         SELECT id, email, full_name, grade, board, school, avatar_url,
-               academic_onboarding_completed
+               academic_onboarding_completed, preferred_voice_agent,
+               voice_onboarding_completed, personalization_json
         FROM tutorly_users WHERE id = ?
         """,
         (user_id,),
@@ -395,6 +480,9 @@ def _session_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, 
             "board": user["board"],
             "school": user["school"],
             "avatar_url": user["avatar_url"],
+            "preferred_voice_agent": user["preferred_voice_agent"],
+            "voice_onboarding_completed": bool(user["voice_onboarding_completed"]),
+            "personalization": _personalization_from_user(user),
         },
     }
 
@@ -437,8 +525,36 @@ def current_user(authorization: str | None = Header(default=None)):
                 "connected_providers": sorted(connected),
                 "preferred_voice_agent": user["preferred_voice_agent"],
                 "voice_onboarding_completed": bool(user["voice_onboarding_completed"]),
+                "personalization": _personalization_from_user(user),
             },
         }
+
+
+@router.get("/personalization")
+def get_personalization(authorization: str | None = Header(default=None)):
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        return {"personalization": _personalization_from_user(user)}
+
+
+@router.put("/personalization")
+def update_personalization(
+    payload: PersonalizationRequest,
+    authorization: str | None = Header(default=None),
+):
+    raw = payload.model_dump() if hasattr(payload, "model_dump") else payload.dict()
+    preferences = _validated_personalization(raw)
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        connection.execute(
+            """
+            UPDATE tutorly_users
+            SET personalization_json = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (json.dumps(preferences, ensure_ascii=False, separators=(",", ":")), int(time.time()), user["id"]),
+        )
+    return {"saved": True, "personalization": preferences}
 
 
 @router.get("/voice-preferences")
@@ -487,17 +603,28 @@ def update_academic_profile(
     grade = _clean_profile_value(payload.grade, required=True, max_length=40, label="grade")
     board = _clean_profile_value(payload.board, required=True, max_length=80, label="board")
     school = _clean_profile_value(payload.school, required=False, max_length=160, label="school")
+    full_name = None
+    if payload.full_name is not None:
+        full_name = _clean_profile_value(payload.full_name, required=True, max_length=120, label="name")
     with _connection() as connection:
         user = _authenticated_user(connection, authorization)
         connection.execute(
             """
             UPDATE tutorly_users
-            SET grade = ?, board = ?, school = ?, academic_onboarding_completed = 1, updated_at = ?
+            SET grade = ?, board = ?, school = ?,
+                full_name = CASE WHEN ? IS NULL THEN full_name ELSE ? END,
+                academic_onboarding_completed = 1, updated_at = ?
             WHERE id = ?
             """,
-            (grade, board, school, int(time.time()), user["id"]),
+            (grade, board, school, full_name, full_name, int(time.time()), user["id"]),
         )
-        return {"saved": True, "grade": grade, "board": board, "school": school}
+        return {
+            "saved": True,
+            "grade": grade,
+            "board": board,
+            "school": school,
+            "full_name": full_name if full_name is not None else user["full_name"],
+        }
 
 
 @router.post("/request-otp")

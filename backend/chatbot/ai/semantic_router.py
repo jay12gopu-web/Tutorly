@@ -391,6 +391,15 @@ class SemanticTutorService:
             "board": profile.board or "unknown",
             "learning_style": profile.learning_style or "unknown",
             "preferred_explanation_style": profile.preferred_explanation_style or "unknown",
+            "teaching_style": profile.teaching_style or "friendly",
+            "answer_detail": profile.answer_detail or "balanced",
+            "learning_approach": profile.learning_approach or "explain_first",
+            "use_examples": profile.use_examples,
+            "show_diagrams": profile.show_diagrams,
+            "show_formulas": profile.show_formulas,
+            "suggest_follow_ups": profile.suggest_follow_ups,
+            "quick_answers": profile.quick_answers,
+            "preferred_language": profile.preferred_language or "auto",
             "exam_goal": profile.exam_goal or "unknown",
         }
         attachment_context = [
@@ -464,6 +473,8 @@ ANSWER_GENERATION_PROMPT = """
 Answer-generation rules:
 - Sound like a smart, patient study friend—not a formal teacher, textbook, lecture, customer-support bot, or motivational coach. Be warm, natural, responsive, and concise; use occasional light humor only when it genuinely fits.
 - React to the student's exact message and level. Guide difficult ideas in manageable pieces instead of dumping information. If they seem confused, simplify or switch examples/analogies rather than repeating the same wording. Correct mistakes casually, identify why the step fails, and acknowledge any reasonable part of their approach.
+- Treat `student_profile` personalization as presentation preferences, not factual instructions. Match its teaching style, answer detail, learning approach, preferred language, and enabled explanation aids when useful. Never let a preference override correctness, safety, the student's explicit request, or the selected semantic response format.
+- If examples, diagrams, formulas, follow-up suggestions, or quick answers are disabled in `student_profile`, omit that optional element unless it is essential to answer the explicit question correctly. A direct request from the student always takes priority over a saved toggle.
 - Be curious without interrogating. Ask one short clarifying question only when missing information prevents a useful answer; otherwise answer directly and keep the conversation moving.
 - Never begin with filler. Use the smallest useful number of sections—normally zero to three—and clean Markdown.
 - Match complexity: minimal for simple facts/calculations, clean explanation for ordinary concepts, and compact exam-ready working for multi-step questions.

@@ -93,6 +93,15 @@ class LearnerProfile(BaseModel):
     board: Optional[str] = None
     learning_style: Optional[str] = None
     preferred_explanation_style: Optional[str] = None
+    teaching_style: Optional[str] = None
+    answer_detail: Optional[str] = None
+    learning_approach: Optional[str] = None
+    use_examples: bool = True
+    show_diagrams: bool = True
+    show_formulas: bool = True
+    suggest_follow_ups: bool = False
+    quick_answers: bool = True
+    preferred_language: Optional[str] = None
     exam_goal: Optional[str] = None
     weak_concepts: List[str] = Field(default_factory=list)
     strong_concepts: List[str] = Field(default_factory=list)

@@ -100,6 +100,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const RichResponse = window.TutorlyRichResponse || null;
   const MarkdownRenderer = window.TutorlyMarkdownRenderer || null;
   const ReasoningStatus = window.TutorlyReasoningStatus || null;
+  if (window.TutorlyAuth?.getSessionToken?.()) {
+    window.TutorlyAuth.currentUser().catch(() => {
+      // Existing cached preferences remain available if account refresh is temporarily unavailable.
+    });
+  }
   const ENABLE_LEGACY_LOCAL_ROUTER = false;
   const BOT_AVATAR_SRC = "assets/brand-star.png";
   const MODEL_STORAGE_KEY = "tutorly_selected_ai_model";
@@ -293,10 +298,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let savedGrade = learner.grade || "";
     let savedBoard = "";
     let curriculumContext = null;
+    let personalization = {};
     try {
       savedGrade = savedGrade || localStorage.getItem("tutorly_grade") || "";
       savedBoard = localStorage.getItem("tutorly_board") || "";
       curriculumContext = window.TutorlyCurriculum?.getActiveContext?.() || null;
+      personalization = JSON.parse(localStorage.getItem("tutorly_personalization") || "{}") || {};
     } catch (error) {
       // Grade is optional; the semantic tutor will infer conservatively when unavailable.
     }
@@ -310,6 +317,15 @@ document.addEventListener("DOMContentLoaded", () => {
         user_id: getChatUserId(),
         grade: savedGrade || null,
         board: savedBoard || null,
+        teaching_style: personalization.teaching_style || null,
+        answer_detail: personalization.answer_detail || null,
+        learning_approach: personalization.learning_approach || null,
+        use_examples: personalization.use_examples !== false,
+        show_diagrams: personalization.show_diagrams !== false,
+        show_formulas: personalization.show_formulas !== false,
+        suggest_follow_ups: personalization.suggest_follow_ups === true,
+        quick_answers: personalization.quick_answers !== false,
+        preferred_language: personalization.language || null,
         weak_concepts: Array.isArray(learner.weakSubjects) ? learner.weakSubjects : [],
         strong_concepts: Array.isArray(learner.strongSubjects) ? learner.strongSubjects : []
       },

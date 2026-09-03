@@ -119,11 +119,12 @@ assert(subscriptionJs.includes('openTrialDialog(planId, button)'), "Eligible pre
 assert(subscriptionJs.includes('startCheckout(planId)'), "Paid plan CTAs must retain the existing checkout entry point");
 
 const profile = read("profile.html");
-for (const emptyState of ["Complete your first test to unlock performance insights.", "No learning activity yet.", "No academic reports yet"]) {
-  assert(profile.includes(emptyState), `Profile empty state missing: ${emptyState}`);
-}
+assert(profile.includes("Personalization"), "Profile personalization section is missing");
+assert(profile.includes("Billing &amp; Plan"), "Profile billing section is missing");
+assert(profile.includes("Study activity"), "Profile study activity calendar is missing");
+const profileHubJs = read("js/profile-hub.js");
 for (const storageKey of ["tutorly_exam_history", "tutorly_lesson_progress", "tutorly_chatbot_history_v1"]) {
-  assert(profile.includes(storageKey), `Profile must read real ${storageKey} data`);
+  assert(profileHubJs.includes(storageKey), `Profile must read real ${storageKey} data`);
 }
 
 console.log("Tutorly shared design, copy, profile, billing, encoding, and responsive static checks passed.");

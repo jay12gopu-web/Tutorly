@@ -63,7 +63,30 @@
     if (user.avatar_url && !localStorage.getItem("tutorly_avatar")) {
       localStorage.setItem("tutorly_avatar", user.avatar_url);
     }
+    cacheUserPreferences(user);
     localStorage.setItem("tutorly_bot_try_count", "0");
+    return payload;
+  }
+
+  function cacheUserPreferences(user) {
+    if (!user || typeof user !== "object") return user;
+    if (user.personalization && typeof user.personalization === "object") {
+      localStorage.setItem("tutorly_personalization", JSON.stringify(user.personalization));
+      if (user.personalization.voice_language) {
+        localStorage.setItem("tutorly_voice_language", user.personalization.voice_language);
+      }
+      if (user.personalization.voice_intelligence) {
+        localStorage.setItem("tutorly_voice_intelligence", user.personalization.voice_intelligence);
+      }
+    }
+    if (user.preferred_voice_agent) {
+      localStorage.setItem("tutorly_preferred_voice_agent", user.preferred_voice_agent);
+    }
+    return user;
+  }
+
+  function cacheCurrentUser(payload) {
+    cacheUserPreferences(payload?.user);
     return payload;
   }
 
@@ -116,7 +139,16 @@
     completeOAuth: (resultCode) => request("/api/auth/oauth/complete", { result_code: resultCode }).then(saveSession),
     socialStartUrl,
     authenticatedDestination,
-    currentUser: () => request("/api/auth/me", null, { method: "GET", auth: true }),
+    currentUser: () => request("/api/auth/me", null, { method: "GET", auth: true }).then(cacheCurrentUser),
+    getPersonalization: () => request("/api/auth/personalization", null, { method: "GET", auth: true }),
+    savePersonalization: (personalization) => request(
+      "/api/auth/personalization",
+      personalization,
+      { method: "PUT", auth: true }
+    ).then((payload) => {
+      cacheUserPreferences({ personalization: payload.personalization });
+      return payload;
+    }),
     getVoicePreferences: () => request("/api/auth/voice-preferences", null, { method: "GET", auth: true }),
     saveVoicePreferences: (preferredVoiceAgent, completed = true) => request(
       "/api/auth/voice-preferences",
@@ -126,6 +158,11 @@
     updateAcademicProfile: (grade, board, school = "") => request(
       "/api/auth/profile",
       { grade, board, school },
+      { auth: true }
+    ),
+    updateProfile: ({ fullName, grade, board, school = "" }) => request(
+      "/api/auth/profile",
+      { full_name: fullName, grade, board, school },
       { auth: true }
     ),
     connectedAccounts: () => request("/api/auth/connected-accounts", null, { method: "GET", auth: true }),
