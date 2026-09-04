@@ -631,7 +631,9 @@
     const rect = doc.getBoundingClientRect();
     const total = Math.max(1, rect.height - window.innerHeight);
     const read = Math.max(0, -rect.top);
-    const percent = Math.max(getProgressFor(state.subjectId, state.chapterId).percent || 0, Math.min(100, Math.round((read / total) * 100)));
+    const previousPercent = getProgressFor(state.subjectId, state.chapterId).percent || 0;
+    let percent = Math.max(previousPercent, Math.min(100, Math.round((read / total) * 100)));
+    if (percent >= 95) percent = 100;
     const progress = getProgress();
     const key = lessonKey(state.subjectId, state.chapterId);
     progress[key] = {
@@ -641,6 +643,19 @@
     };
     writeJson(PROGRESS_KEY, progress);
     $("lessonProgressText").textContent = `${percent}% read`;
+    if (previousPercent < 95 && percent === 100) {
+      const day = new Date().toISOString().slice(0, 10);
+      const subject = Data.getSubject(state.subjectId);
+      const chapter = Data.getChapter(state.subjectId, state.chapterId);
+      window.TutorlyQuestEvents?.record(
+        "lesson_completed",
+        `lesson:${day}:${state.subjectId}:${state.chapterId}`,
+        {
+          subject: subject?.name || state.subjectId,
+          chapter: chapter?.title || state.chapterId
+        }
+      );
+    }
   }
 
   window.addEventListener("DOMContentLoaded", init);

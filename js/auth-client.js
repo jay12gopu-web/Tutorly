@@ -155,6 +155,17 @@
       { preferred_voice_agent: preferredVoiceAgent, voice_onboarding_completed: !!completed },
       { method: "PUT", auth: true }
     ),
+    getQuests: () => request("/api/quests", null, { method: "GET", auth: true }),
+    recordQuestEvent: (eventType, eventId, metadata = {}) => request(
+      "/api/quests/events",
+      { event_type: eventType, event_id: eventId, metadata },
+      { auth: true }
+    ),
+    recordQuestEvents: (events) => request(
+      "/api/quests/events/batch",
+      { events },
+      { auth: true }
+    ),
     updateAcademicProfile: (grade, board, school = "") => request(
       "/api/auth/profile",
       { grade, board, school },

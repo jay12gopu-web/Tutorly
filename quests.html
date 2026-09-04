@@ -80,12 +80,12 @@
       margin-bottom: 10px;
     }
 
-    .quest-btn.done {
-      background: #1c7c4c;
-      color: #fff;
-      border-color: #1c7c4c;
-      cursor: not-allowed;
-    }
+    .quest-progress-copy { display:flex; justify-content:space-between; gap:10px; margin:0 0 7px; color:#567; font-size:12px; font-weight:800; }
+    .quest-progress { height:8px; overflow:hidden; border-radius:999px; background:#e9eef8; margin-bottom:14px; }
+    .quest-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#4f7cff,#7a5cff); transition:width 220ms cubic-bezier(.2,.8,.2,1); }
+    .quest-card.is-complete { border-color:#b9dfcb; background:linear-gradient(120deg,#fff,#f2fbf6); }
+    .quest-card.is-complete .quest-progress span { background:#159a72; }
+    .quest-open { width:100%; text-align:center; text-decoration:none; }
 
     @media (max-width: 980px) {
       .quests-hero, .quest-grid { grid-template-columns: 1fr; }
@@ -110,155 +110,28 @@
   <main class="shell quests-shell">
     <section class="panel panel-soft quests-hero fade-up d2">
       <div>
-        <span class="pill pill-orange">Daily Quest Zone</span>
-        <h1 class="page-title" style="font-size: 44px; margin-top: 8px;">3 New Quests Every Day</h1>
-        <p class="page-sub">Complete today’s quests and instantly collect coin rewards.</p>
+        <span class="pill pill-orange">Real learning quests</span>
+        <h1 class="page-title" style="font-size: 44px; margin-top: 8px;">Daily & Weekly Quests</h1>
+        <p class="page-sub">Practice, tests and lessons update your progress automatically.</p>
         <div class="badge-track">
           <span class="pill pill-blue">Current Coins: <b id="coinsBadge">0</b></span>
-          <span class="pill pill-green">Completed Today: <b id="doneBadge">0</b>/3</span>
-          <span class="pill pill-orange">Date: <b id="dateBadge">--</b></span>
+          <span class="pill pill-green">Weekly XP: <b id="weeklyXpBadge">0</b></span>
+          <span class="pill pill-blue">Total XP: <b id="totalXpBadge">0</b></span>
+          <span class="pill pill-orange">Completed: <b id="doneBadge">0/0</b></span>
         </div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size: 72px; line-height:1;">??</div>
-        <p class="muted" style="margin: 8px 0 0; font-weight:700;">Finish all 3 quests to maximize your daily coins.</p>
+        <img src="assets/brand-star.png" alt="" style="width:72px;height:72px;object-fit:contain;" />
+        <p class="muted" style="margin: 8px 0 0; font-weight:700;">Keep learning. Tutorly handles the tracking.</p>
       </div>
     </section>
 
     <section class="quest-grid fade-up d3" id="questGrid"></section>
   </main>
 
-  <script>
-    const DATE_KEY = 'tutorly_quests_date';
-    const LIST_KEY = 'tutorly_quests_list';
-    const DONE_KEY = 'tutorly_quests_done';
-    const COIN_KEY = 'tutorly_coins';
-    const LEGACY_COIN_KEY = 'tutorly_coins';
-
-    const QUEST_POOL = [
-      { title: 'Algebra Blitz', desc: 'Solve 5 algebra questions in the test zone.', level: 'Easy', reward: 40, route: 'tests.html' },
-      { title: 'Force Finder', desc: 'Complete one Physics practice round.', level: 'Medium', reward: 55, route: 'tests.html' },
-      { title: 'Reaction Run', desc: 'Complete 5 chemistry equation checks.', level: 'Medium', reward: 55, route: 'tests.html' },
-      { title: 'Bio Boost', desc: 'Revise 3 biology topics with a subject test.', level: 'Easy', reward: 45, route: 'tests.html' },
-      { title: 'Grammar Sprint', desc: 'Practice 10 grammar corrections.', level: 'Easy', reward: 40, route: 'tests.html' },
-      { title: 'Test Tactician', desc: 'Complete 1 subject test in Test zone.', level: 'Hard', reward: 75, route: 'tests.html' },
-      { title: 'Mixed Master', desc: 'Attempt one question in each subject test.', level: 'Hard', reward: 80, route: 'tests.html' }
-    ];
-
-    function getTodayKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    function getCoins() {
-      return Number(localStorage.getItem(COIN_KEY) || localStorage.getItem(LEGACY_COIN_KEY) || '1250');
-    }
-
-    function setCoins(val) {
-      localStorage.setItem(COIN_KEY, String(val));
-      localStorage.setItem(LEGACY_COIN_KEY, String(val));
-    }
-
-    function shuffle(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-
-    function ensureDailyQuests() {
-      const today = getTodayKey();
-      const storedDate = localStorage.getItem(DATE_KEY);
-
-      if (storedDate !== today) {
-        const selected = shuffle(QUEST_POOL).slice(0, 3).map((q, i) => ({ id: `q${i + 1}`, ...q }));
-        localStorage.setItem(DATE_KEY, today);
-        localStorage.setItem(LIST_KEY, JSON.stringify(selected));
-        localStorage.setItem(DONE_KEY, JSON.stringify([]));
-      }
-
-      document.getElementById('dateBadge').textContent = today;
-      return JSON.parse(localStorage.getItem(LIST_KEY) || '[]');
-    }
-
-    function getDoneSet() {
-      return new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]'));
-    }
-
-    function saveDoneSet(doneSet) {
-      localStorage.setItem(DONE_KEY, JSON.stringify([...doneSet]));
-    }
-
-    function levelColor(level) {
-      if (level === 'Hard') return 'background:#ffe9e9;color:#b62828;border-color:#ffc2c2;';
-      if (level === 'Medium') return 'background:#fff3e2;color:#a25b00;border-color:#ffd8ab;';
-      return 'background:#ecf2ff;color:#3559d3;border-color:#cfe0ff;';
-    }
-
-    function renderQuests() {
-      const quests = ensureDailyQuests();
-      const doneSet = getDoneSet();
-      const grid = document.getElementById('questGrid');
-      grid.innerHTML = '';
-
-      quests.forEach((q) => {
-        const isDone = doneSet.has(q.id);
-        const card = document.createElement('article');
-        card.className = 'quest-card';
-        card.innerHTML = `
-          <div class="quest-top">
-            <span class="quest-level" style="${levelColor(q.level)}">${q.level}</span>
-            <span class="coin-reward">+${q.reward} coins</span>
-          </div>
-          <h3 class="quest-title">${q.title}</h3>
-          <p class="quest-desc">${q.desc}</p>
-          <div class="quest-meta"><span>${isDone ? 'Completed' : 'Not completed'}</span><span>Daily Quest</span></div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-soft" type="button" data-open="${q.route}" style="flex:1;">Open</button>
-            <button class="btn btn-primary quest-btn ${isDone ? 'done' : ''}" type="button" data-complete="${q.id}" style="flex:1;" ${isDone ? 'disabled' : ''}>${isDone ? 'Claimed' : 'Complete'}</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      updateBadges();
-
-      grid.querySelectorAll('[data-open]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const route = btn.getAttribute('data-open');
-          if (route) window.location.href = route;
-        });
-      });
-
-      grid.querySelectorAll('[data-complete]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-complete');
-          const questsNow = JSON.parse(localStorage.getItem(LIST_KEY) || '[]');
-          const quest = questsNow.find((x) => x.id === id);
-          if (!quest) return;
-
-          const done = getDoneSet();
-          if (done.has(id)) return;
-
-          done.add(id);
-          saveDoneSet(done);
-          setCoins(getCoins() + Number(quest.reward));
-          renderQuests();
-          alert(`Quest complete! +${quest.reward} coins`);
-        });
-      });
-    }
-
-    function updateBadges() {
-      const doneCount = getDoneSet().size;
-      document.getElementById('coinsBadge').textContent = getCoins();
-      document.getElementById('doneBadge').textContent = doneCount;
-    }
-
-    renderQuests();
-  </script>
+  <script src="js/auth-client.js?v=quests-20260904"></script>
+  <script src="js/quest-client.js?v=quests-20260904"></script>
+  <script src="js/quests.js?v=quests-20260904"></script>
   <script src="js/global-layout.js?v=nav-redesign-20260531"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/mobile-app.js?v=mobile-first-20260623"></script>

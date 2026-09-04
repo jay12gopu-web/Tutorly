@@ -62,6 +62,8 @@
     timerId: null,
     remainingSeconds: null,
     currentReport: null,
+    sessionId: "",
+    finished: false,
     difficulty: "Easy",
     includeSubjective: false
   };
@@ -408,6 +410,8 @@
     state.answers = state.questions.map(() => ({ selected: null, status: "unattempted", time: 0 }));
     state.index = 0;
     state.startedAt = Date.now();
+    state.sessionId = `exam_${state.startedAt}_${Math.random().toString(36).slice(2, 10)}`;
+    state.finished = false;
     state.remainingSeconds = state.settings.timeLimit ? state.settings.timeLimit * 60 : null;
     $("setupPanel").hidden = true;
     $("reportView").hidden = true;
@@ -623,6 +627,18 @@
     }
     state.answers[state.index] = { selected, status, time: elapsed };
 
+    if (state.mode === "practice" && status === "correct") {
+      window.TutorlyQuestEvents?.record(
+        "practice_question_correct",
+        `practice:${state.startedAt}:question:${state.index}`,
+        {
+          subject: state.subject?.name || "",
+          chapter_id: question.chapterId || "",
+          concept: question.concept || ""
+        }
+      );
+    }
+
     if (MODE_CONFIG[state.mode].instant) {
       showMiniFeedback(question, status);
       window.setTimeout(nextQuestionOrFinish, 850);
@@ -647,13 +663,16 @@
   }
 
   function finishExam() {
+    if (state.finished) return;
+    state.finished = true;
     stopTimer();
     state.answers = state.answers.map((answer) => answer.status === "unattempted" && answer.time === 0
       ? { ...answer, time: 0 }
       : answer);
     const report = buildReport();
     state.currentReport = report;
-    saveReport(report);
+    const progressionEvents = saveReport(report);
+    syncQuestCompletionEvents(report, progressionEvents);
     $("examView").hidden = true;
     $("reportView").hidden = false;
     renderReport(report);
@@ -680,7 +699,7 @@
     const weakAreas = topics.filter((topic) => topic.percentage < 70).map((topic) => topic.concept);
     const chapterIds = state.selectedChapters.slice();
     return {
-      id: `report_${Date.now()}`,
+      id: state.sessionId || `exam_${state.startedAt}`,
       date: new Date().toISOString(),
       grade: state.profile.grade,
       board: state.profile.board,
@@ -716,23 +735,56 @@
     const history = [report, ...readJson(HISTORY_KEY, [])].slice(0, 60);
     writeJson(HISTORY_KEY, history);
 
+    const progressionEvents = [];
     const mastery = readJson(MASTERY_KEY, {});
     report.chapterIds.forEach((chapterId) => {
       const previous = Number(mastery[chapterId]?.mastery || 0);
+      const updated = Math.round(previous ? previous * 0.65 + report.percentage * 0.35 : report.percentage);
       mastery[chapterId] = {
         chapter: report.chapters[report.chapterIds.indexOf(chapterId)] || chapterId,
         subject: report.subject.name,
-        mastery: Math.round(previous ? previous * 0.65 + report.percentage * 0.35 : report.percentage),
+        mastery: updated,
         updatedAt: report.date
       };
+      if (previous < 80 && updated >= 80) {
+        progressionEvents.push({
+          event_type: "topic_mastered",
+          event_id: `mastery:${report.id}:${chapterId}`,
+          metadata: { subject: report.subject.name, chapter_id: chapterId, mastery: updated }
+        });
+      }
     });
     writeJson(MASTERY_KEY, mastery);
 
     const weakAreas = readJson(WEAK_AREAS_KEY, {});
+    report.topics.forEach((topic) => {
+      if (topic.percentage >= 70 && weakAreas[topic.concept]) {
+        delete weakAreas[topic.concept];
+        progressionEvents.push({
+          event_type: "weak_topic_improved",
+          event_id: `weak-improved:${report.id}:${String(topic.concept).replace(/[^A-Za-z0-9_.-]/g, "-").slice(0, 70)}`,
+          metadata: { subject: report.subject.name, topic: topic.concept, score: topic.percentage }
+        });
+      }
+    });
     report.weakAreas.forEach((area) => {
       weakAreas[area] = { concept: area, subject: report.subject.name, updatedAt: report.date };
     });
     writeJson(WEAK_AREAS_KEY, weakAreas);
+    return progressionEvents;
+  }
+
+  function syncQuestCompletionEvents(report, progressionEvents) {
+    const metadata = {
+      subject: report.subject?.name || "",
+      chapter_ids: report.chapterIds,
+      score: report.percentage,
+      mode: report.mode
+    };
+    const completionEvent = report.mode === "practice"
+      ? { event_type: "practice_session_completed", event_id: `practice:${report.id}:completed`, metadata }
+      : { event_type: "test_completed", event_id: `test:${report.id}:completed`, metadata };
+    window.TutorlyQuestEvents?.recordBatch([completionEvent, ...(progressionEvents || [])]);
   }
 
   function renderReport(report) {
