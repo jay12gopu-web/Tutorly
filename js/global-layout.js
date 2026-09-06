@@ -144,19 +144,23 @@
   }
 
   function enhanceMobileHeader(current) {
-    const header = document.querySelector('header.header-wrap') || document.querySelector('header.topbar');
-    const topbar = header && (header.matches('.topbar') ? header : header.querySelector('.topbar'));
+    const header = document.querySelector([
+      'header.header-wrap',
+      'header.topbar',
+      'header.test-flow-topbar',
+      'header.learn-topbar',
+      'header.profile-topbar'
+    ].join(', '));
+    const topbar = header && (header.matches('.header-wrap') ? header.querySelector('.topbar') : header);
     if (!header || !topbar || topbar.querySelector('.mt-mobile-header-actions')) return;
 
     document.body.classList.add('mt-mobile-header-active');
     header.classList.add('mt-mobile-header');
 
-    const existingActions = topbar.querySelector('.top-actions');
-    const hasNotificationButton = !!topbar.querySelector('.notification-btn, [id$="NotificationBtn"]');
+    const existingActions = topbar.querySelector('.top-actions, .profile-top-actions');
     const actions = document.createElement('div');
     actions.className = 'mt-mobile-header-actions';
     actions.innerHTML = [
-      hasNotificationButton ? '' : '<button class="mt-mobile-icon-btn mt-mobile-notify" type="button" aria-label="Notifications" aria-expanded="false">' + icon('bell') + '</button>',
       '<a class="mt-mobile-icon-btn" href="profile.html" aria-label="Profile">' + icon('profile') + '</a>',
       '<button class="mt-mobile-icon-btn mt-mobile-menu" type="button" aria-label="Open menu" aria-expanded="false">' + icon('menu') + '</button>'
     ].join('');
@@ -182,7 +186,6 @@
     document.body.appendChild(drawer);
 
     const menuBtn = actions.querySelector('.mt-mobile-menu');
-    const notifyBtn = actions.querySelector('.mt-mobile-notify');
     const closeBtn = drawer.querySelector('.mt-page-drawer-close');
 
     function closeDrawer() {
@@ -214,20 +217,13 @@
       link.addEventListener('click', closeDrawer);
     });
 
-    if (notifyBtn) {
-      notifyBtn.addEventListener('click', function () {
-        notifyBtn.classList.add('tapped');
-        window.setTimeout(function () { notifyBtn.classList.remove('tapped'); }, 220);
-      });
-    }
-
     function syncScroll() {
       document.body.classList.toggle('mt-mobile-header-scrolled', window.scrollY > 8);
     }
 
     window.addEventListener('scroll', syncScroll, { passive: true });
     window.addEventListener('resize', function () {
-      if (window.matchMedia('(min-width: 768px)').matches) closeDrawer();
+      if (window.matchMedia('(min-width: 1081px)').matches) closeDrawer();
     });
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') closeDrawer();
@@ -492,7 +488,9 @@
     initMobileSwipeHome();
 
     const current = pageName();
-    enhanceMobileHeader(current);
+    const isEmbeddedTool = window.self !== window.top;
+    document.body.classList.toggle('mt-embedded-tool', isEmbeddedTool);
+    if (!isEmbeddedTool) enhanceMobileHeader(current);
 
     const isHome = current === 'home.html';
     if (!isHome) return;

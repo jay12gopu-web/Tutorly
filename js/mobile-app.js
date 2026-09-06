@@ -25,11 +25,12 @@
   }
 
   function pageTab() {
-    if (['lessons.html', 'ask_doubt.html', 'bookmarks.html', 'offline_tutor.html', 'online_tutor.html'].includes(path)) return 'learn';
+    if (path === 'home.html') return 'home';
+    if (['lessons.html', 'ask_doubt.html', 'offline_tutor.html', 'online_tutor.html'].includes(path)) return 'learn';
     if (path === 'maths_gpt.html') return 'ai';
-    if (['tests.html', 'quests.html', 'refer_earn.html', 'payment-history.html', 'subscriptions.html', 'shop.html'].includes(path)) return 'progress';
-    if (['profile.html', 'contact.html', 'info.html', 'teacher_info.html', 'terms_conditions.html'].includes(path)) return 'profile';
-    return 'home';
+    if (path === 'quests.html') return 'quests';
+    if (['more-tools.html', 'tests.html', 'practice.html', 'progress.html', 'refer_earn.html', 'payment-history.html', 'subscriptions.html', 'shop.html', 'bookmarks.html'].includes(path)) return 'tools';
+    return '';
   }
 
   function applyPageClasses() {
@@ -41,14 +42,14 @@
   }
 
   function mountBottomNav() {
-    if (path === 'maths_gpt.html') return;
+    if (['maths_gpt.html', 'login.html', 'sign_up.html', 'welcome.html'].includes(path)) return;
     if ($('.mt-native-bottom-nav')) return;
     const tabs = [
       { tab: 'home', label: 'Home', href: 'home.html', icon: icons.home },
       { tab: 'learn', label: 'Learn', href: 'lessons.html', icon: icons.learn },
       { tab: 'ai', label: 'AI', href: 'maths_gpt.html', icon: icons.ai },
-      { tab: 'progress', label: 'Progress', href: 'tests.html', icon: icons.progress },
-      { tab: 'profile', label: 'Profile', href: 'profile.html', icon: icons.profile }
+      { tab: 'quests', label: 'Quests', href: 'quests.html', icon: icons.bolt },
+      { tab: 'tools', label: 'Tools', href: 'more-tools.html', icon: icons.card }
     ];
     const active = pageTab();
     const nav = document.createElement('nav');
@@ -181,8 +182,9 @@
 
   function init() {
     applyPageClasses();
-    mountBottomNav();
-    mountHomeSurface();
+    const isEmbeddedTool = window.self !== window.top;
+    document.body.classList.toggle('mt-embedded-tool', isEmbeddedTool);
+    if (!isEmbeddedTool) mountBottomNav();
     tagTables();
     enhanceBottomSheets();
     initPullHint();

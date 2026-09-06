@@ -365,7 +365,7 @@ body.mt-layout-active .mt-bottom-nav svg {
   display: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1080px) {
   body.mt-mobile-header-active {
     --mt-mobile-header-top: max(8px, env(safe-area-inset-top));
   }
@@ -635,7 +635,7 @@ body.mt-layout-active .mt-bottom-nav svg {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1081px) {
   body.mt-layout-active .mt-global-sidebar {
     display: block;
     left: 12px;
@@ -678,7 +678,7 @@ body.mt-layout-active .mt-bottom-nav svg {
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1081px) {
   body.mt-layout-active .mt-global-ai {
     display: none !important;
   }

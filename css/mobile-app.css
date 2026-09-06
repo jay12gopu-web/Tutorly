@@ -74,7 +74,7 @@
     border-radius: 13px !important;
   }
 
-  body.mt-mobile-app :where(.nav-links, .mt-global-sidebar, .mt-bottom-nav, .mt-page-drawer, .mt-page-drawer-overlay, .mt-mobile-menu, .mobile-menu, .back-home-btn) {
+  body.mt-mobile-app :where(.nav-links, .mt-global-sidebar, .mt-bottom-nav, .back-home-btn) {
     display: none !important;
   }
 
@@ -144,15 +144,12 @@
     display: none;
   }
 
-  body.mt-mobile-home .app-shell > :not(.mt-mobile-home-surface),
-  body.mt-mobile-home .mt-global-sidebar {
-    display: none !important;
+  body.mt-mobile-app.mt-embedded-tool {
+    padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
   }
 
-  body.mt-mobile-home .mt-mobile-home-surface {
-    display: grid;
-    gap: 18px;
-    padding: 16px 16px 4px;
+  body.mt-mobile-app.mt-embedded-tool > :where(.mt-native-bottom-nav, .mt-page-drawer, .mt-page-drawer-overlay) {
+    display: none !important;
   }
 
   .mtm-top {
