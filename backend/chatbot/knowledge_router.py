@@ -4,12 +4,16 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import hashlib
 import json
+import logging
 import os
 import re
 import time
 from typing import Dict, Iterable, List, Optional, Protocol
 from urllib import parse, request
 from urllib.error import URLError, HTTPError
+
+
+LOGGER = logging.getLogger("tutorly.search")
 
 
 @dataclass(frozen=True)
@@ -387,11 +391,9 @@ class SmartKnowledgeRouter:
                 provider_error = ""
                 break
             except SearchProviderError as error:
-                provider_error = str(error)
-                print(
-                    "[Tutorly][search] Provider failure "
-                    f"provider={self.provider.name} attempt={attempt}/{retries} error={provider_error}"
-                )
+                provider_error = "Search provider unavailable."
+                LOGGER.warning("search_provider_failed provider=%s attempt=%s error_type=%s",
+                               self.provider.name, attempt, type(error).__name__)
                 if self.provider.name == "disabled":
                     break
 
@@ -400,10 +402,7 @@ class SmartKnowledgeRouter:
         warning = ""
         if not results:
             warning = provider_error or f"{self.provider.name} returned no usable results."
-            print(
-                "[Tutorly][search] Structured warning "
-                f"provider={self.provider.name} query={question!r} warning={warning}"
-            )
+            LOGGER.warning("search_returned_no_results provider=%s", self.provider.name)
         summary = SearchSummary(
             query=question,
             provider=self.provider.name,

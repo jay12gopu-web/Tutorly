@@ -15,10 +15,12 @@ from pydantic import BaseModel
 try:
     from backend.activity_store import activity_store
     from backend.auth_routes import authenticated_user_context
+    from backend.observability.context import set_error_code
     from backend.voice_agents import voice_agent, voice_agents
 except ImportError:
     from activity_store import activity_store
     from auth_routes import authenticated_user_context
+    from observability.context import set_error_code
     from voice_agents import voice_agent, voice_agents
 
 from .orchestrator import ChatbotOrchestrator
@@ -55,6 +57,19 @@ _ELEVENLABS_TOKEN_URL = "https://api.elevenlabs.io/v1/convai/conversation/token"
 _VISION_MIME_TYPES = {"image/jpeg", "image/jpg", "image/png"}
 _VISION_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 _MAX_VISION_BYTES = 12 * 1024 * 1024
+
+
+async def _record_provider(provider: str, operation: str, status: str, started: float, error_code: str | None = None) -> None:
+    if status != "success" and error_code:
+        set_error_code(error_code)
+    await asyncio.to_thread(
+        activity_store.record_provider,
+        provider=provider,
+        operation=operation,
+        status=status,
+        latency_ms=round((perf_counter() - started) * 1000),
+        error_code=error_code,
+    )
 
 
 def _rate_limit_key(request: ChatbotRequest) -> str:
@@ -115,6 +130,7 @@ async def create_voice_session(
     authorization: str | None = Header(default=None),
 ):
     """Issue a short-lived ElevenLabs WebRTC token without exposing provider secrets."""
+    started = perf_counter()
     account = authenticated_user_context(authorization)
     client_host = request.client.host if request.client else "unknown"
     limit_key = f"{client_host}:user-{account['id']}"
@@ -131,6 +147,7 @@ async def create_voice_session(
         raise HTTPException(status_code=400, detail="Choose a valid Tutorly voice.")
     api_key = _elevenlabs_configuration()
     if not api_key:
+        await _record_provider("elevenlabs", "voice_session", "failed", started, "CONFIGURATION_MISSING")
         raise HTTPException(status_code=503, detail="Live Voice Chat is temporarily unavailable.")
     agent_id = str(selected_voice["agent_id"])
 
@@ -146,21 +163,21 @@ async def create_voice_session(
                 headers={"xi-api-key": api_key, "Accept": "application/json"},
             )
     except httpx.TimeoutException:
-        LOGGER.warning("ElevenLabs token request failed category=timeout user_id=%s", account["id"])
+        LOGGER.warning("ElevenLabs token request failed category=timeout")
+        await _record_provider("elevenlabs", "voice_session", "failed", started, "PROVIDER_TIMEOUT")
         raise HTTPException(status_code=504, detail="Live Voice Chat took too long to start. Please try again.") from None
     except httpx.HTTPError:
-        LOGGER.warning("ElevenLabs token request failed category=network user_id=%s", account["id"])
+        LOGGER.warning("ElevenLabs token request failed category=network")
+        await _record_provider("elevenlabs", "voice_session", "failed", started, "NETWORK_ERROR")
         raise HTTPException(status_code=502, detail="Live Voice Chat couldn't start. Please try again.") from None
 
     if response.status_code == 429:
-        LOGGER.warning("ElevenLabs token request rejected category=rate_limit user_id=%s", account["id"])
+        LOGGER.warning("ElevenLabs token request rejected category=rate_limit")
+        await _record_provider("elevenlabs", "voice_session", "failed", started, "RATE_LIMIT")
         raise HTTPException(status_code=429, detail="Live Voice Chat is busy for a moment. Please try again shortly.")
     if not response.is_success:
-        LOGGER.warning(
-            "ElevenLabs token request rejected category=provider status=%s user_id=%s",
-            response.status_code,
-            account["id"],
-        )
+        LOGGER.warning("ElevenLabs token request rejected category=provider status=%s", response.status_code)
+        await _record_provider("elevenlabs", "voice_session", "failed", started, f"HTTP_{response.status_code}")
         raise HTTPException(status_code=502, detail="Live Voice Chat couldn't start. Please try again.")
 
     try:
@@ -170,9 +187,11 @@ async def create_voice_session(
     token = str(payload.get("token") or "").strip() if isinstance(payload, dict) else ""
     conversation_id = str(payload.get("conversation_id") or "").strip() if isinstance(payload, dict) else ""
     if not token or len(token) > 20_000:
-        LOGGER.warning("ElevenLabs token response rejected category=invalid_payload user_id=%s", account["id"])
+        LOGGER.warning("ElevenLabs token response rejected category=invalid_payload")
+        await _record_provider("elevenlabs", "voice_session", "failed", started, "INVALID_RESPONSE")
         raise HTTPException(status_code=502, detail="Live Voice Chat couldn't start. Please try again.")
 
+    await _record_provider("elevenlabs", "voice_session", "success", started)
     return {
         "conversation_token": token,
         "conversation_id": conversation_id[:200],
@@ -189,6 +208,7 @@ async def transcribe_audio(
     language: str = Form("auto"),
     session_id: str = Form("guest"),
 ):
+    started = perf_counter()
     provider = orchestrator.semantic_tutor.provider
     client_host = request.client.host if request.client else "unknown"
     limit_key = f"{client_host}:{(session_id or 'guest').strip()[:100]}"
@@ -227,6 +247,7 @@ async def transcribe_audio(
         )
     except Exception as error:
         status = getattr(error, "status", "transcription_failed")
+        await _record_provider("groq", "voice_transcription", "failed", started, str(status).upper())
         if status == "rate_limited":
             raise HTTPException(status_code=429, detail="Voice is temporarily busy. Please try again shortly.") from None
         if status == "timeout":
@@ -237,7 +258,9 @@ async def transcribe_audio(
 
     text = str(result.get("text") or "").replace("\x00", "").strip()
     if not text:
+        await _record_provider("groq", "voice_transcription", "failed", started, "INVALID_RESPONSE")
         raise HTTPException(status_code=422, detail="I couldn't hear that clearly. Please try saying it again.")
+    await _record_provider("groq", "voice_transcription", "success", started)
     return {"text": text[:5000], "language": str(result.get("language") or normalized_language or "")[:12]}
 
 
@@ -249,6 +272,7 @@ async def extract_homework_image(
     session_id: str = Form("guest"),
 ):
     """Read a homework image with Sarvam Vision; Tutorly's existing AI still teaches from the text."""
+    started = perf_counter()
     client_host = request.client.host if request.client else "unknown"
     limit_key = f"{client_host}:{(session_id or 'guest').strip()[:100]}"
     decision = vision_rate_limiter.check(limit_key)
@@ -291,11 +315,13 @@ async def extract_homework_image(
             "not_configured": 503,
         }.get(error.status, 502)
         VISION_LOGGER.warning("Sarvam Vision failed category=%s", error.status)
+        await _record_provider("sarvam", "vision_extract", "failed", started, str(error.status).upper())
         raise HTTPException(
             status_code=status_code,
             detail="Tutorly couldn't read that image online. It will try the backup image reader.",
         ) from None
 
+    await _record_provider("sarvam", "vision_extract", "success", started)
     return {
         "text": result.text,
         "language": result.language,
@@ -341,6 +367,7 @@ async def respond(request: ChatbotRequest):
             response.metadata["activity_chat_id"] = chat_id
         return response
     except HTTPException as error:
+        set_error_code(f"HTTP_{error.status_code}")
         await asyncio.to_thread(
             activity_store.record_failure,
             user_id=request.user_id,
@@ -354,7 +381,8 @@ async def respond(request: ChatbotRequest):
         )
         raise
     except Exception as error:
-        print(f"[Tutorly][semantic-chat] unexpected failure type={type(error).__name__}")
+        set_error_code("BACKEND_EXCEPTION")
+        LOGGER.error("semantic_chat_failed error_type=%s", type(error).__name__)
         await asyncio.to_thread(
             activity_store.record_failure,
             user_id=request.user_id,
@@ -394,7 +422,7 @@ async def stream(request: ChatbotRequest):
             async for event in orchestrator.stream(request):
                 yield f"data: {event.model_dump_json()}\n\n"
         except Exception as error:
-            print(f"[Tutorly][semantic-stream] failure type={type(error).__name__}")
+            LOGGER.error("semantic_stream_failed error_type=%s", type(error).__name__)
             safe = StreamEvent(
                 stage=ResponseStage.error,
                 message="I couldn't process that question properly. Please try again.",
@@ -436,7 +464,7 @@ async def websocket_chat(websocket: WebSocket):
     except WebSocketDisconnect:
         return
     except Exception as error:
-        print(f"[Tutorly][semantic-ws] failure type={type(error).__name__}")
+        LOGGER.error("semantic_websocket_failed error_type=%s", type(error).__name__)
         await websocket.send_text(json.dumps({
             "stage": "error",
             "message": "I couldn't process that question properly. Please try again.",

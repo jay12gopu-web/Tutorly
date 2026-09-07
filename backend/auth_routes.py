@@ -138,6 +138,7 @@ def _connection():
             full_name TEXT NOT NULL DEFAULT '',
             password_hash TEXT,
             password_salt TEXT,
+            role TEXT NOT NULL DEFAULT 'student',
             created_at INTEGER NOT NULL,
             updated_at INTEGER NOT NULL
         );
@@ -222,6 +223,7 @@ def _ensure_user_columns(connection: sqlite3.Connection) -> None:
         "preferred_voice_agent": "TEXT NOT NULL DEFAULT ''",
         "voice_onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
         "personalization_json": "TEXT NOT NULL DEFAULT '{}'",
+        "role": "TEXT NOT NULL DEFAULT 'student'",
     }
     for name, definition in additions.items():
         if name not in columns:
@@ -283,6 +285,27 @@ def _authenticated_user(connection: sqlite3.Connection, authorization: str | Non
     return user
 
 
+def _effective_role(user: sqlite3.Row) -> str:
+    configured_admins = {
+        email.strip().lower()
+        for email in os.getenv("TUTORLY_ADMIN_EMAILS", "").split(",")
+        if email.strip()
+    }
+    if str(user["email"] or "").strip().lower() in configured_admins:
+        return "admin"
+    value = str(user["role"] or "student").strip().lower()
+    return value if value in {"student", "teacher", "admin"} else "student"
+
+
+def require_role(authorization: str | None, *allowed_roles: str) -> dict[str, str | int]:
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        role = _effective_role(user)
+        if role not in set(allowed_roles):
+            raise HTTPException(status_code=403, detail="Forbidden")
+        return {"id": int(user["id"]), "role": role}
+
+
 def authenticated_user_context(authorization: str | None) -> dict[str, str | int]:
     """Return the minimum safe account context needed by other backend services."""
     with _connection() as connection:
@@ -291,6 +314,7 @@ def authenticated_user_context(authorization: str | None) -> dict[str, str | int
             "id": int(user["id"]),
             "full_name": str(user["full_name"] or "Tutorly Student"),
             "email": str(user["email"] or ""),
+            "role": _effective_role(user),
         }
 
 
@@ -457,7 +481,7 @@ def auth_health():
 def _session_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, object]:
     user = connection.execute(
         """
-        SELECT id, email, full_name, grade, board, school, avatar_url,
+        SELECT id, email, full_name, grade, board, school, avatar_url, role,
                academic_onboarding_completed, preferred_voice_agent,
                voice_onboarding_completed, personalization_json
         FROM tutorly_users WHERE id = ?
@@ -476,6 +500,7 @@ def _session_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, 
             "id": str(user["id"]),
             "email": user["email"],
             "full_name": user["full_name"],
+            "role": _effective_role(user),
             "grade": user["grade"],
             "board": user["board"],
             "school": user["school"],
@@ -518,6 +543,7 @@ def current_user(authorization: str | None = Header(default=None)):
                 "id": str(user["id"]),
                 "email": user["email"],
                 "full_name": user["full_name"],
+                "role": _effective_role(user),
                 "grade": user["grade"],
                 "board": user["board"],
                 "school": user["school"],
@@ -528,6 +554,13 @@ def current_user(authorization: str | None = Header(default=None)):
                 "personalization": _personalization_from_user(user),
             },
         }
+
+
+@router.get("/admin-session")
+def admin_session(authorization: str | None = Header(default=None)):
+    """Role assertion for trusted admin clients; returns no profile or secret data."""
+    context = require_role(authorization, "admin")
+    return {"authenticated": True, "role": "admin", "user_id": str(context["id"])}
 
 
 @router.get("/personalization")
@@ -953,7 +986,7 @@ async def oauth_callback(provider: str, request: Request):
                             now,
                         ),
                     )
-                LOGGER.info("OAuth provider connected provider=%s user_id=%s", normalized_provider, connecting_user_id)
+                LOGGER.info("OAuth provider connected provider=%s", normalized_provider)
                 return RedirectResponse(
                     _frontend_url("profile.html", oauth_connected=normalized_provider),
                     status_code=303,
@@ -985,11 +1018,7 @@ async def oauth_callback(provider: str, request: Request):
                     (identity.email,),
                 ).fetchone()
                 if existing_email:
-                    LOGGER.info(
-                        "OAuth account conflict provider=%s user_id=%s",
-                        normalized_provider,
-                        existing_email["id"],
-                    )
+                    LOGGER.info("OAuth account conflict provider=%s", normalized_provider)
                     return _oauth_error_redirect(normalized_provider, flow, "account_exists")
 
                 fallback_name = identity.email.split("@", 1)[0].replace(".", " ").replace("_", " ").title()
@@ -1021,7 +1050,7 @@ async def oauth_callback(provider: str, request: Request):
                 )
 
             result_code = _new_oauth_result(connection, user_id)
-            LOGGER.info("OAuth sign-in succeeded provider=%s user_id=%s", normalized_provider, user_id)
+            LOGGER.info("OAuth sign-in succeeded provider=%s", normalized_provider)
             page = "sign_up.html" if flow == "signup" else "login.html"
             return RedirectResponse(
                 _frontend_url(page, oauth_result=result_code, provider=normalized_provider),

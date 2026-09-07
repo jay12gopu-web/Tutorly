@@ -80,6 +80,16 @@ def main() -> None:
         assert rejected.status_code == 401
 
         token = password_login.json()["session_token"]
+        me = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+        assert me.status_code == 200
+        assert me.json()["user"]["role"] == "student"
+        forbidden = client.get("/api/auth/admin-session", headers={"Authorization": f"Bearer {token}"})
+        assert forbidden.status_code == 403
+        os.environ["TUTORLY_ADMIN_EMAILS"] = "signup@example.com"
+        admin = client.get("/api/auth/admin-session", headers={"Authorization": f"Bearer {token}"})
+        assert admin.status_code == 200
+        assert admin.json()["role"] == "admin"
+        os.environ.pop("TUTORLY_ADMIN_EMAILS", None)
         logged_out = client.post("/api/auth/logout", headers={"Authorization": f"Bearer {token}"})
         assert logged_out.status_code == 200
         assert logged_out.json()["logged_out"] is True

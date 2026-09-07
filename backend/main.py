@@ -12,10 +12,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+try:
+    from backend.observability import configure_structured_logging
+    from backend.observability.middleware import observability_middleware
+except ImportError:
+    from observability import configure_structured_logging
+    from observability.middleware import observability_middleware
+
 
 BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BACKEND_DIR.parent
 load_dotenv(BACKEND_DIR / ".env")
+configure_structured_logging()
 
 STARTUP_LOGGER = logging.getLogger("tutorly.startup")
 REQUIRED_PROVIDER_KEYS = {
@@ -48,6 +56,7 @@ except ImportError:
 
 
 app = FastAPI(title="Tutorly")
+app.middleware("http")(observability_middleware)
 app.include_router(chatbot_router)
 app.include_router(auth_router)
 app.include_router(curriculum_router)
@@ -185,7 +194,7 @@ async def legacy_chat(request: LegacyChatRequest):
     except HTTPException:
         raise
     except Exception as error:
-        print(f"[Tutorly][legacy-chat] semantic bridge failed type={type(error).__name__}")
+        STARTUP_LOGGER.error("legacy_chat_failed error_type=%s", type(error).__name__)
         raise HTTPException(
             status_code=503,
             detail="I couldn't process that question properly. Please try again.",
