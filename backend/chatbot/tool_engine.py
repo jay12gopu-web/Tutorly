@@ -56,6 +56,7 @@ class ToolEngine:
             ("diagram_renderer", "diagram_renderer"),
             ("web_search", "research"),
             ("code_runner", "code"),
+            ("image_generator", "image_generator"),
         )
         tools = [tool for field, tool in mapping if decision.get(field) is True]
         if has_attachments:
@@ -81,6 +82,14 @@ class ToolEngine:
                     reason="Selected by the semantic router because the visual materially supports understanding.",
                     input={"question": message[:500]},
                     output={"status": "frontend_renderer_selected"},
+                    confidence=0.9,
+                ))
+            elif name == "image_generator":
+                calls.append(ToolCall(
+                    name="image_generator",
+                    reason="The semantic route selected a real illustrative study visual.",
+                    input={"question": message[:500]},
+                    output={"status": "awaiting_secure_generation"},
                     confidence=0.9,
                 ))
             elif name == "ocr":

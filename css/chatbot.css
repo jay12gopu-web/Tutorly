@@ -6992,3 +6992,79 @@ body[data-theme="dark"] .composer-panel .model-selector.open .model-selector-btn
     border-radius: 11px;
   }
 }
+
+/* Generated study visuals stay inside the existing answer column. */
+.tutorly-generated-image {
+  margin: 20px 0;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--tutorly-border, #dfe5f3);
+  border-radius: 18px;
+  color: var(--tutorly-text, #25304b);
+  background: var(--tutorly-surface, #fff);
+}
+.bot-content .tutorly-generated-image p { margin: 0 0 9px; }
+.generated-image-status { font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
+.generated-image-cost, .generated-image-caption {
+  color: var(--tutorly-muted, #64708b);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.generated-image-action, .generated-image-close {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--tutorly-blue, #4f7cff), var(--tutorly-violet, #7a5cff));
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.generated-image-open {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+.generated-image-open img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: contain;
+}
+.generated-image-caption { margin-top: 9px; }
+.generated-image-action:focus-visible, .generated-image-open:focus-visible, .generated-image-close:focus-visible {
+  outline: 3px solid var(--tutorly-blue, #4f7cff);
+  outline-offset: 4px;
+}
+.tutorly-generated-image-preview {
+  box-sizing: border-box;
+  width: min(1120px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  padding: 16px;
+  border: 1px solid var(--tutorly-border, #dfe5f3);
+  border-radius: 18px;
+  background: var(--tutorly-surface, #fff);
+  color: var(--tutorly-text, #25304b);
+}
+.tutorly-generated-image-preview::backdrop { background: rgb(15 20 40 / 75%); }
+.tutorly-generated-image-preview img { display: block; width: 100%; max-height: calc(100dvh - 116px); object-fit: contain; margin-top: 12px; }
+.tutorly-generated-image-preview .generated-image-close { display: block; margin-left: auto; }
+body[data-theme="dark"] .tutorly-generated-image,
+body[data-theme="dark"] .tutorly-generated-image-preview { background: #1b233a; border-color: #36415c; color: #e8edff; }
+body[data-theme="dark"] :is(.generated-image-cost, .generated-image-caption) { color: #b4bfd8; }
+@media (max-width: 520px) {
+  .tutorly-generated-image { padding: 12px; border-radius: 14px; }
+  .generated-image-action { width: 100%; }
+  .tutorly-generated-image-preview { padding: 10px; }
+}

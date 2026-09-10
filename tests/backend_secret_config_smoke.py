@@ -14,6 +14,7 @@ from backend import main as backend_main
 
 
 SECRET_NAMES = ("SARVAM_API_KEY", "ELEVENLABS_API_KEY")
+IMAGE_SECRET_NAMES = ("OPENAI_IMAGE_API_KEY", "TUTORLY_CREDIT_SERVICE_SECRET")
 
 
 def example_value(path: Path, name: str) -> str:
@@ -28,7 +29,7 @@ def example_value(path: Path, name: str) -> str:
 
 def check_examples() -> None:
     for path in (PROJECT_DIR / ".env.example", PROJECT_DIR / "backend" / ".env.example"):
-        for name in SECRET_NAMES:
+        for name in SECRET_NAMES + IMAGE_SECRET_NAMES:
             assert example_value(path, name) == "", f"{name} must remain empty in {path}"
 
 
@@ -93,7 +94,7 @@ def check_frontend_isolation() -> None:
     frontend_files = list(PROJECT_DIR.glob("*.html")) + list((PROJECT_DIR / "js").rglob("*.js"))
     for path in frontend_files:
         source = path.read_text(encoding="utf-8", errors="ignore")
-        for name in SECRET_NAMES:
+        for name in SECRET_NAMES + IMAGE_SECRET_NAMES:
             assert name not in source, f"{name} must not appear in frontend file {path}"
 
 

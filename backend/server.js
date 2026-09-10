@@ -23,6 +23,9 @@ app.use(morgan(nodeEnv === "production" ? "combined" : "dev"));
 // Razorpay requires webhook signature verification against the exact raw body.
 app.post("/webhook", express.raw({ type: "application/json" }), paymentController.handleWebhook);
 
+// Private authenticated bridge must see the exact signed body, before JSON middleware.
+app.use("/internal/credits", require("./routes/internalCredits"));
+
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 

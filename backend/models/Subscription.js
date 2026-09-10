@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const subscriptionSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true, unique: true, index: true, trim: true },
+    // Set only after ownership is verified by the operator; never accept this from browser billing requests.
+    authUserId: { type: String, unique: true, sparse: true, index: true },
+    // Idempotency receipts for paid orders applied after verified account linking.
+    appliedCreditOrderIds: { type: [String], default: undefined },
     currentPlan: { type: String, default: "standard", index: true },
     paymentId: { type: String },
     orderId: { type: String },

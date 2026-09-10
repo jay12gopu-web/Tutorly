@@ -15,6 +15,7 @@ from .analytics_engine import AnalyticsEngine
 from .conversation_context import ConversationContextStore
 from .memory_engine import MemoryEngine
 from .modes import ModeRegistry
+from .premium_credits import EDUCATIONAL_IMAGE_CREDIT_COST
 from .response_policy import ResponsePolicyEngine
 from .schemas import (
     ChatbotRequest,
@@ -107,6 +108,7 @@ class ChatbotOrchestrator:
         confidence = max(0.0, min(1.0, float(classification.confidence)))
         plan_metadata = response_plan.as_metadata()
         route_metadata = classification.model_dump(mode="json")
+        image_generation = self._image_generation_action(classification, profile)
 
         analytics = self.analytics.snapshot(
             subject=analysis.subject,
@@ -172,8 +174,43 @@ class ChatbotOrchestrator:
                 "spoken_answer": semantic_result.output.spoken_answer,
                 "visual": route_metadata["visual"],
                 "tools": route_metadata["tools"],
+                "image_generation": image_generation,
             },
         )
+
+    @staticmethod
+    def _image_generation_action(
+        route: SemanticClassification,
+        profile: LearnerProfile,
+    ) -> dict[str, object]:
+        visual = route.visual
+        requested = bool(
+            route.tools.image_generator
+            and visual.needed
+            and visual.type.value == "educational_illustration"
+            and visual.generation_prompt.strip()
+        )
+        if not requested:
+            return {"requested": False}
+        return {
+            "requested": True,
+            "action": "educationalImage",
+            "credit_cost": EDUCATIONAL_IMAGE_CREDIT_COST,
+            "explicit_request": visual.explicit_image_request,
+            "visual_type": visual.type.value,
+            "topic": route.topic[:160],
+            "description": visual.generation_prompt[:1800],
+            "required_labels": [label[:80] for label in visual.elements[:7]],
+            "educational_context": (
+                f"Tutorly study visual for {route.subject.value}; "
+                f"student level {route.difficulty.value}; topic {route.topic}."
+            )[:500],
+            "style": visual.image_style.value,
+            "aspect_ratio": visual.aspect_ratio.value,
+            "placement": visual.placement.value,
+            "alt_text": visual.title[:180] or f"Educational illustration of {route.topic}",
+            "student_grade": str(profile.grade or route.difficulty.value)[:40],
+        }
 
     def _analysis_from_semantic(self, route: SemanticClassification) -> QuestionAnalysis:
         subject = SubjectArea(route.subject.value)

@@ -91,6 +91,36 @@ async function applySuccessfulPayment(payment, plan) {
   }
 
   const now = new Date();
+  const existing = await Subscription.findOne({ userId: payment.userId });
+
+  // Linked credit accounts must never regain a monthly allowance when an old
+  // successful payment is replayed through verification or another webhook event.
+  if (existing?.authUserId) {
+    if (existing.orderId === payment.orderId || existing.appliedCreditOrderIds?.includes(payment.orderId) || payment.subscriptionStart) {
+      return existing;
+    }
+    const subscriptionExpiry = createSubscriptionExpiry(plan, now);
+    const update = plan.type === "session"
+      ? { $inc: { sessionCredits: 1 }, $set: { lastPaymentAt: now } }
+      : { $set: {
+        currentPlan: plan.id, paymentId: payment.paymentId, orderId: payment.orderId,
+        subscriptionStart: now, subscriptionExpiry,
+        creditAllowance: plan.monthlyPremiumCredits,
+        premiumCreditsRemaining: plan.monthlyPremiumCredits, creditsResetAt: subscriptionExpiry,
+        paymentStatus: "captured", status: "active", trialPlan: null,
+        trialStartedAt: null, trialEndsAt: null, cancelledAt: null, lastPaymentAt: now
+      } };
+    update.$addToSet = { appliedCreditOrderIds: payment.orderId };
+    const applied = await Subscription.findOneAndUpdate(
+      { _id: existing._id, authUserId: existing.authUserId, appliedCreditOrderIds: { $ne: payment.orderId } },
+      update, { new: true }
+    );
+    if (applied && plan.type !== "session") {
+      payment.subscriptionStart = now;
+      payment.subscriptionExpiry = subscriptionExpiry;
+    }
+    return applied || Subscription.findOne({ _id: existing._id });
+  }
 
   if (plan.type === "session") {
     const subscription = await Subscription.findOneAndUpdate(
@@ -153,6 +183,9 @@ async function startTrial(req, res, next) {
     }
 
     const existing = await Subscription.findOne({ userId });
+    if (existing?.authUserId) {
+      return res.status(409).json({ error: "Manage this linked account through authenticated billing support." });
+    }
     if (existing?.trialUsedAt) {
       return res.status(409).json({ error: "This account has already used its Tutorly trial" });
     }
@@ -465,6 +498,12 @@ async function cancelSubscription(req, res, next) {
     const userId = normalizeUserId(req.body.userId);
     if (!userId) return res.status(400).json({ error: "userId is required" });
 
+    // Legacy browser user IDs are not proof of ownership of an authenticated credit account.
+    const linked = await Subscription.findOne({ userId });
+    if (linked?.authUserId) {
+      return res.status(409).json({ error: "Manage this linked account through authenticated billing support." });
+    }
+
     const subscription = await Subscription.findOneAndUpdate(
       { userId },
       {
@@ -504,6 +543,7 @@ async function checkPremium(req, res, next) {
 }
 
 module.exports = {
+  applySuccessfulPayment,
   createOrder,
   verifyPayment,
   handleWebhook,

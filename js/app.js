@@ -100,6 +100,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const RichResponse = window.TutorlyRichResponse || null;
   const MarkdownRenderer = window.TutorlyMarkdownRenderer || null;
   const ReasoningStatus = window.TutorlyReasoningStatus || null;
+  const GeneratedImages = window.TutorlyGeneratedImages || null;
+  const generatedImages = GeneratedImages?.createManager({
+    getEndpoint: () => getBackendEndpoint("/api/images/generate"),
+    getToken: () => window.TutorlyAuth?.getSessionToken?.() || "",
+    getCost: () => PlanConfig?.CREDIT_COSTS?.educationalImage?.credits,
+    isCurrent: (meta) => activeConversationId === meta.conversationId,
+    place: placeSemanticVisual,
+    onInsufficient: (detail) => {
+      applyImageCreditBalance(detail);
+      window.TutorlyPremiumGuard?.showCreditLimit?.("Study illustrations", detail);
+    },
+    onCredits: applyImageCreditBalance
+  });
+  window.addEventListener("pagehide", () => generatedImages?.cancelAll());
+  window.addEventListener("storage", (event) => {
+    if (["tutorly_session_token", "tutorly_logged_in"].includes(event.key)) generatedImages?.cancelAll();
+  });
+  function applyImageCreditBalance(credits) {
+    if (!window.TutorlyAuth?.getSessionToken?.() || !Number.isInteger(credits?.remaining) || credits.remaining < 0) return;
+    const subscription = { ...(readStoredAccountJson("tutorly_subscription") || {}), premiumCreditsRemaining: credits.remaining };
+    try { localStorage.setItem("tutorly_subscription", JSON.stringify(subscription)); } catch (_) { /* The visible account can still update when browser storage is full. */ }
+    syncSidebarAccount(subscription);
+  }
   if (window.TutorlyAuth?.getSessionToken?.()) {
     window.TutorlyAuth.currentUser().catch(() => {
       // Existing cached preferences remain available if account refresh is temporarily unavailable.
@@ -473,7 +496,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        ...(window.TutorlyAuth?.getSessionToken?.() ? { Authorization: `Bearer ${window.TutorlyAuth.getSessionToken()}` } : {})
       },
       body: JSON.stringify(payload),
       signal: controller.signal
@@ -509,6 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
       context.backendConversationId = data?.conversation_id || context.conversationId || null;
       context.activityChatId = data?.metadata?.activity_chat_id || null;
       context.spokenReply = data?.metadata?.spoken_answer || "";
+      context.imageGeneration = data?.metadata?.image_generation || null;
       if (data?.error && data?.message) return data.message;
       const answer = data?.answer || data?.message || data?.response || "";
       if (!answer || /error generating response/i.test(answer)) {
@@ -522,6 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function abortActiveChatRequest() {
+    generatedImages?.cancelAll();
     activeReplyStreamToken += 1;
     if (pendingChatStartTimer) {
       window.clearTimeout(pendingChatStartTimer);
@@ -2631,7 +2657,35 @@ document.addEventListener("DOMContentLoaded", () => {
     attachEducationalVisual(message, meta);
     attachMathVisual(message, meta);
     attachGeographyVisual(message, meta);
+    attachGeneratedImage(message, meta);
     attachBotMessageActions(message, markdown, meta);
+  }
+
+  function attachGeneratedImage(message, meta = {}) {
+    if (!generatedImages || !meta.conversationId || !meta.messageId) return;
+    const content = message.querySelector(".bot-content");
+    if (!content) return;
+    const conversation = GPT?.getConversation?.(meta.conversationId) || ChatHistory?.getConversation?.(meta.conversationId);
+    const record = conversation?.messages?.find((item) => item.id === meta.messageId);
+    let state = record?.metadata?.generatedImage;
+    if (!state && meta.context?.imageGeneration) {
+      state = GeneratedImages.createState(meta.context.imageGeneration);
+      if (state) saveGeneratedImage(state);
+    }
+    if (!state) return;
+    generatedImages.mount(content, state, {
+      conversationId: meta.conversationId,
+      autoStart: meta.autoStartImage === true,
+      onChange: saveGeneratedImage
+    });
+
+    function saveGeneratedImage(nextState) {
+      const latest = GPT?.getConversation?.(meta.conversationId) || ChatHistory?.getConversation?.(meta.conversationId);
+      const existing = latest?.messages?.find((item) => item.id === meta.messageId);
+      if (!existing) return;
+      const patch = { metadata: { ...existing.metadata, generatedImage: nextState } };
+      GPT?.updateMessage?.(meta.conversationId, meta.messageId, patch) || ChatHistory?.updateMessage?.(meta.conversationId, meta.messageId, patch);
+    }
   }
 
   function attachEducationalVisual(message, meta = {}) {
@@ -3001,6 +3055,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (action === "regenerate") {
+        generatedImages?.cancelAll();
         const prompt = meta.prompt || message.dataset.prompt || "";
         const model = meta.model || message.dataset.model || selectedModel;
         const context = meta.context || {};
@@ -3020,18 +3075,26 @@ document.addEventListener("DOMContentLoaded", () => {
           ReasoningStatus?.setStage?.(message, "structuring");
           const subject = context.semanticRoute?.subject || "general";
           const toolkit = createStudyToolkit(subject, prompt, freshReply, model);
+          const existingRecord = (GPT?.getConversation?.(conversationId) || ChatHistory?.getConversation?.(conversationId))?.messages?.find((item) => item.id === messageId);
+          const refreshedMetadata = {
+            ...existingRecord?.metadata,
+            semanticRoute: context.semanticRoute,
+            generatedImage: GeneratedImages?.createState(context.imageGeneration) || null
+          };
           GPT?.updateMessage?.(conversationId, messageId, {
             content: freshReply,
             model,
             subject,
             regeneratedFrom: rawReply.slice(0, 500),
-            tools: toolkit
+            tools: toolkit,
+            metadata: refreshedMetadata
           }) || ChatHistory?.updateMessage?.(conversationId, messageId, {
             content: freshReply,
             model,
             subject,
             regeneratedFrom: rawReply.slice(0, 500),
-            tools: toolkit
+            tools: toolkit,
+            metadata: refreshedMetadata
           });
           streamBotReply(message, freshReply, {
             ...meta,
@@ -3039,6 +3102,7 @@ document.addEventListener("DOMContentLoaded", () => {
             prompt,
             context,
             toolkit,
+            autoStartImage: false,
             onDone: () => showToast("Response regenerated.")
           });
         } catch (error) {
@@ -3133,6 +3197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         attachEducationalVisual(message, options);
         attachMathVisual(message, options);
         attachGeographyVisual(message, options);
+        attachGeneratedImage(message, options);
         attachBotMessageActions(message, text, options);
       }
     } else {
@@ -3593,6 +3658,7 @@ document.addEventListener("DOMContentLoaded", () => {
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
           activityChatId: requestPayload.activityChatId || null,
+          generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
         }
       }) || ChatHistory?.appendMessage?.(conversationId, {
@@ -3610,6 +3676,7 @@ document.addEventListener("DOMContentLoaded", () => {
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
           activityChatId: requestPayload.activityChatId || null,
+          generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
         }
       });
@@ -3621,6 +3688,7 @@ document.addEventListener("DOMContentLoaded", () => {
         model: modelAtSend,
         context: requestPayload,
         toolkit,
+        autoStartImage: true,
         onDone: () => {
           if (options.speakReply && typeof speakLiveReply === "function") {
             speakLiveReply(replyText, requestPayload.spokenReply || "");
@@ -3927,6 +3995,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function signOutFromTutorly() {
+    abortActiveChatRequest();
     await window.TutorlyAuth?.logout?.();
     localStorage.removeItem("tutorly_logged_in");
     localStorage.removeItem("tutorly_signed_up");
@@ -3990,6 +4059,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    abortActiveChatRequest();
     messages.innerHTML = "";
     activeConversationId = conversation.id;
     GPT?.setActiveConversation?.(conversation.id) || ChatHistory.setActiveConversation(conversation.id);
@@ -4004,6 +4074,7 @@ document.addEventListener("DOMContentLoaded", () => {
           messageId: messageRecord.id,
           model: messageRecord.model,
           prompt: conversation.messages.find((item) => item.id === messageRecord.parentId)?.content || "",
+          semanticRoute: messageRecord.metadata?.semanticRoute || null,
           toolkit: messageRecord.tools
         });
         return;

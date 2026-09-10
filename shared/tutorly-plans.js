@@ -68,19 +68,25 @@
     })
   });
 
-  const CREDIT_COSTS = Object.freeze({
-    homeworkPhoto: Object.freeze({ label: "Homework photo analysis", credits: 2, available: true }),
-    additionalQuestionImage: Object.freeze({ label: "Additional image in the same question", credits: 1, available: true }),
-    illustratedDiagram: Object.freeze({ label: "AI-generated illustrated diagram", credits: 8, available: false }),
-    educationalImage: Object.freeze({ label: "AI-generated educational image", credits: 8, available: false }),
-    deepSolve: Object.freeze({ label: "Deep Solve", credits: 5, available: true }),
-    premiumModel: Object.freeze({ label: "Premium-model response", credits: 3, available: true }),
-    practiceSet: Object.freeze({ label: "AI-generated practice set", credits: 2, available: false }),
-    generatedTest: Object.freeze({ label: "AI-generated test", credits: 3, available: false }),
-    shortDocument: Object.freeze({ label: "Short document/PDF analysis", credits: 3, available: false }),
-    largeDocument: Object.freeze({ label: "Large document/PDF analysis", minCredits: 5, maxCredits: 10, available: false }),
-    fullVoiceChat: Object.freeze({ label: "Full Voice Chat", credits: 1, perMinutes: 2, available: true })
-  });
+  // The marked JSON is also read by the Python backend. One price source for all callers.
+  const creditData = JSON.parse(String.raw`/*CREDIT_COSTS_JSON_START*/
+  {
+    "homeworkPhoto": { "label": "Homework photo analysis", "credits": 2, "available": true },
+    "additionalQuestionImage": { "label": "Additional image in the same question", "credits": 1, "available": true },
+    "illustratedDiagram": { "label": "AI-generated illustrated diagram", "credits": 8, "available": false },
+    "educationalImage": { "label": "AI-generated educational image", "credits": 8, "available": true },
+    "deepSolve": { "label": "Deep Solve", "credits": 5, "available": true },
+    "premiumModel": { "label": "Premium-model response", "credits": 3, "available": true },
+    "practiceSet": { "label": "AI-generated practice set", "credits": 2, "available": false },
+    "generatedTest": { "label": "AI-generated test", "credits": 3, "available": false },
+    "shortDocument": { "label": "Short document/PDF analysis", "credits": 3, "available": false },
+    "largeDocument": { "label": "Large document/PDF analysis", "minCredits": 5, "maxCredits": 10, "available": false },
+    "fullVoiceChat": { "label": "Full Voice Chat", "credits": 1, "perMinutes": 2, "available": true }
+  }
+  /*CREDIT_COSTS_JSON_END*/`.replace(/\/\*CREDIT_COSTS_JSON_(?:START|END)\*\//g, ""));
+  const CREDIT_COSTS = Object.freeze(Object.fromEntries(
+    Object.entries(creditData).map(([key, value]) => [key, Object.freeze(value)])
+  ));
 
   function normalizePlanId(value) {
     const raw = String(value || "").trim().toLowerCase();

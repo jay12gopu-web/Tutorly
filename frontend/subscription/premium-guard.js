@@ -121,9 +121,9 @@
       overlay.id = "premiumLockOverlay";
       overlay.className = "premium-lock-overlay";
       overlay.innerHTML = `
-        <article class="premium-lock-card" role="dialog" aria-modal="true">
+        <article class="premium-lock-card" role="dialog" aria-modal="true" aria-labelledby="premiumLockTitle" aria-describedby="premiumLockCopy">
           <div aria-hidden="true" style="font-size:42px;">✦</div>
-          <h2>Upgrade Tutorly</h2>
+          <h2 id="premiumLockTitle">Upgrade Tutorly</h2>
           <p id="premiumLockCopy"></p>
           <div class="premium-lock-actions">
             <a href="subscriptions.html">View plans</a>
@@ -132,10 +132,39 @@
         </article>
       `;
       document.body.appendChild(overlay);
-      overlay.querySelector("#premiumLockClose").addEventListener("click", () => overlay.classList.remove("show"));
+      const close = () => {
+        overlay.classList.remove("show");
+        overlay._returnFocus?.focus?.();
+      };
+      overlay.querySelector("#premiumLockClose").addEventListener("click", close);
+      overlay.addEventListener("click", (event) => { if (event.target === overlay) close(); });
+      overlay.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") { event.preventDefault(); close(); }
+        if (event.key === "Tab") {
+          const controls = Array.from(overlay.querySelectorAll("a, button"));
+          const first = controls[0];
+          const last = controls[controls.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }
+      });
     }
+    overlay._returnFocus = document.activeElement;
+    overlay.querySelector("#premiumLockTitle").textContent = "Upgrade Tutorly";
     overlay.querySelector("#premiumLockCopy").textContent = `${featureName} is available on Plus and Pro. Upgrade to keep using the premium AI tools.`;
     overlay.classList.add("show");
+    overlay.querySelector("#premiumLockClose").focus();
+  }
+
+  function showCreditLimit(featureName = "This study visual", detail = {}) {
+    showUpgradePopup(featureName);
+    const overlay = document.getElementById("premiumLockOverlay");
+    const cost = Number(detail.required ?? detail.cost ?? window.TutorlyPlanConfig?.CREDIT_COSTS?.educationalImage?.credits);
+    const remaining = Number(detail.remaining);
+    overlay.querySelector("#premiumLockTitle").textContent = "More premium credits needed";
+    overlay.querySelector("#premiumLockCopy").textContent = Number.isFinite(cost) && Number.isFinite(remaining)
+      ? `${featureName} need ${cost} credits. You have ${remaining} remaining. View plans for more credits, or continue with normal tutoring chat.`
+      : "You don't have enough premium credits for this study visual. View plans for more credits, or continue with normal tutoring chat.";
   }
 
   function requirePremium(featureName) {
@@ -150,7 +179,8 @@
     syncSubscription,
     isPremiumActive,
     requirePremium,
-    showUpgradePopup
+    showUpgradePopup,
+    showCreditLimit
   };
 
   syncSubscription();

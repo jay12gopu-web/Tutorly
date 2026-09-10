@@ -46,6 +46,8 @@ try:
     )
     from backend.chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
     from backend.chatbot.teaching_success import TeachingSuccessScore
+    from backend.chatbot.image_routes import router as image_router
+    from backend.chatbot.image_generation import image_generation_configured
 except ImportError:
     from auth_routes import router as auth_router
     from curriculum_routes import router as curriculum_router
@@ -53,6 +55,8 @@ except ImportError:
     from chatbot.routes import enforce_chat_rate_limit, orchestrator as chatbot_orchestrator, router as chatbot_router
     from chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
     from chatbot.teaching_success import TeachingSuccessScore
+    from chatbot.image_routes import router as image_router
+    from chatbot.image_generation import image_generation_configured
 
 
 app = FastAPI(title="Tutorly")
@@ -61,11 +65,16 @@ app.include_router(chatbot_router)
 app.include_router(auth_router)
 app.include_router(curriculum_router)
 app.include_router(quest_router)
+app.include_router(image_router)
 teaching_success_engine = TeachingSuccessScore()
 
 
 @app.on_event("startup")
 async def report_missing_provider_keys() -> None:
+    if not image_generation_configured():
+        STARTUP_LOGGER.warning("OPENAI_IMAGE_API_KEY is missing; generated study illustrations are disabled. Normal chat remains available.")
+    if not os.getenv("TUTORLY_CREDIT_SERVICE_URL") or len(os.getenv("TUTORLY_CREDIT_SERVICE_SECRET", "").strip()) < 32:
+        STARTUP_LOGGER.warning("Image credit bridge is not configured; set TUTORLY_CREDIT_SERVICE_URL and TUTORLY_CREDIT_SERVICE_SECRET before enabling paid illustrations.")
     for variable_name in missing_provider_keys():
         STARTUP_LOGGER.error(
             "Tutorly backend configuration is missing %s; %s is unavailable until it is set in the backend environment.",

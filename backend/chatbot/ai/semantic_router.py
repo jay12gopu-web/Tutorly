@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, Iterable, Sequence
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from ..schemas import Attachment, ConversationTurn, LearnerProfile
 from .provider import AIProvider, ProviderFailure
@@ -175,6 +175,22 @@ class VisualType(str, Enum):
     cross_section = "cross_section"
     food_chain = "food_chain"
     architecture_diagram = "architecture_diagram"
+    educational_illustration = "educational_illustration"
+
+
+class GeneratedImageStyle(str, Enum):
+    none = "none"
+    clean_educational = "clean_educational"
+    textbook_illustration = "textbook_illustration"
+    realistic_scene = "realistic_scene"
+    historical_scene = "historical_scene"
+    geography_illustration = "geography_illustration"
+
+
+class GeneratedImageAspectRatio(str, Enum):
+    square = "square"
+    landscape = "landscape"
+    portrait = "portrait"
 
 
 class VisualDecision(BaseModel):
@@ -186,6 +202,10 @@ class VisualDecision(BaseModel):
     title: str
     elements: list[str]
     placement: VisualPlacement
+    generation_prompt: str = ""
+    image_style: GeneratedImageStyle = GeneratedImageStyle.none
+    aspect_ratio: GeneratedImageAspectRatio = GeneratedImageAspectRatio.landscape
+    explicit_image_request: bool = False
 
 
 class ToolDecision(BaseModel):
@@ -197,6 +217,7 @@ class ToolDecision(BaseModel):
     diagram_renderer: bool
     web_search: bool
     code_runner: bool
+    image_generator: bool = False
 
 
 class SemanticClassification(BaseModel):
@@ -212,6 +233,69 @@ class SemanticClassification(BaseModel):
     visual: VisualDecision
     tools: ToolDecision
     confidence: float = Field(ge=0, le=1)
+
+    @model_validator(mode="before")
+    @classmethod
+    def preserve_answer_when_image_metadata_is_invalid(cls, value: Any) -> Any:
+        """Optional image-tool metadata must never reject an otherwise valid answer.
+
+        Older responses omit these fields. Malformed new fields disable the
+        optional action rather than coercing, for example, a string into consent
+        to spend image credits. Subject/intent selection remains model-driven.
+        """
+        if not isinstance(value, dict):
+            return value
+        if not isinstance(value.get("visual"), dict) or not isinstance(value.get("tools"), dict):
+            return value
+        output = dict(value)
+        visual = dict(value["visual"])
+        tools = dict(value["tools"])
+        defaults = {
+            "generation_prompt": "",
+            "image_style": GeneratedImageStyle.none.value,
+            "aspect_ratio": GeneratedImageAspectRatio.landscape.value,
+            "explicit_image_request": False,
+        }
+        validators = {
+            "generation_prompt": lambda item: isinstance(item, str) and len(item) <= 1800,
+            "image_style": lambda item: item in {member.value for member in GeneratedImageStyle} if isinstance(item, str) else False,
+            "aspect_ratio": lambda item: item in {member.value for member in GeneratedImageAspectRatio} if isinstance(item, str) else False,
+            "explicit_image_request": lambda item: type(item) is bool,
+        }
+        invalid = type(tools.get("image_generator", False)) is not bool
+        for field, default in defaults.items():
+            if not validators[field](visual.get(field, default)):
+                invalid = True
+                visual[field] = default
+        if invalid:
+            tools["image_generator"] = False
+        output.update(visual=visual, tools=tools)
+        return output
+
+    @model_validator(mode="after")
+    def normalize_image_action(self) -> "SemanticClassification":
+        visual = self.visual
+        eligible = (
+            visual.needed
+            and visual.type == VisualType.educational_illustration
+            and bool(visual.generation_prompt.strip())
+            and visual.image_style != GeneratedImageStyle.none
+        )
+        self.tools.image_generator = self.tools.image_generator and eligible
+        if self.tools.image_generator:
+            self.tools.graph_engine = False
+            self.tools.geometry_renderer = False
+            self.tools.diagram_renderer = False
+        else:
+            visual.generation_prompt = ""
+            visual.image_style = GeneratedImageStyle.none
+            visual.explicit_image_request = False
+            if visual.type == VisualType.educational_illustration:
+                visual.needed = False
+                visual.type = VisualType.none
+                visual.title = ""
+                visual.elements = []
+        return self
 
 
 class SemanticTutorOutput(BaseModel):
@@ -248,6 +332,9 @@ def fallback_classification() -> SemanticClassification:
             title="",
             elements=[],
             placement=VisualPlacement.after_answer,
+            generation_prompt="",
+            image_style=GeneratedImageStyle.none,
+            aspect_ratio=GeneratedImageAspectRatio.landscape,
         ),
         tools=ToolDecision(
             calculator=False,
@@ -256,6 +343,7 @@ def fallback_classification() -> SemanticClassification:
             diagram_renderer=False,
             web_search=False,
             code_runner=False,
+            image_generator=False,
         ),
         confidence=0.0,
     )
@@ -300,7 +388,7 @@ class SemanticTutorService:
         try:
             payload = await self.provider.complete_structured(
                 messages=messages,
-                schema=SemanticTutorOutput.model_json_schema(),
+                schema=self._provider_schema(),
                 schema_name=self.SCHEMA_NAME,
             )
         except ProviderFailure as error:
@@ -433,6 +521,25 @@ class SemanticTutorService:
         ]
 
     @staticmethod
+    def _provider_schema() -> dict[str, Any]:
+        """Keep strict-provider schemas complete while accepting old saved payloads."""
+        schema = SemanticTutorOutput.model_json_schema()
+
+        def make_strict(node: Any) -> None:
+            if isinstance(node, dict):
+                node.pop("default", None)
+                if node.get("type") == "object" and isinstance(node.get("properties"), dict):
+                    node["required"] = list(node["properties"])
+                for child in node.values():
+                    make_strict(child)
+            elif isinstance(node, list):
+                for child in node:
+                    make_strict(child)
+
+        make_strict(schema)
+        return schema
+
+    @staticmethod
     def _history_payload(
         turns: Iterable[ConversationTurn],
         current_question: str,
@@ -460,8 +567,10 @@ Classification rules:
 - Choose the most specific subject, topic, intent, difficulty, response type, answer format, and length. Use `general` only when no academic subject fits and `interdisciplinary` only when several subjects are central.
 - Use `physics`, `chemistry`, or `biology` instead of broad `science` when appropriate. Literary language remains English, not physics.
 - Examples: powerhouse of the cell → biology/mitochondria; passenger moving when a bus stops → physics/inertia; salt disappearing in water → chemistry/dissolution; night as a blanket → English/metaphor; idea becoming law → civics/legislative process; loop never stopping → computer science/debugging; sublimation → chemistry/change of state.
-- Choose a visual only when it materially improves understanding. When false, use type `none`, empty title/elements, and `after_answer`. When true, choose one visual, a short reason/title, 2–7 labels, and a logical placement. A legislative process can use a flowchart.
-- Enable only useful tools: calculator for numerical work, graph/geometry renderers for spatial or coordinate work, web search for current facts, and code runner for runnable debugging.
+- Choose a visual only when it materially improves understanding. When false, use type `none`, empty title/elements/generation_prompt, image_style `none`, aspect_ratio `landscape`, explicit_image_request false, and `after_answer`. When true, choose one visual, a short reason/title, up to 7 essential labels, and a logical placement. A legislative process can use a flowchart.
+- Prefer deterministic visuals for accuracy: Mermaid/diagram renderers for flows, labelled structures, circuits, geometry, and timelines; graph/chart renderers for quantitative data. Use `educational_illustration` with `image_generator=true` only for a genuinely useful illustrative scene, concept illustration, history/geography visualization, or an explicit request to generate an illustration. Do not use it for simple arithmetic, basic definitions, grammar corrections, exact geometry/circuits, or a topic already better served by a deterministic diagram.
+- For `educational_illustration`, set a self-contained `generation_prompt` of at most 1800 characters describing the visual, age level, composition, and accurate educational details; select an image style other than `none` and an aspect ratio; put only essential readable labels in `elements`; and set every deterministic visual renderer false. Set `explicit_image_request=true` only when the student's actual request asks to create an illustration/image (including contextual follow-ups). A general request to explain a concept or show an exact diagram is not consent to create a paid illustration. For every other visual type, use an empty `generation_prompt`, image_style `none`, explicit_image_request false, and `image_generator=false`.
+- Enable only useful tools: calculator for numerical work, graph/geometry renderers for spatial or coordinate work, web search for current facts, code runner for runnable debugging, and the image generator only under the illustration rule above.
 - Keep decisions consistent: equations use `math_worked_solution`; graphs use `math_graph`; geometry uses `geometry_solution`; numerical physics uses `physics_numerical`; useful comparisons use `comparison_table`; simple facts use `direct_answer` and `very_short`.
 - Length: trivial facts/calculations `very_short`; definitions `short`; multi-step work `medium`; genuinely complex or explicitly deep requests `detailed`.
 
@@ -490,6 +599,7 @@ Answer-generation rules:
 - In equations, use adjacency or `\\cdot` for multiplication. Never use a comma as multiplication or visual spacing, and avoid optional spacing commands when adjacency is clearer.
 - When a selected process, cycle, sequence, hierarchy, relationship, or timeline is materially clearer visually, include one compact fenced `mermaid` block with short labels and no links, click actions, HTML, styling, or initialization directives.
 - Never invent image URLs, local paths, or `attachment://` placeholders. If a requested visual cannot be represented safely as Mermaid or chart data, omit the fake image and rely on the selected visual metadata plus the written explanation.
+- When `image_generator` is selected, write the educational explanation normally and do not include an image URL, Markdown image, placeholder, or claim that generation succeeded. Tutorly's application layer will run the real image tool and place its result beside the answer.
 - When honest quantitative data materially clarifies a comparison, trend, or distribution, a fenced `chart` block may contain strict JSON for a `bar`, `line`, or `pie` chart with no comments, at most 12 rows, and at most 3 series.
 - Rich visuals are optional. Never emit them merely because a topic could have one, and do not duplicate the same information as both a diagram and chart.
 - Use language-labelled fenced code blocks for programming answers, with explanation outside the fence.
