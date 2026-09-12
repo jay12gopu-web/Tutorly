@@ -151,9 +151,14 @@ assert.ok(!page.includes('<a class="profile-dot" href="profile.html"'), "the red
 assert.ok(!page.includes('id="themeToggle"'), "the top-right theme control should be removed");
 assert.ok(!page.includes('id="chatNotificationBtn"'), "the top-right notification control should be removed");
 assert.ok(!page.includes('id="sidebarViewAllChats"'), "the redundant view-all-conversations button should be removed");
+assert.ok(page.includes('id="sidebarPinnedSection"'), "pinned conversations should have their own sidebar section");
+assert.ok(page.includes('id="archivedChatsBtn"'), "archived conversations should have a dedicated sidebar entry point");
 assert.ok(!page.includes('href="practice.html" title="Practice"'), "Practice should not appear in the compact Study section");
 assert.ok(!page.includes('href="progress.html" title="Progress"'), "Progress should not appear in the compact Study section");
 assert.ok(app.includes("renderSidebarRecents"), "recent chats should render from the existing conversation store");
+assert.ok(app.includes("sidebarChatRowHtml"), "sidebar rows should expose the Pin, Archive, and Delete action menu");
+assert.ok(app.includes("getHistoryConversations"), "Search Chats should search the shared stored conversation history");
+assert.ok(app.includes('openHistoryPanel({ mode: "archived" })'), "Archived Chats should open the archived-history view");
 assert.ok(app.includes("loadConversation(conversationId)"), "sidebar conversations should reuse the existing loader");
 assert.ok(app.includes("openSettingsPanel()"), "account Settings should reuse the existing settings panel");
 assert.ok(app.includes("signOutFromTutorly"), "account menu should provide the existing logout behavior");
@@ -166,6 +171,8 @@ assert.ok(app.includes('ChatbotCore?.on?.("history:changed", renderSidebarRecent
 assert.ok(chatHistorySource.includes("function deleteConversation(id)"), "the shared history module should support permanent chat deletion");
 assert.ok(gptSource.includes("deleteConversation,"), "TutorlyGPT should expose shared chat deletion");
 assert.ok(chatbotCss.includes(".sidebar-account"), "profile row should be anchored in the sidebar shell");
+assert.ok(chatbotCss.includes(".sidebar-chat-menu .sidebar-chat-delete"), "Delete must remain visually distinct in the chat action menu");
+assert.ok(chatbotCss.includes(".history-overlay"), "Search Chats should have a styled functional history drawer");
 assert.ok(chatbotCss.includes("text-overflow: ellipsis"), "long conversation titles should be truncated cleanly");
 assert.ok(chatbotCss.includes(".chat-shell.sidebar-collapsed"), "desktop collapsed rail styling should exist");
 assert.ok(chatbotCss.includes("@media (max-width: 1080px)"), "responsive drawer styling should remain available");

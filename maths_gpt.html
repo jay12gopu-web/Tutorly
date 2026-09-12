@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/chatbot.css?v=study-composer-20260825" />
+  <link rel="stylesheet" href="css/chatbot.css?v=chat-history-organizer-20260912" />
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
@@ -53,6 +53,15 @@
         <span class="side-label">Search Chats</span>
       </button>
 
+      <button id="archivedChatsBtn" class="side-link archived-chats-link" type="button" title="Archived Chats" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16" />
+          <path d="M6 7V4h12v3M5 7v13h14V7" />
+          <path d="M9 11h6" />
+        </svg>
+        <span class="side-label">Archived Chats</span>
+      </button>
+
       <div class="sidebar-nav-scroll">
         <div class="side-section-label side-label">Study</div>
 
@@ -91,10 +100,16 @@
           <span class="side-label">More Tools</span>
         </a>
 
-        <div class="sidebar-conversations side-label">
-          <div class="side-section-label">Recent</div>
-          <div id="sidebarRecentChats" class="sidebar-recent-list" aria-live="polite"></div>
-          <p id="sidebarRecentEmpty" class="sidebar-recent-empty">Your recent chats will appear here.</p>
+        <div id="sidebarConversationSections" class="sidebar-conversations side-label">
+          <section id="sidebarPinnedSection" class="sidebar-chat-section" aria-labelledby="sidebarPinnedChatsLabel" hidden>
+            <div id="sidebarPinnedChatsLabel" class="side-section-label">Pinned Chats</div>
+            <div id="sidebarPinnedChats" class="sidebar-recent-list sidebar-pinned-list" aria-live="polite"></div>
+          </section>
+          <section id="sidebarRecentSection" class="sidebar-chat-section" aria-labelledby="sidebarRecentChatsLabel">
+            <div id="sidebarRecentChatsLabel" class="side-section-label">Recent</div>
+            <div id="sidebarRecentChats" class="sidebar-recent-list" aria-live="polite"></div>
+            <p id="sidebarRecentEmpty" class="sidebar-recent-empty">Your recent chats will appear here.</p>
+          </section>
         </div>
       </div>
 
@@ -502,7 +517,7 @@
   <script src="js/live-board/mock-provider.js?v=chat-panel-v2"></script>
   <script src="js/live-board/provider.js?v=chat-panel-v2"></script>
   <script src="js/live-board/chat-panel.js?v=chat-panel-v2"></script>
-  <script src="js/app.js?v=eight-voices-20260826"></script>
+  <script src="js/app.js?v=chat-history-organizer-20260912"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=embedded-tools-20260824"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>

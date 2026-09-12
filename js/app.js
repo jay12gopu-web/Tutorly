@@ -6,7 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileMenu = document.getElementById("mobileMenu");
   const newChatBtn = document.getElementById("newChatBtn");
   const chatHistoryBtn = document.getElementById("chatHistoryBtn");
+  const archivedChatsBtn = document.getElementById("archivedChatsBtn");
   const settingsBtn = document.getElementById("settingsBtn");
+  const sidebarConversationSections = document.getElementById("sidebarConversationSections");
+  const sidebarPinnedSection = document.getElementById("sidebarPinnedSection");
+  const sidebarPinnedChats = document.getElementById("sidebarPinnedChats");
   const sidebarRecentChats = document.getElementById("sidebarRecentChats");
   const sidebarRecentEmpty = document.getElementById("sidebarRecentEmpty");
   const sidebarAccount = document.querySelector(".sidebar-account");
@@ -4134,49 +4138,76 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function closeSidebarChatMenus(exceptMenu = null) {
-    if (!sidebarRecentChats) return;
-    sidebarRecentChats.querySelectorAll(".sidebar-chat-menu").forEach((menu) => {
+    const chatLists = sidebarConversationSections || sidebarRecentChats;
+    if (!chatLists) return;
+    chatLists.querySelectorAll(".sidebar-chat-menu").forEach((menu) => {
       if (menu === exceptMenu) return;
       menu.hidden = true;
       menu.closest(".sidebar-chat-row")?.querySelector(".sidebar-chat-more")?.setAttribute("aria-expanded", "false");
     });
   }
 
+  function sidebarChatRowHtml(conversation) {
+    const title = conversation.title || "Study chat";
+    const isActive = conversation.id === activeConversationId;
+    const pinLabel = conversation.pinned ? "Unpin" : "Pin";
+    return `
+      <div class="sidebar-chat-row ${isActive ? "active" : ""}" data-sidebar-chat-id="${escapeHtml(conversation.id)}">
+        <button class="sidebar-chat-open" type="button" data-sidebar-chat-action="open" title="${escapeHtml(title)}" ${isActive ? 'aria-current="page"' : ""}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /></svg>
+          <span>${escapeHtml(title)}</span>
+        </button>
+        <button class="sidebar-chat-more" type="button" data-sidebar-chat-action="menu" aria-label="More actions for ${escapeHtml(title)}" aria-haspopup="menu" aria-expanded="false">&hellip;</button>
+        <div class="sidebar-chat-menu" role="menu" aria-label="Actions for ${escapeHtml(title)}" hidden>
+          <button type="button" role="menuitem" data-sidebar-chat-action="pin">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 3 6 6-4 1-4 4-1 4-6-6 4-1 4-4zM9 15l-5 5" /></svg>
+            <span>${pinLabel}</span>
+          </button>
+          <button type="button" role="menuitem" data-sidebar-chat-action="archive">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16" /><path d="M6 7V4h12v3M5 7v13h14V7" /><path d="M9 11h6" /></svg>
+            <span>Archive</span>
+          </button>
+          <button class="sidebar-chat-delete" type="button" role="menuitem" data-sidebar-chat-action="delete">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M9 7l1-3h4l1 3M6 7l1 14h10l1-14" /></svg>
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
   function renderSidebarRecents() {
     if (!sidebarRecentChats || (!GPT && !ChatHistory)) return;
     if (isGuestMode) {
       sidebarRecentChats.innerHTML = "";
+      if (sidebarPinnedChats) sidebarPinnedChats.innerHTML = "";
+      if (sidebarPinnedSection) sidebarPinnedSection.hidden = true;
+      if (archivedChatsBtn) archivedChatsBtn.hidden = true;
       if (sidebarRecentEmpty) {
         sidebarRecentEmpty.hidden = false;
         sidebarRecentEmpty.textContent = "Log in to see your recent chats.";
       }
       return;
     }
-    const conversations = (
+    const activeConversations = (
       GPT?.listConversations?.({ includeArchived: false })
       || ChatHistory.listConversations({ includeArchived: false })
-    ).slice(0, 10);
+    );
+    const pinnedConversations = activeConversations.filter((conversation) => conversation.pinned);
+    const recentConversations = activeConversations.filter((conversation) => !conversation.pinned).slice(0, 10);
+    const archivedConversations = (
+      GPT?.listConversations?.({ includeArchived: true })
+      || ChatHistory.listConversations({ includeArchived: true })
+    ).filter((conversation) => conversation.archived);
 
-    sidebarRecentChats.innerHTML = conversations.map((conversation) => {
-      const title = conversation.title || "Study chat";
-      const isActive = conversation.id === activeConversationId;
-      return `
-        <div class="sidebar-chat-row ${isActive ? "active" : ""}" data-sidebar-chat-id="${escapeHtml(conversation.id)}">
-          <button class="sidebar-chat-open" type="button" data-sidebar-chat-action="open" title="${escapeHtml(title)}" ${isActive ? 'aria-current="page"' : ""}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /></svg>
-            <span>${escapeHtml(title)}</span>
-          </button>
-          <button class="sidebar-chat-more" type="button" data-sidebar-chat-action="menu" aria-label="More actions for ${escapeHtml(title)}" aria-haspopup="menu" aria-expanded="false">&hellip;</button>
-          <div class="sidebar-chat-menu" role="menu" hidden>
-            <button type="button" role="menuitem" data-sidebar-chat-action="pin">${conversation.pinned ? "Unpin" : "Pin"}</button>
-            <button type="button" role="menuitem" data-sidebar-chat-action="archive">Archive</button>
-            <button class="sidebar-chat-delete" type="button" role="menuitem" data-sidebar-chat-action="delete">Delete</button>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    if (sidebarRecentEmpty) sidebarRecentEmpty.hidden = conversations.length > 0;
+    if (sidebarPinnedChats) sidebarPinnedChats.innerHTML = pinnedConversations.map(sidebarChatRowHtml).join("");
+    if (sidebarPinnedSection) sidebarPinnedSection.hidden = pinnedConversations.length === 0;
+    sidebarRecentChats.innerHTML = recentConversations.map(sidebarChatRowHtml).join("");
+    if (archivedChatsBtn) archivedChatsBtn.hidden = archivedConversations.length === 0;
+    if (sidebarRecentEmpty) {
+      sidebarRecentEmpty.hidden = activeConversations.length > 0;
+      sidebarRecentEmpty.textContent = "Your recent chats will appear here.";
+    }
   }
 
   async function signOutFromTutorly() {
@@ -4196,17 +4227,47 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.setAttribute("aria-hidden", "true");
   }
 
+  function conversationMatchesSearch(conversation, query) {
+    const normalizedQuery = String(query || "").trim().toLocaleLowerCase();
+    if (!normalizedQuery) return true;
+    const searchableText = [
+      conversation.title,
+      conversation.summary,
+      ...(conversation.subjects || []),
+      ...(conversation.messages || []).map((message) => message.content)
+    ].join(" ").toLocaleLowerCase();
+    return searchableText.includes(normalizedQuery);
+  }
+
+  function getHistoryConversations(query = "", mode = "active") {
+    const allConversations = (
+      GPT?.listConversations?.({ includeArchived: true })
+      || ChatHistory.listConversations({ includeArchived: true })
+    );
+    const wantsArchived = mode === "archived";
+    return allConversations.filter((conversation) => {
+      return Boolean(conversation.archived) === wantsArchived && conversationMatchesSearch(conversation, query);
+    });
+  }
+
   function renderHistoryList(overlay, query = "") {
     const list = overlay.querySelector("#chatHistoryList");
     const empty = overlay.querySelector("#chatHistoryEmpty");
     const stats = overlay.querySelector("#chatHistoryStats");
+    const title = overlay.querySelector("#chatHistoryTitle");
+    const eyebrow = overlay.querySelector("#chatHistoryEyebrow");
+    const searchLabel = overlay.querySelector("#chatHistorySearchLabel");
+    const mode = overlay.dataset.historyMode === "archived" ? "archived" : "active";
     if (!list || (!GPT && !ChatHistory)) return;
 
-    const conversations = GPT?.listConversations?.({ query, includeArchived: false }) || ChatHistory.listConversations({ query, includeArchived: false });
+    const conversations = getHistoryConversations(query, mode);
     const historyStats = GPT?.getStats?.() || ChatHistory.getStats();
+    if (title) title.textContent = mode === "archived" ? "Archived chats" : "Search chats";
+    if (eyebrow) eyebrow.textContent = mode === "archived" ? "Saved for later" : "Tutorly memory";
+    if (searchLabel) searchLabel.textContent = mode === "archived" ? "Search archived chats" : "Search your chats";
     if (stats) {
       stats.innerHTML = `
-        <span><strong>${historyStats.active}</strong> active</span>
+        <span><strong>${mode === "archived" ? historyStats.archived : historyStats.active}</strong> ${mode === "archived" ? "archived" : "active"}</span>
         <span><strong>${historyStats.pinned}</strong> pinned</span>
         <span><strong>${historyStats.messages}</strong> messages</span>
       `;
@@ -4226,14 +4287,20 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
           <div class="history-meta">
             <span>${escapeHtml(subject)}</span>
-            <button type="button" data-history-action="pin">${conversation.pinned ? "Unpin" : "Pin"}</button>
-            <button type="button" data-history-action="archive">Archive</button>
+            ${mode === "archived"
+              ? '<button type="button" data-history-action="unarchive">Restore</button><button class="history-delete" type="button" data-history-action="delete">Delete</button>'
+              : `<button type="button" data-history-action="pin">${conversation.pinned ? "Unpin" : "Pin"}</button><button type="button" data-history-action="archive">Archive</button>`}
           </div>
         </article>
       `;
     }).join("");
 
-    if (empty) empty.hidden = conversations.length > 0;
+    if (empty) {
+      empty.hidden = conversations.length > 0;
+      empty.textContent = query
+        ? "No chats match that search."
+        : (mode === "archived" ? "No archived chats yet." : "No saved chats yet. Send a message and it will appear here.");
+    }
   }
 
   function loadConversation(conversationId) {
@@ -4295,14 +4362,14 @@ document.addEventListener("DOMContentLoaded", () => {
       <aside class="history-drawer" role="dialog" aria-modal="true" aria-labelledby="chatHistoryTitle">
         <header class="history-head">
           <div>
-            <p>Tutorly memory</p>
+            <p id="chatHistoryEyebrow">Tutorly memory</p>
             <h2 id="chatHistoryTitle">Chat history</h2>
           </div>
           <button class="history-close" type="button" aria-label="Close history">&times;</button>
         </header>
         <div class="history-stats" id="chatHistoryStats"></div>
         <label class="history-search">
-          <span>Search chats</span>
+          <span id="chatHistorySearchLabel">Search your chats</span>
           <input id="chatHistorySearch" type="search" placeholder="Search topics, answers, subjects..." />
         </label>
         <div class="history-list" id="chatHistoryList"></div>
@@ -4339,25 +4406,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (action.dataset.historyAction === "archive") {
         GPT?.archiveConversation?.(conversationId, true) || ChatHistory.archiveConversation(conversationId, true);
+        if (conversationId === activeConversationId) resetChat();
         renderHistoryList(overlay, search.value);
         showToast("Chat archived.");
+      }
+
+      if (action.dataset.historyAction === "unarchive") {
+        GPT?.archiveConversation?.(conversationId, false) || ChatHistory.archiveConversation(conversationId, false);
+        renderHistoryList(overlay, search.value);
+        showToast("Chat restored.");
+      }
+
+      if (action.dataset.historyAction === "delete") {
+        const conversation = GPT?.getConversation?.(conversationId) || ChatHistory.getConversation(conversationId);
+        openConfirmDialog({
+          title: "Delete this chat?",
+          message: `“${conversation?.title || "This chat"}” will be permanently removed from your conversation history. This cannot be undone.`,
+          confirmLabel: "Delete chat",
+          destructive: true,
+          returnFocus: action,
+          onConfirm: () => {
+            const wasActive = conversationId === activeConversationId;
+            const deleted = GPT?.deleteConversation?.(conversationId) || ChatHistory.deleteConversation(conversationId);
+            if (!deleted) {
+              showToast("Could not delete this chat.");
+              return;
+            }
+            if (wasActive) resetChat();
+            renderHistoryList(overlay, search.value);
+            showToast("Chat deleted.");
+          }
+        });
       }
     });
 
     return overlay;
   }
 
-  function openHistoryPanel() {
+  function openHistoryPanel(options = {}) {
     if (!GPT && !ChatHistory) {
       showToast("Chat history is not available in this browser.");
       return;
     }
     const overlay = createHistoryPanel();
-    renderHistoryList(overlay, overlay.querySelector("#chatHistorySearch")?.value || "");
+    const search = overlay.querySelector("#chatHistorySearch");
+    const mode = options.mode === "archived" ? "archived" : "active";
+    overlay.dataset.historyMode = mode;
+    if (options.resetQuery !== false && search) search.value = "";
+    renderHistoryList(overlay, search?.value || "");
     overlay.classList.add("show");
     overlay.setAttribute("aria-hidden", "false");
     closeMobileSidebar();
-    overlay.querySelector("#chatHistorySearch")?.focus();
+    search?.focus();
   }
 
   const VOICE_LANGUAGES = new Set([
@@ -4665,7 +4765,17 @@ document.addEventListener("DOMContentLoaded", () => {
         showGuestToolNotice(chatHistoryBtn, "Log in to search your chats");
         return;
       }
-      openHistoryPanel();
+      openHistoryPanel({ mode: "active" });
+    });
+  }
+
+  if (archivedChatsBtn) {
+    archivedChatsBtn.addEventListener("click", () => {
+      if (isGuestMode) {
+        showGuestToolNotice(archivedChatsBtn, "Log in to view archived chats");
+        return;
+      }
+      openHistoryPanel({ mode: "archived" });
     });
   }
 
@@ -4703,8 +4813,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (sidebarRecentChats) {
-    sidebarRecentChats.addEventListener("click", (event) => {
+  if (sidebarConversationSections || sidebarRecentChats) {
+    (sidebarConversationSections || sidebarRecentChats).addEventListener("click", (event) => {
       const action = event.target.closest("[data-sidebar-chat-action]");
       const row = event.target.closest(".sidebar-chat-row");
       if (!action || !row || (!GPT && !ChatHistory)) return;
@@ -5196,6 +5306,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape") {
       closeKeyboardShortcuts();
       closeConfirmDialog();
+      closeHistoryPanel();
       closeAccountMenu();
       closeSidebarChatMenus();
       closeSettingsPanel();
@@ -5214,7 +5325,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sidebarAccount && !sidebarAccount.contains(event.target)) {
       closeAccountMenu();
     }
-    if (sidebarRecentChats && !sidebarRecentChats.contains(event.target)) {
+    if ((sidebarConversationSections || sidebarRecentChats) && !(sidebarConversationSections || sidebarRecentChats).contains(event.target)) {
       closeSidebarChatMenus();
     }
 
