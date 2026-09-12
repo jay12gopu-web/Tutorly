@@ -8,7 +8,7 @@
     "payments:start": "node backend/server.js",
     "payments:dev": "nodemon backend/server.js",
     "check:payments": "node --check backend/server.js",
-    "check:chatbot": "node tests/chatbot-static-check.js",
+    "check:chatbot": "node tests/chatbot-static-check.js && node tests/chat-failure-ui-check.js",
     "check:reasoning-status": "node tests/reasoning-status-check.js",
     "check:voice": "node tests/elevenlabs-voice-ui-check.js && python tests/elevenlabs_voice_backend_smoke.py",
     "check:vision": "python tests/sarvam_vision_smoke.py",

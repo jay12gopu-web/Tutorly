@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 import os
 from pathlib import Path
 from time import perf_counter
@@ -23,10 +24,11 @@ except ImportError:
     from observability.context import set_error_code
     from voice_agents import voice_agent, voice_agents
 
+from .ai import SemanticTutorService
 from .orchestrator import ChatbotOrchestrator
 from .rate_limit import SlidingWindowRateLimiter
 from .sarvam_vision import SarvamVisionError, sarvam_vision
-from .schemas import ChatbotRequest, ResponseStage, StreamEvent, TeachingFeedbackRequest
+from .schemas import ChatbotRequest, ChatbotResponse, ResponseStage, StreamEvent, TeachingFeedbackRequest
 from .teaching_success import TeachingSuccessScore
 
 
@@ -57,6 +59,8 @@ _ELEVENLABS_TOKEN_URL = "https://api.elevenlabs.io/v1/convai/conversation/token"
 _VISION_MIME_TYPES = {"image/jpeg", "image/jpg", "image/png"}
 _VISION_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 _MAX_VISION_BYTES = 12 * 1024 * 1024
+CHAT_UNAVAILABLE_MESSAGE = SemanticTutorService.FRIENDLY_ERROR
+CHAT_RATE_LIMIT_MESSAGE = "I need a short pause before I can reply. Please try again in a moment."
 
 
 async def _record_provider(provider: str, operation: str, status: str, started: float, error_code: str | None = None) -> None:
@@ -84,9 +88,30 @@ def enforce_chat_rate_limit(request: ChatbotRequest) -> None:
         return
     raise HTTPException(
         status_code=429,
-        detail="You're sending questions a little too quickly. Please wait a moment and try again.",
+        detail=CHAT_RATE_LIMIT_MESSAGE,
         headers={"Retry-After": str(decision.retry_after_seconds)},
     )
+
+
+def raise_for_failed_generation(response: ChatbotResponse) -> None:
+    generation = response.metadata.get("generation", {})
+    status = str(generation.get("status") or "")
+    if generation.get("provider") != "none" or status in {"generated", "generated_degraded"}:
+        return
+
+    if status == "rate_limited":
+        headers = {}
+        try:
+            retry_after = float(generation.get("retry_after_seconds"))
+        except (TypeError, ValueError, OverflowError):
+            retry_after = 0
+        if math.isfinite(retry_after) and retry_after > 0:
+            headers["Retry-After"] = str(min(86400, math.ceil(retry_after)))
+        raise HTTPException(status_code=429, detail=SemanticTutorService.RATE_LIMIT_ERROR, headers=headers)
+    if status == "timeout":
+        raise HTTPException(status_code=504, detail="I ran out of time before I could reply. Please try again.")
+    status_code = 503 if status in {"not_configured", "authentication_failed"} else 502
+    raise HTTPException(status_code=status_code, detail=CHAT_UNAVAILABLE_MESSAGE)
 
 
 async def bind_teaching_session(request: ChatbotRequest, authorization: str | None) -> None:
@@ -228,7 +253,7 @@ async def transcribe_audio(
     if not decision.allowed:
         raise HTTPException(
             status_code=429,
-            detail="Voice is receiving too many requests. Please wait a moment and try again.",
+            detail="Voice needs a short pause. Please try again in a moment.",
             headers={"Retry-After": str(decision.retry_after_seconds)},
         )
 
@@ -361,6 +386,7 @@ async def respond(request: ChatbotRequest, authorization: str | None = Header(de
         enforce_chat_rate_limit(request)
         await bind_teaching_session(request, authorization)
         response = await orchestrator.respond(request)
+        raise_for_failed_generation(response)
         generation = response.metadata.get("generation", {})
         chat_id = await asyncio.to_thread(
             activity_store.record_chat,
@@ -409,7 +435,7 @@ async def respond(request: ChatbotRequest, authorization: str | None = Header(de
         )
         raise HTTPException(
             status_code=503,
-            detail="I couldn't process that question properly. Please try again.",
+            detail=CHAT_UNAVAILABLE_MESSAGE,
         ) from None
 
 
@@ -439,7 +465,7 @@ async def stream(request: ChatbotRequest, authorization: str | None = Header(def
             LOGGER.error("semantic_stream_failed error_type=%s", type(error).__name__)
             safe = StreamEvent(
                 stage=ResponseStage.error,
-                message="I couldn't process that question properly. Please try again.",
+                message=CHAT_UNAVAILABLE_MESSAGE,
                 done=True,
             )
             yield f"data: {safe.model_dump_json()}\n\n"
@@ -457,10 +483,10 @@ async def websocket_chat(websocket: WebSocket):
                 request = ChatbotRequest.model_validate_json(payload)
                 enforce_chat_rate_limit(request)
                 await bind_teaching_session(request, websocket.headers.get("authorization"))
-            except HTTPException:
+            except HTTPException as error:
                 event = StreamEvent(
                     stage=ResponseStage.error,
-                    message="You're sending questions a little too quickly. Please wait a moment and try again.",
+                    message=CHAT_RATE_LIMIT_MESSAGE if error.status_code == 429 else "Your session needs a refresh. Please sign in again to keep chatting.",
                     done=True,
                 )
                 await websocket.send_text(event.model_dump_json())
@@ -468,7 +494,7 @@ async def websocket_chat(websocket: WebSocket):
             except Exception:
                 event = StreamEvent(
                     stage=ResponseStage.error,
-                    message="That request was invalid. Please check the message and try again.",
+                    message="I couldn't read that message. Please send it again.",
                     done=True,
                 )
                 await websocket.send_text(event.model_dump_json())
@@ -482,7 +508,7 @@ async def websocket_chat(websocket: WebSocket):
         LOGGER.error("semantic_websocket_failed error_type=%s", type(error).__name__)
         await websocket.send_text(json.dumps({
             "stage": "error",
-            "message": "I couldn't process that question properly. Please try again.",
+            "message": CHAT_UNAVAILABLE_MESSAGE,
             "done": True,
             "payload": {},
         }))

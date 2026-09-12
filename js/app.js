@@ -496,6 +496,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getChatFailureMessage(error) {
+    if (error?.status === 429) {
+      const seconds = Math.ceil(Number(error.retryAfterSeconds));
+      const retry = Number.isFinite(seconds) && seconds > 0
+        ? `Please try again in ${seconds} ${seconds === 1 ? "second" : "seconds"}.`
+        : "Please try again in a moment.";
+      return `I need a short pause before I can reply. ${retry}`;
+    }
+    if (error?.status === 401) return "Your session needs a refresh. Please sign in again to keep chatting.";
+    if (error?.status === 403) return "I couldn't open this chat. Please refresh the page and try again.";
+    if ([400, 422].includes(error?.status)) return "I couldn't read that message. Please send it again.";
+    if (error?.name === "TimeoutError" || error?.status === 504) return "I ran out of time before I could reply. Please try again.";
+    if (error?.name === "TypeError") return "I'm having trouble connecting. Please try again in a moment.";
+    return "I'm having trouble replying right now. Please try again in a moment.";
+  }
+
   async function postChatRequest(endpoint, payload, controller) {
     const response = await fetch(endpoint, {
       method: "POST",
@@ -510,6 +526,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!response.ok) {
       const error = new Error(`Chat backend returned ${response.status}`);
       error.status = response.status;
+      error.retryAfterSeconds = Number(response.headers.get("Retry-After")) || null;
       throw error;
     }
 
@@ -519,7 +536,11 @@ document.addEventListener("DOMContentLoaded", () => {
   async function requestBackendChat(message, context = {}) {
     const controller = new AbortController();
     activeChatController = controller;
-    const timeout = window.setTimeout(() => controller.abort(), 50000);
+    let timedOut = false;
+    const timeout = window.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 50000);
 
     try {
       let data;
@@ -541,12 +562,19 @@ document.addEventListener("DOMContentLoaded", () => {
       context.activityChatId = data?.metadata?.activity_chat_id || null;
       context.spokenReply = data?.metadata?.spoken_answer || "";
       context.imageGeneration = data?.metadata?.image_generation || null;
-      if (data?.error && data?.message) return data.message;
+      if (data?.error) throw new Error("Chat backend returned an error response");
       const answer = data?.answer || data?.message || data?.response || "";
       if (!answer || /error generating response/i.test(answer)) {
         throw new Error("Chat backend returned an empty or error response");
       }
       return String(answer).trim();
+    } catch (error) {
+      if (timedOut && error?.name === "AbortError") {
+        const timeoutError = new Error("Chat request timed out");
+        timeoutError.name = "TimeoutError";
+        throw timeoutError;
+      }
+      throw error;
     } finally {
       window.clearTimeout(timeout);
       if (activeChatController === controller) activeChatController = null;
@@ -2497,8 +2525,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       if (pendingImage) pendingImage.ocrRunning = false;
       const message = error.message === "Empty image detected"
-        ? "Empty image detected. Please retake or upload a clearer image."
-        : "OCR failed. You can still type the question manually.";
+        ? "I couldn't open that image. Please take another photo or upload a new image."
+        : "I couldn't read the text in that image. You can type the question here instead.";
       setPreviewStatus(message, 0);
       showToast(message);
     }
@@ -3129,7 +3157,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ReasoningStatus?.stop?.(message);
           message.classList.remove("loading");
           updateBotContent(message, rawReply, meta);
-          if (error?.name !== "AbortError") showToast("I couldn't regenerate that response. Please try again.");
+          if (error?.name !== "AbortError") showToast(getChatFailureMessage(error));
         }
       }
 
@@ -3520,8 +3548,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       if (error?.name === "AbortError") throw error;
       console.warn("Tutorly semantic chat request failed.");
+      throw error;
     }
-    return "I couldn't process that question properly. Please try again.";
+    throw new Error("Chat backend returned an empty response");
   }
 
   async function sendMessage(options = {}) {
@@ -3618,7 +3647,7 @@ document.addEventListener("DOMContentLoaded", () => {
       pendingImage = null;
       voiceSession?.setImageReady(false);
       uploadImageToBackend(fileForUpload).catch(() => {
-        showToast("Upload failed. The image is still visible in this chat.");
+        showToast("I couldn't save that image, but it's still visible in this chat.");
       });
     }
 
@@ -3653,7 +3682,7 @@ document.addEventListener("DOMContentLoaded", () => {
           updateSendState();
           return;
         }
-        replyText = "I couldn't process that question properly. Please try again.";
+        replyText = getChatFailureMessage(error);
       } finally {
         chatRequestInFlight = false;
         updateSendState();

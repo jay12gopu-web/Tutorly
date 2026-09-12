@@ -63,7 +63,9 @@ class ResponsePolicyEngine:
             "detailed": 520,
         }.get(response_length, 170)
 
-        if answer_only:
+        if intent == "conversation":
+            actions = []
+        elif answer_only:
             actions = ["more_detail"]
         elif intent == "teach_topic" or response_type == "interactive_lesson":
             actions = ["explain_simpler", "give_example", "more_detail"]

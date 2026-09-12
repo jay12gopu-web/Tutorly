@@ -64,6 +64,9 @@ class ChatbotOrchestrator:
         await asyncio.sleep(0)
         yield StreamEvent(stage=ResponseStage.planning, message="Choosing the best explanation, tools, and visual...")
         response = await self._build_response(request)
+        if response.metadata["generation"]["provider"] == "none":
+            yield StreamEvent(stage=ResponseStage.error, message=response.answer, done=True)
+            return
         for chunk in self._chunk_answer(response.answer):
             yield StreamEvent(stage=ResponseStage.final, message="Writing answer...", delta=chunk)
             await asyncio.sleep(0)
@@ -123,7 +126,7 @@ class ChatbotOrchestrator:
         )
         started = asyncio.get_running_loop().time()
         semantic_result = await self.semantic_tutor.route_and_answer(**generation_args, teaching_context=teaching_context)
-        if semantic_result.provider_used:
+        if semantic_result.status == "generated" and semantic_result.output.classification.intent != TutorlyIntent.conversation:
             issue = self.teaching.repetition_issue(teaching_session, semantic_result.output, recent_context)
             if issue:
                 repair = self.teaching.repair_context(teaching_session, semantic_result.output, profile)
@@ -174,6 +177,7 @@ class ChatbotOrchestrator:
                         setattr(safe_output.classification.tools, tool, False)
                     semantic_result = replace(semantic_result, output=safe_output)
         classification = semantic_result.output.classification
+        is_conversation = classification.intent == TutorlyIntent.conversation
         analysis = self._analysis_from_semantic(classification)
         response_plan = self.response_policy.from_semantic(classification.model_dump(mode="json"))
 
@@ -191,7 +195,7 @@ class ChatbotOrchestrator:
             semantic_result.output,
             self.teaching.previous(teaching_session, classification, semantic_result.output.teaching),
             profile, voice_mode=bool(request.client_context.get("voice_mode")),
-        ) if semantic_result.provider_used else []
+        ) if semantic_result.status == "generated" and not is_conversation else []
 
         analytics = self.analytics.snapshot(
             subject=analysis.subject,
@@ -201,6 +205,10 @@ class ChatbotOrchestrator:
             keywords=[],
             tool_calls=tool_calls,
         )
+        if is_conversation:
+            analytics.weak_topic_candidates = []
+            analytics.strong_topic_candidates = []
+            analytics.recommended_next_actions = []
         # Student answers stay focused. Practice/quiz content is generated only
         # when the student explicitly requests it, never as an automatic bundle.
         resources = []
@@ -209,12 +217,13 @@ class ChatbotOrchestrator:
             if owner:
                 self.conversations.append(context_key, "user", request.message)
                 self.conversations.append(context_key, "assistant", answer)
-            self.teaching.remember(
-                owner, conversation_id, teaching_session, semantic_result.output,
-                # Illustrations are only proposed here, not generated yet.
-                visual_shown=classification.visual.needed and not image_generation.get("requested"),
-                voice_offered=any(action["id"] == "talk_it_through" for action in teaching_actions),
-            )
+            if semantic_result.status == "generated" and not is_conversation:
+                self.teaching.remember(
+                    owner, conversation_id, teaching_session, semantic_result.output,
+                    # Illustrations are only proposed here, not generated yet.
+                    visual_shown=classification.visual.needed and not image_generation.get("requested"),
+                    voice_offered=any(action["id"] == "talk_it_through" for action in teaching_actions),
+                )
 
         return ChatbotResponse(
             conversation_id=conversation_id,

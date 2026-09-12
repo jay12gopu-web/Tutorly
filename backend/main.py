@@ -40,9 +40,11 @@ try:
     from backend.curriculum_routes import router as curriculum_router
     from backend.quest_routes import router as quest_router
     from backend.chatbot.routes import (
+        CHAT_UNAVAILABLE_MESSAGE,
         bind_teaching_session,
         enforce_chat_rate_limit,
         orchestrator as chatbot_orchestrator,
+        raise_for_failed_generation,
         router as chatbot_router,
     )
     from backend.chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
@@ -53,7 +55,7 @@ except ImportError:
     from auth_routes import router as auth_router
     from curriculum_routes import router as curriculum_router
     from quest_routes import router as quest_router
-    from chatbot.routes import bind_teaching_session, enforce_chat_rate_limit, orchestrator as chatbot_orchestrator, router as chatbot_router
+    from chatbot.routes import CHAT_UNAVAILABLE_MESSAGE, bind_teaching_session, enforce_chat_rate_limit, orchestrator as chatbot_orchestrator, raise_for_failed_generation, router as chatbot_router
     from chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
     from chatbot.teaching_success import TeachingSuccessScore
     from chatbot.image_routes import router as image_router
@@ -133,11 +135,11 @@ class LegacyChatRequest(BaseModel):
 async def upload_image(request: Request):
     content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
     if not content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Unsupported file type")
+        raise HTTPException(status_code=400, detail="Please choose an image to upload.")
 
     body = await request.body()
     if not body:
-        raise HTTPException(status_code=400, detail="Empty image detected")
+        raise HTTPException(status_code=400, detail="I couldn't open that image. Please choose another image.")
 
     original_name = request.headers.get("x-filename", "")
     extension = Path(original_name).suffix.lower()
@@ -202,13 +204,14 @@ async def legacy_chat(request: LegacyChatRequest, authorization: str | None = He
     await bind_teaching_session(tutor_request, authorization)
     try:
         response = await chatbot_orchestrator.respond(tutor_request)
+        raise_for_failed_generation(response)
     except HTTPException:
         raise
     except Exception as error:
         STARTUP_LOGGER.error("legacy_chat_failed error_type=%s", type(error).__name__)
         raise HTTPException(
             status_code=503,
-            detail="I couldn't process that question properly. Please try again.",
+            detail=CHAT_UNAVAILABLE_MESSAGE,
         ) from None
 
     subject = getattr(response.subject, "value", str(response.subject))
