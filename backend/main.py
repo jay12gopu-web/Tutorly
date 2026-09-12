@@ -7,7 +7,7 @@ import uuid
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -40,6 +40,7 @@ try:
     from backend.curriculum_routes import router as curriculum_router
     from backend.quest_routes import router as quest_router
     from backend.chatbot.routes import (
+        bind_teaching_session,
         enforce_chat_rate_limit,
         orchestrator as chatbot_orchestrator,
         router as chatbot_router,
@@ -52,7 +53,7 @@ except ImportError:
     from auth_routes import router as auth_router
     from curriculum_routes import router as curriculum_router
     from quest_routes import router as quest_router
-    from chatbot.routes import enforce_chat_rate_limit, orchestrator as chatbot_orchestrator, router as chatbot_router
+    from chatbot.routes import bind_teaching_session, enforce_chat_rate_limit, orchestrator as chatbot_orchestrator, router as chatbot_router
     from chatbot.schemas import ChatbotRequest, TeachingFeedbackRequest
     from chatbot.teaching_success import TeachingSuccessScore
     from chatbot.image_routes import router as image_router
@@ -178,7 +179,7 @@ def save_chat(user_id: str, question: str, answer: str, subject: str) -> None:
 
 
 @app.post("/chat")
-async def legacy_chat(request: LegacyChatRequest):
+async def legacy_chat(request: LegacyChatRequest, authorization: str | None = Header(default=None)):
     """Compatibility bridge; the browser uses POST /api/chat."""
     user_id = request.userId or request.user_id or "student_browser"
     mode = (request.model or request.mode or "prime").strip().lower()
@@ -198,6 +199,7 @@ async def legacy_chat(request: LegacyChatRequest):
     )
 
     enforce_chat_rate_limit(tutor_request)
+    await bind_teaching_session(tutor_request, authorization)
     try:
         response = await chatbot_orchestrator.respond(tutor_request)
     except HTTPException:

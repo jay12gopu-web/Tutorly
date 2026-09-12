@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, PrivateAttr, validator
 
 
 class ChatMode(str, Enum):
@@ -117,6 +117,9 @@ class ConversationTurn(BaseModel):
 
 class ChatbotRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
+    # Transport code binds this from the existing verified session. It cannot be
+    # supplied via JSON. Direct in-process callers are trusted; guests are None.
+    _session_owner: str | None = PrivateAttr(default="internal")
 
     user_id: str = "guest"
     conversation_id: Optional[str] = Field(

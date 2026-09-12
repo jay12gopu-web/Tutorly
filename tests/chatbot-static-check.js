@@ -92,7 +92,7 @@ assert.ok(app.includes("voiceSession?.speak"), "full voice mode should speak the
 assert.ok(app.includes("onInterrupt: abortActiveChatRequest"), "barge-in should cancel an active tutor response");
 assert.ok(app.includes("streamToken !== activeReplyStreamToken"), "barge-in should also stop the current progressive renderer");
 assert.ok(app.includes('speechTextBtn?.addEventListener("click", startDictation)'), "speech-to-text should fill the editable composer independently");
-assert.ok(app.includes('voiceSession.open("voice", voiceBtn)'), "the Voice Chat button should open full voice mode directly");
+assert.ok(app.includes('function openVoiceChat(trigger = voiceBtn, focus = null)') && app.includes('voiceSession.open("voice", trigger)'), "the Voice Chat button and teaching suggestion should share the existing full voice entry");
 assert.ok(app.includes("inline: false"), "Voice Chat should open the dedicated full-screen experience");
 assert.ok(voiceSource.includes("if (!inline)"), "the reusable voice controller should suppress its overlay in inline mode");
 assert.ok(app.includes("onStateChange:"), "the composer Voice Chat button should show listening, processing, and speaking states");

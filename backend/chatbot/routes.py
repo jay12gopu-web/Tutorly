@@ -89,6 +89,18 @@ def enforce_chat_rate_limit(request: ChatbotRequest) -> None:
     )
 
 
+async def bind_teaching_session(request: ChatbotRequest, authorization: str | None) -> None:
+    """Private teaching memory belongs to a verified session, never a claimed ID.
+
+    Guests still get adaptive answers from the visible history they supply, but
+    cannot fetch another visitor's server-side context by guessing a chat ID.
+    """
+    request._session_owner = None
+    if isinstance(authorization, str) and authorization.strip():
+        user = await asyncio.to_thread(authenticated_user_context, authorization)
+        request._session_owner = f"account:{user['id']}"
+
+
 @router.get("/chatbot/health")
 async def chatbot_health() -> dict:
     provider = orchestrator.semantic_tutor.provider
@@ -343,10 +355,11 @@ async def respond_options() -> dict:
 
 @router.post("/chat")
 @router.post("/chatbot/respond")
-async def respond(request: ChatbotRequest):
+async def respond(request: ChatbotRequest, authorization: str | None = Header(default=None)):
     started = perf_counter()
     try:
         enforce_chat_rate_limit(request)
+        await bind_teaching_session(request, authorization)
         response = await orchestrator.respond(request)
         generation = response.metadata.get("generation", {})
         chat_id = await asyncio.to_thread(
@@ -414,8 +427,9 @@ async def feedback(request: TeachingFeedbackRequest):
 
 
 @router.post("/chatbot/stream")
-async def stream(request: ChatbotRequest):
+async def stream(request: ChatbotRequest, authorization: str | None = Header(default=None)):
     enforce_chat_rate_limit(request)
+    await bind_teaching_session(request, authorization)
 
     async def event_source():
         try:
@@ -442,6 +456,7 @@ async def websocket_chat(websocket: WebSocket):
             try:
                 request = ChatbotRequest.model_validate_json(payload)
                 enforce_chat_rate_limit(request)
+                await bind_teaching_session(request, websocket.headers.get("authorization"))
             except HTTPException:
                 event = StreamEvent(
                     stage=ResponseStage.error,

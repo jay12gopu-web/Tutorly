@@ -14,6 +14,7 @@ __pycache__/
 .pytest_cache/
 .tutorly-evals/
 .venv/
+.test-deps/
 uploads/generated/
 npm-debug.log*
 yarn-debug.log*

@@ -65,6 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeReplyStreamToken = 0;
   let pendingChatStartTimer = null;
   let voiceSession = null;
+  let openTeachingVoice = null;
+  let voiceTeachingFocus = null;
   let voiceLastUserRecord = null;
   let liveSessionMode = null;
   let chatRequestInFlight = false;
@@ -96,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ResponseContract = window.TutorlyResponseContract || null;
   const MathResponseContract = window.TutorlyMathResponseContract || null;
   const ResponsePolicy = window.TutorlyResponsePolicy || null;
+  const TeachingActions = window.TutorlyTeachingActions || null;
   const EducationalVisuals = window.TutorlyEducationalVisuals || null;
   const RichResponse = window.TutorlyRichResponse || null;
   const MarkdownRenderer = window.TutorlyMarkdownRenderer || null;
@@ -368,6 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
         hasImage: !!context.hasImage,
         voice_mode: !!context.voiceMode,
         voice_language: context.voiceLanguage || "auto",
+        teaching_action: context.teachingAction || null,
         curriculum: curriculumContext
       }
     };
@@ -530,6 +534,9 @@ document.addEventListener("DOMContentLoaded", () => {
       updateDeveloperDiagnosticsPanel(normalizeBackendDiagnostics(data));
       context.semanticRoute = data?.metadata?.semantic_route || null;
       context.quickActions = data?.metadata?.quick_actions || [];
+      context.teachingActions = Object.prototype.hasOwnProperty.call(data?.metadata || {}, "teaching_actions")
+        ? (TeachingActions?.normalize(data.metadata.teaching_actions) || [])
+        : undefined;
       context.backendConversationId = data?.conversation_id || context.conversationId || null;
       context.activityChatId = data?.metadata?.activity_chat_id || null;
       context.spokenReply = data?.metadata?.spoken_answer || "";
@@ -2937,13 +2944,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!content) return;
 
     const prompt = meta.prompt || message.dataset.prompt || "";
-    const contextualActions = ResponsePolicy?.actionsFor?.(prompt, rawReply, {
+    const offeredTeachingActions = meta.teachingActions ?? meta.context?.teachingActions;
+    const teachingActions = TeachingActions?.normalize(offeredTeachingActions) || [];
+    const contextualActions = offeredTeachingActions !== undefined ? [] : ResponsePolicy?.actionsFor?.(prompt, rawReply, {
       semanticRoute: meta.semanticRoute || meta.context?.semanticRoute || null,
       quickActions: meta.quickActions || meta.context?.quickActions || []
     }) || [];
-    const contextualMarkup = contextualActions.length
-      ? `<div class="learning-feedback contextual-actions" aria-label="Continue learning">${contextualActions
-          .map((item) => `<button type="button" data-action="contextual" data-context-action="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`)
+    const visibleActions = offeredTeachingActions !== undefined ? teachingActions : contextualActions;
+    const contextualMarkup = visibleActions.length
+      ? `<div class="learning-feedback contextual-actions" aria-label="Continue learning">${visibleActions
+          .map((item) => `<button type="button" data-action="${offeredTeachingActions !== undefined ? "teaching" : "contextual"}" data-context-action="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`)
           .join("")}</div>`
       : "";
 
@@ -2981,6 +2991,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = button.dataset.action;
       const conversationId = meta.conversationId || message.dataset.conversationId;
       const messageId = meta.messageId || message.dataset.messageId;
+
+      if (action === "teaching") {
+        if (chatRequestInFlight || (conversationId && conversationId !== activeConversationId)) return;
+        const selected = teachingActions.find((item) => item.id === button.dataset.contextAction);
+        if (!selected) return;
+        const route = meta.semanticRoute || meta.context?.semanticRoute;
+        const focus = { topic: route?.topic || "", prompt, reply: rawReply };
+        if (selected.id === "talk_it_through") {
+          if (openTeachingVoice) openTeachingVoice(button, focus);
+          else showToast("Voice Chat is unavailable in this browser.");
+          return;
+        }
+        const followup = TeachingActions?.followup(selected.id, focus);
+        if (followup) await sendMessage({ text: followup, preserveComposer: true, skipPendingImage: true, teachingAction: selected.id });
+        return;
+      }
 
       if (action === "contextual") {
         const selected = contextualActions.find((item) => item.id === button.dataset.contextAction);
@@ -3025,7 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
           item.classList.toggle("active", item.dataset.action === action);
         });
         const prompt = meta.prompt || message.dataset.prompt || "";
-        const feedbackResult = await sendTeachingFeedback({
+        await sendTeachingFeedback({
           conversationId,
           messageId,
           message: prompt,
@@ -3035,23 +3061,15 @@ document.addEventListener("DOMContentLoaded", () => {
           activityChatId: meta.context?.activityChatId || meta.activityChatId || null,
           adaptiveContext: meta.context?.adaptiveContext || meta.adaptiveContext || null
         });
-        const followup = feedbackResult?.followup || GPT?.createFeedbackFollowup?.(action, {
-          message: prompt,
-          reply: rawReply,
-          subject: meta.context?.semanticRoute?.subject || "general",
-          adaptiveContext: meta.context?.adaptiveContext || meta.adaptiveContext || null
-        });
-        showToast(action === "understood" ? "Nice. Tutorly will remember this helped." : "I will adjust the explanation style.");
-        if (followup && action !== "understood") {
-          setChatMode(true);
-          const followupMessage = addMessage(followup, "bot", {
-            conversationId,
-            model: meta.model || selectedModel,
-            prompt
-          });
-          scrollToBottom();
-          return followupMessage;
+        if (action === "understood") {
+          showToast("Thanks for letting me know.");
+          return;
         }
+        if (chatRequestInFlight || (conversationId && conversationId !== activeConversationId)) return;
+        const followup = action === "examples"
+          ? TeachingActions?.followup("give_example", { prompt, topic: meta.context?.semanticRoute?.topic || meta.semanticRoute?.topic })
+          : `${action === "confused" ? "I am still confused. Please try a different explanation with one small step at a time." : "Please explain this more simply, one small step at a time."}\nQuestion we are working on: ${prompt}`;
+        if (followup) await sendMessage({ text: followup, preserveComposer: true, skipPendingImage: true });
       }
 
       if (action === "regenerate") {
@@ -3079,6 +3097,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const refreshedMetadata = {
             ...existingRecord?.metadata,
             semanticRoute: context.semanticRoute,
+            teachingActions: context.teachingActions,
             generatedImage: GeneratedImages?.createState(context.imageGeneration) || null
           };
           GPT?.updateMessage?.(conversationId, messageId, {
@@ -3101,6 +3120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             model,
             prompt,
             context,
+            teachingActions: context.teachingActions,
             toolkit,
             autoStartImage: false,
             onDone: () => showToast("Response regenerated.")
@@ -3506,8 +3526,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function sendMessage(options = {}) {
     if (chatRequestInFlight) return;
-    const text = input.value.trim();
-    const imageToSend = pendingImage;
+    const text = typeof options.text === "string" ? options.text.trim() : input.value.trim();
+    const imageToSend = options.skipPendingImage ? null : pendingImage;
     const hasImage = !!imageToSend;
     if (!text && !hasImage) return;
 
@@ -3539,6 +3559,7 @@ document.addEventListener("DOMContentLoaded", () => {
       extractedText: imageToSend?.extractedText || ""
     });
     requestPayload.voiceMode = !!options.liveMode;
+    requestPayload.teachingAction = options.teachingAction || null;
     requestPayload.voiceLanguage = options.voiceLanguage
       || voiceSession?.getEffectiveLanguage?.()
       || getVoiceLanguage();
@@ -3601,7 +3622,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    input.value = "";
+    if (!options.preserveComposer) input.value = "";
     resizeInput();
     updateSendState();
 
@@ -3657,6 +3678,7 @@ document.addEventListener("DOMContentLoaded", () => {
           directives: requestPayload.responseDirectives,
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
+          teachingActions: requestPayload.teachingActions,
           activityChatId: requestPayload.activityChatId || null,
           generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
@@ -3675,6 +3697,7 @@ document.addEventListener("DOMContentLoaded", () => {
           directives: requestPayload.responseDirectives,
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
+          teachingActions: requestPayload.teachingActions,
           activityChatId: requestPayload.activityChatId || null,
           generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
@@ -3688,7 +3711,7 @@ document.addEventListener("DOMContentLoaded", () => {
         model: modelAtSend,
         context: requestPayload,
         toolkit,
-        autoStartImage: true,
+        autoStartImage: !options.teachingAction,
         onDone: () => {
           if (options.speakReply && typeof speakLiveReply === "function") {
             speakLiveReply(replyText, requestPayload.spokenReply || "");
@@ -4075,6 +4098,7 @@ document.addEventListener("DOMContentLoaded", () => {
           model: messageRecord.model,
           prompt: conversation.messages.find((item) => item.id === messageRecord.parentId)?.content || "",
           semanticRoute: messageRecord.metadata?.semanticRoute || null,
+          teachingActions: messageRecord.metadata?.teachingActions,
           toolkit: messageRecord.tools
         });
         return;
@@ -4679,6 +4703,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const composerWrap = document.querySelector(".composer-wrap");
   if (composerWrap) {
+    if (window.ResizeObserver) {
+      const composerResize = new ResizeObserver(() => {
+        body.style.setProperty("--tutorly-composer-height", `${Math.ceil(composerWrap.getBoundingClientRect().height)}px`);
+      });
+      composerResize.observe(composerWrap);
+      window.addEventListener("pagehide", () => composerResize.disconnect(), { once: true });
+    }
     ["dragenter", "dragover"].forEach((eventName) => {
       composerWrap.addEventListener(eventName, (event) => {
         event.preventDefault();
@@ -4788,7 +4819,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .filter((item) => item?.role === "user" || item?.role === "assistant")
         .slice(-8)
         .map((item) => `${item.role === "user" ? "Student" : "Tutorly"}: ${String(item.content || "").slice(0, 1200)}`)
-        .join("\n");
+        .join("\n").slice(-6000);
       let grade = "";
       let board = "";
       let firstName = "";
@@ -4810,6 +4841,7 @@ document.addEventListener("DOMContentLoaded", () => {
         curriculum?.subject ? `Current subject: ${curriculum.subject}.` : "",
         curriculum?.book ? `Current book: ${curriculum.book}.` : "",
         curriculum?.chapter ? `Current chapter: ${curriculum.chapter}.` : "",
+        TeachingActions?.voiceContext(voiceTeachingFocus) || "",
         recent ? `Recent conversation:\n${recent}` : "No earlier text-chat context is available."
       ].filter(Boolean).join("\n");
     }
@@ -4924,6 +4956,7 @@ document.addEventListener("DOMContentLoaded", () => {
       onClose: () => {
         liveSessionMode = null;
         voiceLastUserRecord = null;
+        voiceTeachingFocus = null;
         voiceBtn?.classList.remove("listening", "thinking", "speaking", "voice-error");
         voiceBtn?.setAttribute("aria-pressed", "false");
         if (voiceBtn) {
@@ -4937,15 +4970,18 @@ document.addEventListener("DOMContentLoaded", () => {
       voiceSession?.speak(markdown, spokenAnswer);
     };
 
-    function openVoiceChat() {
+    function openVoiceChat(trigger = voiceBtn, focus = null) {
       liveSessionMode = "voice";
       if (!voiceSession) {
         showToast("Voice Chat is unavailable in this browser. You can still use speech-to-text.");
         return;
       }
+      voiceTeachingFocus = focus;
       voiceBtn?.setAttribute("aria-pressed", "true");
-      voiceSession.open("voice", voiceBtn);
+      voiceSession.open("voice", trigger);
     }
+
+    openTeachingVoice = openVoiceChat;
 
     voiceBtn?.addEventListener("click", () => {
       if (voiceSession?.isOpen()) {

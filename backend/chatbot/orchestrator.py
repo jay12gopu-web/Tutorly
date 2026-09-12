@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
+from dataclasses import replace
 from typing import AsyncIterator, Dict, List
 
 try:
@@ -30,6 +31,7 @@ from .schemas import (
     SubjectArea,
 )
 from .tool_engine import ToolEngine
+from .teaching_strategy import TeachingStrategyEngine, topic_key
 
 
 class ChatbotOrchestrator:
@@ -38,6 +40,8 @@ class ChatbotOrchestrator:
     All live subject, topic, intent, tool, and visual routing comes from the
     validated semantic LLM response.
     """
+    MAX_REPAIR_SECONDS = 12.0
+    MAX_ADAPTIVE_SECONDS = 44.0  # Leave headroom inside the existing 50s browser timeout.
 
     def __init__(self, semantic_tutor: SemanticTutorService | None = None) -> None:
         self.modes = ModeRegistry()
@@ -47,6 +51,8 @@ class ChatbotOrchestrator:
         self.response_policy = ResponsePolicyEngine()
         self.conversations = ConversationContextStore(max_turns=12)
         self.semantic_tutor = semantic_tutor or SemanticTutorService(GroqProvider())
+        self.teaching = TeachingStrategyEngine()
+        self._conversation_locks = {}
 
     async def respond(self, request: ChatbotRequest) -> ChatbotResponse:
         return await self._build_response(request)
@@ -69,6 +75,23 @@ class ChatbotOrchestrator:
         )
 
     async def _build_response(self, request: ChatbotRequest) -> ChatbotResponse:
+        request.conversation_id = request.conversation_id or f"chat_{uuid.uuid4().hex[:16]}"
+        if not request._session_owner:
+            return await self._build_response_locked(request)
+        # Serialize only turns sharing a verified account AND conversation.
+        # Reference counts include waiters; cancel/failure removes idle locks.
+        key = (request._session_owner, request.conversation_id)
+        entry = self._conversation_locks.setdefault(key, [asyncio.Lock(), 0])
+        entry[1] += 1
+        try:
+            async with entry[0]:
+                return await self._build_response_locked(request)
+        finally:
+            entry[1] -= 1
+            if not entry[1]:
+                self._conversation_locks.pop(key, None)
+
+    async def _build_response_locked(self, request: ChatbotRequest) -> ChatbotResponse:
         conversation_id = request.conversation_id or f"chat_{uuid.uuid4().hex[:16]}"
         profile = request.profile or LearnerProfile(user_id=request.user_id)
         requested_curriculum = request.client_context.get("curriculum")
@@ -85,8 +108,12 @@ class ChatbotOrchestrator:
                 )
             except (TypeError, ValueError):
                 request.client_context["curriculum"] = {}
-        recent_context = self.conversations.recent(conversation_id, request.history)
-        semantic_result = await self.semantic_tutor.route_and_answer(
+        owner = request._session_owner
+        context_key = (owner, conversation_id)
+        recent_context = self.conversations.recent(context_key, request.history) if owner else request.history[-12:]
+        teaching_session = self.teaching.snapshot(owner, conversation_id)
+        teaching_context = self.teaching.context(teaching_session, profile)
+        generation_args = dict(
             student_question=request.message,
             conversation_context=recent_context,
             profile=profile,
@@ -94,9 +121,60 @@ class ChatbotOrchestrator:
             attachments=request.attachments,
             client_context=request.client_context,
         )
+        started = asyncio.get_running_loop().time()
+        semantic_result = await self.semantic_tutor.route_and_answer(**generation_args, teaching_context=teaching_context)
+        if semantic_result.provider_used:
+            issue = self.teaching.repetition_issue(teaching_session, semantic_result.output, recent_context)
+            if issue:
+                repair = self.teaching.repair_context(teaching_session, semantic_result.output, profile)
+                original = semantic_result.output
+                remaining = min(
+                    self.MAX_REPAIR_SECONDS,
+                    self.MAX_ADAPTIVE_SECONDS - (asyncio.get_running_loop().time() - started),
+                )
+                repaired = None
+                if remaining > 0:
+                    try:
+                        repaired = await asyncio.wait_for(self.semantic_tutor.route_and_answer(
+                            **generation_args, teaching_context={**teaching_context, "repair": {**repair, "issue": issue}},
+                        ), timeout=remaining)
+                    except asyncio.TimeoutError:
+                        pass  # A stalled optional repair must not discard the answer.
+                if repaired and repaired.provider_used:
+                    # A retry is the same student turn, not new learning evidence.
+                    repaired.output.teaching.signal = original.teaching.signal
+                    repaired.output.teaching.topic_relation = original.teaching.topic_relation
+                    repaired.output.teaching.requested_strategy = original.teaching.requested_strategy
+                acceptable = (
+                    repaired is not None and repaired.provider_used
+                    and repaired.output.teaching.strategy == repair["required_strategy"]
+                    and repaired.output.classification.subject == original.classification.subject
+                    and topic_key(repaired.output.classification.subject.value, repaired.output.classification.topic)
+                    == topic_key(original.classification.subject.value, original.classification.topic)
+                    and not self.teaching.repetition_issue(teaching_session, repaired.output, recent_context)
+                )
+                if acceptable:
+                    semantic_result = repaired
+                else:
+                    # Never deliver a repeated lecture, nor discard chat on an
+                    # optional repair failure. Ask for concrete diagnostic input.
+                    safe_output = original.model_copy(deep=True)
+                    safe_output.answer = self.teaching.diagnostic_question(teaching_session, original)
+                    safe_output.spoken_answer = safe_output.answer
+                    safe_output.teaching.strategy = "guided_questions"
+                    safe_output.teaching.visual_support = "none"
+                    safe_output.teaching.voice_support = "none"
+                    safe_output.classification.visual.needed = False
+                    safe_output.classification.visual.type = type(original.classification.visual.type).none
+                    safe_output.classification.visual.generation_prompt = ""
+                    safe_output.classification.visual.title = ""
+                    safe_output.classification.visual.elements = []
+                    safe_output.classification.visual.explicit_image_request = False
+                    for tool in type(safe_output.classification.tools).model_fields:
+                        setattr(safe_output.classification.tools, tool, False)
+                    semantic_result = replace(semantic_result, output=safe_output)
         classification = semantic_result.output.classification
         analysis = self._analysis_from_semantic(classification)
-        profile = self.memory.update_profile_from_message(profile, request.message, analysis.subject)
         response_plan = self.response_policy.from_semantic(classification.model_dump(mode="json"))
 
         selected_tools = self.tools.choose_tools_from_semantic(
@@ -109,6 +187,11 @@ class ChatbotOrchestrator:
         plan_metadata = response_plan.as_metadata()
         route_metadata = classification.model_dump(mode="json")
         image_generation = self._image_generation_action(classification, profile)
+        teaching_actions = self.teaching.actions(
+            semantic_result.output,
+            self.teaching.previous(teaching_session, classification, semantic_result.output.teaching),
+            profile, voice_mode=bool(request.client_context.get("voice_mode")),
+        ) if semantic_result.provider_used else []
 
         analytics = self.analytics.snapshot(
             subject=analysis.subject,
@@ -122,14 +205,16 @@ class ChatbotOrchestrator:
         # when the student explicitly requests it, never as an automatic bundle.
         resources = []
 
-        self.conversations.append(conversation_id, "user", request.message)
-        self.conversations.append(conversation_id, "assistant", answer)
-        self.memory.remember(
-            request.user_id,
-            f"{analysis.subject.value}: {request.message}",
-            kind="conversation",
-            tags=[analysis.subject.value, request.mode.value],
-        )
+        if semantic_result.provider_used:
+            if owner:
+                self.conversations.append(context_key, "user", request.message)
+                self.conversations.append(context_key, "assistant", answer)
+            self.teaching.remember(
+                owner, conversation_id, teaching_session, semantic_result.output,
+                # Illustrations are only proposed here, not generated yet.
+                visual_shown=classification.visual.needed and not image_generation.get("requested"),
+                voice_offered=any(action["id"] == "talk_it_through" for action in teaching_actions),
+            )
 
         return ChatbotResponse(
             conversation_id=conversation_id,
@@ -171,6 +256,7 @@ class ChatbotOrchestrator:
                 },
                 "response_policy": plan_metadata,
                 "quick_actions": self.response_policy.action_metadata(response_plan),
+                "teaching_actions": teaching_actions,
                 "spoken_answer": semantic_result.output.spoken_answer,
                 "visual": route_metadata["visual"],
                 "tools": route_metadata["tools"],

@@ -206,7 +206,7 @@
     display: grid !important;
     grid-template-rows: minmax(0, 1fr) auto !important;
     gap: 0 !important;
-    padding: 10px 12px calc(110px + env(safe-area-inset-bottom)) !important;
+    padding: 10px 12px calc(var(--tutorly-composer-height, 180px) + 8px) !important;
     overflow: hidden !important;
   }
 
