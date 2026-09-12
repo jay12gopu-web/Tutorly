@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/human-tools.css?v=human-tools-20260912" />
+  <link rel="stylesheet" href="css/page-transitions.css" />
+</head>
+<body class="human-tools-page" data-tutorly-surface="workspace">
+  <header class="human-tools-header">
+    <a class="human-tools-brand" href="maths_gpt.html" target="_top" aria-label="Return to Tutorly chat"><img src="assets/brand-star.png" alt="" />Tutorly</a>
+    <a class="human-tools-back" href="more-tools.html">Back to More Tools</a>
+  </header>
+  <main class="human-tools-main">
+    <section class="human-tools-hero"><span class="human-tools-kicker">Human tutor support</span><h1>Ask a Doubt</h1><p>Send a difficult schoolwork question for extra help when you need more than the AI tutor.</p></section>
+    <div class="doubt-layout">
+      <section class="human-tools-card doubt-form-card" aria-labelledby="doubtFormTitle">
+        <h2 id="doubtFormTitle">Tell us what you are stuck on</h2><p>Keep it focused on your schoolwork. You do not need to share personal information.</p>
+        <form id="doubtForm" class="doubt-form" novalidate>
+          <div class="doubt-form-row"><div class="doubt-field"><label for="doubtSubject">Subject</label><select id="doubtSubject" required><option value="">Choose a subject</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Social Science</option><option>Other</option></select></div><div class="doubt-field"><label for="doubtTopic">Topic</label><input id="doubtTopic" type="text" maxlength="80" placeholder="e.g. Quadratic equations" required /></div></div>
+          <div class="doubt-field"><label for="doubtQuestion">Question / Doubt</label><textarea id="doubtQuestion" maxlength="3000" placeholder="Describe what you're stuck on..." required></textarea></div>
+          <div class="doubt-field"><label for="doubtTried">What have you tried? <span>(optional)</span></label><textarea id="doubtTried" maxlength="1500" placeholder="Tell the tutor where it stopped making sense."></textarea></div>
+          <label class="doubt-attachment" for="doubtAttachment"><span class="doubt-attachment-copy"><strong>Add an attachment <span>(optional)</span></strong><span id="doubtAttachmentName">Image, PDF, or document · demo upload only</span></span><span class="human-tools-secondary">Choose file</span><input id="doubtAttachment" type="file" accept="image/*,.pdf,.doc,.docx" /></label>
+          <p id="doubtFormStatus" class="human-tools-status" hidden role="status"></p>
+          <div class="doubt-submit-row"><button class="human-tools-primary" type="submit">Submit Doubt</button></div>
+        </form>
+        <p class="human-tools-note">Demo preview: submissions stay in this browser until Tutorly’s human-tutor API is connected. No request is sent to a real tutor yet.</p>
+      </section>
+      <aside class="human-tools-card doubt-history-card" aria-labelledby="myDoubtsTitle"><h2 id="myDoubtsTitle">My doubts</h2><p>Track questions you have submitted from this device.</p><div id="doubtHistory"></div></aside>
+    </div>
+  </main>
+  <script src="js/ask-doubt.js?v=human-tools-20260912"></script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+</body>
+</html>

@@ -5,33 +5,30 @@
     // Replace this preview with authenticated level/rank data when a leaderboard exists.
     progress: { level: "Beginner", rank: "5th", isDemo: true },
     routes: {
-      // TODO: Connect the learning leaderboard route once live rankings are implemented.
-      leaderboard: null,
-      // TODO: Connect a real human-tutor doubt flow. ask_doubt.html currently opens AI chat.
-      askDoubt: null,
-      // TODO: Connect real tutor matching. Existing tutor directory pages use demo profiles.
-      findTutor: null
+      leaderboard: "leaderboard.html",
+      askDoubt: "ask-doubt.html",
+      findTutor: "find-tutor.html"
     }
   };
 
   const details = {
     leaderboard: {
       title: "Leaderboard",
-      description: "Live rankings are still being added. The level and rank shown here are sample values for this preview. You can see your actual learning activity in Progress.",
-      link: "progress.html",
-      linkLabel: "View my progress"
+      description: "See your Tutorly rank, XP, levels, and a clear explanation of how learning activity earns XP.",
+      link: "leaderboard.html",
+      linkLabel: "Open leaderboard"
     },
     askDoubt: {
       title: "Ask a Doubt",
-      description: "This will connect you with a human tutor for extra help. Human-tutor support isn't available here yet, and no request has been sent. Contact support if you need help with Tutorly today.",
-      link: "contact.html",
-      linkLabel: "Contact support"
+      description: "Prepare a difficult schoolwork question for a human tutor. The current preview saves demo requests only on this device.",
+      link: "ask-doubt.html",
+      linkLabel: "Ask a doubt"
     },
     findTutor: {
       title: "Find a Tutor",
-      description: "Tutor matching is still being prepared. You'll be able to find a human tutor for your subjects and learning needs here. No search or booking has been made.",
-      link: "contact.html",
-      linkLabel: "Contact support"
+      description: "Browse structured demo tutor profiles, filter by subject and grade, then prepare a help request.",
+      link: "find-tutor.html",
+      linkLabel: "Find a tutor"
     }
   };
 

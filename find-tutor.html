@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/human-tools.css?v=human-tools-20260912" />
+  <link rel="stylesheet" href="css/page-transitions.css" />
+</head>
+<body class="human-tools-page" data-tutorly-surface="workspace">
+  <header class="human-tools-header"><a class="human-tools-brand" href="maths_gpt.html" target="_top" aria-label="Return to Tutorly chat"><img src="assets/brand-star.png" alt="" />Tutorly</a><a class="human-tools-back" href="more-tools.html">Back to More Tools</a></header>
+  <main class="human-tools-main">
+    <section class="human-tools-hero"><span class="human-tools-kicker">Human tutor support</span><h1>Find a Tutor</h1><p>Find the right tutor for the subject you need help with.</p></section>
+    <form id="tutorFilters" class="human-tools-card tutor-filter-card">
+      <label>Search tutor name<input id="tutorSearch" type="search" placeholder="Search tutors" /></label>
+      <label>Subject<select id="tutorSubject"><option value="">All subjects</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option></select></label>
+      <label>Grade<select id="tutorGrade"><option value="">All grades</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></label>
+      <label>Availability<select id="tutorAvailability"><option value="">Any time</option><option>Available now</option><option>Today</option><option>This week</option></select></label>
+      <button id="clearTutorFilters" class="human-tools-secondary" type="button">Clear</button>
+    </form>
+    <div class="tutor-results-meta"><span id="tutorResultCount" role="status"></span><span>Demo tutor profiles · matching API coming later.</span></div>
+    <section id="tutorGrid" class="tutor-grid" aria-label="Tutor search results"></section>
+  </main>
+  <dialog id="tutorDialog" class="tutor-dialog" aria-labelledby="tutorDialogTitle"><div id="tutorDialogContent" class="tutor-dialog-inner"></div></dialog>
+  <script src="js/find-tutor.js?v=human-tools-20260912"></script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+</body>
+</html>

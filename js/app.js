@@ -3084,7 +3084,8 @@ document.addEventListener("DOMContentLoaded", () => {
           .map((item) => `<button type="button" data-action="${offeredTeachingActions !== undefined ? "teaching" : "contextual"}" data-context-action="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`)
           .join("")}</div>`
       : "";
-    const liveBoardAvailable = routeSupportsLiveBoard(meta.semanticRoute || meta.context?.semanticRoute || null);
+    const liveBoardAvailable = typeof routeSupportsLiveBoard === "function"
+      && routeSupportsLiveBoard(meta.semanticRoute || meta.context?.semanticRoute || null);
     const liveBoardMarkup = liveBoardAvailable
       ? `<div class="learning-feedback live-board-actions" aria-label="Live Board"><button type="button" data-action="live-board">Open Live Board</button></div>`
       : "";

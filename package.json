@@ -24,7 +24,8 @@
     "check:responsive": "node tests/responsive-navigation-check.js",
     "check:account-billing": "node tests/account-billing-check.js",
     "check:auth": "python tests/auth_backend_smoke.py",
-    "check:curriculum": "python tests/curriculum_smoke.py"
+    "check:curriculum": "python tests/curriculum_smoke.py",
+    "check:human-tools": "node tests/human-tools-check.js"
   },
   "dependencies": {
     "@elevenlabs/client": "^1.22.0",

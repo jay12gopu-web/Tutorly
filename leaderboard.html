@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/human-tools.css?v=human-tools-20260912" />
+  <link rel="stylesheet" href="css/page-transitions.css" />
+</head>
+<body class="human-tools-page" data-tutorly-surface="workspace">
+  <header class="human-tools-header">
+    <a class="human-tools-brand" href="maths_gpt.html" target="_top" aria-label="Return to Tutorly chat"><img src="assets/brand-star.png" alt="" />Tutorly</a>
+    <a class="human-tools-back" href="more-tools.html">Back to More Tools</a>
+  </header>
+  <main class="human-tools-main">
+    <section class="human-tools-hero">
+      <span class="human-tools-kicker">Learning progress</span>
+      <h1>Leaderboard</h1>
+      <p>See how your learning progress compares this week. Rankings are a calm snapshot of study activity, not a race.</p>
+    </section>
+    <section class="leaderboard-overview" aria-label="Your leaderboard position">
+      <article id="leaderboardPosition" class="human-tools-card leaderboard-position"></article>
+      <article id="leaderboardXpCard" class="human-tools-card leaderboard-xp-card"></article>
+    </section>
+    <div class="leaderboard-controls">
+      <div class="leaderboard-tabs" role="tablist" aria-label="Leaderboard period">
+        <button type="button" role="tab" data-period="weekly" aria-selected="true">Weekly</button>
+        <button type="button" role="tab" data-period="monthly" aria-selected="false">Monthly</button>
+        <button type="button" role="tab" data-period="allTime" aria-selected="false">All Time</button>
+      </div>
+      <button id="xpInfoButton" class="human-tools-secondary" type="button">How XP works</button>
+    </div>
+    <p id="leaderboardState" class="human-tools-status" hidden role="status"></p>
+    <section id="leaderboardTopThree" class="leaderboard-top-three" aria-label="Top students"></section>
+    <section class="human-tools-card leaderboard-list" aria-labelledby="leaderboardListTitle">
+      <header class="leaderboard-list-head"><div><h2 id="leaderboardListTitle">This week</h2><p id="leaderboardListSubtitle">Demo preview · ranking data will connect to Tutorly soon.</p></div></header>
+      <div id="leaderboardRows"></div>
+    </section>
+    <section id="xpInfo" class="human-tools-card xp-info" hidden aria-labelledby="xpInfoTitle">
+      <h2 id="xpInfoTitle">How XP works</h2>
+      <p>XP is a simple record of learning activity. It can come from completing lessons, practice, tests, quests, and keeping a study streak.</p>
+      <div class="xp-sources"><span>Lesson completed</span><span>Practice completed</span><span>Test completed</span><span>Quest completed</span><span>Daily streak</span></div>
+    </section>
+  </main>
+  <script src="js/leaderboard.js?v=human-tools-20260912"></script>
+  <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
+</body>
+</html>
