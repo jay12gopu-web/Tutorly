@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="css/page-transitions.css" />
   <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/live-board.css?v=chat-panel-v2" />
   <link rel="stylesheet" href="css/chatbot-mobile-polish.css?v=study-composer-20260825" />
   <link rel="stylesheet" href="css/voice-chat.css?v=voice-settings-save-20260826" />
 </head>
@@ -294,6 +295,53 @@
         </section>
       </section>
 
+      <aside id="chatLiveBoardPanel" class="chat-live-board-panel" aria-label="Tutorly Live Board visual panel" hidden>
+        <header class="chat-live-board-head">
+          <div>
+            <span id="chatLiveBoardStatus" class="chat-live-board-status">Ready</span>
+            <h2 id="chatLiveBoardTitle">Live Board</h2>
+          </div>
+          <div class="chat-live-board-head-actions">
+            <button id="chatLiveBoardExpand" class="live-board-icon-btn" type="button" aria-pressed="false">Expand</button>
+            <button id="chatLiveBoardClose" class="live-board-icon-btn" type="button" aria-label="Close Live Board">×</button>
+          </div>
+        </header>
+        <p id="chatLiveBoardSummary" class="chat-live-board-summary">A visual companion to this Tutorly answer.</p>
+        <div id="chatLiveBoardStage" class="chat-live-board-stage" aria-label="Interactive Tutorly Live Board"></div>
+        <article class="chat-live-board-step">
+          <small id="chatLiveBoardStepLabel">Step 1 of 1</small>
+          <strong id="chatLiveBoardStepTitle">Live Board step</strong>
+          <p id="chatLiveBoardStepText">Tutorly will place visual steps here when a graph, diagram, or construction helps.</p>
+          <p id="chatLiveBoardStepHint" class="hint" hidden></p>
+        </article>
+        <div id="chatLiveBoardStudentTools" class="student-tools chat-live-board-tools" aria-label="Student drawing tools" hidden>
+          <button type="button" data-student-tool="select">Select</button>
+          <button class="active" type="button" data-student-tool="pen">Pen</button>
+          <button type="button" data-student-tool="highlighter">Highlighter</button>
+          <button type="button" data-student-tool="point">Point</button>
+          <button type="button" data-student-tool="line">Line</button>
+          <button type="button" data-student-tool="ray">Ray</button>
+          <button type="button" data-student-tool="arrow">Arrow</button>
+          <button type="button" data-student-tool="circle">Circle</button>
+          <button type="button" data-student-tool="rectangle">Rectangle</button>
+          <button type="button" data-student-tool="text">Text</button>
+          <button type="button" data-student-tool="eraser">Eraser</button>
+          <button type="button" data-board-action="undo">Undo</button>
+          <button type="button" data-board-action="redo">Redo</button>
+          <button type="button" data-board-action="clear">Clear My Work</button>
+        </div>
+        <footer class="chat-live-board-controls" aria-label="Live Board playback controls">
+          <button id="chatLiveBoardPrev" class="live-board-btn" type="button">Previous</button>
+          <button id="chatLiveBoardPlay" class="live-board-btn primary" type="button">Play</button>
+          <button id="chatLiveBoardNext" class="live-board-btn" type="button">Next</button>
+          <button id="chatLiveBoardReplay" class="live-board-btn" type="button">Replay</button>
+          <button id="chatLiveBoardTryToggle" class="live-board-btn" type="button" aria-pressed="false">Let Me Try</button>
+          <button id="chatLiveBoardResetView" class="live-board-btn" type="button">Reset View</button>
+        </footer>
+      </aside>
+
+      <button id="chatLiveBoardMobileBanner" class="chat-live-board-mobile-banner" type="button" hidden>View Live Board</button>
+
       <section id="toolWorkspace" class="tool-workspace" aria-label="Tutorly tool workspace" hidden>
         <iframe id="toolFrame" name="tutorlyToolFrame" title="Tutorly learning tool" src="about:blank"></iframe>
       </section>
@@ -446,6 +494,14 @@
   <script src="js/chatbot/elevenlabs-voice.js?v=eight-voices-20260826"></script>
   <script src="js/chatbot/voice-config.js?v=eight-voices-20260826"></script>
   <script src="js/chatbot/voice-chat.js?v=voice-settings-save-20260826"></script>
+  <script src="js/live-board/schema.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/graph-engine.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/geometry-engine.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/diagram-primitives.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/board-engine.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/mock-provider.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/provider.js?v=chat-panel-v2"></script>
+  <script src="js/live-board/chat-panel.js?v=chat-panel-v2"></script>
   <script src="js/app.js?v=eight-voices-20260826"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=embedded-tools-20260824"></script>

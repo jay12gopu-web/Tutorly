@@ -2972,13 +2972,13 @@ document.addEventListener("DOMContentLoaded", () => {
     })).filter((item) => item.content.trim());
   }
 
-  function openLiveBoardFromMessage(meta = {}, prompt = "", reply = "") {
-    if (isGuestMode) {
-      showToast("Log in to try Live Board visuals.");
-      return;
-    }
+  function promptMayModifyLiveBoard(prompt = "") {
+    return /\b(show|highlight|focus|move|moved|add|remove|change|make|again|replay|step|ray|vertex|axis|graph|line|curve|point|object|image|lens|mirror|circuit|force|construct|bisector|angle|circle|triangle)\b/i.test(String(prompt || ""));
+  }
+
+  function buildLiveBoardContext(meta = {}, prompt = "", reply = "") {
     const conversationId = meta.conversationId || activeConversationId || "";
-    const context = {
+    return {
       prompt: prompt || meta.prompt || meta.context?.userMessage || "",
       reply: reply || "",
       conversationId,
@@ -2987,13 +2987,42 @@ document.addEventListener("DOMContentLoaded", () => {
       chatContext: buildLiveBoardChatContext(conversationId),
       openedAt: Date.now()
     };
+  }
+
+  function openLiveBoardFromMessage(meta = {}, prompt = "", reply = "") {
+    if (isGuestMode) {
+      showToast("Log in to try Live Board visuals.");
+      return;
+    }
+    const context = buildLiveBoardContext(meta, prompt, reply);
+    const panel = window.TutorlyLiveBoardPanel;
+    if (panel?.open) {
+      panel.open(context, {
+        force: true,
+        followUp: panel.hasLesson?.() && !routeSupportsLiveBoard(context.semanticRoute)
+      });
+      return;
+    }
     try {
       localStorage.setItem(LIVE_BOARD_CONTEXT_KEY, JSON.stringify(context));
     } catch (error) {
       // Live Board can still open with URL context if localStorage is unavailable.
     }
-    const suffix = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : "";
+    const suffix = context.conversationId ? `?conversationId=${encodeURIComponent(context.conversationId)}` : "";
     showToolWorkspace(`live-board.html${suffix}`, "Live Board");
+  }
+
+  function updateLiveBoardFromResponse(meta = {}, prompt = "", reply = "") {
+    const panel = window.TutorlyLiveBoardPanel;
+    if (!panel?.open || isGuestMode) return;
+    const context = buildLiveBoardContext(meta, prompt, reply);
+    const hasVisual = routeSupportsLiveBoard(context.semanticRoute);
+    const followUp = panel.hasLesson?.() && promptMayModifyLiveBoard(prompt);
+    if (!hasVisual && !followUp) {
+      panel.syncContext?.(context);
+      return;
+    }
+    panel.open(context, { followUp: followUp && !hasVisual });
   }
 
   function openStudyToolkit(toolkit) {
@@ -3220,6 +3249,12 @@ document.addEventListener("DOMContentLoaded", () => {
             tools: toolkit,
             metadata: refreshedMetadata
           });
+          updateLiveBoardFromResponse({
+            conversationId,
+            messageId,
+            semanticRoute: context.semanticRoute || null,
+            context
+          }, prompt, freshReply);
           streamBotReply(message, freshReply, {
             ...meta,
             model,
@@ -3678,6 +3713,15 @@ document.addEventListener("DOMContentLoaded", () => {
       activeConversationId = conversationId;
       GPT?.setActiveConversation?.(conversationId) || ChatHistory?.setActiveConversation?.(conversationId);
     }
+    const liveBoardPanel = window.TutorlyLiveBoardPanel;
+    if (liveBoardPanel?.hasLesson?.()) {
+      requestPayload.liveBoard = {
+        active: liveBoardPanel.isOpen?.() || false,
+        currentLesson: liveBoardPanel.getCurrentLesson?.() || null,
+        compactBoardState: liveBoardPanel.compactBoardState?.() || null,
+        followUpLikely: promptMayModifyLiveBoard(botInputText)
+      };
+    }
     window.TutorlyLastChatPayload = requestPayload;
 
     setChatMode(true);
@@ -3748,6 +3792,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pendingChatStartTimer = window.setTimeout(async () => {
       pendingChatStartTimer = null;
       let replyText;
+      let replyFailed = false;
       try {
         replyText = await getBotReply(botInputText, modelAtSend, requestPayload);
         ReasoningStatus?.setStage?.(loadingMessage, "structuring");
@@ -3759,6 +3804,7 @@ document.addEventListener("DOMContentLoaded", () => {
           updateSendState();
           return;
         }
+        replyFailed = true;
         replyText = getChatFailureMessage(error);
       } finally {
         chatRequestInFlight = false;
@@ -3810,6 +3856,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
       if (!GPT) observeChatMemory(assistantRecord, conversationId, routedSubject);
+      if (!replyFailed) {
+        updateLiveBoardFromResponse({
+          conversationId,
+          messageId: assistantRecord?.id,
+          semanticRoute: requestPayload.semanticRoute || null,
+          context: requestPayload
+        }, botInputText, replyText);
+      }
       streamBotReply(loadingMessage, replyText, {
         conversationId,
         messageId: assistantRecord?.id,
@@ -3832,6 +3886,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetChat() {
     abortActiveChatRequest();
+    window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
     window.TutorlyCurriculum?.clearActiveContext?.();
     messages.innerHTML = "";
     input.value = "";
@@ -4032,6 +4087,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showToolWorkspace(route, title = "") {
     const safeRoute = normalizeToolRoute(route);
     if (!safeRoute || !workArea || !toolWorkspace || !toolFrame) return;
+    window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
     workArea.hidden = true;
     toolWorkspace.hidden = false;
     if (toolFrame.dataset.route !== safeRoute) {
@@ -4189,6 +4245,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     abortActiveChatRequest();
+    window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
     messages.innerHTML = "";
     activeConversationId = conversation.id;
     GPT?.setActiveConversation?.(conversation.id) || ChatHistory.setActiveConversation(conversation.id);

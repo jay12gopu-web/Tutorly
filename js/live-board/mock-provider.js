@@ -262,10 +262,43 @@
     };
   }
 
+  function followUpLesson(request) {
+    const lesson = request.currentLesson;
+    if (!lesson?.steps?.length) return null;
+    const stepIndex = Math.max(0, Math.min(lesson.steps.length - 1, Number(request.compactBoardState?.stepIndex || 0)));
+    const focusBox = lesson.steps[stepIndex]?.focus || { x: 80, y: 70, width: 820, height: 500 };
+    return {
+      ...lesson,
+      id: root.uid("lesson"),
+      summary: `Updated for: ${request.prompt || lesson.topic}`,
+      context: {
+        ...(lesson.context || {}),
+        prompt: request.prompt || lesson.context?.prompt || "",
+        conversationId: request.conversationId || lesson.context?.conversationId || ""
+      },
+      steps: [
+        ...lesson.steps,
+        {
+          id: root.uid("followup"),
+          title: "Follow-up focus",
+          instruction: "Keep the existing board visible while Tutorly answers in chat.",
+          explanation: "This keeps the visual context from the same conversation instead of starting a separate Live Board chat.",
+          hint: "Use the normal Tutorly chat to ask what to highlight, move, add, or replay.",
+          expectedTool: "select",
+          focus: focusBox,
+          commands: [{ type: "highlight", box: focusBox }]
+        }
+      ].slice(-8)
+    };
+  }
+
   async function generateLesson(request = {}) {
     const prompt = helper().text ? helper().text(request.prompt, "") : String(request.prompt || "");
     const visualMode = inferVisualMode(prompt, request.semanticRoute || request.chatContext?.semanticRoute);
     await new Promise((resolve) => window.setTimeout(resolve, 90));
+    if (request.followUp && request.currentLesson?.visualMode && request.currentLesson.visualMode !== "none" && visualMode === "none") {
+      return followUpLesson(request) || noVisualLesson({ ...request, prompt });
+    }
     if (visualMode === "graph") return graphLesson({ ...request, prompt });
     if (visualMode === "geometry") return geometryLesson({ ...request, prompt });
     if (visualMode === "diagram") return componentDiagram({ ...request, prompt });
