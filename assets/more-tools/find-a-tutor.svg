@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Find the right tutor</title>
+  <desc id="desc">An adult tutor's profile, a magnifying glass, and an open study book.</desc>
+  <path d="M105 174c-19-40 1-86 43-104 37-16 63-3 94-10 40-9 86-1 110 33 29 41 17 94-29 110H150c-19 0-37-11-45-29Z" fill="#F2EFFE"/>
+  <circle cx="361" cy="73" r="5" fill="#E2E9FD"/>
+  <path d="M126 52h10m-5-5v10" stroke="#765BD6" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+  <path d="M373 142h8m-4-4v8" stroke="#4F6EE8" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+  <rect x="120" y="73" width="124" height="116" rx="13" transform="rotate(-8 120 73)" fill="#F8FAFF" stroke="#DCE2F3" stroke-width="2"/>
+  <circle cx="149" cy="95" r="10" fill="#E4EAFC"/>
+  <path d="m169 92 34-5m-32 14 21-3" stroke="#CDD6F1" stroke-width="4" stroke-linecap="round"/>
+  <rect x="170" y="37" width="149" height="166" rx="16" fill="#E4DCF7"/>
+  <rect x="163" y="31" width="149" height="166" rx="16" fill="white" stroke="#DCE2F3" stroke-width="2"/>
+  <path d="M180 55h18m-18 7h11" stroke="#CCD6F1" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="292" cy="54" r="4" fill="#E7E0FA"/>
+  <circle cx="237" cy="100" r="43" fill="#EFF3FE"/>
+  <path d="M214 93c-1-22 8-34 24-34 19 0 27 13 26 35l3 26h-56l3-27Z" fill="#182447"/>
+  <path d="M201 142c2-19 13-30 27-33h21c15 3 25 14 27 33h-75Z" fill="#4F6EE8"/>
+  <path d="M230 104v10l8 11 10-11v-10" fill="#E6E0F6"/>
+  <path d="m227 111 11 14-10 10-10-20m31-4-11 14 10 10 10-20" fill="#DDE5FD"/>
+  <path d="M222 82c7-1 13-4 18-10 3 7 8 11 15 13v12c0 11-7 20-16 20s-17-9-17-20V82Z" fill="#EAE5F9"/>
+  <path d="M228 92v2m20-2v2" stroke="#182447" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M236 105c2 2 5 2 7-1" stroke="#64708B" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="222" cy="101" r="2" fill="#765BD6"/>
+  <circle cx="255" cy="101" r="2" fill="#765BD6"/>
+  <path d="M238 126v15" stroke="#3452C0" stroke-width="1.5"/>
+  <rect x="203" y="153" width="70" height="5" rx="2.5" fill="#64708B"/>
+  <rect x="214" y="165" width="47" height="4" rx="2" fill="#D3DBEF"/>
+  <path d="m220 178 2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5 2-4Zm17 0 2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5 2-4Zm17 0 2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5 2-4Z" fill="#765BD6"/>
+  <path d="m332 182 25 25" stroke="#182447" stroke-width="15" stroke-linecap="round"/>
+  <path d="m333 183 8 8" stroke="#64708B" stroke-width="15"/>
+  <circle cx="307" cy="156" r="39" fill="white" stroke="#4F6EE8" stroke-width="8"/>
+  <circle cx="307" cy="156" r="30" fill="#F0F4FF"/>
+  <path d="m294 156 9 9 18-20" stroke="#4F6EE8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M282 151a26 26 0 0 1 19-20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <path d="M103 192h76c4 0 8 4 8 8v7h-84v-15Z" fill="#765BD6"/>
+  <path d="M109 196h69c3 0 5 2 5 5v2h-74v-7Z" fill="#F9F7FF"/>
+  <path d="M107 173c17-4 32-2 45 6 13-7 28-10 44-7v22c-16-3-31 0-44 6-13-7-28-9-45-6v-21Z" fill="white" stroke="#64708B" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M152 179v20m-35-19c9-1 17 1 24 4m-24 3c9-1 17 1 24 4m22-7c7-4 15-5 23-5m-23 12c7-4 15-5 23-5" stroke="#C6CFE8" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M175 173v14l5-3 5 2v-15" fill="#4F6EE8"/>
+  <path d="M95 212h267" stroke="#DDE3F3" stroke-width="2" stroke-linecap="round"/>
+</svg>

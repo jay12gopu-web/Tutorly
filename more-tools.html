@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
-  <link rel="stylesheet" href="css/more-tools.css?v=tools-20260824" />
+  <link rel="stylesheet" href="css/more-tools.css?v=tools-20260912" />
   <link rel="stylesheet" href="css/page-transitions.css" />
 </head>
 <body class="tools-page" data-tutorly-surface="workspace">
@@ -87,8 +87,68 @@
         <span class="tool-arrow" aria-hidden="true">&#8594;</span>
       </a>
     </section>
+
+    <section class="tool-card tools-progress-strip" aria-label="Learning level and leaderboard">
+      <div class="tools-progress-stat">
+        <span class="tool-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m12 3 8 4v6c0 4-8 8-8 8s-8-4-8-8V7z" /><path d="m8 12 3 3 5-6" /></svg>
+        </span>
+        <span><small>Student level</small><strong id="toolsStudentLevel">—</strong></span>
+      </div>
+      <div class="tools-leaderboard-center">
+        <button class="tools-leaderboard-link" type="button" data-tools-action="leaderboard" aria-haspopup="dialog">Leaderboard</button>
+        <small id="toolsProgressSource">Preview · sample level &amp; rank</small>
+      </div>
+      <div class="tools-progress-stat tools-progress-rank">
+        <span><small>Current rank</small><strong id="toolsStudentRank">—</strong></span>
+        <span class="tool-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 3h10v6a5 5 0 0 1-10 0zM7 5H3v3a4 4 0 0 0 4 4M17 5h4v3a4 4 0 0 1-4 4M12 14v6M8 21h8" /></svg>
+        </span>
+      </div>
+    </section>
+
+    <section class="tools-grid tools-feature-grid" aria-label="Support from human tutors">
+      <article class="tool-card tools-feature-card" aria-labelledby="askDoubtTitle">
+        <img class="tools-feature-illustration" src="assets/more-tools/ask-a-doubt.svg" width="480" height="240" alt="A student and tutor discussing a question together" loading="lazy" />
+        <div class="tools-feature-heading">
+          <h2 id="askDoubtTitle">Ask a Doubt</h2>
+          <button class="tools-info-button" type="button" data-tools-info="askDoubt" aria-label="About Ask a Doubt" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7h.01" /></svg>
+          </button>
+        </div>
+        <p>Get help from a human tutor when you need extra support.</p>
+        <button class="tools-upgrade tools-feature-cta" type="button" data-tools-action="askDoubt" aria-haspopup="dialog">Proceed <span class="tools-cta-arrow" aria-hidden="true">&#8594;</span></button>
+      </article>
+
+      <article class="tool-card tools-feature-card" aria-labelledby="findTutorTitle">
+        <img class="tools-feature-illustration" src="assets/more-tools/find-a-tutor.svg" width="480" height="240" alt="A tutor profile with a magnifying glass and study books" loading="lazy" />
+        <div class="tools-feature-heading">
+          <h2 id="findTutorTitle">Find a Tutor</h2>
+          <button class="tools-info-button" type="button" data-tools-info="findTutor" aria-label="About Find a Tutor" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7h.01" /></svg>
+          </button>
+        </div>
+        <p>Find a tutor that matches your learning needs.</p>
+        <button class="tools-upgrade tools-feature-cta" type="button" data-tools-action="findTutor" aria-haspopup="dialog">Start Finding <span class="tools-cta-arrow" aria-hidden="true">&#8594;</span></button>
+      </article>
+    </section>
+    <noscript><p class="tools-noscript">Enable JavaScript to preview the leaderboard and human tutor options. Your existing tool links still work.</p></noscript>
   </main>
 
+  <dialog id="toolsDetailDialog" class="tools-detail-dialog" aria-labelledby="toolsDetailTitle" aria-describedby="toolsDetailDescription">
+    <div class="tool-card tools-detail-card">
+      <div class="tools-feature-heading">
+        <h2 id="toolsDetailTitle">More about this tool</h2>
+        <form method="dialog"><button class="tools-info-button" type="submit" aria-label="Close details" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button></form>
+      </div>
+      <p id="toolsDetailDescription"></p>
+      <div class="tools-detail-actions">
+        <form method="dialog"><button class="back-to-chat tools-dialog-dismiss" type="submit">Got it</button></form>
+        <a id="toolsDetailLink" class="tools-upgrade" href="contact.html" target="_top">Contact support</a>
+      </div>
+    </div>
+  </dialog>
+  <script src="js/more-tools.js?v=tools-20260912" defer></script>
   <script src="js/page-transitions.js?v=nav-redesign-20260531"></script>
 </body>
 </html>
