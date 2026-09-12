@@ -81,7 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "quests.html": "Quests",
     "progress.html": "Progress",
     "bookmarks.html": "Bookmarks",
-    "more-tools.html": "More Tools"
+    "more-tools.html": "More Tools",
+    "live-board.html": "Live Board"
   });
 
   if (!input || !sendBtn || !messages || !chatWindow) {
@@ -2929,6 +2930,72 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const LIVE_BOARD_CONTEXT_KEY = "tutorly_live_board_context_v1";
+  const LIVE_BOARD_VISUAL_TYPES = new Set([
+    "diagram",
+    "flowchart",
+    "process",
+    "cycle",
+    "timeline",
+    "relationship",
+    "graph",
+    "coordinate_graph",
+    "motion_graph",
+    "geometry",
+    "construction",
+    "ray_diagram",
+    "circuit_diagram",
+    "force_diagram",
+    "biology_diagram",
+    "cell_diagram",
+    "system_diagram"
+  ]);
+
+  function routeSupportsLiveBoard(route) {
+    if (!route) return false;
+    const visual = route.visual || route.visualization || {};
+    const visualType = String(visual.type || visual.mode || route.visualMode || "").trim().toLowerCase();
+    if (!visualType || visualType === "none" || visual.needed === false) return false;
+    if (LIVE_BOARD_VISUAL_TYPES.has(visualType)) return true;
+    return Array.from(LIVE_BOARD_VISUAL_TYPES).some((type) => visualType.includes(type) || type.includes(visualType));
+  }
+
+  function buildLiveBoardChatContext(conversationId) {
+    const conversation = conversationId
+      ? (GPT?.getConversation?.(conversationId) || ChatHistory?.getConversation?.(conversationId))
+      : null;
+    return (conversation?.messages || []).slice(-10).map((item) => ({
+      role: item.role || "user",
+      content: String(item.content || "").slice(0, 1400),
+      subject: item.subject || "",
+      semanticRoute: item.metadata?.semanticRoute || null
+    })).filter((item) => item.content.trim());
+  }
+
+  function openLiveBoardFromMessage(meta = {}, prompt = "", reply = "") {
+    if (isGuestMode) {
+      showToast("Log in to try Live Board visuals.");
+      return;
+    }
+    const conversationId = meta.conversationId || activeConversationId || "";
+    const context = {
+      prompt: prompt || meta.prompt || meta.context?.userMessage || "",
+      reply: reply || "",
+      conversationId,
+      messageId: meta.messageId || "",
+      semanticRoute: meta.semanticRoute || meta.context?.semanticRoute || null,
+      chatContext: buildLiveBoardChatContext(conversationId),
+      openedAt: Date.now()
+    };
+    try {
+      localStorage.setItem(LIVE_BOARD_CONTEXT_KEY, JSON.stringify(context));
+    } catch (error) {
+      // Live Board can still open with URL context if localStorage is unavailable.
+    }
+    const suffix = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : "";
+    showToolWorkspace(`live-board.html${suffix}`, "Live Board");
+  }
+
   function openStudyToolkit(toolkit) {
     const toolkitHtml = GPT?.renderStudyToolkitHtml?.(toolkit) || LearningTools?.renderToolkitHtml?.(toolkit);
     if (!toolkit || !toolkitHtml) {
@@ -2984,6 +3051,10 @@ document.addEventListener("DOMContentLoaded", () => {
           .map((item) => `<button type="button" data-action="${offeredTeachingActions !== undefined ? "teaching" : "contextual"}" data-context-action="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`)
           .join("")}</div>`
       : "";
+    const liveBoardAvailable = routeSupportsLiveBoard(meta.semanticRoute || meta.context?.semanticRoute || null);
+    const liveBoardMarkup = liveBoardAvailable
+      ? `<div class="learning-feedback live-board-actions" aria-label="Live Board"><button type="button" data-action="live-board">Open Live Board</button></div>`
+      : "";
 
     const actions = document.createElement("div");
     actions.className = "message-actions";
@@ -3011,6 +3082,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </svg>
       </button>
       ${contextualMarkup}
+      ${liveBoardMarkup}
     `;
 
     actions.addEventListener("click", async (event) => {
@@ -3019,6 +3091,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = button.dataset.action;
       const conversationId = meta.conversationId || message.dataset.conversationId;
       const messageId = meta.messageId || message.dataset.messageId;
+
+      if (action === "live-board") {
+        openLiveBoardFromMessage({ ...meta, conversationId, messageId }, prompt, rawReply);
+        return;
+      }
 
       if (action === "teaching") {
         if (chatRequestInFlight || (conversationId && conversationId !== activeConversationId)) return;
@@ -5138,4 +5215,8 @@ document.addEventListener("DOMContentLoaded", () => {
   resizeInput();
   updateSendState();
   setChatMode(false);
+  const requestedConversationId = pageParams.get("conversationId");
+  if (!isGuestMode && requestedConversationId) {
+    window.setTimeout(() => loadConversation(requestedConversationId), 0);
+  }
 });

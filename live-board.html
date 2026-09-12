@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly Live Board</title>
+  <link rel="icon" type="image/png" href="assets/brand-star.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/live-board.css?v=live-board-v1" />
+</head>
+<body class="live-board-page" data-tutorly-surface="workspace">
+  <div class="live-board-shell">
+    <header class="live-board-header">
+      <a class="live-board-brand" href="maths_gpt.html" target="_top" aria-label="Back to Tutorly chat">
+        <img src="assets/brand-star.png" alt="" aria-hidden="true" />
+        <strong>Tutorly</strong>
+        <span>Live Board</span>
+      </a>
+      <div class="live-board-actions">
+        <span id="liveBoardStatus" class="live-board-status" role="status">Getting board ready...</span>
+        <a id="liveBoardBackToChat" class="live-board-btn" href="maths_gpt.html" target="_top">Back to chat</a>
+      </div>
+    </header>
+
+    <main class="live-board-main">
+      <section class="live-board-canvas-wrap" aria-label="Tutorly Live Board canvas">
+        <div class="live-board-titlebar">
+          <div>
+            <h1 id="liveBoardTitle">Tutorly Live Board</h1>
+            <p id="liveBoardSummary">A step-by-step visual explanation.</p>
+          </div>
+          <div class="live-board-actions">
+            <button id="liveBoardTryToggle" class="live-board-btn primary" type="button" aria-pressed="false">Let Me Try</button>
+            <button id="liveBoardResetView" class="live-board-btn" type="button">Reset View</button>
+          </div>
+        </div>
+
+        <div id="liveBoardStage" class="live-board-stage" aria-label="Interactive visual board"></div>
+        <div id="studentTools" class="student-tools" aria-label="Student drawing tools" hidden>
+          <button type="button" data-student-tool="select">Select</button>
+          <button class="active" type="button" data-student-tool="pen">Pen</button>
+          <button type="button" data-student-tool="highlighter">Highlighter</button>
+          <button type="button" data-student-tool="point">Point</button>
+          <button type="button" data-student-tool="line">Line</button>
+          <button type="button" data-student-tool="ray">Ray</button>
+          <button type="button" data-student-tool="arrow">Arrow</button>
+          <button type="button" data-student-tool="circle">Circle</button>
+          <button type="button" data-student-tool="rectangle">Rectangle</button>
+          <button type="button" data-student-tool="text">Text</button>
+          <button type="button" data-student-tool="eraser">Eraser</button>
+          <input id="studentTextValue" type="text" value="Note" aria-label="Student text value" />
+          <button type="button" data-board-action="undo">Undo</button>
+          <button type="button" data-board-action="redo">Redo</button>
+          <button type="button" data-board-action="clear">Clear My Work</button>
+        </div>
+      </section>
+
+      <aside id="liveBoardPanel" class="live-board-panel" aria-label="Tutorly teaching panel">
+        <header class="live-board-panel-head">
+          <div>
+            <small id="liveBoardStepLabel">Step 1 of 1</small>
+            <h2>Tutorly</h2>
+          </div>
+          <button id="liveBoardPanelToggle" class="live-board-icon-btn" type="button" aria-label="Collapse Tutorly panel" aria-expanded="true">‹</button>
+        </header>
+
+        <article class="live-board-step-card">
+          <small id="liveBoardStepTitle">Step title</small>
+          <p id="liveBoardStepText">The explanation will appear here.</p>
+          <p id="liveBoardStepHint" class="hint" hidden></p>
+        </article>
+
+        <section id="liveBoardChatLog" class="live-board-chat-log" aria-label="Live Board conversation"></section>
+
+        <label class="live-board-composer">
+          <textarea id="liveBoardInput" rows="2" placeholder="Ask about this board..." aria-label="Ask Tutorly about the board"></textarea>
+          <button id="liveBoardSend" class="live-board-btn primary" type="button">Send</button>
+        </label>
+      </aside>
+    </main>
+
+    <footer class="live-board-controls" aria-label="Lesson playback controls">
+      <button id="liveBoardPrev" class="live-board-btn" type="button">Previous</button>
+      <button id="liveBoardPlay" class="live-board-btn primary" type="button">Play</button>
+      <button id="liveBoardNext" class="live-board-btn" type="button">Next</button>
+      <button id="liveBoardReplay" class="live-board-btn" type="button">Replay</button>
+    </footer>
+  </div>
+
+  <script src="js/live-board/schema.js?v=live-board-v1"></script>
+  <script src="js/live-board/graph-engine.js?v=live-board-v1"></script>
+  <script src="js/live-board/geometry-engine.js?v=live-board-v1"></script>
+  <script src="js/live-board/diagram-primitives.js?v=live-board-v1"></script>
+  <script src="js/live-board/board-engine.js?v=live-board-v1"></script>
+  <script src="js/live-board/mock-provider.js?v=live-board-v1"></script>
+  <script src="js/live-board/provider.js?v=live-board-v1"></script>
+  <script src="js/live-board/app.js?v=live-board-v1"></script>
+</body>
+</html>
