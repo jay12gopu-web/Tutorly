@@ -49,6 +49,7 @@
         grade: normalizeGrade(user.grade || local.grade),
         school: String(user.school || local.school || "").trim()
       };
+      invalidateProfileChange(local, profile);
       if (profile.board) localStorage.setItem("tutorly_board", profile.board);
       if (profile.grade) localStorage.setItem("tutorly_grade", profile.grade);
       if (profile.school) localStorage.setItem("tutorly_school", profile.school);
@@ -88,6 +89,30 @@
     catch (_error) { /* Catalog remains usable in memory. */ }
   }
 
+  function clearCache() {
+    memoryCache.clear();
+    try {
+      Object.keys(sessionStorage)
+        .filter((key) => key.startsWith(CACHE_PREFIX))
+        .forEach((key) => sessionStorage.removeItem(key));
+    } catch (_error) { /* Storage may be unavailable in privacy-restricted browsers. */ }
+  }
+
+  function invalidateProfileChange(previous = {}, next = {}) {
+    const before = {
+      board: normalizeBoard(previous.board),
+      grade: normalizeGrade(previous.grade)
+    };
+    const after = {
+      board: normalizeBoard(next.board),
+      grade: normalizeGrade(next.grade)
+    };
+    if (before.board === after.board && before.grade === after.grade) return false;
+    clearCache();
+    clearActiveContext();
+    return true;
+  }
+
   async function load(options = {}) {
     const profile = options.profile || await currentProfile();
     const academicYear = options.academicYear || ACADEMIC_YEAR;
@@ -100,6 +125,7 @@
         academic_year: academicYear,
         medium,
         subjects: [],
+        status: "profile_incomplete",
         message: "Complete your Grade and Board in Profile to load your curriculum."
       };
     }
@@ -125,6 +151,7 @@
       const catalog = {
         ...payload,
         subjects: Array.isArray(payload.subjects) ? payload.subjects : [],
+        status: payload.available ? "available" : "unavailable",
         message: payload.message || (payload.available ? "" : UNAVAILABLE_MESSAGE)
       };
       writeCached(key, catalog);
@@ -137,6 +164,7 @@
         academic_year: academicYear,
         medium,
         subjects: [],
+        status: "error",
         message: "Tutorly couldn't load the curriculum right now. Please try again."
       };
     }
@@ -206,6 +234,8 @@
     normalizeGrade,
     currentProfile,
     load,
+    clearCache,
+    invalidateProfileChange,
     subjectModels,
     setActiveContext,
     getActiveContext,

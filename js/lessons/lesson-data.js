@@ -6,9 +6,9 @@
     catalog: null,
     message: "",
 
-    async load() {
+    async load(options = {}) {
       if (!window.TutorlyCurriculum) throw new Error("Tutorly curriculum client is unavailable.");
-      this.catalog = await window.TutorlyCurriculum.load();
+      this.catalog = await window.TutorlyCurriculum.load(options);
       this.message = this.catalog.message || "";
       this.subjects = window.TutorlyCurriculum.subjectModels(this.catalog).map((subject) => ({
         ...subject,

@@ -147,14 +147,23 @@ def check_bundled_snapshot() -> None:
 
 
 def check_frontend_connections() -> None:
+    client = (ROOT / "js" / "curriculum-client.js").read_text(encoding="utf-8")
     syllabus = (ROOT / "js" / "exams" / "syllabus-config.js").read_text(encoding="utf-8")
     lesson_data = (ROOT / "js" / "lessons" / "lesson-data.js").read_text(encoding="utf-8")
+    lesson_module = (ROOT / "js" / "lessons" / "lesson-module.js").read_text(encoding="utf-8")
     practice = (ROOT / "practice.html").read_text(encoding="utf-8")
+    practice_client = (ROOT / "js" / "practice-curriculum.js").read_text(encoding="utf-8")
+    profile = (ROOT / "js" / "profile-hub.js").read_text(encoding="utf-8")
     app = (ROOT / "js" / "app.js").read_text(encoding="utf-8")
     assert "CBSE_GRADE_9" not in syllabus
     assert "Matter in Our Surroundings" not in lesson_data
     assert "practiceSubjectGrid" in practice and "curriculum-client.js" in practice
     assert "TutorlyCurriculum?.getActiveContext" in app
+    assert "invalidateProfileChange" in client and "clearCache" in client
+    assert "status: \"profile_incomplete\"" in client and "status: \"error\"" in client
+    assert "invalidateProfileChange" in profile
+    assert "data-curriculum-practice-chapter" in practice_client
+    assert "curriculumRetry" in lesson_module
 
 
 def main() -> None:

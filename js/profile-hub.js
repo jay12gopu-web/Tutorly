@@ -356,6 +356,7 @@
       school: $("schoolInput").value.trim(), avatar: state.profile.avatar
     };
     try {
+      const previousCurriculum = { board: state.profile.board, grade: state.profile.grade };
       await Auth.updateProfile({ fullName: next.name, grade: next.grade, board: next.board, school: next.school });
       state.profile = next;
       localStorage.setItem("tutorly_name", next.name);
@@ -364,6 +365,7 @@
       localStorage.setItem("tutorly_grade", next.grade);
       localStorage.setItem("tutorly_board", next.board);
       localStorage.setItem("tutorly_school", next.school);
+      window.TutorlyCurriculum?.invalidateProfileChange?.(previousCurriculum, next);
       renderProfile();
       setEditMode(false);
       toast("Profile saved.");

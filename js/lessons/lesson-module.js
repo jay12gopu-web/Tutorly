@@ -66,6 +66,7 @@
       state.librarySearch = event.target.value.trim().toLowerCase();
       renderSubjects();
     });
+    $("curriculumRetry")?.addEventListener("click", refreshCurriculum);
     window.addEventListener("scroll", saveScrollProgress, { passive: true });
   }
 
@@ -112,6 +113,9 @@
   }
 
   function curriculumLabel() {
+    if (Data.catalog?.available) {
+      return `${Data.catalog.board} · Grade ${Data.catalog.grade} · ${Data.catalog.academic_year}`;
+    }
     const board = String(localStorage.getItem("tutorly_board") || "").trim();
     const grade = String(localStorage.getItem("tutorly_grade") || "").trim();
     const details = [grade ? `Grade ${grade}` : "", board].filter(Boolean);
@@ -145,6 +149,7 @@
 
   function renderLearnHome() {
     if ($("curriculumStatus")) $("curriculumStatus").textContent = curriculumLabel();
+    if ($("curriculumRetry")) $("curriculumRetry").hidden = Data.catalog?.status !== "error";
     if ($("subjectCount")) $("subjectCount").textContent = Data.subjects.length
       ? `${Data.subjects.length} subjects available`
       : Data.message;
@@ -169,11 +174,26 @@
           <b>${latest?.subject.id === subject.id ? "Continue →" : "Open subject →"}</b>
         </span>
       </button>
-    `).join("") || `<div class="learn-empty"><strong>Curriculum unavailable</strong><p>${escapeHtml(Data.message)}</p></div>`;
+    `).join("") || `<div class="learn-empty"><strong>${Data.catalog?.status === "profile_incomplete" ? "Set up your curriculum" : "Curriculum unavailable"}</strong><p>${escapeHtml(Data.message)}</p>${Data.catalog?.status === "error" ? '<button class="learn-back" data-curriculum-retry type="button">Retry</button>' : ""}</div>`;
     if ($("subjectSearchEmpty")) $("subjectSearchEmpty").hidden = filteredSubjects.length > 0;
     document.querySelectorAll("[data-subject]").forEach((button) => {
       button.addEventListener("click", () => openSubject(button.dataset.subject));
     });
+    document.querySelectorAll("[data-curriculum-retry]").forEach((button) => button.addEventListener("click", refreshCurriculum));
+  }
+
+  async function refreshCurriculum() {
+    const retry = $("curriculumRetry");
+    if (retry) {
+      retry.disabled = true;
+      retry.textContent = "Loading…";
+    }
+    await Data.load({ refresh: true });
+    if (retry) {
+      retry.disabled = false;
+      retry.textContent = "Retry";
+    }
+    renderLearnHome();
   }
 
   function openSubject(subjectId) {
@@ -182,7 +202,14 @@
     if (!subject) return;
     $("chapterSubjectName").textContent = subject.name;
     $("chapterSubjectMeta").textContent = `${subject.chapters.length} textbook chapters`;
-    $("chapterGrid").innerHTML = subject.chapters.map((chapter) => {
+    const books = subject.books?.length ? subject.books : [{ id: "all", title: "", chapters: subject.chapters }];
+    $("chapterGrid").innerHTML = books.map((book) => {
+      const bookChapters = subject.chapters.filter((chapter) => chapter.bookId === book.id);
+      if (!bookChapters.length) return "";
+      const heading = books.length > 1
+        ? `<div class="chapter-book-heading"><span>${escapeHtml(book.part_label || "Textbook")}</span><strong>${escapeHtml(book.title)}</strong></div>`
+        : "";
+      return heading + bookChapters.map((chapter) => {
       const progress = getProgressFor(subject.id, chapter.id);
       return `
         <button class="chapter-card" type="button" data-chapter="${chapter.id}">
@@ -196,6 +223,7 @@
           <em>Last opened: ${progress.lastOpened ? new Date(progress.lastOpened).toLocaleDateString() : "Never"}</em>
         </button>
       `;
+      }).join("");
     }).join("");
     document.querySelectorAll("[data-chapter]").forEach((button) => {
       button.addEventListener("click", () => openChapter(state.subjectId, button.dataset.chapter));

@@ -204,6 +204,22 @@
     }
 
     .chapter-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .chapter-book-heading {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      padding: 8px 2px 1px;
+      color: var(--lesson-ink);
+    }
+    .chapter-book-heading span {
+      color: var(--lesson-muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .chapter-book-heading strong { font-size: 15px; }
     .chapter-card { min-height: 208px; }
     .chapter-card > span {
       display: inline-flex;
@@ -1133,6 +1149,7 @@
             <span>Curriculum: <b id="curriculumStatus">Your saved curriculum</b></span>
             <span class="learn-status-dot" aria-hidden="true"></span>
             <span><b id="subjectCount">Subjects available</b></span>
+            <button class="learn-back" id="curriculumRetry" type="button" hidden>Retry</button>
           </div>
         </section>
 
@@ -1222,9 +1239,9 @@
 
   <script src="js/auth-client.js?v=curriculum-20260826"></script>
   <script src="js/quest-client.js?v=quests-20260904"></script>
-  <script src="js/curriculum-client.js?v=curriculum-20260826"></script>
-  <script src="js/lessons/lesson-data.js?v=curriculum-20260826"></script>
-  <script src="js/lessons/lesson-module.js?v=learn-redesign-20260825"></script>
+  <script src="js/curriculum-client.js?v=curriculum-20260913"></script>
+  <script src="js/lessons/lesson-data.js?v=curriculum-20260913"></script>
+  <script src="js/lessons/lesson-module.js?v=curriculum-20260913"></script>
   <script src="js/global-layout.js?v=responsive-20260905b"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/mobile-app.js?v=responsive-20260905c"></script>
