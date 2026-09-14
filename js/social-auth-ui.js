@@ -42,18 +42,21 @@
   }
 
   function render(providers) {
-    const enabled = providers.filter((provider) => provider.enabled);
-    if (!enabled.length) return;
-    host.hidden = false;
-    host.innerHTML = enabled.map((provider) => `
-      <button class="social-auth-button" type="button" data-social-provider="${provider.id}" aria-label="Continue with ${provider.label}">
-        ${icons[provider.id] || ""}
-        <span>Continue with ${provider.label}</span>
+    const known = [{id:"google",label:"Google"}, {id:"microsoft",label:"Microsoft"}, {id:"apple",label:"Apple"}];
+    host.hidden = !!host.dataset.authStep && host.dataset.authStep !== "email";
+    host.innerHTML = `<div class="social-auth-divider" aria-hidden="true">OR</div><p class="social-auth-heading">Continue with</p>` + known.map((provider) => `
+      <button class="social-auth-button" type="button" data-social-provider="${provider.id}" aria-label="Continue with ${provider.label}" aria-disabled="${!providers.some(item => item.id === provider.id && item.enabled === true)}">
+        ${icons[provider.id]}
+        <span>${provider.label}</span>
       </button>
-    `).join("") + `<div class="social-auth-divider" aria-hidden="true">or</div><p class="social-auth-status" role="status" aria-live="polite"></p>`;
+    `).join("") + `<p class="social-auth-status" role="status" aria-live="polite"></p>`;
 
     host.querySelectorAll("[data-social-provider]").forEach((button) => {
       button.addEventListener("click", () => {
+        if (button.getAttribute("aria-disabled") === "true") {
+          setStatus(`${button.textContent.trim()} sign-in isn’t available yet. Please continue with email.`, false);
+          return;
+        }
         host.querySelectorAll("button").forEach((item) => { item.disabled = true; });
         setStatus(`Opening ${button.textContent.replace("Continue with", "").trim()}…`, false);
         root.location.assign(root.TutorlyAuth.socialStartUrl(button.dataset.socialProvider, flow));
@@ -67,11 +70,12 @@
     try {
       const payload = await root.TutorlyAuth.completeOAuth(resultCode);
       history.replaceState({}, document.title, root.location.pathname);
-      const destination = await root.TutorlyAuth.authenticatedDestination(payload);
+      const destination = payload.onboarding_required ? "info.html" : await root.TutorlyAuth.authenticatedDestination(payload);
       root.location.replace(destination);
+      return "";
     } catch (error) {
       history.replaceState({}, document.title, root.location.pathname);
-      setStatus(error.message || "Sign-in could not be completed. Please try again.", true);
+      return error.message || "Sign-in could not be completed. Please try again.";
     }
   }
 
@@ -79,17 +83,22 @@
     const params = new URLSearchParams(root.location.search);
     const resultCode = params.get("oauth_result");
     const errorCode = params.get("oauth_error");
+    let completionError = "";
     if (resultCode) {
-      await completeOAuth(resultCode);
-      return;
+      root.dispatchEvent(new CustomEvent("tutorly:oauth-state", { detail: { pending: true } }));
+      completionError = await completeOAuth(resultCode);
+      root.dispatchEvent(new CustomEvent("tutorly:oauth-state", { detail: { pending: false } }));
+      if (!completionError) return;
     }
     try {
       const payload = await root.TutorlyAuth.getProviders();
       render(Array.isArray(payload.providers) ? payload.providers : []);
-      if (errorCode) setStatus(errorMessages[errorCode] || "Sign-in could not be completed. Please try again.", errorCode !== "cancelled");
+      if (completionError) setStatus(completionError, true);
+      else if (errorCode) setStatus(errorMessages[errorCode] || "Sign-in could not be completed. Please try again.", errorCode !== "cancelled");
     } catch (error) {
       // Email/password and OTP remain available if provider discovery is unavailable.
-      host.hidden = true;
+      render([]);
+      setStatus(completionError || (errorCode ? (errorMessages[errorCode] || "Sign-in could not be completed. Please try again.") : "Social sign-in couldn’t load. You can still use email, or refresh to retry."), true);
     }
   }
 

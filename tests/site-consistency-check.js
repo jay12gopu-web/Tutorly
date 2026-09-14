@@ -76,16 +76,18 @@ assert(welcome.includes("+ English, Civics, Economics, Computer Science and more
 const signup = read("sign_up.html");
 assert(!signup.includes('id="phone"'), "Phone must not be required during initial signup");
 assert(!signup.includes('id="dateOfBirth"'), "Date of birth must not be required during initial signup");
-assert(signup.includes("TutorlyAuth.register"), "Signup must create the account through Tutorly's backend");
+assert(signup.includes("window.location.replace('login.html'"), "Signup must use the unified login entry");
+assert(signup.includes("window.location.search"), "The signup alias must preserve OAuth callback parameters");
 
 const login = read("login.html");
-assert(login.includes("Enter your email and password."), "Password-mode copy is missing");
-assert(login.includes("We'll send a 6-digit code to your email."), "OTP-mode copy is missing");
-assert(login.includes("if (loginMode === 'otp')"), "OTP must only open for OTP mode");
-assert(login.includes("TutorlyAuth.requestOtp"), "OTP must be requested from Tutorly's backend");
-assert(login.includes("TutorlyAuth.verifyOtp"), "OTP must be verified by Tutorly's backend");
-assert(login.includes("TutorlyAuth.passwordLogin"), "Password login must be verified by Tutorly's backend");
-assert(!login.includes("Demo OTP code") && !login.includes("generatedOtp"), "Demo/client-generated OTP logic must be removed");
+const authEntry = read("js/auth-entry.js");
+assert(login.includes('id="emailForm"') && login.includes('id="codeForm"') && login.includes('id="passwordForm"'), "Email-first, code and existing-password forms must remain available");
+assert(authEntry.includes("auth.requestOtp"), "OTP must be requested from Tutorly's backend");
+assert(authEntry.includes("auth.verifyOtp"), "OTP must be verified by Tutorly's backend");
+assert(authEntry.includes("auth.passwordLogin"), "Password login must be verified by Tutorly's backend");
+assert(authEntry.includes('payload.onboarding_required ? "info.html"'), "New verified users must enter existing onboarding");
+assert(!/Demo OTP code|generatedOtp|Math.random\(/.test(login + authEntry), "Demo/client-generated OTP logic must be removed");
+assert(login.includes("assets/auth-study-ai.png"), "Login must use the original AI-generated illustration");
 
 const authClient = read("js/auth-client.js");
 assert(authClient.includes('request("/api/auth/request-otp"'), "Auth client must use the server OTP endpoint");

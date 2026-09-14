@@ -9,11 +9,15 @@ const socialUi = read("js/social-auth-ui.js");
 const authClient = read("js/auth-client.js");
 const socialCss = read("css/auth-social.css");
 
-for (const [name, html, flow] of [["login", login, "login"], ["signup", signup, "signup"]]) {
+for (const [name, html, flow] of [["login", login, "login"]]) {
   if (!html.includes(`data-social-auth="${flow}"`)) throw new Error(`${name} is missing its social auth host`);
   if (!html.includes("css/auth-social.css")) throw new Error(`${name} is missing social auth styles`);
   if (!html.includes("js/social-auth-ui.js")) throw new Error(`${name} is missing social auth behavior`);
 }
+if (!signup.includes("window.location.replace('login.html' + window.location.search")) throw new Error("Signup alias must preserve OAuth callback parameters");
+if (!socialUi.includes('social-auth-heading">Continue with</p>')) throw new Error("Continue with must be centered below OR");
+if (!socialUi.includes('<span>${provider.label}</span>')) throw new Error("Each icon must sit beside the company name");
+if (!socialUi.includes('aria-disabled=') || !socialUi.includes('item.enabled === true')) throw new Error("Unconfigured providers must not start OAuth");
 
 for (const provider of ["Google", "Microsoft", "Apple"]) {
   if (!socialUi.includes(`Continue with ${"${provider.label}"}`) && !socialUi.includes(provider.toLowerCase())) {
