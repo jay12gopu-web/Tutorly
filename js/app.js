@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sendBtn = document.getElementById("sendBtn");
   const messages = document.getElementById("messages");
   const chatWindow = document.getElementById("chatWindow");
-  const suggestionChips = document.querySelectorAll(".suggestion-chip");
+  const chatSuggestions = document.getElementById("chatSuggestions");
   const disclaimer = document.querySelector(".disclaimer");
   let speakLiveReply = null;
   let activeChatController = null;
@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let pendingConfirmAction = null;
   let confirmReturnFocus = null;
   let shortcutReturnFocus = null;
+  let composerTransition = null;
 
   const TOOL_ROUTE_TITLES = Object.freeze({
     "lessons.html": "Learn",
@@ -2190,7 +2191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (uploadBtn) uploadBtn.disabled = true;
     if (cameraBtn) cameraBtn.disabled = true;
     if (voiceBtn) voiceBtn.disabled = true;
-    suggestionChips.forEach((chip) => {
+    document.querySelectorAll("#chatSuggestions .chat-suggestion").forEach((chip) => {
       chip.disabled = true;
     });
     body.classList.add("chat-cooldown-active");
@@ -3337,6 +3338,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function addMessage(text, type, options = {}) {
+    // Voice transcripts, restored history, and typed messages share this view.
+    if (!options.loading && !body.classList.contains("has-chat")) setChatMode(true);
     const message = document.createElement("div");
     message.className = `msg ${type}`;
     if (options.loading) message.classList.add("loading");
@@ -3434,11 +3437,76 @@ document.addEventListener("DOMContentLoaded", () => {
     input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
   }
 
-  function setChatMode(isActive) {
+  function setChatMode(isActive, options = {}) {
+    const wasActive = body.classList.contains("has-chat");
+    const panel = document.querySelector(".composer-panel");
+    const shouldAnimate = isActive && !wasActive && options.animate !== false
+      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isActive !== wasActive || options.animate === false) {
+      composerTransition?.cancel();
+      composerTransition = null;
+    }
+    const previousRect = shouldAnimate && panel ? panel.getBoundingClientRect() : null;
     body.classList.toggle("has-chat", isActive);
+    body.dataset.chatState = isActive ? "CONVERSATION" : "NEW_CHAT";
+    [document.getElementById("hero"), chatSuggestions].forEach((element) => {
+      if (!element) return;
+      element.inert = isActive;
+      element.setAttribute("aria-hidden", String(isActive));
+    });
     if (chatTitle) {
       chatTitle.textContent = isActive ? "Tutorly chat" : "New chat";
     }
+    // FLIP the existing composer; never clone its input or event listeners.
+    if (previousRect && previousRect.width > 0 && panel?.animate) {
+      const nextRect = panel.getBoundingClientRect();
+      if (nextRect.width > 0 && nextRect.height > 0) {
+        composerTransition = panel.animate([
+          { transform: `translate(${previousRect.left - nextRect.left}px, ${previousRect.top - nextRect.top}px) scale(${previousRect.width / nextRect.width}, ${previousRect.height / nextRect.height})`, transformOrigin: "top left" },
+          { transform: "none", transformOrigin: "top left" }
+        ], { duration: 280, easing: "cubic-bezier(.2,.7,.2,1)" });
+        composerTransition.onfinish = () => { composerTransition = null; };
+      }
+    }
+  }
+
+  function prefillChatSuggestion(suggestion) {
+    if (input.disabled) return;
+    const prompt = typeof suggestion === "string" ? suggestion : suggestion?.promptTemplate || suggestion?.prompt;
+    if (typeof prompt !== "string" || !prompt.trim()) return;
+    input.value = prompt;
+    resizeInput();
+    updateSendState();
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+
+  function updateConversationUrl(conversationId) {
+    try {
+      const url = new URL(window.location.href);
+      if (conversationId && !isGuestMode) url.searchParams.set("conversationId", conversationId);
+      else url.searchParams.delete("conversationId");
+      window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    } catch (_) { /* History may be unavailable in an embedded or restricted browser. */ }
+  }
+
+  function restoreConversation() {
+    const requestedId = pageParams.get("conversationId");
+    const candidateId = !isGuestMode && (requestedId || activeConversationId);
+    const conversation = candidateId
+      ? (GPT?.getConversation?.(candidateId) || ChatHistory?.getConversation?.(candidateId))
+      : null;
+    if (conversation && (requestedId || !conversation.archived) && Array.isArray(conversation.messages)) {
+      loadConversation(conversation.id, { focus: false });
+      return;
+    }
+    activeConversationId = null;
+    if (!isGuestMode) {
+      GPT?.setActiveConversation?.(null) || ChatHistory?.setActiveConversation?.(null);
+    }
+    updateConversationUrl(null);
+    setChatMode(false, { animate: false });
+    if (!isGuestMode && requestedId) showToast("That chat could not be found. Start a new chat or search your history.");
   }
 
   function getResponseDelay(text, modelId = selectedModel, hasImage = false) {
@@ -3717,6 +3785,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (conversationId) {
       activeConversationId = conversationId;
       GPT?.setActiveConversation?.(conversationId) || ChatHistory?.setActiveConversation?.(conversationId);
+      updateConversationUrl(conversationId);
     }
     const liveBoardPanel = window.TutorlyLiveBoardPanel;
     if (liveBoardPanel?.hasLesson?.()) {
@@ -3902,6 +3971,8 @@ document.addEventListener("DOMContentLoaded", () => {
     GPT?.setActiveConversation?.(null) || ChatHistory?.setActiveConversation?.(null);
     showChatWorkspace();
     setChatMode(false);
+    updateConversationUrl(null);
+    window.TutorlyChatSuggestions?.rotate?.(chatSuggestions, { onSelect: prefillChatSuggestion });
     closeAccountMenu();
     closeMobileSidebar();
     input.focus();
@@ -4304,7 +4375,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function loadConversation(conversationId) {
+  function loadConversation(conversationId, options = {}) {
     if (!GPT && !ChatHistory) return;
     const conversation = GPT?.getConversation?.(conversationId) || ChatHistory.getConversation(conversationId);
     if (!conversation) {
@@ -4318,7 +4389,8 @@ document.addEventListener("DOMContentLoaded", () => {
     activeConversationId = conversation.id;
     GPT?.setActiveConversation?.(conversation.id) || ChatHistory.setActiveConversation(conversation.id);
     showChatWorkspace();
-    setChatMode(true);
+    setChatMode(conversation.messages.length > 0, { animate: false });
+    updateConversationUrl(conversation.id);
     if (chatTitle) chatTitle.textContent = conversation.title || "Tutorly chat";
 
     conversation.messages.forEach((messageRecord) => {
@@ -4348,7 +4420,7 @@ document.addEventListener("DOMContentLoaded", () => {
     closeAccountMenu();
     closeMobileSidebar();
     scrollToBottom();
-    input.focus();
+    if (options.focus !== false) input.focus();
   }
 
   function createHistoryPanel() {
@@ -4747,15 +4819,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  suggestionChips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-      input.value = chip.dataset.prompt || chip.textContent.trim();
-      resizeInput();
-      updateSendState();
-      sendMessage();
-    });
-  });
-
   if (newChatBtn) {
     newChatBtn.addEventListener("click", resetChat);
   }
@@ -5129,6 +5192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!conversationId) return;
         activeConversationId = conversationId;
         GPT?.setActiveConversation?.(conversationId) || ChatHistory?.setActiveConversation?.(conversationId);
+        updateConversationUrl(conversationId);
         voiceLastUserRecord = GPT?.recordUserMessage?.({
           conversationId,
           content,
@@ -5383,9 +5447,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   resizeInput();
   updateSendState();
-  setChatMode(false);
-  const requestedConversationId = pageParams.get("conversationId");
-  if (!isGuestMode && requestedConversationId) {
-    window.setTimeout(() => loadConversation(requestedConversationId), 0);
-  }
+  window.TutorlyChatSuggestions?.render?.(chatSuggestions, { onSelect: prefillChatSuggestion });
+  restoreConversation();
+  window.addEventListener("pagehide", () => {
+    composerTransition?.cancel();
+    composerTransition = null;
+  });
 });
