@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
   <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
   <link rel="stylesheet" href="css/profile-hub.css?v=profile-hub-20260903" />
+  <link rel="stylesheet" href="css/education-select.css" />
 </head>
 <body class="profile-hub-page" data-tutorly-surface="workspace">
   <header class="profile-topbar mt-mobile-header">
@@ -64,14 +65,15 @@
 
       <div class="settings-content">
         <section class="settings-panel active" data-settings-panel="profile" aria-labelledby="profileSettingsTitle">
-          <header class="panel-heading"><div><p>Account details</p><h2 id="profileSettingsTitle">Profile</h2><span>Keep your student details accurate so Tutorly can use the right curriculum.</span></div></header>
+          <header class="panel-heading"><div><p>Account details</p><h2 id="profileSettingsTitle">Profile</h2><span id="profileDetailsHelp">Keep your details accurate so Tutorly can support you.</span></div></header>
           <div class="profile-readonly" id="profileReadonly">
-            <div><span>Name</span><strong id="summaryName">Student</strong></div><div><span>Email</span><strong id="summaryEmail">Not set</strong></div><div><span>Grade</span><strong id="summaryGrade">Not set</strong></div><div><span>Board</span><strong id="summaryBoard">Not set</strong></div><div><span>School</span><strong id="summarySchool">Optional</strong></div>
+            <div><span>Name</span><strong id="summaryName">Student</strong></div><div><span>Email</span><strong id="summaryEmail">Not set</strong></div><div data-student-profile><span>Age</span><strong id="summaryAge">Not set</strong></div><div data-student-profile><span>Grade</span><strong id="summaryGrade">Not set</strong></div><div data-student-profile><span>Board</span><strong id="summaryBoard">Not set</strong></div><div data-student-profile><span>School</span><strong id="summarySchool">Optional</strong></div>
+            <div data-teacher-profile hidden><span>Preferred subjects</span><strong id="summarySubjects"></strong></div><div data-teacher-profile hidden><span>Preferred boards</span><strong id="summaryBoards"></strong></div><div data-teacher-profile hidden><span>Preferred grades</span><strong id="summaryGradeRange"></strong></div><div data-teacher-profile hidden><span>Degree verification</span><strong id="summaryVerification"></strong></div>
           </div>
           <form class="profile-edit-form" id="profileForm" hidden>
             <div class="avatar-edit-row"><label class="button button-secondary" for="avatarInput">Choose avatar</label><input id="avatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden /><span>PNG, JPG or WebP. Saved on this device.</span></div>
             <div class="field-grid">
-              <label><span>Name</span><input id="nameInput" type="text" maxlength="120" required /></label><label><span>Email</span><input id="emailInput" type="email" readonly aria-readonly="true" /></label><label><span>Grade</span><input id="gradeInput" type="text" maxlength="40" required /></label><label><span>Board</span><input id="boardInput" type="text" maxlength="80" required /></label><label class="wide"><span>School <small>optional</small></span><input id="schoolInput" type="text" maxlength="160" /></label>
+              <label><span>Name</span><input id="nameInput" type="text" maxlength="120" required /></label><label><span>Email</span><input id="emailInput" type="email" readonly aria-readonly="true" /></label><label data-student-profile><span>Age</span><input id="ageInput" type="number" min="5" max="120" inputmode="numeric" /></label><label data-student-profile><span>Grade</span><select id="gradeInput" required></select></label><div data-student-profile><label id="boardFallbackLabel" for="boardInput">Board</label><input id="boardInput" type="text" maxlength="80" required /><div id="profileBoardSelect"></div></div><label class="wide" data-student-profile><span>School <small>optional</small></span><input id="schoolInput" type="text" maxlength="160" /></label>
             </div>
             <div class="form-actions"><button class="button button-secondary" id="cancelProfileEdit" type="button">Cancel</button><button class="button" type="submit">Save profile</button></div>
           </form>
@@ -116,6 +118,6 @@
   </main>
 
   <div class="profile-toast" id="profileToast" role="status" aria-live="polite"></div>
-  <script src="shared/tutorly-plans.js"></script><script src="js/auth-client.js"></script><script src="js/curriculum-client.js?v=curriculum-20260913"></script><script src="js/chatbot/voice-config.js?v=eight-voices-20260826"></script><script src="js/profile-hub.js?v=profile-hub-20260913"></script><script src="js/connected-accounts.js?v=social-auth-20260825"></script><script src="js/global-layout.js?v=responsive-20260905b"></script><script src="js/swipe-home.js?v=nav-redesign-20260531d"></script><script src="js/campus.js?v=campus-20260629"></script><script src="js/mobile-app.js?v=responsive-20260905c"></script>
+  <script src="shared/tutorly-plans.js"></script><script src="js/auth-client.js?v=onboarding-20260922"></script><script src="js/education-registry.js"></script><script src="js/education-select.js"></script><script src="js/curriculum-client.js?v=curriculum-20260913"></script><script src="js/chatbot/voice-config.js?v=eight-voices-20260826"></script><script src="js/profile-hub.js?v=onboarding-20260922"></script><script src="js/connected-accounts.js?v=social-auth-20260825"></script><script src="js/global-layout.js?v=responsive-20260905b"></script><script src="js/swipe-home.js?v=nav-redesign-20260531d"></script><script src="js/campus.js?v=campus-20260629"></script><script src="js/mobile-app.js?v=responsive-20260905c"></script>
 </body>
 </html>

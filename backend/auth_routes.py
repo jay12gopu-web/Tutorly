@@ -14,11 +14,11 @@ import time
 from contextlib import contextmanager
 from email.message import EmailMessage
 from pathlib import Path
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import quote, unquote, urlencode, urlsplit
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel
 
 try:
@@ -42,6 +42,7 @@ PASSWORD_ITERATIONS = 240_000
 OAUTH_STATE_TTL_SECONDS = 10 * 60
 OAUTH_RESULT_TTL_SECONDS = 2 * 60
 OAUTH_MAX_STARTS_PER_HOUR = 30
+DEGREE_MAX_BYTES = 5 * 1024 * 1024
 LOGGER = logging.getLogger("tutorly.auth")
 
 
@@ -74,6 +75,40 @@ class AcademicProfileRequest(BaseModel):
     board: str
     school: str = ""
     full_name: str | None = None
+    age: int | None = None
+
+
+class OnboardingRequest(BaseModel):
+    role: str
+    full_name: str
+    age: int | None = None
+    grade: str | int | None = None
+    board: str = ""
+    school: str = ""
+    subjects: list[str] = []
+    boards: list[str] = []
+    grade_min: int | None = None
+    grade_max: int | None = None
+    gender: str = ""
+    teaching_personality: list[str] = []
+    preferred_days: list[str] = []
+    preferred_start_time: str = ""
+    preferred_end_time: str = ""
+    consent: bool = False
+
+
+class TeacherProfileRequest(BaseModel):
+    full_name: str | None = None
+    school: str | None = None
+    subjects: list[str] | None = None
+    boards: list[str] | None = None
+    grade_min: int | None = None
+    grade_max: int | None = None
+    gender: str | None = None
+    teaching_personality: list[str] | None = None
+    preferred_days: list[str] | None = None
+    preferred_start_time: str | None = None
+    preferred_end_time: str | None = None
 
 
 class VoicePreferenceRequest(BaseModel):
@@ -202,9 +237,20 @@ def _connection():
             consumed INTEGER NOT NULL DEFAULT 0,
             FOREIGN KEY(user_id) REFERENCES tutorly_users(id)
         );
+        CREATE TABLE IF NOT EXISTS tutorly_teacher_degrees (
+            user_id INTEGER PRIMARY KEY,
+            id TEXT NOT NULL UNIQUE,
+            name TEXT NOT NULL,
+            content_type TEXT NOT NULL,
+            size INTEGER NOT NULL,
+            document BLOB NOT NULL,
+            uploaded_at INTEGER NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES tutorly_users(id)
+        );
             """
         )
         _ensure_user_columns(connection)
+        connection.commit()
         yield connection
         connection.commit()
     finally:
@@ -224,10 +270,23 @@ def _ensure_user_columns(connection: sqlite3.Connection) -> None:
         "voice_onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
         "personalization_json": "TEXT NOT NULL DEFAULT '{}'",
         "role": "TEXT NOT NULL DEFAULT 'student'",
+        "age": "INTEGER",
+        "onboarding_completed": "INTEGER NOT NULL DEFAULT 0",
+        "teacher_profile_json": "TEXT NOT NULL DEFAULT '{}'",
+        "teacher_verification_status": "TEXT NOT NULL DEFAULT 'pending'",
+        "last_login_at": "INTEGER",
     }
     for name, definition in additions.items():
         if name not in columns:
             connection.execute(f"ALTER TABLE tutorly_users ADD COLUMN {name} {definition}")
+    # Run only while introducing the column. Never reclassify a new incomplete
+    # account just because an old client writes grade/board through /profile.
+    if "onboarding_completed" not in columns:
+        connection.execute(
+            """UPDATE tutorly_users SET onboarding_completed = 1
+               WHERE (academic_onboarding_completed = 1 AND grade <> '' AND board <> '')
+                  OR lower(role) IN ('teacher', 'admin')"""
+        )
 
 
 def _normalize_email(value: str) -> str:
@@ -303,6 +362,8 @@ def require_role(authorization: str | None, *allowed_roles: str) -> dict[str, st
         role = _effective_role(user)
         if role not in set(allowed_roles):
             raise HTTPException(status_code=403, detail="Forbidden")
+        if role == "teacher" and user["teacher_verification_status"] != "verified":
+            raise HTTPException(status_code=403, detail="Teacher verification is pending.")
         return {"id": int(user["id"]), "role": role}
 
 
@@ -315,6 +376,7 @@ def authenticated_user_context(authorization: str | None) -> dict[str, str | int
             "full_name": str(user["full_name"] or "Tutorly Student"),
             "email": str(user["email"] or ""),
             "role": _effective_role(user),
+            "age": user["age"],
         }
 
 
@@ -353,6 +415,132 @@ def _clean_profile_value(value: str, *, required: bool, max_length: int, label: 
     if len(cleaned) > max_length:
         raise HTTPException(status_code=400, detail=f"{label.title()} is too long.")
     return cleaned
+
+
+def _normalized_grade(value: object) -> str:
+    grade = re.sub(r"^(?:grade|class)\s*", "", str(value or "").strip(), flags=re.I)
+    if not grade.isdigit() or not 1 <= int(grade) <= 12:
+        raise HTTPException(status_code=400, detail="Choose a grade from 1 to 12.")
+    return str(int(grade))
+
+
+def _normalized_board(value: str) -> str:
+    board = _clean_profile_value(value, required=True, max_length=160, label="board")
+    alias = re.sub(r"[^a-z0-9]", "", board.lower())
+    if alias in {"cbse", "ncert", "cbsencert", "centralboard", "centralboardofsecondaryeducation"}:
+        return "CBSE"
+    if alias in {"cisce", "icse", "isc", "councilfortheindianschoolcertificateexaminations"}:
+        return "CISCE"
+    # Board identity is independent of curriculum import availability.
+    return board
+
+
+def _profile_list(values: list[str], label: str) -> list[str]:
+    if not values or len(values) > 40:
+        raise HTTPException(status_code=400, detail=f"Choose between 1 and 40 {label}.")
+    result: list[str] = []
+    for value in values:
+        cleaned = _normalized_board(value) if label == "boards" else _clean_profile_value(
+            value, required=True, max_length=100, label=label
+        )
+        if cleaned.casefold() not in {item.casefold() for item in result}:
+            result.append(cleaned)
+    return result
+
+
+def _validated_age(value: int | None, *, required: bool = False) -> int | None:
+    if value is None and not required:
+        return None
+    if value is None or not 5 <= value <= 120:
+        raise HTTPException(status_code=400, detail="Enter an age between 5 and 120.")
+    return value
+
+
+def _degree_metadata(connection: sqlite3.Connection, user_id: int) -> dict[str, object] | None:
+    row = connection.execute(
+        "SELECT id, name, size, content_type FROM tutorly_teacher_degrees WHERE user_id = ?", (user_id,)
+    ).fetchone()
+    return dict(row) if row else None
+
+
+TEACHER_PROFILE_FIELDS = (
+    "subjects", "boards", "grade_min", "grade_max", "gender", "teaching_personality",
+    "preferred_days", "preferred_start_time", "preferred_end_time", "timezone", "consented_at",
+)
+TEACHING_PERSONALITIES = {
+    "caring", "focused", "funny", "strict", "patient", "calm", "energetic", "friendly",
+    "encouraging", "practical", "detailed", "straightforward",
+}
+
+
+def _teacher_preferences(values: dict) -> dict:
+    """Gender is self-description only; never an input to access or verification."""
+    gender = values.get("gender", "")
+    if gender not in {"male", "female", "non_binary", "prefer_not_to_say"}:
+        raise HTTPException(400, "Select a gender option, including Prefer not to say.")
+    personalities = values.get("teaching_personality", [])
+    if not personalities or len(personalities) > 12 or any(value not in TEACHING_PERSONALITIES for value in personalities):
+        raise HTTPException(400, "Choose one or more teaching personality options.")
+    days = values.get("preferred_days", [])
+    weekdays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+    if not days or len(days) > 7 or any(day not in weekdays for day in days):
+        raise HTTPException(400, "Choose at least one preferred day.")
+    times = []
+    for key in ("preferred_start_time", "preferred_end_time"):
+        value = values.get(key, "")
+        if not isinstance(value, str) or not re.fullmatch(r"(?:[01]\d|2[0-3]):(?:00|15|30|45)", value):
+            raise HTTPException(400, "Choose valid times in 15-minute increments.")
+        hour, minute = map(int, value.split(":"))
+        times.append(hour * 60 + minute)
+    if not 15 <= times[1] - times[0] <= 120:
+        raise HTTPException(400, "Choose a same-day time range of 15 minutes to 2 hours.")
+    return {
+        "gender": gender, "teaching_personality": list(dict.fromkeys(personalities)),
+        "preferred_days": [day for day in weekdays if day in days],
+        "preferred_start_time": values["preferred_start_time"],
+        "preferred_end_time": values["preferred_end_time"], "timezone": "Asia/Kolkata",
+    }
+
+
+def _canonical_user(connection: sqlite3.Connection, user: sqlite3.Row) -> dict[str, object]:
+    connected = [row["provider"] for row in connection.execute(
+        "SELECT provider FROM tutorly_social_identities WHERE user_id = ? ORDER BY provider", (user["id"],)
+    )]
+    teacher = {}
+    try:
+        saved = json.loads(user["teacher_profile_json"] or "{}")
+        if isinstance(saved, dict):
+            teacher = {key: saved[key] for key in TEACHER_PROFILE_FIELDS if key in saved}
+    except (TypeError, ValueError):
+        pass
+    teacher["verification_status"] = user["teacher_verification_status"] if user["teacher_verification_status"] in {
+        "pending", "verified", "rejected"
+    } else "pending"
+    teacher["degree"] = _degree_metadata(connection, user["id"])
+    return {
+        "id": str(user["id"]), "email": user["email"], "full_name": user["full_name"],
+        "role": _effective_role(user), "age": user["age"], "grade": user["grade"],
+        "board": user["board"], "school": user["school"], "avatar_url": user["avatar_url"],
+        "onboarding_completed": bool(user["onboarding_completed"]),
+        "academic_onboarding_completed": bool(user["academic_onboarding_completed"]),
+        "teacher_profile": teacher,
+        "connected_providers": connected,
+        "preferred_voice_agent": user["preferred_voice_agent"],
+        "voice_onboarding_completed": bool(user["voice_onboarding_completed"]),
+        "personalization": _personalization_from_user(user),
+    }
+
+
+def _profile_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, object]:
+    user = connection.execute("SELECT * FROM tutorly_users WHERE id = ?", (user_id,)).fetchone()
+    if not user:
+        raise HTTPException(status_code=401, detail="Your session has expired. Please log in again.")
+    return {
+        "authenticated": True,
+        "onboarding_required": not bool(user["onboarding_completed"]),
+        "role_selection_required": not bool(user["onboarding_completed"]),
+        "user": _canonical_user(connection, user),
+    }
 
 
 def _personalization_from_value(value: object) -> dict[str, object]:
@@ -479,37 +667,10 @@ def auth_health():
 
 
 def _session_payload(connection: sqlite3.Connection, user_id: int) -> dict[str, object]:
-    user = connection.execute(
-        """
-        SELECT id, email, full_name, grade, board, school, avatar_url, role,
-               academic_onboarding_completed, preferred_voice_agent,
-               voice_onboarding_completed, personalization_json
-        FROM tutorly_users WHERE id = ?
-        """,
-        (user_id,),
-    ).fetchone()
-    if not user:
-        raise HTTPException(status_code=401, detail="Account not found.")
-    token = _create_session(connection, user_id)
-    onboarding_required = not bool(user["academic_onboarding_completed"] and user["grade"] and user["board"])
-    return {
-        "authenticated": True,
-        "session_token": token,
-        "onboarding_required": onboarding_required,
-        "user": {
-            "id": str(user["id"]),
-            "email": user["email"],
-            "full_name": user["full_name"],
-            "role": _effective_role(user),
-            "grade": user["grade"],
-            "board": user["board"],
-            "school": user["school"],
-            "avatar_url": user["avatar_url"],
-            "preferred_voice_agent": user["preferred_voice_agent"],
-            "voice_onboarding_completed": bool(user["voice_onboarding_completed"]),
-            "personalization": _personalization_from_user(user),
-        },
-    }
+    result = _profile_payload(connection, user_id)
+    result["session_token"] = _create_session(connection, user_id)
+    connection.execute("UPDATE tutorly_users SET last_login_at = ? WHERE id = ?", (int(time.time()), user_id))
+    return result
 
 
 @router.get("/providers")
@@ -527,33 +688,7 @@ def auth_providers():
 def current_user(authorization: str | None = Header(default=None)):
     with _connection() as connection:
         user = _authenticated_user(connection, authorization)
-        connected = {
-            str(row["provider"])
-            for row in connection.execute(
-                "SELECT provider FROM tutorly_social_identities WHERE user_id = ?",
-                (user["id"],),
-            )
-        }
-        return {
-            "authenticated": True,
-            "onboarding_required": not bool(
-                user["academic_onboarding_completed"] and user["grade"] and user["board"]
-            ),
-            "user": {
-                "id": str(user["id"]),
-                "email": user["email"],
-                "full_name": user["full_name"],
-                "role": _effective_role(user),
-                "grade": user["grade"],
-                "board": user["board"],
-                "school": user["school"],
-                "avatar_url": user["avatar_url"],
-                "connected_providers": sorted(connected),
-                "preferred_voice_agent": user["preferred_voice_agent"],
-                "voice_onboarding_completed": bool(user["voice_onboarding_completed"]),
-                "personalization": _personalization_from_user(user),
-            },
-        }
+        return _profile_payload(connection, user["id"])
 
 
 @router.get("/admin-session")
@@ -633,23 +768,26 @@ def update_academic_profile(
     payload: AcademicProfileRequest,
     authorization: str | None = Header(default=None),
 ):
-    grade = _clean_profile_value(payload.grade, required=True, max_length=40, label="grade")
-    board = _clean_profile_value(payload.board, required=True, max_length=80, label="board")
+    grade = _normalized_grade(payload.grade)
+    board = _normalized_board(payload.board)
+    age = _validated_age(payload.age)
     school = _clean_profile_value(payload.school, required=False, max_length=160, label="school")
     full_name = None
     if payload.full_name is not None:
         full_name = _clean_profile_value(payload.full_name, required=True, max_length=120, label="name")
     with _connection() as connection:
         user = _authenticated_user(connection, authorization)
+        if _effective_role(user) == "teacher":
+            raise HTTPException(status_code=400, detail="Use your teacher profile settings.")
         connection.execute(
             """
             UPDATE tutorly_users
             SET grade = ?, board = ?, school = ?,
                 full_name = CASE WHEN ? IS NULL THEN full_name ELSE ? END,
-                academic_onboarding_completed = 1, updated_at = ?
+                age = COALESCE(?, age), updated_at = ?
             WHERE id = ?
             """,
-            (grade, board, school, full_name, full_name, int(time.time()), user["id"]),
+            (grade, board, school, full_name, full_name, age, int(time.time()), user["id"]),
         )
         return {
             "saved": True,
@@ -657,7 +795,189 @@ def update_academic_profile(
             "board": board,
             "school": school,
             "full_name": full_name if full_name is not None else user["full_name"],
+            "age": age if age is not None else user["age"],
         }
+
+
+@router.post("/onboarding")
+def complete_onboarding(payload: OnboardingRequest, authorization: str | None = Header(default=None)):
+    role = payload.role.strip().lower()
+    if role not in {"student", "teacher"}:
+        raise HTTPException(status_code=400, detail="Choose Student or Teacher.")
+    full_name = _clean_profile_value(payload.full_name, required=True, max_length=120, label="name")
+    if len(full_name) < 2:
+        raise HTTPException(status_code=400, detail="Enter your full name.")
+    school = _clean_profile_value(payload.school, required=False, max_length=160, label="school")
+    with _connection() as connection:
+        connection.execute("BEGIN IMMEDIATE")
+        user = _authenticated_user(connection, authorization)
+        if user["onboarding_completed"]:
+            if role != _effective_role(user):
+                raise HTTPException(status_code=409, detail="Your account role is already saved.")
+            # An uncertain retry is idempotent, never overwrites a finished profile.
+            return {"saved": True, **_profile_payload(connection, user["id"])}
+        if role == "student":
+            grade = _normalized_grade(payload.grade)
+            board = _normalized_board(payload.board)
+            age = _validated_age(payload.age, required=True)
+            connection.execute(
+                """UPDATE tutorly_users SET role = 'student', full_name = ?, age = ?,
+                   grade = ?, board = ?, school = ?, academic_onboarding_completed = 1,
+                   onboarding_completed = 1, updated_at = ? WHERE id = ?""",
+                (full_name, age, grade, board, school, int(time.time()), user["id"]),
+            )
+            # A person who changes their role choice before completion should not
+            # leave an unnecessary degree document in their student account.
+            connection.execute("DELETE FROM tutorly_teacher_degrees WHERE user_id = ?", (user["id"],))
+        else:
+            if not _degree_metadata(connection, user["id"]):
+                raise HTTPException(status_code=400, detail="Upload your degree before continuing.")
+            subjects = _profile_list(payload.subjects, "subjects")
+            boards = _profile_list(payload.boards, "boards")
+            lower, upper = payload.grade_min, payload.grade_max
+            if lower is None or upper is None or not 1 <= lower <= upper <= 12:
+                raise HTTPException(status_code=400, detail="Choose a grade range between 1 and 12.")
+            teacher = {"subjects": subjects, "boards": boards, "grade_min": lower, "grade_max": upper}
+            teacher.update(_teacher_preferences({
+                "gender": payload.gender, "teaching_personality": payload.teaching_personality,
+                "preferred_days": payload.preferred_days, "preferred_start_time": payload.preferred_start_time,
+                "preferred_end_time": payload.preferred_end_time,
+            }))
+            if payload.consent is not True:
+                raise HTTPException(400, "Confirm the Terms of Service and Privacy Policy to finish.")
+            teacher["consented_at"] = int(time.time())
+            connection.execute(
+                """UPDATE tutorly_users SET role = 'teacher', full_name = ?, school = ?,
+                   teacher_profile_json = ?, teacher_verification_status = 'pending',
+                   onboarding_completed = 1, updated_at = ? WHERE id = ?""",
+                (full_name, school, json.dumps(teacher, ensure_ascii=False), int(time.time()), user["id"]),
+            )
+        return {"saved": True, **_profile_payload(connection, user["id"])}
+
+
+def _degree_upload_user(connection: sqlite3.Connection, authorization: str | None) -> sqlite3.Row:
+    user = _authenticated_user(connection, authorization)
+    if user["onboarding_completed"] and _effective_role(user) != "teacher":
+        raise HTTPException(status_code=403, detail="Degree uploads are for teacher profiles.")
+    return user
+
+
+@router.put("/teacher-profile")
+def update_teacher_profile(payload: TeacherProfileRequest, authorization: str | None = Header(default=None)):
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        if _effective_role(user) != "teacher" or not user["onboarding_completed"]:
+            raise HTTPException(status_code=403, detail="Complete your teacher profile first.")
+        full_name = str(user["full_name"])
+        school = str(user["school"])
+        if payload.full_name is not None:
+            full_name = _clean_profile_value(payload.full_name, required=True, max_length=120, label="name")
+            if len(full_name) < 2:
+                raise HTTPException(status_code=400, detail="Enter your full name.")
+        if payload.school is not None:
+            school = _clean_profile_value(payload.school, required=False, max_length=160, label="school")
+        stored = _canonical_user(connection, user)["teacher_profile"]
+        teacher = {key: stored[key] for key in TEACHER_PROFILE_FIELDS if key in stored}
+        preferences = ("gender", "teaching_personality", "preferred_days", "preferred_start_time", "preferred_end_time")
+        if any(getattr(payload, key) is not None for key in preferences):
+            values = {key: getattr(payload, key) if getattr(payload, key) is not None else teacher.get(key) for key in preferences}
+            teacher.update(_teacher_preferences(values))
+        if payload.subjects is not None:
+            teacher["subjects"] = _profile_list(payload.subjects, "subjects")
+        if payload.boards is not None:
+            teacher["boards"] = _profile_list(payload.boards, "boards")
+        if payload.grade_min is not None or payload.grade_max is not None:
+            lower = payload.grade_min if payload.grade_min is not None else teacher.get("grade_min", 1)
+            upper = payload.grade_max if payload.grade_max is not None else teacher.get("grade_max", 12)
+            if not 1 <= lower <= upper <= 12:
+                raise HTTPException(status_code=400, detail="Choose a grade range between 1 and 12.")
+            teacher.update(grade_min=lower, grade_max=upper)
+        connection.execute(
+            "UPDATE tutorly_users SET full_name = ?, school = ?, teacher_profile_json = ?, updated_at = ? WHERE id = ?",
+            (full_name, school, json.dumps(teacher, ensure_ascii=False), int(time.time()), user["id"]),
+        )
+        return {"saved": True, **_profile_payload(connection, user["id"])}
+
+
+def _store_degree(authorization: str | None, name: str, content_type: str, document: bytes):
+    with _connection() as connection:
+        connection.execute("BEGIN IMMEDIATE")
+        user = _degree_upload_user(connection, authorization)
+        connection.execute(
+            """INSERT INTO tutorly_teacher_degrees(user_id, id, name, content_type, size, document, uploaded_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(user_id) DO UPDATE SET id = excluded.id, name = excluded.name,
+               content_type = excluded.content_type, size = excluded.size,
+               document = excluded.document, uploaded_at = excluded.uploaded_at""",
+            (user["id"], secrets.token_urlsafe(24), name, content_type, len(document), document, int(time.time())),
+        )
+        connection.execute(
+            "UPDATE tutorly_users SET teacher_verification_status = 'pending', updated_at = ? WHERE id = ?",
+            (int(time.time()), user["id"]),
+        )
+        return {"degree": _degree_metadata(connection, user["id"]), "verification_status": "pending"}
+
+
+@router.put("/teacher-degree")
+async def upload_teacher_degree(request: Request, authorization: str | None = Header(default=None)):
+    # Authenticate before accepting any file data; no public upload path exists.
+    with _connection() as connection:
+        _degree_upload_user(connection, authorization)
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    name = unquote(request.headers.get("x-filename", "")).strip()
+    suffixes = {"application/pdf": {".pdf"}, "image/jpeg": {".jpg", ".jpeg"}, "image/png": {".png"}}
+    if (content_type not in suffixes or not name or len(name) > 160
+            or re.search(r"[\x00-\x1f\x7f/\\]", name)
+            or Path(name).suffix.lower() not in suffixes.get(content_type, set())):
+        raise HTTPException(status_code=400, detail="Choose a PDF, JPG, JPEG or PNG degree document.")
+    try:
+        declared_size = int(request.headers.get("content-length", "0"))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="The upload size is invalid.") from None
+    if declared_size > DEGREE_MAX_BYTES:
+        raise HTTPException(status_code=413, detail="Your degree document must be 5 MB or smaller.")
+    document = bytearray()
+    async for chunk in request.stream():
+        if len(document) + len(chunk) > DEGREE_MAX_BYTES:
+            raise HTTPException(status_code=413, detail="Your degree document must be 5 MB or smaller.")
+        document.extend(chunk)
+    signatures = {
+        "application/pdf": document.startswith(b"%PDF-") and b"%%EOF" in document[-2048:],
+        "image/jpeg": document.startswith(b"\xff\xd8\xff") and document.endswith(b"\xff\xd9"),
+        "image/png": document.startswith(b"\x89PNG\r\n\x1a\n") and b"IEND" in document[-16:],
+    }
+    if not document or not signatures[content_type]:
+        raise HTTPException(status_code=400, detail="This file does not match its document type. Choose another file.")
+    return await run_in_threadpool(_store_degree, authorization, name, content_type, bytes(document))
+
+
+@router.get("/teacher-degree")
+def download_teacher_degree(authorization: str | None = Header(default=None)):
+    with _connection() as connection:
+        user = _authenticated_user(connection, authorization)
+        degree = connection.execute(
+            "SELECT name, content_type, document FROM tutorly_teacher_degrees WHERE user_id = ?", (user["id"],)
+        ).fetchone()
+        if not degree:
+            raise HTTPException(status_code=404, detail="No degree document has been uploaded.")
+        return Response(
+            content=bytes(degree["document"]), media_type=degree["content_type"],
+            headers={"Content-Disposition": "attachment; filename*=UTF-8''" + quote(degree["name"], safe=""),
+                     "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff",
+                     "Content-Security-Policy": "sandbox"},
+        )
+
+
+@router.delete("/teacher-degree")
+def remove_teacher_degree(authorization: str | None = Header(default=None)):
+    with _connection() as connection:
+        user = _degree_upload_user(connection, authorization)
+        connection.execute("DELETE FROM tutorly_teacher_degrees WHERE user_id = ?", (user["id"],))
+        connection.execute(
+            "UPDATE tutorly_users SET teacher_verification_status = 'pending', updated_at = ? WHERE id = ?",
+            (int(time.time()), user["id"]),
+        )
+    return {"removed": True, "degree": None, "verification_status": "pending"}
 
 
 @router.post("/request-otp")
@@ -710,6 +1030,7 @@ def verify_otp(payload: OtpVerifyRequest):
         raise HTTPException(status_code=400, detail="Enter the complete 6-digit code.")
     now = int(time.time())
     with _connection() as connection:
+        connection.execute("BEGIN IMMEDIATE")
         otp = connection.execute(
             "SELECT * FROM tutorly_login_otps WHERE email = ? AND consumed = 0 ORDER BY created_at DESC LIMIT 1",
             (email,),
@@ -720,6 +1041,7 @@ def verify_otp(payload: OtpVerifyRequest):
             raise HTTPException(status_code=429, detail="Too many incorrect attempts. Request a new code.")
         if not hmac.compare_digest(str(otp["otp_hash"]), _hash_otp(email, code)):
             connection.execute("UPDATE tutorly_login_otps SET attempts = attempts + 1 WHERE id = ?", (otp["id"],))
+            connection.commit()  # Keep the attempt counter even though the response is an error.
             raise HTTPException(status_code=400, detail="That code is incorrect. Try again.")
 
         connection.execute("UPDATE tutorly_login_otps SET consumed = 1 WHERE id = ?", (otp["id"],))
@@ -737,30 +1059,40 @@ def verify_otp(payload: OtpVerifyRequest):
 
 
 @router.post("/register")
-def register(payload: RegisterRequest):
+def register(payload: RegisterRequest, authorization: str | None = Header(default=None)):
+    """Legacy password setup, only after OTP/OAuth has proved account ownership.
+
+    The public auth entry uses OTP/OAuth for new identities. Keep this endpoint
+    for authenticated older clients, not as unverified account registration.
+    """
     email = _normalize_email(payload.email)
     full_name = re.sub(r"\s+", " ", str(payload.full_name or "").strip())
     password = str(payload.password or "")
     if len(full_name) < 2 or len(full_name) > 80:
         raise HTTPException(status_code=400, detail="Enter your full name.")
-    if len(password) < 8:
-        raise HTTPException(status_code=400, detail="Use at least 8 characters for your password.")
+    if not 8 <= len(password) <= 1024:
+        raise HTTPException(status_code=400, detail="Use between 8 and 1024 characters for your password.")
     now = int(time.time())
     salt = secrets.token_bytes(16)
     with _connection() as connection:
-        if connection.execute("SELECT id FROM tutorly_users WHERE email = ?", (email,)).fetchone():
-            raise HTTPException(status_code=409, detail="An account already exists for this email.")
-        cursor = connection.execute(
-            "INSERT INTO tutorly_users(email, full_name, password_hash, password_salt, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-            (email, full_name, _hash_password(password, salt), salt.hex(), now, now),
+        user = _authenticated_user(connection, authorization)
+        if not hmac.compare_digest(email, str(user["email"])):
+            raise HTTPException(status_code=403, detail="Authenticate with this email before setting a password.")
+        if user["password_hash"]:
+            raise HTTPException(status_code=409, detail="A password is already configured for your account.")
+        connection.execute(
+            "UPDATE tutorly_users SET password_hash = ?, password_salt = ?, updated_at = ? WHERE id = ?",
+            (_hash_password(password, salt), salt.hex(), now, user["id"]),
         )
-        return _session_payload(connection, int(cursor.lastrowid))
+        return _session_payload(connection, int(user["id"]))
 
 
 @router.post("/password-login")
 def password_login(payload: PasswordLoginRequest):
     email = _normalize_email(payload.email)
     password = str(payload.password or "")
+    if len(password) > 1024:
+        raise HTTPException(status_code=401, detail="Incorrect email or password.")
     with _connection() as connection:
         user = connection.execute(
             "SELECT id, password_hash, password_salt FROM tutorly_users WHERE email = ?",
@@ -770,6 +1102,9 @@ def password_login(payload: PasswordLoginRequest):
         if user and user["password_hash"] and user["password_salt"]:
             computed = _hash_password(password, bytes.fromhex(str(user["password_salt"])))
             valid = hmac.compare_digest(str(user["password_hash"]), computed)
+        else:
+            # Missing/passwordless accounts perform the same expensive operation.
+            _hash_password(password, b"tutorly-dummy-salt")
         if not valid:
             raise HTTPException(status_code=401, detail="Incorrect email or password.")
         return _session_payload(connection, int(user["id"]))

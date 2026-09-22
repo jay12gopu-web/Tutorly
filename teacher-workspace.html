@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tutorly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/brand-star.png" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/global-layout.css" />
+  <link rel="stylesheet" href="css/tutorly-theme.css" />
+  <link rel="stylesheet" href="css/profile-hub.css" />
+  <link rel="stylesheet" href="css/mobile-app.css" />
+</head>
+<body class="profile-hub-page" data-tutorly-surface="workspace">
+  <header class="profile-topbar mt-mobile-header">
+    <a class="profile-brand" href="teacher-workspace.html"><img src="assets/brand-star.png" alt="" /><span>Tutorly</span></a>
+    <div class="profile-top-actions"><a class="profile-back-link" href="profile.html">My profile</a></div>
+  </header>
+  <main class="profile-page-shell">
+    <section class="settings-panel active" id="teacherLoading" aria-live="polite">
+      <h1>Getting your workspace ready</h1><p id="teacherStatus">Loading your Tutorly profile…</p>
+      <button class="button" id="teacherRetry" type="button" hidden>Retry</button>
+    </section>
+    <section class="settings-panel active" id="teacherWorkspace" hidden aria-labelledby="teacherTitle">
+      <header class="panel-heading"><div><p>Tutorly for teachers</p><h1 id="teacherTitle">Teacher workspace</h1><span id="teacherGreeting"></span></div></header>
+      <div class="plan-summary-card"><div><span>Degree verification</span><strong id="teacherVerification"></strong><small id="teacherVerificationHelp"></small></div></div>
+      <dl class="profile-readonly">
+        <div><dt>Preferred subjects</dt><dd id="teacherSubjects"></dd></div>
+        <div><dt>Preferred boards</dt><dd id="teacherBoards"></dd></div>
+        <div><dt>Preferred grades</dt><dd id="teacherGrades"></dd></div>
+      </dl>
+      <p>Your preferences are saved to your Tutorly account. Student assignments and scheduling are not available in this workspace yet.</p>
+      <div class="form-actions"><a class="button" href="profile.html">View profile</a><a class="button button-secondary" href="maths_gpt.html">Ask Tutorly</a><button class="button button-secondary" id="teacherLogout" type="button">Log out</button></div>
+    </section>
+  </main>
+  <script src="js/auth-client.js?v=onboarding-20260921"></script>
+  <script src="js/education-registry.js"></script>
+  <script src="js/teacher-workspace.js"></script>
+  <script src="js/global-layout.js"></script>
+  <script src="js/mobile-app.js"></script>
+</body>
+</html>

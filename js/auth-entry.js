@@ -22,6 +22,47 @@
   let step = "email";
   let busy = false;
   let timer;
+  const resolution = document.getElementById("authResolution");
+  const resolutionStatus = document.getElementById("authResolutionStatus");
+  const resolutionRetry = document.getElementById("authResolutionRetry");
+  const resolutionBack = document.getElementById("authResolutionBack");
+
+  function showResolution(pending, message = "Loading your Tutorly profile…", failed = false) {
+    entry.hidden = pending;
+    resolution.hidden = !pending;
+    resolution.setAttribute("aria-busy", String(pending && !failed));
+    resolutionStatus.textContent = message;
+    resolutionRetry.hidden = !failed;
+    resolutionBack.hidden = !failed;
+  }
+
+  async function resolveProfile() {
+    showResolution(true);
+    try {
+      const profile = await auth.currentUser();
+      root.location.replace(await auth.authenticatedDestination(profile));
+      return true;
+    } catch (error) {
+      if (error.status === 401) {
+        auth.clearSession();
+        setBusy(false);
+        showStep("email", false);
+        showResolution(false);
+        setStatus("Your session expired. Please sign in again.", true);
+      } else {
+        showResolution(true, "We couldn’t load your profile. Your details are safe—please retry.", true);
+      }
+      return false;
+    }
+  }
+  root.TutorlyAuthUI = Object.freeze({ resolveProfile });
+  resolutionRetry.addEventListener("click", () => auth ? resolveProfile() : root.location.reload());
+  resolutionBack.addEventListener("click", async () => {
+    if (auth) await auth.logout();
+    setBusy(false);
+    showStep("email");
+    showResolution(false);
+  });
 
   function setStatus(message, isError = false, field) {
     status.textContent = message;
@@ -78,7 +119,7 @@
     social.dataset.authStep = step;
     setStatus("");
     if (step === "email") {
-      title.textContent = "Welcome Back";
+      title.textContent = "Welcome";
       subtitle.textContent = "Your next chapter starts here.";
     } else if (step === "code") {
       title.textContent = "Verify your email";
@@ -93,8 +134,7 @@
   }
 
   async function completeLogin(payload) {
-    const destination = payload.onboarding_required ? "info.html" : await auth.authenticatedDestination(payload);
-    root.location.replace(destination);
+    await resolveProfile();
   }
 
   async function sendCode() {
@@ -194,10 +234,15 @@
     event.currentTarget.setAttribute("aria-label", show ? "Hide password" : "Show password");
     event.currentTarget.setAttribute("aria-pressed", String(show));
   });
-  root.addEventListener("tutorly:oauth-state", (event) => setBusy(Boolean(event.detail?.pending)));
+  root.addEventListener("tutorly:oauth-state", (event) => {
+    setBusy(Boolean(event.detail?.pending));
+    showResolution(Boolean(event.detail?.pending), "Finishing secure sign-in…");
+  });
   root.addEventListener("pageshow", (event) => {
     if (!event.persisted) return;
+    if (auth?.getSessionToken()) { resolveProfile(); return; }
     setBusy(false);
+    showResolution(false);
     if ((cooldowns.get(currentEmail) || 0) > Date.now()) timer = root.setInterval(updateCooldown, 1000);
   });
   root.addEventListener("pagehide", () => {
@@ -207,7 +252,10 @@
   });
 
   if (!auth) {
-    setBusy(true);
-    setStatus("The sign-in page couldn’t load. Refresh the page to try again.", true);
-  }
+    showResolution(true, "The sign-in page couldn’t load. Please retry.", true);
+  } else if (new URLSearchParams(root.location.search).has("oauth_result")) {
+    showResolution(true, "Finishing secure sign-in…");
+  } else if (auth.getSessionToken() && !new URLSearchParams(root.location.search).has("oauth_error")) {
+    resolveProfile();
+  } else showResolution(false);
 })(window);

@@ -26,6 +26,7 @@
   const VALID_SECTIONS = new Set(["profile", "personalization", "voice", "billing", "usage", "security", "privacy", "account"]);
 
   const $ = (id) => document.getElementById(id);
+  let boardPicker;
   const state = {
     profile: {
       name: localStorage.getItem("tutorly_name") || localStorage.getItem("math-bot-name") || localStorage.getItem("tutorly_signup_full_name") || "Student",
@@ -33,6 +34,8 @@
       grade: localStorage.getItem("tutorly_grade") || "",
       board: localStorage.getItem("tutorly_board") || "",
       school: localStorage.getItem("tutorly_school") || "",
+      age: localStorage.getItem("tutorly_age") || "",
+      role: "student",
       avatar: localStorage.getItem("tutorly_avatar") || ""
     },
     personalization: { ...DEFAULTS, ...readJson("tutorly_personalization", {}) },
@@ -77,6 +80,21 @@
 
   function renderProfile() {
     const profile = state.profile;
+    const isTeacher = profile.role === "teacher";
+    document.querySelectorAll("[data-student-profile]").forEach((node) => {
+      node.hidden = isTeacher; node.querySelectorAll("input, select").forEach((input) => { input.disabled = isTeacher; });
+    });
+    document.querySelectorAll("[data-teacher-profile]").forEach((node) => { node.hidden = !isTeacher; });
+    if (isTeacher) {
+      const teacher = profile.teacher || {};
+      $("summarySubjects").textContent = (teacher.subjects || []).join(", ") || "Not set";
+      $("summaryBoards").textContent = (teacher.boards || []).join(", ") || "Not set";
+      $("summaryGradeRange").textContent = teacher.grade_min ? `Grades ${teacher.grade_min}–${teacher.grade_max}` : "Not set";
+      $("summaryVerification").textContent = { verified: "Verified", rejected: "Needs attention", pending: "Pending" }[teacher.verification_status] || "Pending";
+      $("profileDetailsHelp").textContent = "Your teacher profile. Degree upload does not grant verified status.";
+      document.querySelector(".profile-back-link").href = "teacher-workspace.html";
+      document.querySelector(".profile-back-link").textContent = "Teacher workspace";
+    }
     const initial = String(profile.name || "Student").trim().charAt(0).toUpperCase() || "S";
     $("profileTitle").textContent = profile.name || "Student";
     $("profileUsername").textContent = `@${safeUsername()}`;
@@ -96,11 +114,14 @@
     $("summaryGrade").textContent = profile.grade ? `Grade ${profile.grade}` : "Not set";
     $("summaryBoard").textContent = profile.board || "Not set";
     $("summarySchool").textContent = profile.school || "Optional";
+    $("summaryAge").textContent = profile.age || "Not set";
+    $("ageInput").value = profile.age || "";
     $("nameInput").value = profile.name || "";
     $("emailInput").value = profile.email || "";
     $("gradeInput").value = profile.grade || "";
     $("boardInput").value = profile.board || "";
     $("schoolInput").value = profile.school || "";
+    boardPicker?.setValue(profile.board || "");
   }
 
   function renderSubscription() {
@@ -325,8 +346,9 @@
         ...state.profile,
         name: user.full_name || state.profile.name,
         email: user.email || state.profile.email,
-        grade: user.grade || state.profile.grade,
-        board: user.board || state.profile.board,
+        role: user.role || "student", age: user.age || "", teacher: user.teacher_profile,
+        grade: user.grade || "",
+        board: user.board || "",
         school: typeof user.school === "string" ? user.school : state.profile.school,
         avatar: state.profile.avatar || user.avatar_url || ""
       };
@@ -351,13 +373,16 @@
       return;
     }
     const next = {
+      ...state.profile,
       name: $("nameInput").value.trim(), email: state.profile.email,
+      age: $("ageInput").value,
       grade: $("gradeInput").value.trim(), board: $("boardInput").value.trim(),
       school: $("schoolInput").value.trim(), avatar: state.profile.avatar
     };
     try {
       const previousCurriculum = { board: state.profile.board, grade: state.profile.grade };
-      await Auth.updateProfile({ fullName: next.name, grade: next.grade, board: next.board, school: next.school });
+      if (state.profile.role === "teacher") await Auth.updateTeacherProfile({ full_name: next.name });
+      else await Auth.updateProfile({ fullName: next.name, age: next.age, grade: next.grade, board: next.board, school: next.school });
       state.profile = next;
       localStorage.setItem("tutorly_name", next.name);
       localStorage.setItem("math-bot-name", next.name);
@@ -365,6 +390,7 @@
       localStorage.setItem("tutorly_grade", next.grade);
       localStorage.setItem("tutorly_board", next.board);
       localStorage.setItem("tutorly_school", next.school);
+      if (next.age) localStorage.setItem("tutorly_age", next.age);
       window.TutorlyCurriculum?.invalidateProfileChange?.(previousCurriculum, next);
       renderProfile();
       setEditMode(false);
@@ -454,6 +480,9 @@
   }
 
   async function init() {
+    $("gradeInput").replaceChildren(...Array.from({ length: 12 }, (_, i) => {
+      const option = document.createElement("option"); option.value = String(i + 1); option.textContent = `Grade ${i + 1}`; return option;
+    }));
     populateLanguages();
     renderProfile();
     renderSubscription();
@@ -463,6 +492,16 @@
     bind();
     openSection(location.hash.slice(1), { hash: false });
     await Promise.allSettled([loadBackendProfile(), renderVoices()]);
+    if (state.profile.role !== "teacher") {
+      try {
+        const registry = await root.TutorlyEducation.load();
+        boardPicker = root.TutorlyEducationSelect.mount($("profileBoardSelect"), {
+          id: "profileBoard", label: "Board", items: registry.boards, value: state.profile.board,
+          onChange(_value, items) { $("boardInput").value = items[0]?.curriculumValue || items[0]?.id || ""; }
+        });
+        $("boardInput").hidden = true; $("boardInput").required = false; $("boardFallbackLabel").hidden = true;
+      } catch (_error) { /* Keep the labelled Board field usable if registry loading fails. */ }
+    }
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

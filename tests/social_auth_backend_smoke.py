@@ -14,6 +14,7 @@ if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
 from backend import auth_routes
+from auth_test_helpers import register_test_user
 from backend.oauth_providers import OAuthProviderError, ProviderIdentity
 
 
@@ -187,10 +188,7 @@ def main() -> None:
         assert hidden_return["user"]["full_name"] == "Relay Student"
 
         # Same-email accounts are not silently merged.
-        registered = client.post(
-            "/api/auth/register",
-            json={"full_name": "Existing Student", "email": "existing@example.com", "password": "strong-pass-123"},
-        )
+        registered = register_test_user(client, full_name="Existing Student", email="existing@example.com", password="strong-pass-123")
         assert registered.status_code == 200
         state = state_from_start(client, "google")
         conflict = complete_callback(client, "google", state, "conflict")

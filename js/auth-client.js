@@ -35,7 +35,9 @@
       if (response.status === 404 && path.startsWith("/api/auth/")) {
         throw new Error("Tutorly's login service is updating. Please try again in a few minutes.");
       }
-      throw new Error(String(payload.detail || payload.error || "Tutorly couldn't complete that request."));
+      const error = new Error(typeof payload.detail === "string" ? payload.detail : String(payload.error || "Tutorly couldn't complete that request."));
+      error.status = response.status;
+      throw error;
     }
     return payload;
   }
@@ -51,19 +53,7 @@
     localStorage.setItem(SESSION_TOKEN_KEY, payload.session_token);
     localStorage.setItem("tutorly_logged_in", "true");
     localStorage.setItem("tutorly_signed_up", "true");
-    localStorage.setItem("tutorly_account_role", "student");
-    if (user.email) {
-      localStorage.setItem("tutorly_email", user.email);
-      localStorage.setItem("tutorly_signup_email", user.email);
-    }
-    if (user.full_name) localStorage.setItem("tutorly_signup_full_name", user.full_name);
-    if (user.grade) localStorage.setItem("tutorly_grade", user.grade);
-    if (user.board) localStorage.setItem("tutorly_board", user.board);
-    if (typeof user.school === "string") localStorage.setItem("tutorly_school", user.school);
-    if (user.avatar_url && !localStorage.getItem("tutorly_avatar")) {
-      localStorage.setItem("tutorly_avatar", user.avatar_url);
-    }
-    cacheUserPreferences(user);
+    cacheUser(user);
     localStorage.setItem("tutorly_bot_try_count", "0");
     return payload;
   }
@@ -86,8 +76,56 @@
   }
 
   function cacheCurrentUser(payload) {
-    cacheUserPreferences(payload?.user);
+    cacheUser(payload?.user);
     return payload;
+  }
+
+  function invalidateCurriculum(previous, next) {
+    if (previous.board === next.board && previous.grade === next.grade) return;
+    if (root.TutorlyCurriculum) {
+      root.TutorlyCurriculum.invalidateProfileChange(previous, next);
+    } else {
+      localStorage.removeItem("tutorly_curriculum_context");
+      try {
+        Object.keys(sessionStorage).filter((key) => key.startsWith("tutorly_curriculum_catalog:"))
+          .forEach((key) => sessionStorage.removeItem(key));
+      } catch (_error) { /* Curriculum will reload when storage is unavailable. */ }
+    }
+  }
+
+  function cacheUser(user) {
+    if (!user?.id) return;
+    const oldId = localStorage.getItem("tutorly_profile_user_id");
+    const previous = { board: localStorage.getItem("tutorly_board") || "", grade: localStorage.getItem("tutorly_grade") || "" };
+    if (oldId !== String(user.id)) {
+      // Clear account-derived presentation caches, never chat/progress/learning data.
+      ["tutorly_avatar", "tutorly_personalization", "tutorly_preferred_voice_agent", "tutorly_teacher_profile"]
+        .forEach((key) => localStorage.removeItem(key));
+      localStorage.removeItem("tutorly_curriculum_context");
+    }
+    const fields = {
+      tutorly_profile_user_id: user.id,
+      tutorly_account_role: user.role || "student",
+      tutorly_email: user.email,
+      tutorly_signup_email: user.email,
+      tutorly_signup_full_name: user.full_name,
+      tutorly_name: user.full_name,
+      "math-bot-name": user.full_name,
+      tutorly_age: user.age,
+      tutorly_grade: user.grade,
+      tutorly_board: user.board,
+      tutorly_school: user.school
+    };
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value == null || value === "") localStorage.removeItem(key);
+      else localStorage.setItem(key, String(value));
+    });
+    if (user.teacher_profile) localStorage.setItem("tutorly_teacher_profile", JSON.stringify(user.teacher_profile));
+    else localStorage.removeItem("tutorly_teacher_profile");
+    if (user.avatar_url && !localStorage.getItem("tutorly_avatar")) localStorage.setItem("tutorly_avatar", user.avatar_url);
+    cacheUserPreferences(user);
+    invalidateCurriculum(previous, { board: user.board || "", grade: String(user.grade || "") });
+    root.dispatchEvent(new CustomEvent("tutorly:profile-updated", { detail: { user } }));
   }
 
   function clearSession() {
@@ -95,7 +133,19 @@
       SESSION_TOKEN_KEY,
       "tutorly_logged_in",
       "tutorly_signed_up",
-      "tutorly_account_role"
+      "tutorly_account_role",
+      "tutorly_profile_user_id",
+      "tutorly_email",
+      "tutorly_signup_email",
+      "tutorly_signup_full_name",
+      "tutorly_name",
+      "math-bot-name",
+      "tutorly_age",
+      "tutorly_grade",
+      "tutorly_board",
+      "tutorly_school",
+      "tutorly_teacher_profile",
+      "tutorly_curriculum_context"
     ].forEach((key) => localStorage.removeItem(key));
   }
 
@@ -113,17 +163,34 @@
   }
 
   async function authenticatedDestination(payload, fallback = "maths_gpt.html") {
-    if (!payload?.onboarding_required) return fallback;
-    const grade = localStorage.getItem("tutorly_grade") || "";
-    const board = localStorage.getItem("tutorly_board") || "";
-    const school = localStorage.getItem("tutorly_school") || "";
-    if (!grade || !board) return "info.html";
-    try {
-      await request("/api/auth/profile", { grade, board, school }, { auth: true });
-      return fallback;
-    } catch (error) {
-      return "info.html";
+    const resolved = payload?.authenticated && payload?.user ? payload : await currentUser();
+    if (resolved.onboarding_required) return "info.html";
+    return resolved.user.role === "teacher" ? "teacher-workspace.html" : fallback;
+  }
+
+  async function currentUser() {
+    return request("/api/auth/me", null, { method: "GET", auth: true }).then(cacheCurrentUser);
+  }
+
+  async function degreeRequest(method, file) {
+    const headers = { Authorization: `Bearer ${getSessionToken()}` };
+    if (file) {
+      if (!/\.(pdf|jpe?g|png)$/i.test(file.name) || !file.size || file.size > 5 * 1024 * 1024) {
+        throw new Error("Choose a PDF, JPG or PNG up to 5 MB.");
+      }
+      headers["Content-Type"] = file.type || (/\.pdf$/i.test(file.name) ? "application/pdf" : /\.png$/i.test(file.name) ? "image/png" : "image/jpeg");
+      headers["X-Filename"] = encodeURIComponent(file.name);
     }
+    let response;
+    try { response = await fetch(`${backendOrigin()}/api/auth/teacher-degree`, { method, headers, ...(file ? { body: file } : {}) }); }
+    catch (_error) { throw new Error("The degree service is unavailable. Please retry."); }
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      const error = new Error(typeof payload.detail === "string" ? payload.detail : "Your degree could not be saved. Please retry.");
+      error.status = response.status;
+      throw error;
+    }
+    return method === "GET" ? response.blob() : response.json();
   }
 
   root.TutorlyAuth = Object.freeze({
@@ -134,12 +201,17 @@
     requestOtp: (email) => request("/api/auth/request-otp", { email }),
     verifyOtp: (email, code) => request("/api/auth/verify-otp", { email, code }).then(saveSession),
     passwordLogin: (email, password) => request("/api/auth/password-login", { email, password }).then(saveSession),
-    register: (fullName, email, password) => request("/api/auth/register", { full_name: fullName, email, password }).then(saveSession),
+    register: (fullName, email, password) => request("/api/auth/register", { full_name: fullName, email, password }, { auth: true }).then(saveSession),
     getProviders: () => request("/api/auth/providers", null, { method: "GET" }),
     completeOAuth: (resultCode) => request("/api/auth/oauth/complete", { result_code: resultCode }).then(saveSession),
     socialStartUrl,
     authenticatedDestination,
-    currentUser: () => request("/api/auth/me", null, { method: "GET", auth: true }).then(cacheCurrentUser),
+    currentUser,
+    completeOnboarding: (profile) => request("/api/auth/onboarding", profile, { auth: true }).then(cacheCurrentUser),
+    updateTeacherProfile: (profile) => request("/api/auth/teacher-profile", profile, { method: "PUT", auth: true }).then(cacheCurrentUser),
+    uploadTeacherDegree: (file) => degreeRequest("PUT", file),
+    removeTeacherDegree: () => degreeRequest("DELETE"),
+    teacherDegreeBlob: () => degreeRequest("GET"),
     getPersonalization: () => request("/api/auth/personalization", null, { method: "GET", auth: true }),
     savePersonalization: (personalization) => request(
       "/api/auth/personalization",
@@ -171,9 +243,9 @@
       { grade, board, school },
       { auth: true }
     ),
-    updateProfile: ({ fullName, grade, board, school = "" }) => request(
+    updateProfile: ({ fullName, age, grade, board, school = "" }) => request(
       "/api/auth/profile",
-      { full_name: fullName, grade, board, school },
+      { full_name: fullName, ...(age != null && age !== "" ? { age: Number(age) } : {}), grade, board, school },
       { auth: true }
     ),
     connectedAccounts: () => request("/api/auth/connected-accounts", null, { method: "GET", auth: true }),

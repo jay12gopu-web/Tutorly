@@ -7,95 +7,57 @@
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site.css" />
-  <link rel="stylesheet" href="css/global-layout.css?v=responsive-20260905" />
-  <style>
-    .profile-shell { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
-    .profile-card { width: min(680px, 96vw); }
-    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
-    .step-pill { background: #eef3ff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; font-weight: 800; color: var(--primary-dark); }
-    .step-pill.active { background: linear-gradient(120deg, rgba(79,124,255,0.16), rgba(139,125,255,0.16)); }
-    .profile-card .input, .profile-card .select { margin-bottom: 10px; }
-    @media (max-width: 680px) { .steps { grid-template-columns: 1fr; } }
-  </style>
-  <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
-  <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/auth-entry.css?v=auth-entry-20260913" />
+  <link rel="stylesheet" href="css/education-select.css?v=onboarding-20260921" />
+  <link rel="stylesheet" href="css/onboarding.css?v=onboarding-20260921" />
 </head>
-<body data-tutorly-surface="auth">
-  <a class="back-home-btn" href="sign_up.html" aria-label="Back to Tutorly signup">Tutorly</a>
-  <main class="profile-shell">
-    <form class="panel panel-soft profile-card fade-up" id="profileForm" novalidate>
-      <span class="auth-brand">&#10022; Tutorly</span>
-      <span class="pill pill-blue">Student setup</span>
-      <h1 class="page-title" style="font-size: 42px; margin-top: 8px;">Tell us about your class</h1>
-      <p class="page-sub" style="margin-bottom: 14px;">This helps us set the right level and create better practice plans.</p>
-
-      <div class="steps">
-        <div class="step-pill active">1. Class</div>
-        <div class="step-pill">2. Board</div>
-        <div class="step-pill">3. School</div>
+<body data-tutorly-surface="auth" class="auth-entry-page onboarding-page">
+  <main class="auth-entry-shell">
+    <aside class="auth-story" aria-label="Welcome to Tutorly">
+      <a class="auth-wordmark" href="maths_gpt.html" aria-label="Tutorly home"><img src="assets/brand-star.png" width="36" height="36" alt="" /><span>Tutorly</span></a>
+      <div class="auth-story-content">
+        <img class="auth-learning-art" src="assets/auth-study-ai.png" width="1536" height="1024" alt="" decoding="async" />
+        <h2>A little about you.<br />A world of possibilities.</h2>
+        <p>Make Tutorly feel like your space.</p>
       </div>
-
-      <select class="select" id="grade" required>
-        <option value="">Select Grade</option>
-        <option>1</option><option>2</option><option>3</option><option>4</option>
-        <option>5</option><option>6</option><option>7</option><option>8</option>
-        <option>9</option><option>10</option><option>11</option><option>12</option>
-      </select>
-
-      <select class="select" id="board" required>
-        <option value="">Select Board</option>
-        <option>CBSE</option>
-        <option>ICSE</option>
-        <option>State Board</option>
-        <option>IB</option>
-        <option>Cambridge</option>
-      </select>
-
-      <input class="input" id="school" type="text" placeholder="School Name (optional)" />
-
-      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
-        <a class="btn btn-soft" href="sign_up.html">Back</a>
-        <button class="btn btn-primary" type="submit" style="flex: 1; min-width: 200px;">Continue to Tutorly</button>
+      <p class="auth-story-footer">Learn. Teach. Keep growing.</p>
+    </aside>
+    <section class="auth-entry-main setup-main" aria-label="Profile setup">
+      <header class="setup-header">
+        <a class="auth-mobile-brand" href="maths_gpt.html" aria-label="Tutorly home"><img src="assets/brand-star.png" width="32" height="32" alt="" /><span>Tutorly</span></a>
+        <button id="setupLogout" class="auth-text-button" type="button">Sign out</button>
+      </header>
+      <div class="auth-entry-card setup-card">
+        <div id="setupLoading" class="setup-loading" role="status">Loading your profile…</div>
+        <div id="setupLoadError" hidden>
+          <h1>We couldn’t load your profile</h1>
+          <p id="setupLoadErrorText" class="setup-description"></p>
+          <button id="setupRetry" class="auth-primary" type="button">Try again</button>
+          <a class="setup-login-link" href="login.html">Back to sign in</a>
+        </div>
+        <form id="onboardingForm" novalidate hidden>
+          <div class="setup-progress-label"><span id="stepLabel">Your profile</span><span id="stepCount"></span></div>
+          <progress id="setupProgress" class="setup-progress" max="100" value="0" aria-label="Profile setup progress"></progress>
+          <div class="auth-intro"><h1 id="stepTitle" tabindex="-1"></h1><p id="stepDescription"></p></div>
+          <div id="stepContent" class="setup-content"></div>
+          <p id="stepError" class="setup-error" role="alert" hidden></p>
+          <div class="setup-actions">
+            <button id="setupBack" class="auth-secondary" type="button">Back</button>
+            <button id="setupContinue" class="auth-primary" type="submit">Continue <span aria-hidden="true">→</span></button>
+          </div>
+          <p class="setup-confirm-legal" id="teacherConfirmLegal" hidden>By clicking Confirm, you agree to Tutorly's <a href="Terms_Conditions.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+          <button id="setupSkip" class="auth-text-button setup-skip" type="button" hidden>Skip for now</button>
+        </form>
+        <noscript><h1>Set up your Tutorly profile</h1><p>Please enable JavaScript to continue.</p></noscript>
       </div>
-    </form>
+      <p class="auth-support">Need a hand? <a href="contact.html">Contact us</a></p>
+    </section>
   </main>
-
-  <script src="js/auth-client.js?v=social-auth-20260825"></script>
-  <script>
-    document.getElementById('profileForm').addEventListener('submit', async function (e) {
-      if (this.dataset.campusEnhanced === 'true') return;
-      e.preventDefault();
-      const grade = document.getElementById('grade').value;
-      const board = document.getElementById('board').value;
-      const school = document.getElementById('school').value.trim();
-
-      if (!grade || !board) {
-        alert('Please select your grade and board before continuing.');
-        return;
-      }
-
-      localStorage.setItem('tutorly_grade', grade);
-      localStorage.setItem('tutorly_board', board);
-      localStorage.setItem('tutorly_school', school);
-      try {
-        await window.TutorlyAuth.updateAcademicProfile(grade, board, school);
-        window.location.href = 'maths_gpt.html';
-      } catch (error) {
-        alert(error.message);
-      }
-    });
-  </script>
-  <script src="js/global-layout.js?v=responsive-20260905b"></script>
-  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
-  <script src="js/campus.js?v=campus-20260629"></script>
-  <script src="js/mobile-app.js?v=responsive-20260905c"></script>
+  <script src="js/auth-client.js?v=onboarding-20260921"></script>
+  <script src="js/education-registry.js?v=onboarding-20260921"></script>
+  <script src="js/education-select.js?v=onboarding-20260921"></script>
+  <script src="js/onboarding.js?v=onboarding-20260921"></script>
 </body>
 </html>
-
-
-
-
-

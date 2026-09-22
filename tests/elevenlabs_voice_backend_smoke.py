@@ -61,10 +61,8 @@ def main() -> None:
         unauthenticated = client.post("/api/voice/session", json={"voice": "miles"})
         assert unauthenticated.status_code == 401
 
-        registered = client.post(
-            "/api/auth/register",
-            json={"full_name": "Voice Student", "email": "voice@example.com", "password": "strong-pass-123"},
-        )
+        from auth_test_helpers import register_test_user
+        registered = register_test_user(client, full_name="Voice Student", email="voice@example.com", password="strong-pass-123")
         assert registered.status_code == 200, registered.text
         token = registered.json()["session_token"]
 

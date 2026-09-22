@@ -13,6 +13,7 @@ if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
 from backend import auth_routes
+from auth_test_helpers import register_test_user
 
 
 def main() -> None:
@@ -23,10 +24,7 @@ def main() -> None:
         app = FastAPI()
         app.include_router(auth_routes.router)
         client = TestClient(app)
-        registered = client.post(
-            "/api/auth/register",
-            json={"full_name": "Profile Student", "email": "profile@example.com", "password": "strong-pass-123"},
-        )
+        registered = register_test_user(client, full_name="Profile Student", email="profile@example.com", password="strong-pass-123")
         assert registered.status_code == 200, registered.text
         token = registered.json()["session_token"]
         headers = {"Authorization": f"Bearer {token}"}

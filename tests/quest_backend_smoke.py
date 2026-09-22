@@ -14,6 +14,7 @@ if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
 from backend import auth_routes, quest_routes
+from auth_test_helpers import register_test_user
 
 
 def main() -> None:
@@ -27,10 +28,7 @@ def main() -> None:
         app.include_router(quest_routes.router)
         client = TestClient(app)
 
-        registered = client.post(
-            "/api/auth/register",
-            json={"full_name": "Quest Student", "email": "quests@example.com", "password": "strong-pass-123"},
-        )
+        registered = register_test_user(client, full_name="Quest Student", email="quests@example.com", password="strong-pass-123")
         assert registered.status_code == 200, registered.text
         headers = {"Authorization": f"Bearer {registered.json()['session_token']}"}
 

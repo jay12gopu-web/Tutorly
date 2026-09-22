@@ -32,12 +32,19 @@
       <a class="auth-mobile-brand" href="maths_gpt.html" aria-label="Tutorly home">
         <img src="assets/brand-star.png" width="32" height="32" alt="" /><span>Tutorly</span>
       </a>
-      <div class="auth-entry-card" id="authEntry">
+      <section class="auth-resolution auth-entry-card" id="authResolution" aria-live="polite" aria-busy="true">
+        <h1>Getting Tutorly ready</h1>
+        <p id="authResolutionStatus">Checking your secure session…</p>
+        <button type="button" class="auth-primary" id="authResolutionRetry" hidden>Retry</button>
+        <button type="button" class="auth-text-button" id="authResolutionBack" hidden>Use another account</button>
+      </section>
+      <noscript><p>Please enable JavaScript to sign in securely.</p></noscript>
+      <div class="auth-entry-card" id="authEntry" hidden>
         <button class="auth-back" id="authBack" type="button" hidden>
           <span aria-hidden="true">←</span> Back
         </button>
         <div class="auth-intro">
-          <h1 id="authTitle">Welcome Back</h1>
+          <h1 id="authTitle">Welcome</h1>
           <p id="authSubtitle">Your next chapter starts here.</p>
         </div>
 
@@ -77,8 +84,8 @@
       <p class="auth-support">Need a hand? <a href="contact.html">Contact us</a></p>
     </section>
   </main>
-  <script src="js/auth-client.js?v=auth-entry-20260913"></script>
-  <script src="js/auth-entry.js?v=auth-entry-20260913"></script>
-  <script src="js/social-auth-ui.js?v=auth-entry-20260913"></script>
+  <script src="js/auth-client.js?v=onboarding-20260921"></script>
+  <script src="js/auth-entry.js?v=onboarding-20260921"></script>
+  <script src="js/social-auth-ui.js?v=onboarding-20260921"></script>
 </body>
 </html>

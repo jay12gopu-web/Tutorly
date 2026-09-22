@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,7 +30,7 @@ def run():
         }
         app = FastAPI()
         app.include_router(auth_routes.router)
-        for folder in ("js", "css", "assets", "shared"):
+        for folder in ("js", "css", "assets", "shared", "data"):
             app.mount(f"/{folder}", StaticFiles(directory=ROOT / folder))
 
         @app.get("/__test__/mail")
@@ -39,9 +39,14 @@ def run():
 
         @app.get("/{page}")
         def html(page: str):
-            if page not in {"login.html", "sign_up.html", "info.html", "maths_gpt.html"}:
+            if page not in {"login.html", "sign_up.html", "info.html", "maths_gpt.html", "teacher-workspace.html", "profile.html", "Terms_Conditions.html", "privacy.html"}:
                 raise HTTPException(404)
-            return FileResponse(ROOT / page)
+            html = (ROOT / page).read_text(encoding="utf-8")
+            # Test-only same-origin API wiring. Never shipped in production HTML.
+            return HTMLResponse(html.replace("<head>", '<head><script>window.TUTORLY_BACKEND_ORIGIN=location.origin;</script>', 1), headers={
+                "Cache-Control": "no-store",
+                "Content-Security-Policy": "connect-src 'self'; frame-src 'self' blob:; object-src 'none'",
+            })
 
         uvicorn.run(app, host="127.0.0.1", port=8765, access_log=False, log_level="warning")
 

@@ -178,7 +178,7 @@ select:focus-visible { outline: 3px solid rgba(52, 124, 255, .25); outline-offse
 .settings-nav-button.active { color: #fff; background: linear-gradient(135deg, var(--ph-blue), var(--ph-violet)); box-shadow: 0 9px 18px rgba(74, 96, 233, .18); }
 .settings-content { min-width: 0; }
 .settings-panel { padding: clamp(20px, 3vw, 32px); border-radius: var(--ph-radius); }
-.settings-panel[hidden] { display: none !important; }
+.settings-panel[hidden], [data-student-profile][hidden], [data-teacher-profile][hidden], #boardInput[hidden], #boardFallbackLabel[hidden] { display: none !important; }
 .panel-heading { padding-bottom: 20px; border-bottom: 1px solid var(--ph-line); }
 .panel-heading h2 { margin: 0; color: var(--ph-text) !important; font-size: 25px; letter-spacing: -.035em; }
 .panel-heading span { display: block; margin-top: 7px; color: var(--ph-muted); font-size: 13px; line-height: 1.55; }

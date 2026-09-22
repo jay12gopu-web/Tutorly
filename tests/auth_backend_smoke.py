@@ -13,6 +13,7 @@ if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
 from backend import auth_routes
+from auth_test_helpers import register_test_user
 
 
 def main() -> None:
@@ -63,10 +64,7 @@ def main() -> None:
         )
         assert reused.status_code == 400
 
-        registered = client.post(
-            "/api/auth/register",
-            json={"full_name": "Tutorly Student", "email": "signup@example.com", "password": "strong-pass-123"},
-        )
+        registered = register_test_user(client, full_name="Tutorly Student", email="signup@example.com", password="strong-pass-123")
         assert registered.status_code == 200, registered.text
         password_login = client.post(
             "/api/auth/password-login",

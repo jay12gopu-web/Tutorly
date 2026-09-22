@@ -13,9 +13,9 @@
 
   const errorMessages = {
     cancelled: "Sign-in cancelled.",
-    account_exists: "A Tutorly account already uses this email. Log in with your existing method, then connect this provider from Profile.",
-    account_conflict: "That sign-in is already connected to another Tutorly account.",
-    identity_in_use: "That provider account is already connected to another Tutorly account.",
+    account_exists: "We couldn’t complete this sign-in. Please continue with an email code.",
+    account_conflict: "We couldn’t connect this sign-in. Please continue with an email code.",
+    identity_in_use: "We couldn’t connect this sign-in. Please continue with an email code.",
     state_invalid: "That sign-in request expired or was already used. Please try again.",
     provider_unavailable: "That sign-in option is not available right now.",
     identity_invalid: "Your identity could not be verified by the provider. Please try again.",
@@ -70,8 +70,8 @@
     try {
       const payload = await root.TutorlyAuth.completeOAuth(resultCode);
       history.replaceState({}, document.title, root.location.pathname);
-      const destination = payload.onboarding_required ? "info.html" : await root.TutorlyAuth.authenticatedDestination(payload);
-      root.location.replace(destination);
+      if (root.TutorlyAuthUI) await root.TutorlyAuthUI.resolveProfile();
+      else root.location.replace(await root.TutorlyAuth.authenticatedDestination(await root.TutorlyAuth.currentUser()));
       return "";
     } catch (error) {
       history.replaceState({}, document.title, root.location.pathname);
@@ -87,8 +87,8 @@
     if (resultCode) {
       root.dispatchEvent(new CustomEvent("tutorly:oauth-state", { detail: { pending: true } }));
       completionError = await completeOAuth(resultCode);
-      root.dispatchEvent(new CustomEvent("tutorly:oauth-state", { detail: { pending: false } }));
       if (!completionError) return;
+      root.dispatchEvent(new CustomEvent("tutorly:oauth-state", { detail: { pending: false } }));
     }
     try {
       const payload = await root.TutorlyAuth.getProviders();

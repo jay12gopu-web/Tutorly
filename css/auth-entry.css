@@ -30,12 +30,13 @@ body.auth-entry-page {
   overflow: hidden;
   padding: 34px 42px 30px;
   border-radius: 25px;
-  color: #243457;
-  background: #edf0fb;
+  color: #fff;
+  background: #102c61;
 }
 .auth-wordmark { display: inline-flex; align-items: center; gap: 8px; width: fit-content; color: #243457 !important; font-size: 28px; font-weight: 750; letter-spacing: -.05em; text-decoration: none; }
 .auth-learning-art { display: block; width: 100%; height: auto; margin: 0 0 38px; border-radius: 20px; }
 .auth-wordmark img { object-fit: contain; }
+.auth-story .auth-wordmark { color: #fff !important; }
 .auth-story-content { position: relative; padding: 14px 0 42px; }
 .auth-brand-art { position: relative; display: grid; place-items: center; height: clamp(190px, 27vh, 310px); margin: 8px 0 35px; }
 .auth-brand-art > img { z-index: 1; width: clamp(175px, 18vw, 240px); height: auto; filter: drop-shadow(0 16px 42px rgba(178, 171, 255, .22)); transform: rotate(-9deg); }
@@ -46,8 +47,11 @@ body.auth-entry-page {
 .auth-art-spark-two { bottom: 13%; right: 14%; font-size: 18px; }
 .auth-story-eyebrow { margin: 0 0 18px !important; color: #d5deff !important; font-size: 11px !important; font-weight: 700; letter-spacing: .16em; }
 .auth-story h2 { margin: 0 0 20px; font-size: clamp(30px, 3.1vw, 46px); font-weight: 600; line-height: 1.15; letter-spacing: -.045em; }
-.auth-story-content > p { margin: 0; color: #5d6c88; font-size: 15px; line-height: 1.8; }
-.auth-story-footer { margin: 0; color: #5d6c88; font-size: 12px; line-height: 1.6; }
+.auth-story-content > p { margin: 0; color: #d0dcf0; font-size: 15px; line-height: 1.8; }
+.auth-story-footer { margin: 0; color: #d0dcf0; font-size: 12px; line-height: 1.6; }
+.auth-resolution h1 { font-size: 28px; letter-spacing: -.035em; }
+.auth-resolution p { color: #54617a; line-height: 1.65; }
+.auth-resolution button { width: 100%; }
 
 .auth-entry-main { display: flex; min-width: 0; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 55px 32px 64px; background: #fff; border-radius: 25px; }
 .auth-entry-card { width: min(100%, 378px); }

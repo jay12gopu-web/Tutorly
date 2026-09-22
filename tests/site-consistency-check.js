@@ -85,7 +85,7 @@ assert(login.includes('id="emailForm"') && login.includes('id="codeForm"') && lo
 assert(authEntry.includes("auth.requestOtp"), "OTP must be requested from Tutorly's backend");
 assert(authEntry.includes("auth.verifyOtp"), "OTP must be verified by Tutorly's backend");
 assert(authEntry.includes("auth.passwordLogin"), "Password login must be verified by Tutorly's backend");
-assert(authEntry.includes('payload.onboarding_required ? "info.html"'), "New verified users must enter existing onboarding");
+assert(authEntry.includes("await auth.currentUser()") && authEntry.includes("auth.authenticatedDestination(profile)") && read("js/auth-client.js").includes('resolved.onboarding_required) return "info.html"'), "Verified users must resolve their canonical profile before entering existing onboarding");
 assert(!/Demo OTP code|generatedOtp|Math.random\(/.test(login + authEntry), "Demo/client-generated OTP logic must be removed");
 assert(login.includes("assets/auth-study-ai.png"), "Login must use the original AI-generated illustration");
 
