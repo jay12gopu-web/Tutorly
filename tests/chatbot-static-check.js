@@ -135,7 +135,6 @@ assert.ok(voiceSource.includes("Auto-detect"), "voice language selection should 
   'href="help-center.html"',
   'href="release-notes.html"',
   'href="privacy.html"',
-  'href="lessons.html"',
   'href="tests.html"',
   'href="quests.html"',
   'href="more-tools.html"',
@@ -144,9 +143,9 @@ assert.ok(voiceSource.includes("Auto-detect"), "voice language selection should 
   'id="confirmActionBtn"',
   'id="toolWorkspace"',
   'id="toolFrame"',
-  'data-workspace-route="lessons.html"',
-  'class="learn-crown side-label"'
+  'id="studyPlannerBtn"'
 ].forEach((marker) => assert.ok(page.includes(marker), `chat shell should preserve ${marker}`));
+assert.ok(!page.includes('data-workspace-route="lessons.html"'), "Learn sidebar button is removed without removing the Learn page");
 assert.ok(!page.includes('<a class="profile-dot" href="profile.html"'), "the redundant top-right profile avatar should be removed");
 assert.ok(!page.includes('id="themeToggle"'), "the top-right theme control should be removed");
 assert.ok(!page.includes('id="chatNotificationBtn"'), "the top-right notification control should be removed");

@@ -30,7 +30,7 @@
     const view = document.getElementById('studyPlannerView');
     const bar = document.getElementById('studySessionBar');
     if (!view || !bar || !root.TutorlyStudyPlanner) return null;
-    let active = false, accountChanged = false;
+    let active = false, accountChanged = false, openVersion = 0;
     const planner = root.TutorlyStudyPlanner.create({ container: view, getAccountKey: options.getAccountKey,
       getProfile: () => root.TutorlyCurriculum?.currentProfile?.(),
       onReturnToChat: () => { options.showChat(); options.focusComposer(); },
@@ -69,13 +69,53 @@
       const button = node('button', label); button.type = 'button';
       button.addEventListener('click', action); return button;
     }
-    async function open(settings = {}) {
+    async function ready(retry = false) {
+      let timer;
       try {
-        if (accountChanged) { options.notify('Your account changed. Refresh Tutorly before opening saved study plans.'); return; }
-        await options.ready;
-        if (options.isBusy()) { options.notify('Wait for the current answer to finish before opening your plan.'); return; }
-        options.showPlanner(); planner.open(settings); view.focus();
-      } catch (_) { options.notify('Your account could not be loaded. Reconnect and try Study Bot again.'); }
+        await Promise.race([
+          Promise.resolve().then(() => typeof options.ready === 'function' ? options.ready(retry) : options.ready),
+          new Promise((_, reject) => { timer = root.setTimeout(() => reject(new Error('Account request timed out.')), 15000); })
+        ]);
+      } finally { root.clearTimeout(timer); }
+    }
+    function entryState(message, settings, error) {
+      view.hidden = false;
+      view.classList.add('study-planner');
+      view.setAttribute('aria-busy', error ? 'false' : 'true');
+      const heading = node('h1', 'Study Bot');
+      const status = node('p', message, error ? 'study-status study-error' : 'study-status');
+      status.setAttribute('role', error ? 'alert' : 'status');
+      const actions = node('div', '', 'study-actions');
+      if (error) {
+        const retry = actionButton('Retry', () => open(settings, true));
+        retry.className = 'study-button study-button-primary'; actions.append(retry);
+        if (error.status === 401) {
+          const login = node('a', 'Sign in again', 'study-button'); login.href = 'login.html?intent=chatbot'; actions.append(login);
+        }
+      }
+      const back = actionButton('Back to chat', () => options.showChat()); back.className = 'study-button'; actions.append(back);
+      view.replaceChildren(heading, status, actions);
+    }
+    async function open(settings = {}, retry = false) {
+      if (options.isBusy()) { options.notify('Wait for the current answer to finish before opening your plan.'); return; }
+      const version = ++openVersion;
+      options.showPlanner();
+      entryState('Loading your study plans…', settings);
+      view.focus();
+      try {
+        if (accountChanged) throw new Error('Account changed.');
+        await ready(retry);
+        if (version !== openVersion) return;
+        if (accountChanged) throw new Error('Account changed.');
+        planner.open(settings);
+        view.setAttribute('aria-busy', 'false');
+      } catch (error) {
+        if (version !== openVersion) return;
+        const message = accountChanged ? 'Your account changed. Refresh Tutorly before opening saved study plans.'
+          : error.status === 401 ? 'Your session expired. Sign in again to open your study plans.'
+          : 'Tutorly couldn’t load your study plans. Check your connection and retry. Your saved plans have not been changed.';
+        entryState(message, settings, error);
+      }
     }
     function render(message = '') {
       const value = active ? planner.getActiveSessionContext() : null;
@@ -136,8 +176,8 @@
     root.addEventListener('storage', event => {
       if (['tutorly_session_token', 'tutorly_logged_in'].includes(event.key)) { reset(); planner.close(); accountChanged = true; }
     });
-    Promise.resolve(options.ready).then(() => restore(options.getConversationId())).catch(() => {});
-    return Object.freeze({ open, close: () => planner.close(), context, restore, reset, isActive: () => !!context() });
+    ready().then(() => { if (!accountChanged) restore(options.getConversationId()); }).catch(() => {});
+    return Object.freeze({ open, close: () => { ++openVersion; planner.close(); }, context, restore, reset, isActive: () => !!context() });
   }
   root.TutorlyStudySession = Object.freeze({ create, detectExamDraft });
 })(window);

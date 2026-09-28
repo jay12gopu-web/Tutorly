@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let composerTransition = null;
   let studySession = null;
   let studyAccountId = null;
-  let studyAccountReady = Promise.resolve();
+  let studyAccountReady = null;
 
   const TOOL_ROUTE_TITLES = Object.freeze({
     "lessons.html": "Learn",
@@ -135,16 +135,24 @@ document.addEventListener("DOMContentLoaded", () => {
     try { localStorage.setItem("tutorly_subscription", JSON.stringify(subscription)); } catch (_) { /* The visible account can still update when browser storage is full. */ }
     syncSidebarAccount(subscription);
   }
-  if (window.TutorlyAuth?.getSessionToken?.()) {
-    studyAccountReady = window.TutorlyAuth.currentUser().then((payload) => {
+  function resolveStudyAccount(retry = false) {
+    const token = window.TutorlyAuth?.getSessionToken?.();
+    if (!token || studyAccountId) return Promise.resolve();
+    if (studyAccountReady && !retry) return studyAccountReady;
+    const request = Promise.resolve().then(() => window.TutorlyAuth.currentUser()).then((payload) => {
+      if (token !== window.TutorlyAuth?.getSessionToken?.()) throw new Error("Account changed. Refresh Tutorly.");
       if (!payload?.user?.id) throw new Error("Account could not be confirmed.");
       studyAccountId = String(payload.user.id);
       return payload;
     });
-    studyAccountReady.catch(() => {
-      // Existing cached preferences remain available if account refresh is temporarily unavailable.
+    studyAccountReady = request;
+    request.catch(() => {
+      // A failed request must not permanently disable the Study Bot sidebar button.
+      if (studyAccountReady === request) studyAccountReady = null;
     });
+    return request;
   }
+  resolveStudyAccount().catch(() => { /* Study Bot offers a visible retry when opened. */ });
   const ENABLE_LEGACY_LOCAL_ROUTER = false;
   const BOT_AVATAR_SRC = "assets/brand-star.png";
   const MODEL_STORAGE_KEY = "tutorly_selected_ai_model";
@@ -5481,7 +5489,7 @@ document.addEventListener("DOMContentLoaded", () => {
   resizeInput();
   updateSendState();
   studySession = window.TutorlyStudySession?.create({
-    ready: studyAccountReady,
+    ready: resolveStudyAccount,
     getAccountKey: () => studyAccountId,
     getConversationId: () => activeConversationId,
     isBusy: () => chatRequestInFlight,
@@ -5506,7 +5514,10 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     send: (text, action) => sendMessage({ text, preserveComposer: true, skipPendingImage: true, studyAction: action })
   });
-  document.getElementById("studyPlannerBtn")?.addEventListener("click", () => studySession?.open());
+  document.getElementById("studyPlannerBtn")?.addEventListener("click", () => {
+    if (studySession) studySession.open();
+    else showToast("Study Bot could not load. Refresh this page and try again.");
+  });
   window.TutorlyChatSuggestions?.render?.(chatSuggestions, { onSelect: prefillChatSuggestion });
   restoreConversation();
   window.addEventListener("pagehide", () => {
