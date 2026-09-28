@@ -78,6 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let confirmReturnFocus = null;
   let shortcutReturnFocus = null;
   let composerTransition = null;
+  let studySession = null;
+  let studyAccountId = null;
+  let studyAccountReady = Promise.resolve();
 
   const TOOL_ROUTE_TITLES = Object.freeze({
     "lessons.html": "Learn",
@@ -133,7 +136,12 @@ document.addEventListener("DOMContentLoaded", () => {
     syncSidebarAccount(subscription);
   }
   if (window.TutorlyAuth?.getSessionToken?.()) {
-    window.TutorlyAuth.currentUser().catch(() => {
+    studyAccountReady = window.TutorlyAuth.currentUser().then((payload) => {
+      if (!payload?.user?.id) throw new Error("Account could not be confirmed.");
+      studyAccountId = String(payload.user.id);
+      return payload;
+    });
+    studyAccountReady.catch(() => {
       // Existing cached preferences remain available if account refresh is temporarily unavailable.
     });
   }
@@ -240,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setSelectedModel(modelId, options = {}) {
     const nextModel = normalizeModelId(modelId);
+    if (options.announce && nextModel !== "study") studySession?.reset();
     selectedModel = nextModel;
     try {
       localStorage.setItem(MODEL_STORAGE_KEY, nextModel);
@@ -249,6 +258,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateModelSelectorUi();
     closeModelMenu();
+    body.classList.toggle("study-mode", nextModel === "study");
+    if (nextModel === "study") window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
 
     if (options.announce) {
       showToast(`${MODEL_CONFIGS[nextModel].name} mode selected.`);
@@ -378,7 +389,8 @@ document.addEventListener("DOMContentLoaded", () => {
         voice_mode: !!context.voiceMode,
         voice_language: context.voiceLanguage || "auto",
         teaching_action: context.teachingAction || null,
-        curriculum: curriculumContext
+        curriculum: curriculumContext,
+        study_session: studySession?.context(context.studyAction) || null
       }
     };
   }
@@ -2540,7 +2552,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function prepareImageFile(file, source = "upload") {
     if (!validateImageFile(file)) return;
-    setSelectedModel("lens", { announce: true });
+    if (!studySession?.isActive()) setSelectedModel("lens", { announce: true });
     removePendingImage();
     pendingImage = {
       file,
@@ -2995,6 +3007,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function openLiveBoardFromMessage(meta = {}, prompt = "", reply = "") {
+    if (selectedModel === "study" || studySession?.isActive()) {
+      showToast("Live Board is off in Study Bot. Continue with a short explanation or example.");
+      return;
+    }
     if (isGuestMode) {
       showToast("Log in to try Live Board visuals.");
       return;
@@ -3018,6 +3034,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateLiveBoardFromResponse(meta = {}, prompt = "", reply = "") {
+    if (selectedModel === "study" || studySession?.isActive()) return;
     const panel = window.TutorlyLiveBoardPanel;
     if (!panel?.open || isGuestMode) return;
     const context = buildLiveBoardContext(meta, prompt, reply);
@@ -3073,19 +3090,29 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!content) return;
 
     const prompt = meta.prompt || message.dataset.prompt || "";
+    const examDraft = window.TutorlyStudySession?.detectExamDraft(prompt);
+    if (examDraft && !studySession?.isActive()) {
+      const planButton = document.createElement("button");
+      planButton.type = "button";
+      planButton.className = "study-button";
+      planButton.textContent = "Build my exam plan";
+      planButton.addEventListener("click", () => studySession?.open({ draft: examDraft }));
+      content.appendChild(planButton);
+    }
     const offeredTeachingActions = meta.teachingActions ?? meta.context?.teachingActions;
     const teachingActions = TeachingActions?.normalize(offeredTeachingActions) || [];
     const contextualActions = offeredTeachingActions !== undefined ? [] : ResponsePolicy?.actionsFor?.(prompt, rawReply, {
       semanticRoute: meta.semanticRoute || meta.context?.semanticRoute || null,
       quickActions: meta.quickActions || meta.context?.quickActions || []
     }) || [];
-    const visibleActions = offeredTeachingActions !== undefined ? teachingActions : contextualActions;
+    const visibleActions = (offeredTeachingActions !== undefined ? teachingActions : contextualActions)
+      .filter((item) => !((selectedModel === "study" || studySession?.isActive()) && item.id === "show_diagram"));
     const contextualMarkup = visibleActions.length
       ? `<div class="learning-feedback contextual-actions" aria-label="Continue learning">${visibleActions
           .map((item) => `<button type="button" data-action="${offeredTeachingActions !== undefined ? "teaching" : "contextual"}" data-context-action="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`)
           .join("")}</div>`
       : "";
-    const liveBoardAvailable = typeof routeSupportsLiveBoard === "function"
+    const liveBoardAvailable = selectedModel !== "study" && !studySession?.isActive() && typeof routeSupportsLiveBoard === "function"
       && routeSupportsLiveBoard(meta.semanticRoute || meta.context?.semanticRoute || null);
     const liveBoardMarkup = liveBoardAvailable
       ? `<div class="learning-feedback live-board-actions" aria-label="Live Board"><button type="button" data-action="live-board">Open Live Board</button></div>`
@@ -3774,6 +3801,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     requestPayload.voiceMode = !!options.liveMode;
     requestPayload.teachingAction = options.teachingAction || null;
+    requestPayload.studyAction = options.studyAction || null;
+    if (studySession?.isActive()) requestPayload.model = "study";
     requestPayload.voiceLanguage = options.voiceLanguage
       || voiceSession?.getEffectiveLanguage?.()
       || getVoiceLanguage();
@@ -3788,7 +3817,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateConversationUrl(conversationId);
     }
     const liveBoardPanel = window.TutorlyLiveBoardPanel;
-    if (liveBoardPanel?.hasLesson?.()) {
+    if (selectedModel !== "study" && !studySession?.isActive() && liveBoardPanel?.hasLesson?.()) {
       requestPayload.liveBoard = {
         active: liveBoardPanel.isOpen?.() || false,
         currentLesson: liveBoardPanel.getCurrentLesson?.() || null,
@@ -3960,6 +3989,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetChat() {
     abortActiveChatRequest();
+    studySession?.reset();
     window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
     window.TutorlyCurriculum?.clearActiveContext?.();
     messages.innerHTML = "";
@@ -4161,6 +4191,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showToolWorkspace(route, title = "") {
+    studySession?.close();
     const safeRoute = normalizeToolRoute(route);
     if (!safeRoute || !workArea || !toolWorkspace || !toolFrame) return;
     window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
@@ -4178,6 +4209,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showChatWorkspace() {
+    studySession?.close();
     if (workArea) workArea.hidden = false;
     if (toolWorkspace) toolWorkspace.hidden = true;
     setActiveWorkspaceLink("");
@@ -4387,6 +4419,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
     messages.innerHTML = "";
     activeConversationId = conversation.id;
+    studySession?.restore(conversation.id);
     GPT?.setActiveConversation?.(conversation.id) || ChatHistory.setActiveConversation(conversation.id);
     showChatWorkspace();
     setChatMode(conversation.messages.length > 0, { animate: false });
@@ -5447,6 +5480,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   resizeInput();
   updateSendState();
+  studySession = window.TutorlyStudySession?.create({
+    ready: studyAccountReady,
+    getAccountKey: () => studyAccountId,
+    getConversationId: () => activeConversationId,
+    isBusy: () => chatRequestInFlight,
+    notify: showToast,
+    focusComposer: () => input.focus(),
+    showChat: showChatWorkspace,
+    showPlanner: () => {
+      window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
+      workArea.hidden = true;
+      toolWorkspace.hidden = true;
+      if (chatTitle) chatTitle.textContent = "Study Bot";
+      closeMobileSidebar();
+      closeAccountMenu();
+    },
+    selectStudyMode: () => setSelectedModel("study"),
+    prepareConversation: (existingId, title) => {
+      let conversation = existingId && (GPT?.getConversation?.(existingId) || ChatHistory?.getConversation?.(existingId));
+      if (!conversation && !isGuestMode) conversation = ChatHistory?.createConversation?.({ title, source: "study-plan" });
+      if (conversation) loadConversation(conversation.id);
+      else resetChat();
+      return conversation?.id || null;
+    },
+    send: (text, action) => sendMessage({ text, preserveComposer: true, skipPendingImage: true, studyAction: action })
+  });
+  document.getElementById("studyPlannerBtn")?.addEventListener("click", () => studySession?.open());
   window.TutorlyChatSuggestions?.render?.(chatSuggestions, { onSelect: prefillChatSuggestion });
   restoreConversation();
   window.addEventListener("pagehide", () => {

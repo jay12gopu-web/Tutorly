@@ -120,7 +120,7 @@
       group: "education",
       name: "Study",
       icon: "\u25A3",
-      description: "Quizzes, flashcards, revision",
+      description: "Adaptive exam preparation",
       loading: "Clarifying",
       delayMultiplier: 1.05,
       answerDepth: "study",

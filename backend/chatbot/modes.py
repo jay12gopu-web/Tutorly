@@ -130,16 +130,18 @@ class ModeRegistry:
             ChatMode.study: ModeStrategy(
                 mode=ChatMode.study,
                 title="Study",
-                description="Revision, quizzes, flashcards, checkpoints, and study planning.",
+                description="Adaptive exam planning with short study sessions and quick checks.",
                 response_depth="study",
                 reasoning_style="teach-test-review",
                 temperature_hint=0.32,
-                max_sections=7,
+                max_sections=3,
                 preferred_tools=["quiz", "flashcards", "study_plan", "knowledge_check"],
                 prompt_rules=[
-                    "Turn explanations into active recall.",
-                    "Create practice items after the main answer.",
-                    "Recommend the next study step.",
+                    "Teach one small concept in 2–4 short lines, followed by a simple example.",
+                    "Use frequent 2–4 question checks, waiting for actual answers before feedback.",
+                    "Adapt the next example to observed mistakes; never invent quiz scores or mastery.",
+                    "Give a short evidence-based recap; the application owns scheduling and completion.",
+                    "Stay in the same chat: no Live Board, and no invented video links.",
                 ],
             ),
         }
