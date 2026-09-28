@@ -23,9 +23,11 @@ from pydantic import BaseModel
 
 try:
     from backend.oauth_providers import OAuthProviderError, pkce_challenge, provider_configs
+    from backend.observability.context import set_product_service
     from backend.voice_agents import voice_agent
 except ImportError:
     from oauth_providers import OAuthProviderError, pkce_challenge, provider_configs
+    from observability.context import set_product_service
     from voice_agents import voice_agent
 
 
@@ -804,6 +806,8 @@ def complete_onboarding(payload: OnboardingRequest, authorization: str | None = 
     role = payload.role.strip().lower()
     if role not in {"student", "teacher"}:
         raise HTTPException(status_code=400, detail="Choose Student or Teacher.")
+    if role == "teacher":
+        set_product_service("human_tutor")
     full_name = _clean_profile_value(payload.full_name, required=True, max_length=120, label="name")
     if len(full_name) < 2:
         raise HTTPException(status_code=400, detail="Enter your full name.")

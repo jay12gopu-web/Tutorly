@@ -13,7 +13,7 @@ from .logging import sanitize
 
 
 LOGGER = logging.getLogger("tutorly.observability")
-_IDENTIFIER = re.compile(r"[^a-zA-Z0-9_./:-]+")
+_IDENTIFIER = re.compile(r"[^a-zA-Z0-9_./:{}-]+")
 
 SCHEMA = (
     """CREATE TABLE IF NOT EXISTS tutorly_request_logs (

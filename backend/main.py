@@ -15,9 +15,11 @@ from pydantic import BaseModel
 try:
     from backend.observability import configure_structured_logging
     from backend.observability.middleware import observability_middleware
+    from backend.observability.context import set_product_service
 except ImportError:
     from observability import configure_structured_logging
     from observability.middleware import observability_middleware
+    from observability.context import set_product_service
 
 
 BACKEND_DIR = Path(__file__).resolve().parent
@@ -200,6 +202,7 @@ async def legacy_chat(request: LegacyChatRequest, authorization: str | None = He
         },
     )
 
+    set_product_service("study_bot" if tutor_request.mode.value == "study" else "chat")
     enforce_chat_rate_limit(tutor_request)
     await bind_teaching_session(tutor_request, authorization)
     try:
