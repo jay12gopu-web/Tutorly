@@ -62,7 +62,7 @@
         date: root.TutorlyStudyPlanEngine.todayDate(), completed_tasks: value.completedTasks || 0,
         total_tasks: value.totalTasks || 0, action: action || 'resume', topics: value.topicTitles,
         target_score: value.targetScore, concern: value.concerns, resource_labels: value.resourceLabels,
-        performance_evidence: value.performanceEvidence
+        performance_evidence: value.performanceEvidence, materials: planner.getMaterials?.() || []
       };
     }
     function actionButton(label, action) {
@@ -130,11 +130,13 @@
       bar.append(heading);
       const details = node('details'); details.append(node('summary', 'Study actions'));
       const actions = node('div', '', 'study-session-actions');
-      [['Got it · next', 'next'], ['Explain another way', 'another_method'], ['Quick check', 'quick_check'], ['Another question', 'another_question'], ['Quick revision', 'quick_revision'], ['Recap', 'recap']].forEach(([label, action]) => {
+      const primary = node('div', '', 'study-session-actions');
+      [['Got it · next', 'next'], ['Quick check', 'quick_check']].forEach(([label, action]) => primary.append(actionButton(label, () => options.send(PROMPTS[action], action))));
+      [['Explain another way', 'another_method'], ['Another question', 'another_question'], ['Quick revision', 'quick_revision'], ['Recap', 'recap']].forEach(([label, action]) => {
         actions.append(actionButton(label, () => options.send(PROMPTS[action], action)));
       });
       const status = node('p', message, 'study-session-status'); status.setAttribute('role', 'status');
-      actions.append(actionButton(value.taskStatus === 'completed' ? 'Task saved as complete' : 'Finish & save task', () => {
+      primary.append(actionButton(value.taskStatus === 'completed' ? 'Task saved as complete' : 'Finish & save task', () => {
         if (options.isBusy()) { options.notify('Wait for Tutorly to finish before saving this task.'); return; }
         try {
           if (value.taskStatus !== 'completed' && planner.completeActiveTask()) {
@@ -163,8 +165,9 @@
           }
         } catch (error) { status.textContent = error.message || 'Could not save your result. Try again.'; }
       });
-      details.append(actions, form, node('small', 'Record an actual 2–4 question check after reviewing your answers. This is a self-reported result, not an automatic grade.'));
-      bar.append(details, status);
+      const manual = node('details'); manual.append(node('summary', 'Record a separate quiz result'), form, node('small', 'Record an actual 2–4 question check after reviewing your answers. This is a self-reported result, not an automatic grade.'));
+      details.append(actions, manual);
+      bar.append(primary, details, status);
     }
     function restore(conversationId) {
       planner.restoreConversation?.(conversationId);
@@ -173,11 +176,29 @@
       render();
     }
     function reset() { active = false; planner.clearActiveSession?.(); render(); }
+    function mountCheck(container, check, id) {
+      if (!check || !root.TutorlyStudyQuiz) return false;
+      const key = String(id || root.crypto?.randomUUID?.() || `check-${Date.now()}`);
+      const conversationId = options.getConversationId();
+      const host = node('div', 'Loading saved answers…', 'study-check-host'); host.setAttribute('role', 'status'); container.append(host);
+      const canAnswer = () => { const value = context(); return value?.plan_id === check.plan_id && value?.task_id === check.task_id && value.exam_date > root.TutorlyStudyPlanEngine.todayDate(); };
+      ready().then(() => {
+        if (!host.isConnected || accountChanged || options.getConversationId() !== conversationId) return;
+        host.replaceChildren(); host.removeAttribute('role');
+        root.TutorlyStudyQuiz.mount(host, check, {
+        id: key, canAnswer, load: () => planner.quizAttempt(check, key), save: answers => planner.quizAttempt(check, key, answers),
+        complete: (result, answers) => { if (!canAnswer()) return false; const saved = planner.quizAttempt(check, key, answers, result); render('Quick check saved. Your remaining revision reflects these answers.'); return !!saved; },
+        explain: (question, answer) => options.send(`Help me understand this check: ${question.question}\nI chose: ${question.options[answer]}. Explain the concept another way in a few short lines.`, 'another_method'),
+        continue: result => options.send(`I finished the quick check: ${result.correct}/${result.total} correct on first attempts. ${result.correct < result.total ? 'Help me revisit the mistakes with a smaller example before continuing.' : 'Continue with the next small concept.'}`, result.correct < result.total ? 'another_method' : 'next')
+        });
+      }).catch(() => { host.textContent = 'Saved answers could not be loaded. Open Study Bot and retry your account connection, then reopen this conversation.'; });
+      return true;
+    }
     root.addEventListener('storage', event => {
       if (['tutorly_session_token', 'tutorly_logged_in'].includes(event.key)) { reset(); planner.close(); accountChanged = true; }
     });
     ready().then(() => { if (!accountChanged) restore(options.getConversationId()); }).catch(() => {});
-    return Object.freeze({ open, close: () => { ++openVersion; planner.close(); }, context, restore, reset, isActive: () => !!context() });
+    return Object.freeze({ open, close: () => { ++openVersion; planner.close(); }, context, restore, reset, mountCheck, isActive: () => !!context() });
   }
   root.TutorlyStudySession = Object.freeze({ create, detectExamDraft });
 })(window);

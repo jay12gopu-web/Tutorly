@@ -39,6 +39,7 @@ chat_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=15, requests_pe
 voice_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=20, requests_per_hour=180)
 voice_session_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=60)
 vision_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=80)
+study_material_limiter = SlidingWindowRateLimiter(requests_per_minute=5, requests_per_hour=30)
 LOGGER = logging.getLogger("tutorly.voice")
 VISION_LOGGER = logging.getLogger("tutorly.vision")
 
@@ -365,6 +366,29 @@ async def extract_homework_image(
         "provider": "sarvam-vision",
         "partial": result.partial,
     }
+
+
+@router.post("/study/material/extract")
+async def extract_study_material(request: Request, file: UploadFile = File(...), authorization: str | None = Header(default=None)):
+    """Read a PDF in memory; no public upload URL or document logging."""
+    from .study_material import MAX_BYTES, extract_pdf
+    try:
+        if authorization:
+            await asyncio.to_thread(authenticated_user_context, authorization)
+        decision = study_material_limiter.check(request.client.host if request.client else "unknown")
+        if not decision.allowed:
+            raise HTTPException(429, "Please wait a moment before adding another document.", headers={"Retry-After": str(decision.retry_after_seconds)})
+        if Path(file.filename or "").suffix.lower() != ".pdf":
+            raise HTTPException(400, "Please choose a PDF. Images use Tutorly's existing image reader.")
+        payload = await file.read(MAX_BYTES + 1)
+        if len(payload) > MAX_BYTES:
+            raise HTTPException(413, "Choose a PDF smaller than 5 MB.")
+        try:
+            return await asyncio.to_thread(extract_pdf, payload)
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from None
+    finally:
+        await file.close()
 
 
 @router.options("/chat")

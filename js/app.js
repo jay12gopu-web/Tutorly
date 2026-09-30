@@ -587,6 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
       context.backendConversationId = data?.conversation_id || context.conversationId || null;
       context.activityChatId = data?.metadata?.activity_chat_id || null;
       context.spokenReply = data?.metadata?.spoken_answer || "";
+      context.studyCheck = window.TutorlyStudyQuiz?.normalize(data?.metadata?.study_check) || null;
       context.imageGeneration = data?.metadata?.image_generation || null;
       if (data?.error) throw new Error("Chat backend returned an error response");
       const answer = data?.answer || data?.message || data?.response || "";
@@ -3097,6 +3098,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = message.querySelector(".bot-content");
     if (!content) return;
 
+    if (!content.querySelector('.study-quiz-card')) studySession?.mountCheck(content, meta.studyCheck || meta.context?.studyCheck, meta.messageId);
+
     const prompt = meta.prompt || message.dataset.prompt || "";
     const examDraft = window.TutorlyStudySession?.detectExamDraft(prompt);
     if (examDraft && !studySession?.isActive()) {
@@ -3942,6 +3945,7 @@ document.addEventListener("DOMContentLoaded", () => {
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
           teachingActions: requestPayload.teachingActions,
+          studyCheck: requestPayload.studyCheck || null,
           activityChatId: requestPayload.activityChatId || null,
           generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
@@ -3961,6 +3965,7 @@ document.addEventListener("DOMContentLoaded", () => {
           adaptiveContext: requestPayload.adaptiveContext || null,
           semanticRoute: requestPayload.semanticRoute || null,
           teachingActions: requestPayload.teachingActions,
+          studyCheck: requestPayload.studyCheck || null,
           activityChatId: requestPayload.activityChatId || null,
           generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
@@ -4443,6 +4448,7 @@ document.addEventListener("DOMContentLoaded", () => {
           prompt: conversation.messages.find((item) => item.id === messageRecord.parentId)?.content || "",
           semanticRoute: messageRecord.metadata?.semanticRoute || null,
           teachingActions: messageRecord.metadata?.teachingActions,
+          studyCheck: messageRecord.metadata?.studyCheck || null,
           toolkit: messageRecord.tools
         });
         return;

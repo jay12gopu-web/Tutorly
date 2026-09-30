@@ -72,11 +72,12 @@ check('same main chat includes bounded context and blocks Study-only board entry
   const css=fs.readFileSync('css/study-session.css','utf8');
   assert.match(css,/\.work-area\[hidden\] \{ display: none !important/);
 });
-check('curriculum choices exclude review data and material labels do not pretend to upload', () => {
+check('curriculum choices exclude review data and actual notes stay student-provided', () => {
   const ui=fs.readFileSync('js/study/planner-ui.js','utf8');
   assert.match(ui,/chapter.verification_status === 'verified'/);
   assert.match(ui,/Student-provided titles stay separate/);
-  assert.match(ui,/files are not uploaded or read here/);
+  assert.match(ui,/Original files are not stored by this uploader/);
+  assert.match(ui,/root.TutorlyStudyMaterials.readFile/);
   assert.match(ui,/These are my results on this device/);
   assert.match(ui,/Save and rebalance/);
 });

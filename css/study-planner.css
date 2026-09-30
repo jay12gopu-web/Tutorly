@@ -29,6 +29,38 @@
 .study-field small { font-weight: 400; font-size: 12px; }
 .study-field :is(input, textarea, select) { width: 100%; min-width: 0; min-height: 46px; padding: 11px 13px; border: 1px solid var(--tutorly-border); border-radius: 11px; background: var(--surface, #fff); color: var(--tutorly-text); font: inherit; font-weight: 400; }
 .study-field textarea { resize: vertical; line-height: 1.6; }
+.study-setup { max-width: 680px; margin: 30px auto; }
+.study-setup h2 { margin-bottom: 24px; }
+.study-notes-preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow-y: auto; font-size: 13px; line-height: 1.6; }
+.study-button:disabled { cursor: wait; opacity: .6; }
+.study-field[hidden] { display: none; }
+.study-calendar { max-width: 420px; margin: 20px auto 12px; padding: 18px; border: 1px solid var(--tutorly-border); border-radius: 18px; background: var(--surface, #fff); }
+.study-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
+.study-calendar-head h3 { font-size: 16px; margin: 0; text-align: center; }
+.study-calendar-head .study-button { padding: 7px; min-height: 36px; font-size: 12px; }
+.study-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.study-calendar-weekday { font-size: 11px; color: var(--tutorly-muted); text-align: center; padding: 5px 0 10px; }
+.study-calendar-date { min-width: 0; aspect-ratio: 1; border: 0; border-radius: 11px; background: transparent; color: var(--tutorly-text); font: inherit; font-size: 14px; cursor: pointer; }
+.study-calendar-date:hover:not(:disabled) { background: var(--surface-soft, #f1f4ff); }
+.study-calendar-date[aria-pressed="true"] { background: var(--tutorly-blue) !important; color: white; font-weight: 700; }
+.study-calendar-date:disabled { opacity: .32; cursor: default; }
+.study-date-shortcuts { justify-content: center; }
+.study-date-summary { text-align: center; color: var(--tutorly-blue); font-size: 13px; font-weight: 650; margin-bottom: 24px; }
+.study-field input[type="range"] { padding: 0; border: 0; box-shadow: none; accent-color: var(--tutorly-blue); cursor: pointer; background: transparent; }
+.study-range-value { display: block; margin-top: -15px; color: var(--tutorly-muted); font-size: 13px; }
+.study-score-control { text-align: center; }
+.study-score-dial { position: relative; width: min(300px, 100%); aspect-ratio: 1; margin: 0 auto 8px; touch-action: none; user-select: none; }
+.study-score-dial canvas { display: block; width: 100%; height: 100%; }
+.study-score-value { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.study-score-value strong { font-size: clamp(42px, 8vw, 56px); letter-spacing: -.055em; color: var(--tutorly-text); font-weight: 750; }
+.study-score-value span { margin-top: 6px; font-size: 13px; color: var(--tutorly-muted); }
+.study-score-dial .study-score-handle { position: absolute; transform: translate(-50%, -50%); width: 44px; height: 44px; min-height: 44px; padding: 0; border: 7px solid var(--surface, #fff); border-radius: 50%; background: var(--tutorly-blue); box-shadow: 0 3px 12px #17255630; cursor: grab; touch-action: none; }
+.study-score-handle:active { cursor: grabbing; }
+.study-score-presets, .study-worry-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 25px; }
+.study-score-presets { justify-content: center; }
+.study-worry-choices .study-button { border-radius: 24px; font-weight: 500; }
+.study-worry-choices [aria-pressed="true"] { background: var(--tutorly-blue); color: white; border-color: var(--tutorly-blue); }
+@media (max-width: 400px) { .study-calendar { padding: 12px; } .study-calendar-grid { gap: 2px; } .study-calendar-date { min-height: 36px; } }
 .study-chapter-options { max-height: 285px; overflow-y: auto; padding: 4px; margin-bottom: 24px; }
 .study-check { position: relative; display: grid; grid-template-columns: 24px 1fr; column-gap: 12px; row-gap: 3px; margin: 0 0 8px; padding: 12px; border: 1px solid var(--tutorly-border); border-radius: 12px; cursor: pointer; }
 .study-check[hidden] { display: none; }

@@ -267,6 +267,11 @@ class ChatbotOrchestrator:
                 "quick_actions": self.response_policy.action_metadata(response_plan),
                 "teaching_actions": teaching_actions,
                 "spoken_answer": semantic_result.output.spoken_answer,
+                "study_check": ({
+                    **semantic_result.output.study_check.model_dump(mode="json"),
+                    "plan_id": str(request.client_context.get("study_session", {}).get("plan_id", ""))[:96],
+                    "task_id": str(request.client_context.get("study_session", {}).get("task_id", ""))[:96],
+                } if semantic_result.output.study_check else None),
                 "visual": route_metadata["visual"],
                 "tools": route_metadata["tools"],
                 "image_generation": image_generation,

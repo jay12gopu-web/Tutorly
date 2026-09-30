@@ -12,6 +12,8 @@
     const store = root.TutorlyStudyPlanStore.create({ getAccountKey: options.getAccountKey });
     let namespace = store.namespace(), view = 'list', step = 0, draft = {}, catalog = null, profile = {}, busy = false, loadToken = 0;
     let statusNode, activePlanId = null;
+    let subjectChoices = [];
+    root.TutorlyEducation?.load().then(registry => { subjectChoices = registry.subjects; if (view === 'setup' && step === 1) render(); }).catch(() => {});
     const today = () => engine.todayDate();
     const dateLabel = date => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     const getPlan = () => store.read().plans.find(item => item.id === activePlanId) || null;
@@ -28,7 +30,7 @@
     function initialDraft(seed = {}) {
       const context = root.TutorlyCurriculum?.getActiveContext?.();
       return { subject: seed.subject || context?.subject || '', title: seed.title || '', examDate: seed.examDate || engine.addDays(today(), 7), minutesPerDay: seed.minutesPerDay || 45,
-        targetScore: seed.targetScore || '', concerns: seed.concerns || '', selected: new Set(), manualTopics: safeList(seed.topics).map(item => typeof item === 'string' ? item : item.title).filter(Boolean).join('\n'), resourceLabels: '' };
+        targetScore: seed.targetScore ?? '', concerns: seed.concerns || '', selected: new Set(), manualTopics: safeList(seed.topics).map(item => typeof item === 'string' ? item : item.title).filter(Boolean).join('\n'), resourceLabels: '', materials: [], pastedNotes: '' };
     }
     async function loadCatalog(refresh = false) {
       const token = ++loadToken, account = store.namespace(); busy = true;
@@ -39,7 +41,7 @@
         if (token !== loadToken || account !== store.namespace()) return;
         catalog = next || { available: false, message: 'Curriculum is unavailable. Add your own topic titles below.' };
       } catch (_) { if (token === loadToken) catalog = { available: false, status: 'error', message: 'Tutorly could not load your curriculum. You can retry or add your own topics.' }; }
-      finally { if (token === loadToken && account === store.namespace()) { busy = false; if (view === 'setup' && step === 2) render(); } }
+      finally { if (token === loadToken && account === store.namespace()) { busy = false; if (view === 'setup' && step === 4) render(); } }
     }
     function verifiedChapters(subject) {
       return safeList(catalog?.subjects).filter(item => String(item.name).toLowerCase() === String(subject).toLowerCase()).flatMap(item => safeList(item.books).flatMap(book => safeList(book.chapters)
@@ -75,27 +77,66 @@
     }
     function setup() {
       header('Let’s make your study plan', 'Your saved Board and Grade are reused automatically. No extra profile setup here.');
-      container.append(el('p', 'study-eyebrow', `STEP ${step + 1} OF 3`));
+      container.append(el('p', 'study-eyebrow', `STEP ${step + 1} OF 5 · ${['Exam date', 'Subject', 'Your goal', 'Study material', 'Review topics'][step]}`));
+      const meter = el('progress'); meter.max = 5; meter.value = step + 1; meter.setAttribute('aria-label', 'Study setup progress'); container.append(meter);
       const form = el('form', 'study-setup'); form.noValidate = true;
       form.addEventListener('submit', event => { event.preventDefault(); advance(); });
-      let capture = () => {};
-      if (step === 0) {
+      let capture = () => {}, readingFiles = false;
+      if (step === 1) {
         form.append(el('h2', '', 'What are you preparing for?'));
-        const subject = input('text', draft.subject, { maxlength: '100', autocomplete: 'off', list: 'studySubjectOptions', required: '' });
-        const subjects = el('datalist'); subjects.id = 'studySubjectOptions'; safeList(catalog?.subjects).forEach(item => { const option = el('option'); option.value = item.name; subjects.append(option); });
-        const concerns = el('textarea'); concerns.rows = 3; concerns.maxLength = 600; concerns.value = draft.concerns; concerns.placeholder = 'For example: I understand the lessons but struggle with questions.';
-        const target = input('number', draft.targetScore, { min: '0', max: '100', inputmode: 'numeric' });
-        subject.addEventListener('input', () => { draft.subject = subject.value; });
+        const subject = el('select'); subject.required = true;
+        const names = [...new Set([...safeList(catalog?.subjects).map(item => item.name), ...subjectChoices.map(item => item.name), ...(draft.subject ? [draft.subject] : [])])];
+        [['', 'Choose your subject'], ...names.map(name => [name,name]), ['__custom','Another subject…']].forEach(([value,label]) => { const option=el('option','',label); option.value=value; subject.append(option); }); subject.value=draft.subject;
+        const custom=input('text','',{maxlength:'100',placeholder:'Subject name'}); const customField=field('Your subject',custom); customField.hidden=true;
+        subject.addEventListener('change',()=>{customField.hidden=subject.value!=='__custom';draft.subject=customField.hidden?subject.value:custom.value;if(!customField.hidden)custom.focus();});
+        custom.addEventListener('input',()=>{draft.subject=custom.value;});
+        form.append(field('Subject',subject,'These are subject choices, not a claim that a verified syllabus is available.'),customField);
+        if (!names.length) form.append(button('Reload subject choices',async()=>{try{subjectChoices=(await root.TutorlyEducation.load()).subjects;render();}catch(_){announce('Could not load subjects. Choose Another subject to continue.',true);}}));
+        capture=()=>{draft.subject=(subject.value==='__custom'?custom.value:subject.value).trim();if(!draft.subject){subject.focus();throw new Error('Choose a subject to continue.');}};
+      } else if (step === 0) {
+        form.append(el('h2', '', 'When is your exam?'));
+        const dateSummary=el('p','study-date-summary');dateSummary.setAttribute('role','status');const updateDate=date=>{draft.examDate=date;dateSummary.textContent=`${dateLabel(date)} · ${engine.daysBetween(today(),date)} preparation days`;};
+        const calendar=root.TutorlyStudyControls.calendar({value:draft.examDate,min:engine.addDays(today(),1),max:engine.addDays(today(),365),onChange:updateDate});updateDate(draft.examDate);
+        const shortcuts=el('div','study-actions study-date-shortcuts');[[1,'Tomorrow'],[3,'In 3 days'],[7,'In a week'],[30,'In a month']].forEach(([days,label])=>shortcuts.append(button(label,()=>{const date=engine.addDays(today(),days);calendar.setValue(date);updateDate(date);})));form.append(shortcuts,calendar.element,dateSummary);
+        const minutes=input('range',draft.minutesPerDay,{min:'15',max:'120',step:'5'}),minutesOutput=el('output','study-range-value',`${draft.minutesPerDay} min/day`);
+        minutes.addEventListener('input',()=>{draft.minutesPerDay=Number(minutes.value);minutesOutput.textContent=`${draft.minutesPerDay} min/day`;});form.append(field('Time to study each day',minutes),minutesOutput);
+        capture=()=>{if(!draft.examDate||draft.examDate<=today())throw new Error('Choose a future exam date.');};
+      } else if (step === 2) {
+        form.append(el('h2', '', 'What would make you feel ready?'));
+        const target = root.TutorlyStudyControls.scoreRing({value:draft.targetScore,onChange:value=>{draft.targetScore=value;}});
+        const concerns = el('textarea'); concerns.rows = 3; concerns.maxLength = 600; concerns.value = draft.concerns; concerns.placeholder = 'For example: I understand the ideas but struggle with calculations.';
         concerns.addEventListener('input', () => { draft.concerns = concerns.value; });
-        target.addEventListener('input', () => { draft.targetScore = target.value; });
-        form.append(field('Subject', subject, 'Choose from your curriculum, or enter the subject you need.'), subjects, field('What would you like help with? (optional)', concerns), field('Target score % (optional)', target, 'A planning preference, not a prediction or guarantee.'));
-        capture = () => { draft.subject = subject.value.trim(); draft.concerns = concerns.value.trim(); draft.targetScore = target.value; if (!draft.subject) { subject.focus(); throw new Error('Enter a subject to continue.'); } if (target.value !== '' && (!Number.isFinite(Number(target.value)) || Number(target.value) < 0 || Number(target.value) > 100)) { target.focus(); throw new Error('Use a target score between 0 and 100.'); } };
-      } else if (step === 1) {
-        form.append(el('h2', '', 'How much time do you have?'));
-        const exam = input('date', draft.examDate, { min: engine.addDays(today(), 1), required: '' }); const minutes = input('number', draft.minutesPerDay, { min: '15', max: '480', step: '5', inputmode: 'numeric', required: '' });
-        exam.addEventListener('input', () => { draft.examDate = exam.value; }); minutes.addEventListener('input', () => { draft.minutesPerDay = minutes.value; });
-        form.append(field('Exam date', exam), field('Study minutes per day', minutes, 'Keep it realistic. Unfinished work can be rebalanced without erasing completed tasks.'));
-        capture = () => { draft.examDate = exam.value; draft.minutesPerDay = Number(minutes.value); if (!exam.value || exam.value <= today()) { exam.focus(); throw new Error('Choose a future exam date; today can be your first preparation day.'); } if (draft.minutesPerDay < 15 || draft.minutesPerDay > 480 || !Number.isFinite(draft.minutesPerDay)) { minutes.focus(); throw new Error('Choose between 15 and 480 minutes per day.'); } };
+        const worryChoices=el('div','study-worry-choices');['Getting started','Too much to cover','Understanding concepts','Remembering what I learn','Running out of time'].forEach(text=>{const choice=button(text,()=>{draft.concerns=text;concerns.value=text;Array.from(worryChoices.children).forEach(item=>item.setAttribute('aria-pressed',String(item===choice)));});choice.setAttribute('aria-pressed',String(draft.concerns===text));worryChoices.append(choice);});
+        form.append(target.element,el('h3','','What worries you most?'),worryChoices,field('Anything else? (optional)',concerns));
+        capture=()=>{draft.targetScore=target.getValue();draft.concerns=concerns.value;};
+      } else if (step === 3) {
+        form.append(el('h2', '', 'Bring your study material'), el('p', 'study-subtitle', 'Add the notes or pages you need for this exam. No material? Continue and choose your topics.'));
+        const upload = input('file', '', { accept: '.pdf,.txt,.jpg,.jpeg,.png', multiple: '' });
+        form.append(field('Add files or a photo of your notes', upload, 'PDF, TXT, JPG or PNG · up to 5 MB each · up to 5 files. PDFs need selectable text; photos use the existing image reader.'));
+        const uploadStatus = el('p', 'study-status'); uploadStatus.setAttribute('role', 'status'); form.append(uploadStatus);
+        upload.addEventListener('change', async () => {
+          const files = Array.from(upload.files || []), owner = namespace, currentDraft = draft;
+          if (draft.materials.length + files.length > 5) { uploadStatus.textContent = 'Use up to 5 files. Remove one before adding more.'; return; }
+          readingFiles = true; upload.disabled = true; next.disabled = true;
+          try {
+            for (const file of files) {
+              uploadStatus.textContent = `Reading ${file.name}…`;
+              const result = await root.TutorlyStudyMaterials.readFile(file);
+              if (store.namespace() !== owner || draft !== currentDraft) return;
+              draft.materials.push({ id: root.crypto?.randomUUID?.() || `notes-${Date.now()}-${draft.materials.length}`, label: file.name, text: result.text, partial: result.partial, source: 'student-material' });
+            }
+            if (view === 'setup' && step === 3) { render(); announce('Notes read. Review the extracted text before continuing.'); }
+          } catch (error) { uploadStatus.textContent = `${error.message} You can choose the file again to retry. Previously read files are kept.`; }
+          finally { readingFiles = false; upload.disabled = false; upload.value = ''; next.disabled = false; }
+        });
+        draft.materials.forEach((material, index) => {
+          const details = el('details', 'study-day'); details.append(el('summary', '', `${material.label}${material.partial ? ' · partial text' : ' · ready'}`));
+          const text = el('textarea'); text.rows = 5; text.maxLength = 24000; text.value = material.text; text.addEventListener('input', () => { material.text = text.value; });
+          details.append(field('Review extracted notes', text, 'Correct reading errors here. These notes are not verified curriculum.'), button('Remove file', () => { draft.materials.splice(index, 1); render(); })); form.append(details);
+        });
+        const pasted = el('textarea'); pasted.rows = 5; pasted.maxLength = 24000; pasted.value = draft.pastedNotes; pasted.placeholder = 'Paste the relevant section of your notes here…'; pasted.addEventListener('input', () => { draft.pastedNotes = pasted.value; });
+        form.append(field('Or paste your notes', pasted), el('p', 'study-storage-note', 'Extracted text stays with this plan in this browser and is sent to Tutorly’s existing AI when you study. Original files are not stored by this uploader. Avoid personal or sensitive information.'));
+        capture = () => { draft.pastedNotes = pasted.value; const length = draft.materials.reduce((n, item) => n + item.text.length, 0) + pasted.value.length; if (length > 24000) throw new Error('Keep the combined notes under 24,000 characters. Trim the text to the sections for this exam.'); };
       } else {
         form.append(el('h2', '', 'What needs to go into your plan?'));
         const meta = [profile.board, profile.grade ? `Grade ${profile.grade}` : '', catalog?.academic_year].filter(Boolean).join(' · '); if (meta) form.append(el('p', 'study-subtitle', meta));
@@ -112,23 +153,23 @@
           search.addEventListener('input', () => Array.from(list.children).forEach(node => { node.hidden = !node.dataset.search.includes(search.value.trim().toLowerCase()); })); form.append(list);
         }
         const manual = el('textarea'); manual.rows = 4; manual.maxLength = 5000; manual.value = draft.manualTopics; manual.placeholder = 'One topic per line';
-        const resources = el('textarea'); resources.rows = 2; resources.maxLength = 1000; resources.value = draft.resourceLabels; resources.placeholder = 'For example: Class notes, pages 4–8';
         manual.addEventListener('input', () => { draft.manualTopics = manual.value; });
-        resources.addEventListener('input', () => { draft.resourceLabels = resources.value; });
-        form.append(field('Add your own topics', manual, 'Student-provided titles stay separate from verified curriculum metadata.'), field('Material reminders (optional)', resources, 'Labels only; files are not uploaded or read here. Use the existing chat attachment control when starting a task.'));
-        capture = () => { draft.manualTopics = manual.value; draft.resourceLabels = resources.value; if (!topicsFromDraft().length) { manual.focus(); throw new Error('Choose at least one verified chapter or add a topic.'); } };
+        form.append(field('Add your own topics', manual, 'Student-provided titles stay separate from verified curriculum metadata. Copy the headings you want to study from your notes; Tutorly will not invent syllabus entries.'));
+        if (draft.materials.length || draft.pastedNotes.trim()) form.append(el('p', 'study-notice', 'Your notes will support these topics. Check the titles against your exam syllabus before creating the plan.'));
+        capture = () => { draft.manualTopics = manual.value; if (!topicsFromDraft().length) { manual.focus(); throw new Error('Choose at least one verified chapter or add a topic from your notes.'); } };
       }
       function advance() {
         try {
+          if (readingFiles) throw new Error('Please wait while your notes are being read.');
           capture();
-          if (step < 2) { step++; render(); return; }
-          const topics = topicsFromDraft(); const resources = draft.resourceLabels.split(/\n/).map(label => label.trim()).filter(Boolean).map((label, index) => ({ id: `material-${index + 1}`, label, source: 'student-provided-label' }));
+          if (step < 4) { step++; render(); return; }
+          const topics = topicsFromDraft(); const resources = [...draft.materials, ...(draft.pastedNotes.trim() ? [{ id: 'pasted-notes', label: 'Pasted notes', text: draft.pastedNotes.trim(), source: 'student-material' }] : [])].filter(item => item.text.trim()).map(item => ({ ...item, topicIds: topics.map(topic => topic.id) }));
           const plan = engine.createPlan({ id: root.crypto?.randomUUID?.() || `study-${Date.now()}`, title: draft.title || `${draft.subject} exam prep`, subject: draft.subject, examDate: draft.examDate, minutesPerDay: draft.minutesPerDay, topics: topics.map(topic => ({ ...topic, resourceIds: resources.map(item => item.id) })), resourceIds: resources.map(item => item.id), targetScore: draft.targetScore === '' ? undefined : Number(draft.targetScore), concerns: draft.concerns, curriculumContext: { board: profile.board || '', grade: String(profile.grade || ''), subject: draft.subject } }, { today: today() });
-          persist({ ...plan, resourceLabels: resources }); view = 'detail'; render(); announce(store.getError() || 'Your study plan is ready.');
+          persist({ ...plan, materials: resources, resourceLabels: resources.map(({id, label, source}) => ({id, label, source})) }); view = 'detail'; render(); announce(store.getError() || 'Your study plan is ready.');
         } catch (error) { announce(error.message || 'Please check your plan details.', true); }
       }
-      const actions = el('div', 'study-actions'); actions.append(button(step === 0 ? 'Cancel' : 'Back', () => { try { capture(); } catch (_) {} if (step > 0) step--; else view = 'list'; render(); }, 'study-button study-button-quiet'));
-      const next = el('button', 'study-button study-button-primary', step === 2 ? 'Create my plan' : 'Continue'); next.type = 'submit'; actions.append(next); form.append(actions); container.append(form);
+      const actions = el('div', 'study-actions'); actions.append(button(step === 0 ? 'Cancel' : 'Back', () => { if (readingFiles) { announce('Please wait while your notes are being read.'); return; } try { capture(); } catch (_) {} if (step > 0) step--; else view = 'list'; render(); }, 'study-button study-button-quiet'));
+      const next = el('button', 'study-button study-button-primary', step === 4 ? 'Create my plan' : 'Continue'); next.type = 'submit'; actions.append(next); form.append(actions); container.append(form);
     }
     function taskRow(plan, task) {
       const row = el('article', 'study-task'); row.dataset.taskId = task.id;
@@ -168,7 +209,9 @@
       if (completedHistory.length) { const history = el('details', 'study-day'); history.append(el('summary', '', `Completed earlier · ${completedHistory.length} tasks`)); completedHistory.forEach(task => history.append(taskRow(plan, task))); container.append(history); }
       const unscheduled = safeList(plan.unscheduledTaskIds).map(id => tasks.get(id)).filter(task => task && task.status !== 'completed');
       if (unscheduled.length) { const backlog = el('details', 'study-day'); backlog.open = true; backlog.append(el('summary', '', `Needs more time · ${unscheduled.length} tasks`), el('p', 'study-subtitle', 'These tasks do not fit yet. Add daily time, reduce topics, or move the exam date.')); unscheduled.forEach(task => backlog.append(taskRow(plan, task))); container.append(backlog); }
-      if (safeList(plan.resourceLabels).length) { const materials = el('details', 'study-day'); materials.append(el('summary', '', 'Your material reminders')); const list = el('ul'); plan.resourceLabels.forEach(item => list.append(el('li', '', item.label))); materials.append(list, el('p', 'study-subtitle', 'Reminders only. Upload the actual material in Tutorly chat when you start a task.')); container.append(materials); }
+      if (safeList(plan.materials).length) { const materials = el('details', 'study-day'); materials.append(el('summary', '', 'Your study material'));
+        plan.materials.forEach(item => { const preview = el('details'); preview.append(el('summary', '', item.label), el('p', 'study-notes-preview', item.text), button('Remove notes', () => run(() => persist({ ...plan, materials: plan.materials.filter(source => source.id !== item.id), resourceLabels: safeList(plan.resourceLabels).filter(source => source.id !== item.id) }), 'Notes removed from this plan. Previously sent chat messages are unchanged.'))); materials.append(preview); }); container.append(materials);
+      } else if (safeList(plan.resourceLabels).length) { const reminders = el('p', 'study-subtitle', `Material reminders (labels only): ${plan.resourceLabels.map(item => item.label).join(', ')}`); container.append(reminders); }
       const results = el('details', 'study-day'); results.append(el('summary', '', 'Use previous quiz results (optional)'), el('p', 'study-subtitle', 'Earlier Tutorly test history is stored device-wide and may include another person’s work. Only import it if these are your results. Only exact single-chapter, Board and Grade matches are used.'));
       const consent = input('checkbox'); const consentLabel = field('These are my results on this device', consent); consentLabel.classList.add('study-check'); results.append(consentLabel);
       results.append(button('Use matching quiz results from this device', () => {
@@ -233,6 +276,38 @@
       }
       persist(next); if (!container.hidden) render(); if (store.getError()) throw new Error(store.getError()); return true;
     }
+    function quizAttempt(check, id, answers, result) {
+      ensureAccount(); const state = store.read(); const plan = state.plans.find(item => item.id === check.plan_id);
+      if (!plan) return null;
+      const previous = safeList(plan.studyQuizAttempts).find(item => item.id === id);
+      if (!answers) return previous || null;
+      if (state.activePlanId !== plan.id || state.activeTaskId !== check.task_id || today() >= plan.examDate) throw new Error('Open this task from your plan before saving answers.');
+      const checked = root.TutorlyStudyQuiz.normalize(check);
+      if (!checked || !answers.every((value, i) => checked.questions[i] && Number.isInteger(value) && value >= 0 && value < checked.questions[i].options.length)) throw new Error('This answer could not be saved safely.');
+      // First attempts are immutable: review/refresh/retry must not inflate scores.
+      if (previous && previous.answers.some((value, i) => answers[i] !== value)) throw new Error('Your first answer is already saved. Request another check to practise again.');
+      const attempt = { id, taskId: check.task_id, answers: answers.slice(), scored: !!previous?.scored };
+      let next = { ...plan };
+      if (result && !attempt.scored) {
+        const scored = root.TutorlyStudyQuiz.score(checked, answers); if (!scored) throw new Error('Answer every question before saving this check.');
+        const performance = [], evidence = [];
+        scored.topics.forEach((item, index) => {
+          const topic = plan.topics.find(topic => topic.title.trim().toLowerCase() === item.topic.trim().toLowerCase()); if (!topic) return;
+          performance.push({ id: `${id}:${index}`, topicId: topic.id, score: item.correct / item.total * 100, source: 'study-quiz', observedDate: today() });
+          evidence.push({ record_id: `${id}:${index}`, topic: topic.title, correct: item.correct, total: item.total, source: 'quiz' });
+        });
+        next = engine.rebalance(plan, { today: today(), performance });
+        next.studyChecks = [...safeList(plan.studyChecks), ...evidence].slice(-30);
+        attempt.scored = true;
+      }
+      next.studyQuizAttempts = [...safeList(plan.studyQuizAttempts).filter(item => item.id !== id), attempt].slice(-200);
+      persist(next); if (store.getError()) throw new Error(store.getError()); return attempt;
+    }
+    function getMaterials() {
+      const context = getActiveSessionContext(); if (!context) return [];
+      const plan = store.read().plans.find(item => item.id === context.planId);
+      return root.TutorlyStudyMaterials?.excerpts(plan?.materials, context.topicId) || [];
+    }
     function selectTask(planId, taskId) { ensureAccount(); const state = store.select(planId, taskId); return !!state.activeTaskId; }
     function bindConversation(id) {
       const context = getActiveSessionContext(); if (!context || typeof id !== 'string' || !id.trim()) return false;
@@ -243,7 +318,7 @@
       if (!plan || !plan.tasks.some(task => task.id === plan.lastActiveTaskId && task.status !== 'removed')) { store.clearActiveSession(); return null; }
       store.select(plan.id, plan.lastActiveTaskId); return getActiveSessionContext();
     }
-    return Object.freeze({ open({ draft: seed, planId } = {}) { ensureAccount(); container.hidden = false; if (seed) { draft = initialDraft(seed); step = 0; view = 'setup'; render(); loadCatalog(); } else { if (planId) { activePlanId = planId; const plan = getPlan(); if (plan && (plan.updatedDate !== today() || plan.tasks.some(task => task.status === 'pending' && task.date && task.date < today()))) persist(engine.rebalance(plan, { today: today() })); view = 'detail'; } render(); } }, close() { container.hidden = true; }, getActiveSessionContext, completeActiveTask, recordPerformance, selectTask, bindConversation, restoreConversation, clearActiveSession() { ensureAccount(); store.clearActiveSession(); }, getConversationId(planId) { ensureAccount(); return store.read().plans.find(plan => plan.id === planId)?.conversationId || null; } });
+    return Object.freeze({ open({ draft: seed, planId } = {}) { ensureAccount(); container.hidden = false; if (seed) { draft = initialDraft(seed); step = 0; view = 'setup'; render(); loadCatalog(); } else { if (planId) { activePlanId = planId; const plan = getPlan(); if (plan && (plan.updatedDate !== today() || plan.tasks.some(task => task.status === 'pending' && task.date && task.date < today()))) persist(engine.rebalance(plan, { today: today() })); view = 'detail'; } render(); } }, close() { container.hidden = true; }, getActiveSessionContext, getMaterials, quizAttempt, completeActiveTask, recordPerformance, selectTask, bindConversation, restoreConversation, clearActiveSession() { ensureAccount(); store.clearActiveSession(); }, getConversationId(planId) { ensureAccount(); return store.read().plans.find(plan => plan.id === planId)?.conversationId || null; } });
   }
   root.TutorlyStudyPlanner = Object.freeze({ create });
 })(window);

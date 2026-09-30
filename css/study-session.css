@@ -16,6 +16,23 @@ body.chat-ui-refresh .main-area .work-area[hidden] { display: none !important; }
 .study-session-score label { display: grid; gap: 4px; font-size: 12px; }
 .study-session-score :is(input, select) { width: 85px; min-height: 36px; padding: 6px; border: 1px solid var(--chat-border); border-radius: 8px; background: var(--chat-card); color: var(--chat-ink); font: inherit; }
 .study-session-status { margin: 8px 0 0; }
+.study-quiz-card { margin: 20px 0; padding: clamp(16px, 3vw, 28px); border: 1px solid var(--chat-border); border-radius: 16px; background: var(--chat-card); color: var(--chat-ink); max-width: 680px; }
+.study-quiz-card h3 { margin: 0 0 12px; font-size: 15px; }
+.study-quiz-card p { line-height: 1.6; overflow-wrap: anywhere; }
+.study-quiz-card fieldset { padding: 0; margin: 16px 0; border: 0; min-width: 0; }
+.study-quiz-card legend, .study-quiz-card small { color: var(--chat-muted); font-size: 12px; line-height: 1.5; }
+.study-quiz-option { display: flex; align-items: flex-start; gap: 12px; margin-top: 10px; padding: 14px; border: 1px solid var(--chat-border); border-radius: 11px; cursor: pointer; font-size: 14px; }
+.study-quiz-option span { min-width: 0; overflow-wrap: anywhere; }
+.study-quiz-card .study-quiz-option input[type="radio"] { flex: 0 0 18px; width: 18px !important; min-width: 18px !important; max-width: 18px; height: 18px !important; min-height: 18px !important; padding: 0; margin: 3px 0 0; accent-color: var(--tutorly-blue); }
+.study-quiz-option span { flex: 1; }
+.study-quiz-option:has(input:checked) { border-color: var(--tutorly-blue); background: var(--surface-soft, #f5f7ff); }
+.study-quiz-option.is-correct { border-color: var(--tutorly-success, #16815c); }
+.study-quiz-option.is-incorrect { border-color: var(--tutorly-danger, #c2414d); }
+.study-quiz-card button { min-height: 44px; margin: 12px 8px 0 0; padding: 10px 16px; border: 1px solid var(--chat-border); border-radius: 10px; background: var(--chat-card); color: var(--chat-ink); font: inherit; font-size: 13px; cursor: pointer; }
+.study-quiz-card button:last-child { background: var(--tutorly-blue); border-color: var(--tutorly-blue); color: white; }
+.study-quiz-card :is(button, input, summary):focus-visible { outline: 3px solid var(--tutorly-blue); outline-offset: 3px; }
+.study-quiz-card summary { min-height: 36px; cursor: pointer; }
+.study-quiz-feedback { font-weight: 600; font-size: 13px; }
 body.study-session-active .live-board-actions,
 body.study-mode .live-board-actions,
 body.study-mode [data-context-action="show_diagram"],
