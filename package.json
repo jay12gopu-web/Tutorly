@@ -26,7 +26,8 @@
     "check:auth": "python tests/auth_backend_smoke.py",
     "check:curriculum": "python tests/curriculum_smoke.py",
     "check:study": "node tests/study-plan-engine-check.js && node tests/study-session-ui-check.js && node tests/study-entry-check.js && node tests/study-guided-check.js && python tests/study_session_backend_smoke.py && python tests/study_material_smoke.py",
-    "check:human-tools": "node tests/human-tools-check.js"
+    "check:human-tools": "node tests/human-tools-check.js",
+    "check:test-materials": "node tests/test-material-ui-check.js && python tests/material_test_smoke.py"
   },
   "dependencies": {
     "@elevenlabs/client": "^1.22.0",

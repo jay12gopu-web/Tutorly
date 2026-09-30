@@ -30,6 +30,8 @@ from .rate_limit import SlidingWindowRateLimiter
 from .sarvam_vision import SarvamVisionError, sarvam_vision
 from .schemas import ChatbotRequest, ChatbotResponse, ResponseStage, StreamEvent, TeachingFeedbackRequest
 from .teaching_success import TeachingSuccessScore
+from .material_test import MaterialTestRequest, generate_material_test
+from .ai.provider import ProviderFailure
 
 
 router = APIRouter(prefix="/api", tags=["Tutorly Chatbot"])
@@ -40,6 +42,7 @@ voice_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=20, requests_p
 voice_session_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=60)
 vision_rate_limiter = SlidingWindowRateLimiter(requests_per_minute=8, requests_per_hour=80)
 study_material_limiter = SlidingWindowRateLimiter(requests_per_minute=5, requests_per_hour=30)
+material_test_limiter = SlidingWindowRateLimiter(requests_per_minute=3, requests_per_hour=20)
 LOGGER = logging.getLogger("tutorly.voice")
 VISION_LOGGER = logging.getLogger("tutorly.vision")
 
@@ -125,6 +128,23 @@ async def bind_teaching_session(request: ChatbotRequest, authorization: str | No
     if isinstance(authorization, str) and authorization.strip():
         user = await asyncio.to_thread(authenticated_user_context, authorization)
         request._session_owner = f"account:{user['id']}"
+
+
+@router.post("/tests/generate")
+async def generate_test(payload: MaterialTestRequest, request: Request, authorization: str | None = Header(default=None)):
+    if authorization:
+        await asyncio.to_thread(authenticated_user_context, authorization)
+    decision = material_test_limiter.check(request.client.host if request.client else "unknown")
+    if not decision.allowed:
+        raise HTTPException(429, "Please wait before generating another paper.", headers={"Retry-After": str(decision.retry_after_seconds)})
+    try:
+        return await generate_material_test(payload, orchestrator.semantic_tutor.provider)
+    except ProviderFailure as error:
+        status = 429 if error.status == "rate_limited" else 504 if error.status == "timeout" else 503
+        raise HTTPException(status, "Tutorly couldn't generate the paper right now. Your notes are kept here; please retry.") from None
+    except ValueError:
+        # Never expose a validation error containing uploaded text or provider output.
+        raise HTTPException(502, "Tutorly couldn't validate the paper against your notes. Retry or add clearer material.") from None
 
 
 @router.get("/chatbot/health")

@@ -1,5 +1,6 @@
 (function () {
-  const Syllabus = window.TutorlySyllabus;
+  let materialInput;
+  let generating = false;
   const HISTORY_KEY = "tutorly_exam_history";
   const MASTERY_KEY = "tutorly_chapter_mastery";
   const WEAK_AREAS_KEY = "tutorly_weak_areas";
@@ -16,8 +17,8 @@
       instant: true
     },
     chapter: {
-      label: "Chapter Test",
-      description: "Balanced coverage across the chapters you chose.",
+      label: "Topic Test",
+      description: "Balanced coverage of your uploaded study material.",
       counts: [10, 15, 20, 30, 40],
       defaultCount: 20,
       times: ["10 Minutes", "20 Minutes", "30 Minutes", "45 Minutes", "60 Minutes", "Custom"],
@@ -65,7 +66,9 @@
     sessionId: "",
     finished: false,
     difficulty: "Easy",
-    includeSubjective: false
+    includeSubjective: false,
+    sourceMaterials: [],
+    materialBased: false
   };
 
   const $ = (id) => document.getElementById(id);
@@ -95,38 +98,27 @@
       ? `Grade ${state.profile.grade} · ${state.profile.board}`
       : "Academic profile required";
     bindStaticEvents();
-    await Syllabus.load(state.profile.grade, state.profile.board);
-    renderSubjects();
-    const requestedSubjectId = localStorage.getItem("tutorly_practice_subject_id") || "";
-    const requestedSubjectName = localStorage.getItem("tutorly_practice_subject") || "";
-    const requestedSubject = Syllabus.getSubjects().find((subject) =>
-      subject.id === requestedSubjectId || subject.name === requestedSubjectName
-    );
-    const practiceEntry = new URLSearchParams(window.location.search).get("mode") === "practice";
-    if (requestedSubject && practiceEntry) {
-      state.mode = "practice";
-      chooseSubject(requestedSubject);
-    }
+    materialInput = window.TutorlyTestMaterials.create({onChange: () => {
+      document.querySelector('[data-step="mode"]').disabled = !materialInput?.hasContent();
+      $("continueToModes").disabled = materialInput?.reading();
+    }});
     renderRecommendation();
     renderHistory();
-    showSetupStep(requestedSubject && practiceEntry ? "chapter" : "subject");
+    showSetupStep("material");
   }
 
   function bindStaticEvents() {
-    $("chapterSearch").addEventListener("input", renderChapters);
-    $("selectAllChapters").addEventListener("click", () => {
-      const allSelected = state.selectedChapters.length === state.chapters.length;
-      state.selectedChapters = allSelected ? [] : state.chapters.map((chapter) => chapter.id);
-      renderChapters();
-      renderModeCards();
+    $("continueToModes").addEventListener("click", () => {
+      try {
+        state.sourceMaterials = materialInput.get();
+        state.subject = {id:"uploaded-material",name:"My study material"};
+        state.chapters = state.sourceMaterials.map(item => ({id:item.id,name:item.label}));
+        state.selectedChapters = state.chapters.map(item => item.id);
+        state.materialBased = true;
+        renderModeCards(); showSetupStep("mode");
+      } catch (error) { materialInput.error(error.message); }
     });
-    $("continueToChapters").addEventListener("click", () => {
-      if (!state.subject) return;
-      renderChapters();
-      showSetupStep("chapter");
-    });
-    $("backToSubjects").addEventListener("click", () => showSetupStep("subject"));
-    $("backToChapters").addEventListener("click", () => showSetupStep("chapter"));
+    $("backToMaterials").addEventListener("click", () => { if (!generating) showSetupStep("material"); });
     $("startExamBtn").addEventListener("click", startExam);
     $("submitAnswerBtn").addEventListener("click", submitAnswer);
     $("skipQuestionBtn").addEventListener("click", () => submitAnswer(null));
@@ -136,16 +128,18 @@
       $("examView").hidden = true;
       $("reportView").hidden = true;
       $("setupPanel").hidden = false;
-      showSetupStep("subject");
+      showSetupStep("material");
     });
     $("retakeBtn").addEventListener("click", () => {
       if (!state.currentReport) return;
-      state.selectedChapters = state.currentReport.chapterIds;
       state.mode = state.currentReport.mode;
       state.settings = state.currentReport.settings;
       state.subject = state.currentReport.subject;
-      state.chapters = Syllabus.getChapters(state.profile.grade, state.profile.board, state.subject.id);
-      startExam(true);
+      state.chapters = state.currentReport.chapters.map((name,index) => ({id:state.currentReport.chapterIds[index] || "review-"+index,name}));
+      state.selectedChapters = state.chapters.map(item => item.id);
+      state.materialBased = !!state.currentReport.materialBased;
+      state.questions = state.currentReport.questions.map(item => ({...item}));
+      beginExam();
     });
     $("historySearch").addEventListener("input", renderHistory);
     $("historySort").addEventListener("change", renderHistory);
@@ -160,154 +154,31 @@
     document.querySelectorAll(".stepper [data-step]").forEach((button) => {
       button.addEventListener("click", () => {
         if (button.disabled) return;
-        showSetupStep(button.dataset.step);
+        if (button.dataset.step === 'mode') $("continueToModes").click();
+        else showSetupStep(button.dataset.step);
       });
     });
   }
 
   function showSetupStep(step) {
-    const copy = {
-      subject: {
-        title: "What are you studying?",
-        lead: "Choose one subject. Tutorly will load the chapters that match your saved grade and board.",
-        pill: `Grade ${state.profile.grade} · ${state.profile.board}`
-      },
-      chapter: {
-        title: "Pick the chapters.",
-        lead: "Choose one chapter or combine several. Tutorly will build the paper only from what you select.",
-        pill: state.subject?.name || "Choose a subject"
-      },
-      mode: {
-        title: "Shape the paper your way.",
-        lead: "Choose the test style, difficulty, question count, and timing. This is the final step before Tutorly generates the paper.",
-        pill: "Final step"
-      }
-    };
-    ["subject", "chapter", "mode"].forEach((name) => {
-      $(`${name}Step`).hidden = name !== step;
-      const button = document.querySelector(`[data-step="${name}"]`);
-      const order = { subject: 0, chapter: 1, mode: 2 };
-      button?.classList.toggle("active", name === step);
-      button?.classList.toggle("done", order[name] < order[step]);
-      if (button) button.disabled = name === "chapter" ? !state.subject : name === "mode" ? state.selectedChapters.length === 0 : false;
+    if (generating) return;
+    const mode = step === "mode";
+    $("materialStep").hidden = mode;
+    $("modeStep").hidden = !mode;
+    document.querySelectorAll(".stepper [data-step]").forEach(button => {
+      button.classList.toggle("active",button.dataset.step === step);
+      button.classList.toggle("done",mode && button.dataset.step === "material");
+      if (button.dataset.step === "mode") button.disabled = !materialInput?.hasContent();
     });
-    $("flowTitle").textContent = copy[step].title;
-    $("flowLead").textContent = copy[step].lead;
-    $("profilePill").textContent = copy[step].pill;
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function renderSubjects() {
-    const subjects = Syllabus.getSubjects(state.profile.grade, state.profile.board);
-    const syllabus = Syllabus.getSyllabus();
-    $("subjectAvailability").textContent = subjects.length
-      ? `${subjects.length} subjects available`
-      : syllabus.message;
-    $("subjectGrid").innerHTML = subjects.map((subject) => `
-      <button class="exam-card subject-card accent-${subject.accent} ${state.subject?.id === subject.id ? "selected" : ""}" type="button" data-subject="${subject.id}" aria-pressed="${state.subject?.id === subject.id}">
-        <span class="card-icon">${subject.name === "English" ? "Aa" : subject.name === "Hindi" ? "हि" : escapeHtml(subject.name.slice(0, 1))}</span>
-        <strong>${escapeHtml(subject.name)}</strong>
-        <small>${subjectDescription(subject)}</small>
-      </button>
-    `).join("") || `<div class="empty-state"><strong>Curriculum unavailable</strong><p>${escapeHtml(syllabus.message)}</p></div>`;
-
-    document.querySelectorAll("[data-subject]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const subject = subjects.find((item) => item.id === button.dataset.subject);
-        chooseSubject(subject);
-      });
-    });
-  }
-
-  function chooseSubject(subject) {
-    state.subject = subject;
-    state.chapters = Syllabus.getChapters(state.profile.grade, state.profile.board, subject.id);
-    state.selectedChapters = [];
-    state.settings = {};
-    $("subjectSummary").textContent = `Select as many ${subject.name} chapters as you want.`;
-    $("selectedSubjectLabel").textContent = subject.name;
-    $("continueToChapters").disabled = false;
-    $("selectAllChapters").setAttribute("aria-pressed", "false");
-    $("selectAllChapters").textContent = "Select all";
-    window.TutorlyCurriculum?.setActiveContext({
-      board: state.profile.board,
-      grade: state.profile.grade,
-      subject_id: subject.id,
-      subject: subject.name
-    });
-    renderSubjects();
-    renderChapters();
-  }
-
-  function subjectDescription(subject) {
-    return ({
-      mathematics: "Algebra, geometry, mensuration and statistics.",
-      science: "Physics, chemistry and biology across your syllabus.",
-      english: "Grammar, literature, reading comprehension and writing.",
-      "social-studies": "History, geography, civics and economics.",
-      hindi: "व्याकरण, साहित्य, पठन और लेखन कौशल."
-    })[String(subject.name || "").toLowerCase().replace(/\s+/g, "-")] || `Verified ${state.profile.board} textbook chapters.`;
-  }
-
-  function renderChapters() {
-    const search = $("chapterSearch").value.trim().toLowerCase();
-    const visibleChapters = state.chapters.filter((chapter) => chapter.name.toLowerCase().includes(search));
-    $("chapterGrid").innerHTML = visibleChapters.map((chapter) => {
-      const checked = state.selectedChapters.includes(chapter.id);
-      const chapterNumber = chapter.number;
-      return `
-        <label class="chapter-option ${checked ? "selected" : ""}">
-          <input type="checkbox" value="${chapter.id}" ${checked ? "checked" : ""} />
-          <span>
-            <strong>${escapeHtml(chapter.name)}</strong>
-            <small>${escapeHtml([chapter.bookTitle, chapter.partLabel].filter(Boolean).join(" · "))}</small>
-          </span>
-          <span class="chapter-number">CH ${escapeHtml(chapterNumber)}</span>
-        </label>
-      `;
-    }).join("");
-
-    $("chapterGrid").querySelectorAll("input").forEach((input) => {
-      input.addEventListener("change", () => {
-        if (input.checked) {
-          state.selectedChapters = Array.from(new Set([...state.selectedChapters, input.value]));
-          const chapter = state.chapters.find((item) => item.id === input.value);
-          if (chapter) {
-            window.TutorlyCurriculum?.setActiveContext({
-              board: state.profile.board,
-              grade: state.profile.grade,
-              subject_id: state.subject?.id,
-              subject: state.subject?.name,
-              book_id: chapter.bookId,
-              book: chapter.bookTitle,
-              chapter_id: chapter.id,
-              chapter: chapter.name,
-              source_url: chapter.sourceUrl
-            });
-          }
-        } else {
-          state.selectedChapters = state.selectedChapters.filter((id) => id !== input.value);
-        }
-        state.settings = {};
-        renderChapters();
-        renderModeCards();
-      });
-    });
-
-    const allSelected = state.chapters.length > 0 && state.selectedChapters.length === state.chapters.length;
-    $("chapterCount").textContent = state.selectedChapters.length;
-    $("selectAllChapters").setAttribute("aria-pressed", String(allSelected));
-    $("selectAllChapters").textContent = allSelected ? "Clear all" : "Select all";
-    $("continueToModes").disabled = state.selectedChapters.length === 0;
-    $("continueToModes").onclick = () => {
-      renderModeCards();
-      showSetupStep("mode");
-    };
+    $("flowTitle").textContent = mode ? "Shape the paper your way." : "Turn your notes into a test.";
+    $("flowLead").textContent = mode ? "Choose the test style, difficulty, question count, and timing." : "Add your material, choose your paper settings, and practise.";
+    $("profilePill").textContent = [state.profile.grade ? "Grade " + state.profile.grade : "",state.profile.board].filter(Boolean).join(" · ") || "Your study material";
+    window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
   }
 
   function renderModeCards() {
     const selectedNames = getSelectedChapters().map((chapter) => chapter.name).join(", ");
-    $("modeSummary").textContent = `${state.subject?.name || "Subject"} | ${selectedNames || "No chapters selected"}`;
+    $("modeSummary").textContent = `Your material | ${selectedNames || "No material added"}`;
     $("modeGrid").innerHTML = Object.entries(MODE_CONFIG).map(([id, mode]) => `
       <button class="exam-card mode-card ${state.mode === id ? "selected" : ""}" type="button" data-mode="${id}">
         <span class="card-icon">${id === "practice" ? "✓" : id === "chapter" ? "▤" : id === "mock" ? "◷" : "★"}</span>
@@ -347,7 +218,7 @@
         </div>
         <label class="subjective-toggle">
           <input id="includeSubjective" type="checkbox" ${state.includeSubjective ? "checked" : ""} />
-          <span><strong>Add subjective questions as well</strong><small>Include short written-answer questions with the objective questions.</small></span>
+          <span><strong>Add written questions as well</strong><small>Compare written answers with a guide and self-review. They are not automatically graded.</small></span>
         </label>
       </div>
     `;
@@ -393,20 +264,28 @@
     return { questionCount: count, timeLimit, difficulty: state.difficulty, includeSubjective: state.includeSubjective };
   }
 
-  function startExam(usePresetSettings = false) {
-    state.settings = usePresetSettings && state.settings.questionCount ? state.settings : collectSettings();
-    state.questions = generateQuestions({
-      grade: state.profile.grade,
-      board: state.profile.board,
-      subject: state.subject.name,
-      subjectId: state.subject.id,
-      chapters: getSelectedChapters(),
-      testType: MODE_CONFIG[state.mode].label,
-      questionCount: state.settings.questionCount,
-      timeLimit: state.settings.timeLimit,
-      difficulty: state.settings.difficulty,
-      includeSubjective: state.settings.includeSubjective
-    });
+  async function startExam() {
+    if (generating) return;
+    state.settings = collectSettings();
+    generating = true;
+    const controls = Array.from($("setupPanel").querySelectorAll("button,input,select,textarea"));
+    const disabled = controls.map(node => node.disabled); controls.forEach(node => {node.disabled = true;});
+    $("generationStatus").textContent = "Creating questions from your notes…";
+    try {
+      const result = await window.TutorlyTestMaterials.generate(state.sourceMaterials,state.settings,state.profile);
+      state.questions = result.questions;
+      $("generationStatus").textContent = result.notice;
+      $("paperNotice").textContent = result.notice + (state.settings.includeSubjective ? " Written answers are self-reviewed, not automatically graded." : "");
+      beginExam();
+    } catch (error) {
+      $("generationStatus").textContent = error.message + " Use Generate test paper to retry.";
+    } finally {
+      generating = false;
+      controls.forEach((node,index) => {node.disabled = disabled[index];});
+    }
+  }
+
+  function beginExam() {
     state.answers = state.questions.map(() => ({ selected: null, status: "unattempted", time: 0 }));
     state.index = 0;
     state.startedAt = Date.now();
@@ -420,141 +299,6 @@
     $("examSubtitle").textContent = `${state.subject.name} | ${getSelectedChapters().map((chapter) => chapter.name).join(", ")}`;
     renderQuestion();
     startTimer();
-  }
-
-  function generateQuestions(config) {
-    const selected = config.chapters.length ? config.chapters : state.chapters.slice(0, 1);
-    const questions = [];
-    for (let i = 0; i < config.questionCount; i += 1) {
-      const chapter = selected[i % selected.length];
-      const concept = chapter.concepts[Math.floor(i / selected.length) % chapter.concepts.length];
-      const useWrittenAnswer = config.includeSubjective && (i + 1) % 4 === 0;
-      questions.push(useWrittenAnswer ? makeSubjectiveQuestion(chapter, concept, i, config) : makeQuestion(chapter, concept, i, config));
-    }
-    return questions;
-  }
-
-  function makeSubjectiveQuestion(chapter, concept, index, config) {
-    const prompts = [
-      `Explain ${concept} in your own words and connect it to ${chapter.name}.`,
-      `Write a short answer showing why ${concept} matters in ${chapter.name}.`,
-      `Give one correct example of ${concept} from ${chapter.name} and explain it.`
-    ];
-    return {
-      id: `q_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      type: "subjective",
-      question: prompts[index % prompts.length],
-      options: [],
-      answer: null,
-      correctText: `A good answer should accurately explain ${concept}, connect it to ${chapter.name}, and include a relevant example when asked.`,
-      chapterId: chapter.id,
-      chapterName: chapter.name,
-      concept,
-      explanation: `The response should show a clear understanding of ${concept} in the context of ${chapter.name}.`,
-      hint: `Define ${concept} first, then connect it to ${chapter.name}.`,
-      difficulty: config.difficulty || "Moderate"
-    };
-  }
-
-  function makeQuestion(chapter, concept, index, config) {
-    const templates = [
-      {
-        q: `In ${chapter.name}, which statement best matches the concept "${concept}"?`,
-        options: [
-          `${concept} is a key idea from ${chapter.name}.`,
-          `${concept} belongs mainly to a different chapter.`,
-          `${concept} should be ignored in this test.`,
-          `${concept} is only a memorized label.`
-        ],
-        answer: 0
-      },
-      {
-        q: `A student is revising ${chapter.name}. Which topic should they connect most closely with ${concept}?`,
-        options: [
-          chapter.concepts[(chapter.concepts.indexOf(concept) + 1) % chapter.concepts.length],
-          "An unrelated topic",
-          "A different unit",
-          "A revision habit"
-        ],
-        answer: 0
-      },
-      {
-        q: `Why is ${concept} important in ${chapter.name}?`,
-        options: [
-          `It helps solve questions from ${chapter.name} accurately.`,
-          "It is outside the selected chapter.",
-          "It replaces all other concepts.",
-          "It is not used in school exams."
-        ],
-        answer: 0
-      }
-    ];
-
-    if (chapter.id === "number-systems") {
-      const numberSystemQuestions = [
-        {
-          q: "Which number is irrational?",
-          options: ["sqrt(2)", "3/4", "0.25", "7"],
-          answer: 0,
-          concept: "Irrational Numbers",
-          explanation: "sqrt(2) cannot be written as p/q, so it is irrational."
-        },
-        {
-          q: "The decimal expansion 0.3333... represents which type of number?",
-          options: ["Rational number", "Irrational number", "Prime number", "Whole number only"],
-          answer: 0,
-          concept: "Decimal Expansions",
-          explanation: "A recurring decimal is rational because it can be written as a fraction."
-        },
-        {
-          q: "Which set contains both rational and irrational numbers?",
-          options: ["Real Numbers", "Natural Numbers", "Whole Numbers", "Integers"],
-          answer: 0,
-          concept: "Real Numbers",
-          explanation: "Real numbers include every rational and irrational number on the number line."
-        },
-        {
-          q: "Which number can be represented exactly on the number line?",
-          options: ["Every real number", "Only whole numbers", "Only positive numbers", "Only integers"],
-          answer: 0,
-          concept: "Number Line Representation",
-          explanation: "Every real number has a position on the number line."
-        },
-        {
-          q: "A number of the form p/q, where q is not zero, is called what?",
-          options: ["Rational number", "Irrational number", "Imaginary number", "Composite number"],
-          answer: 0,
-          concept: "Rational Numbers",
-          explanation: "Rational numbers are exactly the numbers that can be written as p/q with q not equal to zero."
-        }
-      ];
-      return normalizeQuestion(numberSystemQuestions[index % numberSystemQuestions.length], chapter, config);
-    }
-
-    const base = templates[index % templates.length];
-    return normalizeQuestion({ ...base, concept, explanation: `This question is restricted to ${chapter.name} and checks ${concept}. Review the definition, examples, and common exam applications of this concept.` }, chapter, config);
-  }
-
-  function normalizeQuestion(question, chapter, config) {
-    const options = question.options.map((text, index) => ({ text, originalIndex: index }));
-    for (let i = options.length - 1; i > 0; i -= 1) {
-      const swap = (i + chapter.id.length + config.subjectId.length) % (i + 1);
-      [options[i], options[swap]] = [options[swap], options[i]];
-    }
-    return {
-      id: `q_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      type: "objective",
-      question: question.q,
-      options: options.map((option) => option.text),
-      answer: options.findIndex((option) => option.originalIndex === question.answer),
-      correctText: question.options[question.answer],
-      chapterId: chapter.id,
-      chapterName: chapter.name,
-      concept: question.concept,
-      explanation: question.explanation,
-      hint: `Focus on ${question.concept} inside ${chapter.name}. Eliminate options that belong to another chapter.`,
-      difficulty: config.difficulty || "Moderate"
-    };
   }
 
   function startTimer() {
@@ -582,6 +326,7 @@
   function renderQuestion() {
     const question = state.questions[state.index];
     state.questionStartedAt = Date.now();
+    $("submitAnswerBtn").disabled = false; $("skipQuestionBtn").disabled = false;
     $("progressText").textContent = `Question ${state.index + 1} of ${state.questions.length}`;
     $("progressFill").style.width = `${pct(state.index, state.questions.length)}%`;
     $("questionMeta").textContent = `${question.chapterName} | ${question.concept}`;
@@ -614,17 +359,27 @@
   }
 
   function submitAnswer(answerIndex) {
+    if (state.finished || $("submitAnswerBtn").disabled) return;
     const elapsed = (Date.now() - state.questionStartedAt) / 1000;
     const question = state.questions[state.index];
     const selected = answerIndex === null ? null : state.answers[state.index].selected;
     let status;
-    if (question.type === "subjective") {
-      const response = String(selected || "").trim().toLowerCase();
-      const conceptWords = String(question.concept).toLowerCase().split(/\s+/).filter((word) => word.length > 3);
-      status = !response ? "unattempted" : conceptWords.some((word) => response.includes(word)) && response.length >= 18 ? "correct" : "incorrect";
-    } else {
-      status = selected === null ? "unattempted" : selected === question.answer ? "correct" : "incorrect";
+    if (question.type === "subjective" && selected !== null) {
+      const response = String(selected || "").trim();
+      if (!response) { $("hintBox").textContent = "Write an answer first, or skip this question."; $("hintBox").hidden = false; return; }
+      $("hintBox").replaceChildren();
+      const guide = document.createElement("p"); guide.textContent = "Self-review — compare your answer: " + question.correctText;
+      const note = document.createElement("p"); note.textContent = "Tutorly has not automatically graded your written answer.";
+      $("hintBox").append(guide,note); $("hintBox").hidden = false;
+      $("submitAnswerBtn").disabled = true; $("skipQuestionBtn").disabled = true;
+      [["My answer matches","correct"],["Needs revision","incorrect"]].forEach(([label,result]) => {
+        const button=document.createElement("button"); button.type="button"; button.className="secondary-btn";button.textContent=label;
+        button.addEventListener("click",()=>{if(state.finished)return;state.answers[state.index]={selected:response,status:result,time:elapsed,selfReviewed:true};$("submitAnswerBtn").disabled=false;$("skipQuestionBtn").disabled=false;nextQuestionOrFinish();});
+        $("hintBox").append(button);
+      });
+      return;
     }
+    status = selected === null ? "unattempted" : selected === question.answer ? "correct" : "incorrect";
     state.answers[state.index] = { selected, status, time: elapsed };
 
     if (state.mode === "practice" && status === "correct") {
@@ -640,8 +395,10 @@
     }
 
     if (MODE_CONFIG[state.mode].instant) {
+      $("submitAnswerBtn").disabled = true; $("skipQuestionBtn").disabled = true;
       showMiniFeedback(question, status);
-      window.setTimeout(nextQuestionOrFinish, 850);
+      const session = state.sessionId, index = state.index;
+      window.setTimeout(() => { if (!state.finished && state.sessionId === session && state.index === index) nextQuestionOrFinish(); }, 850);
     } else {
       nextQuestionOrFinish();
     }
@@ -697,13 +454,15 @@
     });
     const topics = Object.values(topicStats).map((topic) => ({ ...topic, percentage: pct(topic.correct, topic.total) }));
     const weakAreas = topics.filter((topic) => topic.percentage < 70).map((topic) => topic.concept);
-    const chapterIds = state.selectedChapters.slice();
+    const chapterIds = state.materialBased ? [] : state.selectedChapters.slice();
     return {
       id: state.sessionId || `exam_${state.startedAt}`,
       date: new Date().toISOString(),
       grade: state.profile.grade,
       board: state.profile.board,
       subject: state.subject,
+      materialBased: state.materialBased,
+      assessmentSource: state.materialBased ? "ai_generated_material_practice" : "legacy_practice",
       chapterIds,
       chapters: getSelectedChapters().map((chapter) => chapter.name),
       mode: state.mode,
@@ -820,17 +579,10 @@
     `).join("");
     $("aiFeedback").innerHTML = buildFeedback(report);
     $("recommendedStartBtn")?.addEventListener("click", () => {
-      state.subject = report.subject;
-      state.chapters = Syllabus.getChapters(report.grade, report.board, report.subject.id);
-      state.selectedChapters = report.chapterIds.slice();
-      state.mode = report.percentage < 70 ? "practice" : report.averageTime > 60 ? "rapid" : "chapter";
-      state.settings = {
-        questionCount: state.mode === "practice" ? 10 : 20,
-        timeLimit: state.mode === "practice" ? null : 20,
-        difficulty: state.mode === "rapid" ? "Hard" : state.mode === "practice" ? "Easy" : "Moderate",
-        includeSubjective: false
-      };
-      startExam(true);
+      $("reportView").hidden = true;
+      $("setupPanel").hidden = false;
+      showSetupStep("material");
+      materialInput.error("Add the notes you want to practise. Your previous report is kept.");
     });
     renderQuestionReview("all");
   }
@@ -840,7 +592,7 @@
     const weak = report.weakAreas.slice(0, 3);
     const nextMode = report.percentage >= 85 && report.averageTime > 60 ? "Challenge" : report.percentage < 70 ? "Quick Check" : "Chapter Test";
     return `
-      <p><b>Great work, ${escapeHtml(state.profile.name)}.</b> Your accuracy is ${report.percentage}% and your completion rate is ${report.completionRate}%.</p>
+      <p><b>Great work, ${escapeHtml(state.profile.name)}.</b> Your practice score is ${report.percentage}% and your completion rate is ${report.completionRate}%.${report.answers.some(answer => answer.selfReviewed) ? ' Includes self-reviewed written answers.' : ''}</p>
       <p>${strong.length ? `You are strong in ${strong.map(escapeHtml).join(", ")}.` : "You are building a foundation across the selected concepts."}</p>
       <p>${weak.length ? `Focus next on ${weak.map(escapeHtml).join(", ")}.` : "No major weak area was detected in this attempt."}</p>
       <div class="next-card">

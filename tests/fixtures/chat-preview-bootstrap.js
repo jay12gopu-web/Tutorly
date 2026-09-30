@@ -31,6 +31,18 @@
     preview.lastRequest = payload;
     if (url.pathname === '/api/auth/me') return sessionStorage.getItem('preview_account_offline') === 'true'
       ? json({ detail: 'Intentional account lookup fixture failure.' }, 503) : json({ authenticated: true, user });
+    if (url.pathname === '/api/tests/generate') {
+      await wait(options.signal);
+      if (preview.scenario === 'failure') return json({detail:'Intentional test-generation fixture failure.'},503);
+      const source=payload.materials?.[0];
+      return json({source:'student_material',notice:'Local fixture questions only — no AI provider was called.',questions:[{
+        id:'fixture-test-1',type:'objective',question:'Local fixture: 20 metres in 4 seconds gives which speed?',
+        options:['5 m/s','80 m/s'],answer:0,correctText:'5 m/s',chapterId:source.id,chapterName:source.label,
+        concept:'Speed',explanation:'20 divided by 4 is 5.',hint:'Divide distance by time.',difficulty:'Easy'
+      }, ...(payload.include_subjective ? [{id:'fixture-test-2',type:'subjective',question:'Local fixture: explain how speed is calculated.',
+        options:[],answer:null,correctText:'Speed is distance divided by time.',chapterId:source.id,chapterName:source.label,
+        concept:'Speed',explanation:'Divide distance by time.',hint:'Use distance and time.',difficulty:'Easy'}] : [])]});
+    }
     if (url.pathname === '/api/auth/personalization') return json({ personalization: {} });
     if (url.pathname === '/api/auth/voice-preferences') {
       if (options.method === 'PATCH' || options.method === 'POST') return json({ saved: true, ...payload });

@@ -165,6 +165,14 @@
 
     .step-head p { margin: 5px 0 0; color: var(--exam-muted); font-weight: 800; }
 
+    .test-material-upload { border: 1px dashed var(--exam-line, #d5dbea); border-radius: 18px; padding: 24px; margin-bottom: 24px; }
+    .test-material-upload label { display: block; font-weight: 700; margin-bottom: 14px; }
+    .test-material-upload input { width: 100%; max-width: 100%; min-width: 0; }
+    .test-material-preview { padding: 16px; border: 1px solid var(--exam-line, #d5dbea); border-radius: 14px; margin-bottom: 16px; }
+    .test-material-preview summary { cursor: pointer; overflow-wrap: anywhere; padding: 8px 0; }
+    .test-material-preview .paper-field { margin: 12px 0; }
+    #materialStep textarea { width: 100%; max-width: 100%; min-width: 0; padding: 14px; border: 1px solid var(--exam-line, #d5dbea); border-radius: 12px; background: var(--exam-surface, #fff); color: inherit; font: inherit; resize: vertical; }
+    #testMaterialStatus { min-height: 24px; overflow-wrap: anywhere; }
     .subject-grid,
     .mode-grid {
       display: grid;
@@ -711,57 +719,32 @@
     <section class="test-flow-header fade-up d2">
       <div>
         <span class="exam-kicker" id="flowKicker">Create a test paper</span>
-        <h1 class="exam-title" id="flowTitle">What are you studying?</h1>
-        <p class="exam-subtitle" id="flowLead">Choose one subject. Tutorly will load the chapters that match your saved grade and board.</p>
+        <h1 class="exam-title" id="flowTitle">Turn your notes into a test.</h1>
+        <p class="exam-subtitle" id="flowLead">Add your material, choose your paper settings, and practise.</p>
       </div>
-      <span class="profile-pill" id="profilePill">Grade 9 &middot; CBSE</span>
+      <span class="profile-pill" id="profilePill">Your study material</span>
     </section>
 
     <section class="setup-panel fade-up d3" id="setupPanel">
       <div class="stepper" aria-label="Exam setup steps">
-        <button type="button" data-step="subject" class="active"><b>1</b> Subject</button>
-        <button type="button" data-step="chapter" disabled><b>2</b> Chapters</button>
-        <button type="button" data-step="mode" disabled><b>3</b> Paper setup</button>
+        <button type="button" data-step="material" class="active"><b>1</b> Your material</button>
+        <button type="button" data-step="mode" disabled><b>2</b> Paper setup</button>
       </div>
 
-      <section class="content-card" id="subjectStep">
-        <div class="content-head">
-          <div>
-            <h2>Select a subject</h2>
-            <p>You can change it later before generating your paper.</p>
-          </div>
-          <span class="mini-note" id="subjectAvailability">Subjects available</span>
+      <section class="content-card" id="materialStep">
+        <div class="content-head"><div><h2>Add your study material</h2><p>Upload notes, textbook sections or worksheets. Tutorly will make questions from the text you review.</p></div></div>
+        <div class="test-material-upload">
+          <label for="testMaterialFiles">Add files or photos</label>
+          <input id="testMaterialFiles" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png" multiple />
+          <p class="helper">PDF, TXT, JPG or PNG · up to 5 files, 5 MB each. Scanned PDFs need photos or pasted text.</p>
         </div>
-        <div class="subject-grid" id="subjectGrid"></div>
-        <div class="footer-actions">
-          <span class="helper">Selected: <strong id="selectedSubjectLabel">Choose a subject</strong></span>
-          <button class="primary-btn" id="continueToChapters" type="button" disabled>
-            Continue to chapters <span aria-hidden="true">&#8594;</span>
-          </button>
-        </div>
-      </section>
-
-      <section class="content-card" id="chapterStep" hidden>
-        <div class="content-head">
-          <div>
-            <h2>Choose what goes into the paper</h2>
-            <p id="subjectSummary">Select as many chapters as you want.</p>
-          </div>
-          <span class="mini-note">Only selected chapters are used</span>
-        </div>
-        <div class="chapter-toolbar">
-          <label class="chapter-search" for="chapterSearch">
-            <span aria-hidden="true">&#128269;</span>
-            <input id="chapterSearch" type="search" placeholder="Search chapters" />
-          </label>
-          <button class="secondary-btn" id="selectAllChapters" type="button" aria-pressed="false">Select all</button>
-          <div class="selection-counter"><strong id="chapterCount">0</strong> selected</div>
-        </div>
-        <div class="chapter-grid" id="chapterGrid"></div>
-        <div class="footer-actions">
-          <button class="secondary-btn" id="backToSubjects" type="button">&#8592; Back</button>
-          <button class="primary-btn" id="continueToModes" type="button" disabled>Continue to paper setup &#8594;</button>
-        </div>
+        <div id="testMaterialList"></div>
+        <label class="paper-field" for="testPastedNotes">Or paste your notes
+          <textarea id="testPastedNotes" rows="6" maxlength="24000" placeholder="Paste the sections you want to be tested on…"></textarea>
+        </label>
+        <p class="helper">Review extracted text before continuing. Up to 24,000 characters combined. Notes are sent to Tutorly's existing AI to generate your paper; original files are not stored. Notes stay in this tab until refresh. Avoid personal information.</p>
+        <p id="testMaterialStatus" role="status" aria-live="polite"></p>
+        <div class="footer-actions"><span class="helper">No subject or chapter selection needed.</span><button class="primary-btn" id="continueToModes" type="button">Continue to paper setup &#8594;</button></div>
       </section>
 
       <section class="setup-layout" id="modeStep" hidden>
@@ -769,7 +752,7 @@
           <section class="setup-section">
             <h2>Choose the paper style</h2>
             <p>Pick the format that best matches what you want to practise.</p>
-            <p class="visually-hidden" id="modeSummary">Selected subject and chapters</p>
+            <p class="visually-hidden" id="modeSummary">Uploaded study material</p>
             <div class="mode-grid" id="modeGrid"></div>
           </section>
 
@@ -779,7 +762,7 @@
             <div class="mode-options" id="modeOptions"></div>
           </section>
 
-          <button class="secondary-btn setup-back" id="backToChapters" type="button">&#8592; Back to chapters</button>
+          <button class="secondary-btn setup-back" id="backToMaterials" type="button">&#8592; Back to material</button>
         </div>
 
         <aside class="summary-card">
@@ -787,8 +770,8 @@
           <h3>Ready to generate</h3>
           <p>Review the setup before Tutorly builds your test.</p>
           <dl class="summary-list">
-            <div><dt>Subject</dt><dd id="summarySubject">&mdash;</dd></div>
-            <div><dt>Chapters</dt><dd id="summaryChapters">&mdash;</dd></div>
+            <div><dt>Source</dt><dd id="summarySubject">Your material</dd></div>
+            <div><dt>Files / notes</dt><dd id="summaryChapters">&mdash;</dd></div>
             <div><dt>Style</dt><dd id="summaryMode">Quick Check</dd></div>
             <div><dt>Questions</dt><dd id="summaryQuestions">10</dd></div>
             <div><dt>Difficulty</dt><dd id="summaryDifficulty">Easy</dd></div>
@@ -796,7 +779,7 @@
             <div><dt>Timer</dt><dd id="summaryTime">No limit</dd></div>
           </dl>
           <button class="primary-btn generate-paper" id="startExamBtn" type="button">Generate test paper &#8594;</button>
-          <p class="generation-note">Questions are generated only from your selected chapters.</p>
+          <p class="generation-note" id="generationStatus" role="status">Questions use your reviewed notes. AI answers can contain mistakes.</p>
         </aside>
       </section>
     </section>
@@ -812,12 +795,13 @@
         <span class="timer-badge">Time: <b id="timerText">No limit</b></span>
       </div>
       <p class="question-meta" id="progressText">Question 1 of 10</p>
+      <p class="helper" id="paperNotice" role="status">Practice questions are AI-generated. Check important answers against your notes.</p>
       <div class="progress-track" aria-label="Exam progress"><span id="progressFill"></span></div>
       <article class="question-card">
         <p class="question-meta" id="questionMeta">Chapter | Concept</p>
         <h3 class="question-text" id="questionText">Question text</h3>
         <div class="answer-grid" id="answerGrid"></div>
-        <p class="hint-box" id="hintBox" hidden></p>
+        <div class="hint-box" id="hintBox" hidden></div>
         <div class="exam-actions">
           <button class="btn btn-soft" id="hintBtn" type="button">Hint</button>
           <button class="btn btn-soft" id="skipQuestionBtn" type="button">Skip</button>
@@ -907,7 +891,7 @@
         <select class="select" id="historyFilter">
           <option value="all">All Types</option>
           <option value="practice">Quick Check</option>
-          <option value="chapter">Chapter Test</option>
+          <option value="chapter">Topic Test</option>
           <option value="mock">Exam Mode</option>
           <option value="rapid">Challenge</option>
         </select>
@@ -919,8 +903,9 @@
   <script src="js/auth-client.js?v=curriculum-20260826"></script>
   <script src="js/quest-client.js?v=quests-20260904"></script>
   <script src="js/curriculum-client.js?v=curriculum-20260913"></script>
-  <script src="js/exams/syllabus-config.js?v=curriculum-20260826"></script>
-  <script src="js/exams/exam-system.js?v=tests-flow-20260825"></script>
+  <script src="js/study/materials.js?v=20260929"></script>
+  <script src="js/exams/material-input.js?v=20260930"></script>
+  <script src="js/exams/exam-system.js?v=material-tests-20260930"></script>
   <script src="js/global-layout.js?v=responsive-20260905b"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
   <script src="js/mobile-app.js?v=responsive-20260905c"></script>
