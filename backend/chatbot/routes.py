@@ -16,12 +16,12 @@ from pydantic import BaseModel
 try:
     from backend.activity_store import activity_store
     from backend.auth_routes import authenticated_user_context
-    from backend.observability.context import set_error_code
+    from backend.observability.context import set_error_code, set_product_service
     from backend.voice_agents import voice_agent, voice_agents
 except ImportError:
     from activity_store import activity_store
     from auth_routes import authenticated_user_context
-    from observability.context import set_error_code
+    from observability.context import set_error_code, set_product_service
     from voice_agents import voice_agent, voice_agents
 
 from .ai import SemanticTutorService
@@ -139,6 +139,13 @@ async def chatbot_health() -> dict:
         "routing": "semantic_llm",
         "modes": [strategy.mode.value for strategy in orchestrator.modes.all()],
         "transcription": "groq_whisper",
+        "observability": {
+            "version": 2,
+            "services": ["auth", "chat", "study_bot", "human_tutor", "images", "voice", "vision", "curriculum", "quests"],
+            "collection": "http_requests",
+            "storage_configured": activity_store.configured,
+            "websocket": False,
+        },
     }
 
 
@@ -405,6 +412,7 @@ async def respond_options() -> dict:
 @router.post("/chat")
 @router.post("/chatbot/respond")
 async def respond(request: ChatbotRequest, authorization: str | None = Header(default=None)):
+    set_product_service("study_bot" if request.mode.value == "study" else "chat")
     started = perf_counter()
     try:
         enforce_chat_rate_limit(request)
@@ -478,6 +486,7 @@ async def feedback(request: TeachingFeedbackRequest):
 
 @router.post("/chatbot/stream")
 async def stream(request: ChatbotRequest, authorization: str | None = Header(default=None)):
+    set_product_service("study_bot" if request.mode.value == "study" else "chat")
     enforce_chat_rate_limit(request)
     await bind_teaching_session(request, authorization)
 
