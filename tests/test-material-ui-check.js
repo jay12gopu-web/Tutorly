@@ -12,7 +12,7 @@ let failure=false;
 const context={AbortController,document:{getElementById:id=>ids[id],createElement:()=>new Element()},window:{
   TutorlyAuth:{backendOrigin:()=> 'https://fixture.invalid',getSessionToken:()=> 'fixture'},
   TutorlyStudyMaterials:{readFile:async file=>({text:'Synthetic note text for '+file.name,partial:false})},crypto:{randomUUID:()=> 'fixture'},setTimeout,clearTimeout},
-  fetch:async(url,options)=>{requests.push({url,...options});return {ok:!failure,json:async()=>failure?{detail:'Retry safely'}:{questions:[{question:'Fixture'}]}}}};
+  fetch:async(url,options)=>{requests.push({url,...options});return {ok:!failure,status:failure?503:200,headers:{get:()=>null},json:async()=>failure?{detail:'Private provider detail'}:{questions:[{question:'Fixture'}]}}}};
 vm.runInNewContext(fs.readFileSync('js/exams/material-input.js','utf8'),context);
 const api=context.window.TutorlyTestMaterials,view=api.create({});
 (async()=>{
@@ -27,7 +27,7 @@ const api=context.window.TutorlyTestMaterials,view=api.create({});
   await api.generate(view.get(),{questionCount:5,difficulty:'Easy',includeSubjective:false},{grade:'9',board:'CBSE'});
   const body=JSON.parse(requests[0].body);assert.equal(body.materials[0].text,ids.testPastedNotes.value);assert.equal(body.grade,'9');
   assert.equal(requests[0].headers.Authorization,'Bearer fixture');
-  failure=true;await assert.rejects(()=>api.generate(view.get(),{},{ }),/Retry safely/);assert.equal(view.get().length,1);
+  failure=true;await assert.rejects(()=>api.generate(view.get(),{},{ }),/notes and settings are kept; please retry/);assert.equal(view.get().length,1);
   const html=fs.readFileSync('tests.html','utf8'),system=fs.readFileSync('js/exams/exam-system.js','utf8');
   assert.ok(html.includes('id="materialStep"'));assert.ok(!html.includes('id="subjectStep"'));assert.ok(!html.includes('id="chapterStep"'));
   assert.ok(!system.includes('generateQuestions('));assert.ok(system.includes('state.materialBased ? [] : state.selectedChapters.slice()'));

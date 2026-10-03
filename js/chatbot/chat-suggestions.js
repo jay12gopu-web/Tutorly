@@ -62,9 +62,13 @@
   }
 
   function createIcon(doc, name) {
-    // Neutral capability glyphs, not unofficial third-party brand logos.
-    const icon = doc.createElement("span");
-    icon.textContent = { notes: "▤", writing: "✎", calendar: "▦", graph: "ƒ", revision: "↻", presentation: "▣" }[name] || "✦";
+    // Locally bundled Tabler assets; no third-party image requests.
+    const icon = doc.createElement("img");
+    const file = { notes: "notes", writing: "pencil", calendar: "calendar-time", graph: "chart-line", revision: "refresh", presentation: "presentation", youtube: "brand-youtube" }[name] || "notes";
+    icon.src = `assets/chat-icons/${file}.svg`;
+    icon.alt = "";
+    icon.width = 20;
+    icon.height = 20;
     return icon;
   }
 

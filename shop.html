@@ -573,7 +573,7 @@
     .cart-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 70;
+      z-index: 11000;
       display: none;
       background: rgba(31, 39, 68, 0.24);
       backdrop-filter: blur(8px);
@@ -767,10 +767,10 @@
         position: fixed;
         left: 12px;
         right: 12px;
-        bottom: 12px;
-        z-index: 90;
+        bottom: calc(92px + env(safe-area-inset-bottom));
+        z-index: 11001;
         display: none;
-        max-height: min(78vh, 620px);
+        max-height: min(68dvh, 620px);
         overflow-y: auto;
         border-radius: 26px;
         padding: 18px;
@@ -788,7 +788,9 @@
       }
 
       .mobile-cart-fab {
-        bottom: calc(18px + env(safe-area-inset-bottom));
+        position: fixed;
+        bottom: calc(94px + env(safe-area-inset-bottom));
+        z-index: 9101;
       }
     }
 
@@ -819,7 +821,7 @@
     <section class="panel hero-panel fade-up d2">
       <span class="kicker">Student coin shop</span>
       <h1 class="title">Buy helpful boosts for tests.</h1>
-      <p class="sub">Spend your Tutor Tokens on smart helps like double chance, erase answers, extra time, and hints. Add boosts to your cart, then checkout when you are ready.</p>
+      <p class="sub">Spend learning coins on helps like double chance, erase answers, extra time, and hints. Coins are separate from AI credits. Add boosts to your cart, then checkout when you are ready.</p>
     </section>
 
     <section id="cartPanel" class="panel cart-panel fade-up d3" aria-label="Cart">
@@ -834,7 +836,7 @@
           </span>
           <div>
             <h2 class="panel-title">Cart</h2>
-            <p class="panel-copy">Your selected helps will appear here before you spend coins.</p>
+            <p class="panel-copy">Your selected helps will appear here before you spend learning coins. Coins are separate from AI credits and cannot be exchanged for cash.</p>
           </div>
         </div>
         <button id="cartCloseBtn" class="cart-close" type="button" aria-label="Close cart">×</button>
@@ -846,6 +848,7 @@
       <div class="cart-actions">
         <button id="clearCartBtn" class="cart-secondary" type="button">Clear Cart</button>
         <button id="checkoutBtn" class="cart-checkout" type="button">Checkout</button>
+        <a class="cart-checkout" href="quests.html">Earn coins through Quests</a>
       </div>
     </section>
 
@@ -868,6 +871,20 @@
     const coinBalance = document.getElementById("coinBalance");
     const shopList = document.getElementById("shopList");
     const cartPanel = document.getElementById("cartPanel");
+    // A transformed fade-up parent made the mobile sheet fixed to its content,
+    // not to the viewport. Keep the same cart, outside that containing block.
+    const cartHome = cartPanel.parentElement;
+    const cartPosition = document.createComment("cart desktop position");
+    cartHome.insertBefore(cartPosition, cartPanel);
+    const cartMobile = window.matchMedia("(max-width: 720px)");
+    function placeCart() {
+      if (cartMobile.matches) {
+        document.body.appendChild(cartPanel);
+        cartPanel.classList.remove("fade-up", "d3");
+      } else cartHome.insertBefore(cartPanel, cartPosition.nextSibling);
+    }
+    cartMobile.addEventListener("change", placeCart);
+    placeCart();
     const cartBackdrop = document.getElementById("cartBackdrop");
     const mobileCartFab = document.getElementById("mobileCartFab");
     const mobileCartCount = document.getElementById("mobileCartCount");
@@ -979,14 +996,37 @@
       return window.matchMedia("(max-width: 720px)").matches;
     }
 
+    let cartBackground = [];
+    let cartFocusReturn = null;
     function toggleMobileCart(forceOpen) {
       if (!cartPanel || !cartBackdrop || !mobileCartFab) return;
       const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !cartPanel.classList.contains("mobile-open");
+      const wasOpen = cartPanel.classList.contains("mobile-open");
+      if (shouldOpen && !wasOpen) {
+        cartFocusReturn = document.activeElement;
+        cartBackground = Array.from(document.body.children).filter(item => item !== cartPanel && item !== cartBackdrop && item.tagName !== 'SCRIPT').map(item => [item,item.inert]);
+        cartBackground.forEach(([item]) => { item.inert = true; });
+        cartPanel.setAttribute('role','dialog'); cartPanel.setAttribute('aria-modal','true');
+      } else if (!shouldOpen) {
+        cartBackground.forEach(([item,previous]) => { item.inert = previous; }); cartBackground = [];
+        cartPanel.removeAttribute('aria-modal'); cartPanel.removeAttribute('role');
+      }
       cartPanel.classList.toggle("mobile-open", shouldOpen);
       cartBackdrop.classList.toggle("show", shouldOpen);
       document.body.classList.toggle("cart-popup-open", shouldOpen);
       mobileCartFab.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+      if (shouldOpen) cartCloseBtn.focus();
+      else if (wasOpen) cartFocusReturn?.focus();
     }
+    cartPanel.addEventListener('keydown', event => {
+      if (!cartPanel.classList.contains('mobile-open')) return;
+      if (event.key === 'Escape') { closeMobileCart(); return; }
+      if (event.key !== 'Tab') return;
+      const controls = Array.from(cartPanel.querySelectorAll('button:not([disabled]),a[href]'));
+      const first = controls[0], last = controls[controls.length-1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    });
 
     function closeMobileCart() {
       toggleMobileCart(false);

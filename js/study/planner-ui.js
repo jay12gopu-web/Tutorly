@@ -61,6 +61,25 @@
       if (store.isGuest()) container.append(el('p', 'study-storage-note', 'Guest plans stay on this device only. Signing in uses your account’s separate plans.'));
       else container.append(el('p', 'study-storage-note', 'Saved for your account in this browser. Cross-device sync is not available yet.'));
       statusNode = el('p', 'study-status'); statusNode.setAttribute('role', 'status'); statusNode.setAttribute('aria-live', 'polite'); container.append(statusNode);
+      if (view !== 'setup') {
+        const backup = el('details'); backup.append(el('summary', '', 'Back up or restore plans'));
+        backup.append(el('p', 'study-storage-note', 'Clearing site data removes browser-only plans. Backups may contain private notes; keep yours safe. Restoring adds missing plans to the current account/device and never overwrites existing IDs.'));
+        backup.append(button('Download backup', () => {
+          const url = URL.createObjectURL(new Blob([store.exportPlans()], {type:'application/json'}));
+          const link = el('a'); link.href = url; link.download = 'tutorly-study-backup.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url),1000);
+        }));
+        const restore = input('file', '', {accept:'.json,application/json'});
+        restore.addEventListener('change', async () => {
+          const owner = store.namespace(), file = restore.files?.[0]; if (!file) return;
+          try {
+            if (file.size > 2000000) throw new Error('Use a backup under 2 MB.');
+            const text = await file.text(); if (owner !== store.namespace()) throw new Error('Account changed. Choose the backup again.');
+            store.importPlans(text); render(); announce(store.getError() || 'Missing plans restored. Existing plans kept.');
+          } catch (error) { announce(error.message || 'Backup could not be restored; saved plans kept.',true); }
+          restore.value = '';
+        });
+        backup.append(field('Restore backup', restore)); container.append(backup);
+      }
     }
     function showList() {
       header('A calmer way to prepare', 'Choose what you’re preparing for. Tutorly will turn the time you have into a practical study plan.');
@@ -176,7 +195,13 @@
       const copy = el('div', 'study-task-copy'); copy.append(el('p', 'study-eyebrow', `${task.kind}${task.part ? ` · part ${task.part}` : ''} · ${task.estimatedMinutes} min`), el('h3', '', task.title));
       if (task.questionCount) copy.append(el('small', '', `${task.questionCount} questions planned`));
       row.append(copy);
-      if (task.status === 'completed') { row.append(el('span', 'study-complete', 'Completed')); return row; }
+      if (task.status === 'completed') {
+        row.append(el('span', 'study-complete', 'Completed'));
+        if (today() < plan.examDate) row.append(button('Undo completion', () => run(() => persist(engine.reopenTask(plan, task.id, { today: today() })), 'Task reopened and remaining work rebalanced. Quiz evidence is kept.')));
+        const review = el('a', 'study-button', 'Review in Tutorly');
+        review.href = plan.conversationId ? `maths_gpt.html?conversationId=${encodeURIComponent(plan.conversationId)}` : 'maths_gpt.html';
+        row.append(review); return row;
+      }
       if (today() >= plan.examDate) { row.append(el('span', 'study-subtitle', 'Preparation ended')); return row; }
       const actions = el('div', 'study-task-actions');
       actions.append(button('Start', () => run(() => { store.select(plan.id, task.id); options.onStudyTask?.(plan, task); }, 'Task opened in Tutorly chat.'), 'study-button study-button-primary'));

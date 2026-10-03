@@ -66,6 +66,8 @@
       this.studentCommands = [];
       this.redoStack = [];
       this.render();
+      if (!lesson) { this.tutorlyLayer.innerHTML = ''; this.studentLayer.innerHTML = ''; this.focusLayer.innerHTML = ''; }
+      this.fitCurrentStep();
     }
 
     compactState() {
@@ -81,6 +83,17 @@
       if (!this.lesson) return;
       this.stepIndex = Math.max(0, Math.min(index, this.lesson.steps.length - 1));
       this.render();
+      this.fitCurrentStep();
+    }
+
+    fitCurrentStep() {
+      const box = this.lesson?.steps?.[this.stepIndex]?.focus;
+      if (!box || ![box.x,box.y,box.width,box.height].every(Number.isFinite)) return;
+      const width = Math.min(1000, Math.max(440, box.width + 100, (box.height + 90) / .65));
+      const height = width * .65;
+      const x = Math.max(0, Math.min(1000 - width, box.x + box.width / 2 - width / 2));
+      const y = Math.max(0, Math.min(650 - height, box.y + box.height / 2 - height / 2));
+      this.svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
     }
 
     next() { this.setStep(this.stepIndex + 1); }

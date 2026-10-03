@@ -279,12 +279,12 @@
         const link = document.createElement("link");
         link.id = "tutorly-katex-style";
         link.rel = "stylesheet";
-        link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css";
+        link.href = "assets/vendor/katex/katex.min.css";
         document.head.appendChild(link);
       }
       katexLoader = loadScriptOnce(
         "tutorly-katex-script",
-        "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js",
+        "assets/vendor/katex/katex.min.js",
         "katex"
       );
     }

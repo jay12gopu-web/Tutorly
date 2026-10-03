@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorly</title>
+  <title>AI Tutor | Tutorly</title>
   <link rel="canonical" href="https://mytutor.co.in/maths_gpt.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
 
@@ -18,9 +18,10 @@
   <link rel="stylesheet" href="css/live-board.css?v=chat-panel-v2" />
   <link rel="stylesheet" href="css/chatbot-mobile-polish.css?v=study-composer-20260825" />
   <link rel="stylesheet" href="css/voice-chat.css?v=voice-settings-save-20260826" />
-  <link rel="stylesheet" href="css/chat-layout.css?v=20260919" />
+  <link rel="stylesheet" href="css/chat-layout.css?v=audit-20261002" />
   <link rel="stylesheet" href="css/study-planner.css?v=20260929" />
   <link rel="stylesheet" href="css/study-session.css?v=20260929" />
+  <link rel="stylesheet" href="css/audit-repairs.css?v=20261002" />
 </head>
 
 <body class="chat-ui-refresh" data-tutorly-surface="workspace">
@@ -86,6 +87,10 @@
             <path d="m13 2-1 7h6l-8 13 1-8H5l8-12z" />
           </svg>
           <span class="side-label">Quests</span>
+        </a>
+
+        <a class="side-link workspace-link" href="progress.html" data-workspace-route="progress.html" data-workspace-title="Progress" title="Progress">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16v-4M12 16V8M17 16V4" /></svg><span class="side-label">Progress</span>
         </a>
 
         <a class="side-link workspace-link" href="more-tools.html" data-workspace-route="more-tools.html" data-workspace-title="More Tools" title="More Tools">
@@ -205,7 +210,8 @@
 
       <section class="work-area">
         <section id="hero" class="hero">
-          <h1>What can I help you with?</h1>
+          <h1>What would you like to learn today?</h1>
+          <p class="hero-sub">Learn smarter with Tutorly.</p>
         </section>
 
         <section id="chatWindow" class="chat-window" aria-live="polite">
@@ -253,7 +259,7 @@
                 </button>
                 <button class="model-option" type="button" role="option" data-model="study">
                   <span class="model-glyph" aria-hidden="true">&#9635;</span>
-                  <span><strong>Study</strong><small>Exam preparation</small></span>
+                  <span><strong>Study</strong><small>Quiz and revision</small></span>
                 </button>
               </div>
             </div>
@@ -265,7 +271,7 @@
                   <path d="M5 12h14" />
                 </svg>
               </button>
-              <textarea id="input" rows="1" placeholder="Ask Tutorly anything..." aria-label="Ask Tutorly"></textarea>
+              <textarea id="input" rows="1" placeholder="Ask anything about your studies..." aria-label="Ask Tutorly"></textarea>
               <div id="voiceWave" class="voice-wave" aria-hidden="true">
                 <span></span>
                 <span></span>
@@ -306,7 +312,7 @@
           </div>
           <p class="disclaimer">Tutorly can make mistakes. Check important answers.</p>
         </section>
-        <nav id="chatSuggestions" class="chat-suggestions" aria-label="Ideas to get started"></nav>
+        <nav id="chatSuggestions" class="chat-suggestions" aria-label="Suggested prompts"></nav>
       </section>
 
       <aside id="chatLiveBoardPanel" class="chat-live-board-panel" aria-label="Tutorly Live Board visual panel" hidden>
@@ -492,22 +498,22 @@
   </div>
 
   <script src="shared/tutorly-plans.js"></script>
-  <script src="js/auth-client.js?v=study-entry-20260928"></script>
-  <script src="js/curriculum-client.js?v=curriculum-20260913"></script>
+  <script src="js/auth-client.js"></script>
+  <script src="js/curriculum-client.js?v=curriculum-20260826"></script>
   <script src="frontend/subscription/premium-guard.js"></script>
   <script src="js/chatbot/chatbot-core.js"></script>
-  <script src="js/chatbot/mode-registry.js?v=study-planner-20260927"></script>
+  <script src="js/chatbot/mode-registry.js"></script>
   <script src="js/chatbot/chat-history-store.js"></script>
   <script src="js/chatbot/learning-tools.js"></script>
-  <script src="js/chatbot/chat-suggestions.js?v=20260919"></script>
+  <script src="js/chatbot/chat-suggestions.js?v=audit-20261002"></script>
   <script src="js/study/plan-engine.js?v=20260920"></script>
   <script src="js/study/plan-store.js?v=20260920"></script>
   <script src="js/study/materials.js?v=20260929"></script>
   <script src="js/education-registry.js?v=20260930"></script>
   <script src="js/study/setup-controls.js?v=20260930"></script>
   <script src="js/study/quiz-card.js?v=20260929"></script>
-  <script src="js/study/planner-ui.js?v=20260929"></script>
-  <script src="js/study/session-controller.js?v=20260929"></script>
+  <script src="js/study/planner-ui.js?v=audit-20261002"></script>
+  <script src="js/study/session-controller.js?v=audit-20261002"></script>
   <script src="js/chatbot/response-policy.js"></script>
   <script src="js/chatbot/teaching-actions.js"></script>
   <script src="js/chatbot/educational-visuals.js"></script>
@@ -526,7 +532,7 @@
   <script src="js/live-board/mock-provider.js?v=chat-panel-v2"></script>
   <script src="js/live-board/provider.js?v=chat-panel-v2"></script>
   <script src="js/live-board/chat-panel.js?v=chat-panel-v2"></script>
-  <script src="js/app.js?v=study-guided-20260929"></script>
+  <script src="js/app.js?v=chat-history-organizer-20260912"></script>
   <script src="js/tutorly-shell.js"></script>
   <script src="js/page-transitions.js?v=embedded-tools-20260824"></script>
   <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>

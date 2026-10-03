@@ -419,6 +419,7 @@
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
 <body data-tutorly-surface="workspace">
+  <p class="audit-status" role="note">Referral preview only. Codes and all referral counts, reward totals, pending rewards, streaks and rankings are sample/local data. They do not credit your wallet. Real referral rewards are not connected yet.</p>
   <div id="root">
     <div class="fallback-workspace">
       <div class="blob one"></div>
@@ -435,7 +436,7 @@
           <section class="fallback-card">
             <span class="fallback-pill">Invite friends, unlock rewards</span>
             <h1 class="fallback-title">Refer & Earn</h1>
-            <p class="fallback-sub">Share Tutorly with classmates. Every successful invite earns coins, unlocks badges, and pushes you up the referral leaderboard.</p>
+            <p class="fallback-sub">Preview the invitation experience. Example rewards and referral metrics are not connected to your real account or wallet.</p>
 
             <div class="fallback-code">
               <strong id="refCode">TUTORLY-XXXXXX</strong>
@@ -469,7 +470,7 @@
             <article class="fallback-mini"><span>01</span><b>Share Code</b><p class="fallback-sub" style="font-size:14px;">Send your referral link.</p></article>
             <article class="fallback-mini"><span>02</span><b>Friend Joins</b><p class="fallback-sub" style="font-size:14px;">They create an account.</p></article>
             <article class="fallback-mini"><span>03</span><b>They Learn</b><p class="fallback-sub" style="font-size:14px;">They use Tutorly tools.</p></article>
-            <article class="fallback-mini"><span>04</span><b>You Earn</b><p class="fallback-sub" style="font-size:14px;">Coins land automatically.</p></article>
+            <article class="fallback-mini"><span>04</span><b>Example reward</b><p class="fallback-sub" style="font-size:14px;">Preview only; no coins are issued.</p></article>
           </div>
         </section>
       </div>
@@ -507,8 +508,8 @@
         }
         localStorage.setItem(codeKey, code);
         localStorage.setItem(expKey, String(exp));
-        localStorage.removeItem(legacyCodeKey);
-        localStorage.removeItem(legacyExpKey);
+        if (legacyCodeKey !== codeKey) localStorage.removeItem(legacyCodeKey);
+        if (legacyExpKey !== expKey) localStorage.removeItem(legacyExpKey);
         codeEl.textContent = code;
         return { code, exp };
       }
@@ -614,8 +615,8 @@
 
       localStorage.setItem(CODE_KEY, code);
       localStorage.setItem(EXP_KEY, String(exp));
-      localStorage.removeItem(LEGACY_CODE_KEY);
-      localStorage.removeItem(LEGACY_EXP_KEY);
+      if (LEGACY_CODE_KEY !== CODE_KEY) localStorage.removeItem(LEGACY_CODE_KEY);
+      if (LEGACY_EXP_KEY !== EXP_KEY) localStorage.removeItem(LEGACY_EXP_KEY);
       return { code, exp };
     }
 
@@ -737,7 +738,7 @@
               transition: { duration: 0.65 }
             }, "Refer & Earn"),
             h("p", { className: "mt-4 text-lg font-semibold leading-8 text-slate-600 dark:text-slate-300" },
-              "Share Tutorly with classmates. Every successful invite earns coins, unlocks badges, and pushes you up the referral leaderboard."
+              "Preview the invitation experience. Example rewards and referral metrics are not connected to your real account or wallet."
             )
           ),
           h("div", { className: "mt-7 w-full max-w-xl rounded-[28px] border border-white/70 bg-white/70 p-4 shadow-premium dark:border-white/10 dark:bg-white/8" },
@@ -874,7 +875,7 @@
         { title: "Share your code", copy: "Send your referral link to friends.", icon: Share2 },
         { title: "Friend joins", copy: "They create their Tutorly account.", icon: Users },
         { title: "They learn", copy: "They use study tools and AI help.", icon: Rocket },
-        { title: "You earn", copy: "Coins land in your wallet automatically.", icon: Trophy }
+        { title: "Example reward", copy: "Preview only; no coins are issued.", icon: Trophy }
       ];
 
       return h(MotionCard, { className: "p-5 sm:p-7 lg:p-8", delay: 0.12 },
@@ -884,7 +885,7 @@
             h("h2", { className: "mt-2 font-display text-3xl font-black text-slate-950 dark:text-white sm:text-4xl" }, "A cleaner path from share to reward")
           ),
           h("p", { className: "m-0 max-w-md text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300" },
-            "Track the full referral journey with clear milestones and automatic reward status updates."
+            "Preview the referral journey. These sample milestones are not connected to real accounts or rewards."
           )
         ),
         h("div", { className: "relative grid gap-4 lg:grid-cols-4" },

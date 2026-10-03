@@ -332,6 +332,16 @@
     plan.updatedDate = today;
     return plan;
   }
+  function reopenTask(input, taskId, options) {
+    validatePlan(input);
+    const plan = copy(input);
+    const item = plan.tasks.find(value => value.id === taskId);
+    if (!item || item.status !== 'completed') fail('unknown_task', 'Only completed tasks can be reopened.');
+    item.status = 'pending';
+    delete item.completedDate;
+    item.date = item.scheduledDate || item.date;
+    return rebalance(plan, options || {});
+  }
   function moveTask(input, taskId, date, options) {
     validatePlan(input);
     const plan = copy(input);
@@ -375,5 +385,5 @@
       status: today > plan.examDate ? 'closed' : today === plan.examDate ? 'exam-day' : 'active'
     };
   }
-  return { VERSION, createPlan, rebalance, completeTask, moveTask, progress, normalizeDate, todayDate, addDays, daysBetween };
+  return { VERSION, createPlan, rebalance, completeTask, reopenTask, moveTask, progress, normalizeDate, todayDate, addDays, daysBetween };
 });

@@ -57,9 +57,18 @@
       const response = await fetch(origin + '/api/tests/generate', {method:'POST', signal:controller.signal,
         headers:{'Content-Type':'application/json', ...(token ? {Authorization:'Bearer ' + token} : {})},
         body:JSON.stringify({materials,question_count:settings.questionCount,difficulty:settings.difficulty,
-          include_subjective:settings.includeSubjective,grade:String(profile.grade || ''),board:String(profile.board || '')})});
+          include_subjective:settings.includeSubjective,grade:String(profile.grade || ''),board:String(profile.board || ''),
+          ...(profile.curriculumContext ? {curriculum_context:profile.curriculumContext} : {})})});
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Could not generate this paper. Check your notes and retry.');
+      if (!response.ok) {
+        const reference = response.headers?.get?.('X-Request-ID');
+        const message = response.status === 404 ? 'The test service is updating. Your notes and settings are kept. Retry after the service is available.'
+          : response.status === 401 ? 'Your session expired. Sign in again, then retry. Your notes are kept in this tab.'
+          : response.status === 429 ? 'The test service is busy. Wait a moment and retry. Your notes are kept.'
+          : response.status >= 500 ? 'Tutorly could not generate this paper right now. Your notes and settings are kept; please retry.'
+          : 'Check your notes and settings, then retry.';
+        throw new Error(message + (reference ? ' Reference: ' + reference : ''));
+      }
       if (!Array.isArray(data.questions) || !data.questions.length) throw new Error('No usable questions were returned. Add more material and retry.');
       return data;
     } catch (error) { if (error.name === 'AbortError') throw new Error('Generation took too long. Your notes are kept; try again.'); throw error; }

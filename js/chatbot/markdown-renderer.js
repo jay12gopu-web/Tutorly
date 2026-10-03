@@ -187,6 +187,10 @@
         continue;
       }
 
+      const bareMath = line.match(/^\[\s*(.+?)\s*\]$/);
+      if (bareMath && !/\]\(/.test(line) && /^[\d\sA-Za-z{}_^+*/=().,\\-]+$/.test(bareMath[1]) && /[=^]|\\(?:frac|sqrt|sum|int)\b/.test(bareMath[1])) {
+        closeParagraph(); closeList(); html.push(renderDisplayMath(bareMath[1])); continue;
+      }
       const displayMath = line.match(/^\$\$(.+)\$\$$|^\\\[(.+)\\\]$/);
       if (displayMath) {
         closeParagraph();
@@ -199,7 +203,7 @@
       if (heading) {
         closeParagraph();
         closeList();
-        const level = heading[1].length;
+        const level = Math.min(4, heading[1].length + 1);
         html.push(`<h${level}>${renderInlineMarkdown(heading[2], richResponse)}</h${level}>`);
         continue;
       }

@@ -1,6 +1,12 @@
 (function () {
   if (window.__tutorlyGlobalLayoutApplied) return;
   window.__tutorlyGlobalLayoutApplied = true;
+  const auditStyle = document.createElement('link');
+  auditStyle.rel = 'stylesheet'; auditStyle.href = 'css/audit-repairs.css?v=20261002';
+  document.head.appendChild(auditStyle);
+  const featureTitles = { 'maths_gpt.html':'AI Tutor', 'profile.html':'Profile', 'lessons.html':'Learn', 'practice.html':'Practice', 'tests.html':'Tests', 'progress.html':'Progress', 'quests.html':'Quests', 'bookmarks.html':'Bookmarks', 'shop.html':'Shop', 'refer_earn.html':'Refer and earn', 'subscriptions.html':'Plans', 'payment-history.html':'Payment history', 'more-tools.html':'More tools', 'contact.html':'Contact', 'ask-doubt.html':'Ask a doubt', 'find-tutor.html':'Find a tutor', 'leaderboard.html':'Leaderboard', 'live-board.html':'Live Board', 'privacy.html':'Privacy Policy', 'terms_conditions.html':'Terms of Service', 'release-notes.html':'Release notes' };
+  const featureTitle = featureTitles[location.pathname.split('/').pop().toLowerCase()];
+  if (featureTitle) document.title = featureTitle + ' · Tutorly';
 
   if (document.body.dataset.tutorlySurface === 'workspace' && !document.body.dataset.theme) {
     const storedTheme = localStorage.getItem('tutorly_theme');
@@ -113,7 +119,7 @@
       { key: 'home', label: 'Home', href: 'home.html', match: ['home.html', 'welcome.html'] },
       { key: 'ai', label: 'AI Tutor', href: 'maths_gpt.html', match: ['maths_gpt.html'] },
       { key: 'subjects', label: 'Tests', href: 'tests.html', match: ['tests.html'] },
-      { key: 'practice', label: 'Practice', href: 'quests.html', match: ['quests.html', 'refer_earn.html', 'subscriptions.html'] },
+      { key: 'practice', label: 'Practice', href: 'practice.html', match: ['practice.html'] },
       { key: 'lessons', label: 'Lessons', href: 'lessons.html', match: ['lessons.html'] },
       { key: 'profile', label: 'Profile', href: 'profile.html', match: ['profile.html', 'contact.html', 'terms_conditions.html'] }
     ];
@@ -130,6 +136,9 @@
       { key: 'subjects', label: 'Tests', href: 'tests.html', match: ['tests.html'] },
       { key: 'lessons', label: 'Lessons', href: 'lessons.html', match: ['lessons.html'] },
       { key: 'practice', label: 'Quests', href: 'quests.html', match: ['quests.html'] },
+      { key: 'subjects', label: 'Practice', href: 'practice.html', match: ['practice.html'] },
+      { key: 'subjects', label: 'Progress', href: 'progress.html', match: ['progress.html'] },
+      { key: 'menu', label: 'More Tools', href: 'more-tools.html', match: ['more-tools.html'] },
       { key: 'plans', label: 'Plans', href: 'subscriptions.html', match: ['subscriptions.html', 'payment-history.html', 'payment-success.html'] },
       { key: 'shop', label: 'Shop', href: 'shop.html', match: ['shop.html'] },
       { key: 'gift', label: 'Refer & Earn', href: 'refer_earn.html', match: ['refer_earn.html'] },
@@ -174,6 +183,7 @@
     drawer.className = 'mt-page-drawer';
     drawer.setAttribute('aria-label', 'Mobile menu');
     drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
     drawer.innerHTML = [
       '<div class="mt-page-drawer-head">',
       '<img src="assets/title-logo.png" alt="Tutorly" />',
@@ -187,22 +197,41 @@
 
     const menuBtn = actions.querySelector('.mt-mobile-menu');
     const closeBtn = drawer.querySelector('.mt-page-drawer-close');
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-modal', 'true');
+    let background = [];
 
     function closeDrawer() {
+      const wasOpen = document.body.classList.contains('mt-page-drawer-open');
+      background.forEach(([element, previous]) => { element.inert = previous; }); background = [];
       document.body.classList.remove('mt-page-drawer-open');
       menuBtn.setAttribute('aria-expanded', 'false');
       menuBtn.setAttribute('aria-label', 'Open menu');
       drawer.setAttribute('aria-hidden', 'true');
+      drawer.inert = true;
       overlay.setAttribute('aria-hidden', 'true');
+      if (wasOpen) menuBtn.focus();
     }
 
     function openDrawer() {
+      if (document.body.classList.contains('mt-page-drawer-open')) return;
+      drawer.inert = false;
+      background = Array.from(document.body.children).filter(element => element !== drawer && element !== overlay && element.tagName !== 'SCRIPT').map(element => [element, element.inert]);
+      background.forEach(([element]) => { element.inert = true; });
       document.body.classList.add('mt-page-drawer-open');
       menuBtn.setAttribute('aria-expanded', 'true');
       menuBtn.setAttribute('aria-label', 'Close menu');
       drawer.setAttribute('aria-hidden', 'false');
       overlay.setAttribute('aria-hidden', 'false');
+      closeBtn.focus();
     }
+    drawer.addEventListener('keydown', event => {
+      if (event.key !== 'Tab') return;
+      const controls = Array.from(drawer.querySelectorAll('a[href],button:not([disabled])')).filter(element => element.getClientRects().length);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    });
 
     menuBtn.addEventListener('click', function () {
       if (document.body.classList.contains('mt-page-drawer-open')) {
@@ -251,7 +280,7 @@
       { key: 'home', label: 'Home', href: 'home.html', match: ['home.html', 'welcome.html'] },
       { key: 'ai', label: 'AI Tutor', href: 'maths_gpt.html', match: ['maths_gpt.html'] },
       { key: 'lessons', label: 'Lessons', href: 'lessons.html', match: ['lessons.html'] },
-      { key: 'practice', label: 'Practice', href: 'tests.html', match: ['tests.html', 'quests.html'] },
+      { key: 'practice', label: 'Tests', href: 'tests.html', match: ['tests.html'] },
       { key: 'profile', label: 'Profile', href: 'profile.html', match: ['profile.html', 'contact.html'] }
     ];
 

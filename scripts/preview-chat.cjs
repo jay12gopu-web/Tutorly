@@ -3,6 +3,7 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
+const {execFile} = require('node:child_process');
 const root = path.resolve(__dirname, '..');
 const host = '127.0.0.1';
 const port = 8767;
@@ -22,6 +23,16 @@ http.createServer((request, response) => {
   try { pathname = decodeURIComponent(new URL(request.url, `http://${host}:${port}`).pathname); }
   catch (_) { response.writeHead(400).end(); return; }
   if (pathname === '/') pathname = '/maths_gpt.html';
+  if (pathname === '/__preview/curriculum-catalog.json') {
+    const grade = new URL(request.url, `http://${host}:${port}`).searchParams.get('grade') || '9';
+    if (!/^(?:[1-9]|1[0-2])$/.test(grade)) { response.writeHead(400).end(); return; }
+    execFile('python', [path.join(root,'scripts','audit-preview-catalog.py'),grade],
+      {cwd:root, timeout:15000, maxBuffer:1000000}, (error, output) => {
+        response.writeHead(error ? 503 : 200, {'Content-Type':'application/json', 'Cache-Control':'no-store'});
+        response.end(error ? '{"available":false,"message":"Local curriculum preview unavailable"}' : output);
+      });
+    return;
+  }
   const isBootstrap = pathname === '/__preview/bootstrap.js';
   const isEducationRegistry = pathname === '/data/education-registry.json';
   const isPage = /^\/[a-zA-Z0-9_-]+\.html$/.test(pathname);

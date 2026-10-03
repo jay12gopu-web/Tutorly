@@ -5,6 +5,11 @@
   if (!host || !root.TutorlyAuth) return;
 
   const flow = host.dataset.socialAuth === "signup" ? "signup" : "login";
+  const socialOnly = host.dataset.socialOnly === "true";
+  const allowedProviders = host.dataset.socialProviders?.split(",").map(value => value.trim());
+  const conflictMessage = socialOnly
+    ? "We couldn’t connect this Google sign-in. Please contact Tutorly support for help."
+    : "We couldn’t connect this sign-in. Please continue with an email code.";
   const icons = {
     google: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.4-.18-2.07H12v3.92h5.38a4.6 4.6 0 0 1-2 3.02v2.54h3.24c1.9-1.75 2.98-4.33 2.98-7.41Z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.62-2.36l-3.24-2.54c-.9.6-2.05.96-3.38.96-2.61 0-4.82-1.76-5.61-4.13H3.04v2.62A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.39 13.93A6.02 6.02 0 0 1 6.08 12c0-.67.11-1.32.31-1.93V7.45H3.04A10 10 0 0 0 2 12c0 1.63.39 3.17 1.04 4.55l3.35-2.62Z"/><path fill="#EA4335" d="M12 5.94c1.47 0 2.78.5 3.82 1.49l2.87-2.87A9.61 9.61 0 0 0 12 2a10 10 0 0 0-8.96 5.45l3.35 2.62C7.18 7.7 9.39 5.94 12 5.94Z"/></svg>`,
     microsoft: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f35325" d="M2 2h9v9H2z"/><path fill="#81bc06" d="M13 2h9v9h-9z"/><path fill="#05a6f0" d="M2 13h9v9H2z"/><path fill="#ffba08" d="M13 13h9v9h-9z"/></svg>`,
@@ -13,9 +18,9 @@
 
   const errorMessages = {
     cancelled: "Sign-in cancelled.",
-    account_exists: "We couldn’t complete this sign-in. Please continue with an email code.",
-    account_conflict: "We couldn’t connect this sign-in. Please continue with an email code.",
-    identity_in_use: "We couldn’t connect this sign-in. Please continue with an email code.",
+    account_exists: conflictMessage,
+    account_conflict: conflictMessage,
+    identity_in_use: conflictMessage,
     state_invalid: "That sign-in request expired or was already used. Please try again.",
     provider_unavailable: "That sign-in option is not available right now.",
     identity_invalid: "Your identity could not be verified by the provider. Please try again.",
@@ -42,19 +47,21 @@
   }
 
   function render(providers) {
-    const known = [{id:"google",label:"Google"}, {id:"microsoft",label:"Microsoft"}, {id:"apple",label:"Apple"}];
+    const known = [{id:"google",label:"Google"}, {id:"microsoft",label:"Microsoft"}, {id:"apple",label:"Apple"}]
+      .filter(provider => !allowedProviders || allowedProviders.includes(provider.id));
     host.hidden = !!host.dataset.authStep && host.dataset.authStep !== "email";
-    host.innerHTML = `<div class="social-auth-divider" aria-hidden="true">OR</div><p class="social-auth-heading">Continue with</p>` + known.map((provider) => `
+    host.innerHTML = (socialOnly ? "" : `<div class="social-auth-divider" aria-hidden="true">OR</div><p class="social-auth-heading">Continue with</p>`) + known.map((provider) => `
       <button class="social-auth-button" type="button" data-social-provider="${provider.id}" aria-label="Continue with ${provider.label}" aria-disabled="${!providers.some(item => item.id === provider.id && item.enabled === true)}">
         ${icons[provider.id]}
-        <span>${provider.label}</span>
+        <span>${socialOnly ? "Continue with " : ""}${provider.label}</span>
       </button>
     `).join("") + `<p class="social-auth-status" role="status" aria-live="polite"></p>`;
 
     host.querySelectorAll("[data-social-provider]").forEach((button) => {
       button.addEventListener("click", () => {
         if (button.getAttribute("aria-disabled") === "true") {
-          setStatus(`${button.textContent.trim()} sign-in isn’t available yet. Please continue with email.`, false);
+          setStatus(socialOnly ? "Google sign-in isn’t available right now. Please retry shortly or contact Tutorly support." : `${button.textContent.trim()} sign-in isn’t available yet. Please continue with email.`, true);
+          showRetry();
           return;
         }
         host.querySelectorAll("button").forEach((item) => { item.disabled = true; });
@@ -62,6 +69,25 @@
         root.location.assign(root.TutorlyAuth.socialStartUrl(button.dataset.socialProvider, flow));
       });
     });
+    if (!known.some(provider => providers.some(item => item.id === provider.id && item.enabled === true))) {
+      setStatus(socialOnly ? "Google sign-in isn’t available right now. Please retry shortly or contact Tutorly support." : "Social sign-in isn’t available right now.", true);
+      showRetry();
+    }
+  }
+
+  function showRetry() {
+    if (host.querySelector("[data-social-retry]")) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "auth-secondary";
+    button.dataset.socialRetry = "true";
+    button.textContent = "Retry";
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      setStatus("Checking sign-in availability…", false);
+      await init();
+    });
+    host.append(button);
   }
 
   async function completeOAuth(resultCode) {
@@ -70,7 +96,10 @@
     try {
       const payload = await root.TutorlyAuth.completeOAuth(resultCode);
       history.replaceState({}, document.title, root.location.pathname);
-      if (root.TutorlyAuthUI) await root.TutorlyAuthUI.resolveProfile();
+      if (root.TutorlyAuthUI) {
+        const resolved = await root.TutorlyAuthUI.resolveProfile();
+        if (!resolved && !root.TutorlyAuth.getSessionToken()) return "Your session expired. Please sign in again.";
+      }
       else root.location.replace(await root.TutorlyAuth.authenticatedDestination(await root.TutorlyAuth.currentUser()));
       return "";
     } catch (error) {
@@ -96,11 +125,14 @@
       if (completionError) setStatus(completionError, true);
       else if (errorCode) setStatus(errorMessages[errorCode] || "Sign-in could not be completed. Please try again.", errorCode !== "cancelled");
     } catch (error) {
-      // Email/password and OTP remain available if provider discovery is unavailable.
       render([]);
-      setStatus(completionError || (errorCode ? (errorMessages[errorCode] || "Sign-in could not be completed. Please try again.") : "Social sign-in couldn’t load. You can still use email, or refresh to retry."), true);
+      setStatus(completionError || (errorCode ? (errorMessages[errorCode] || "Sign-in could not be completed. Please try again.") : "We couldn’t reach the sign-in service. Please retry."), true);
+      showRetry();
     }
   }
 
+  root.addEventListener("pageshow", (event) => {
+    if (event.persisted && !root.TutorlyAuth.getSessionToken()) init();
+  });
   init();
 })(window);

@@ -20,7 +20,7 @@ const activePages = htmlFiles.filter((file) => ![
 for (const file of htmlFiles) {
   const source = read(file);
   assert(/<meta\s+charset="UTF-8"/i.test(source), `${file} must declare UTF-8`);
-  assert(/<title>Tutorly<\/title>/i.test(source), `${file} must use the Tutorly title`);
+  assert(/<title>[^<]*Tutorly[^<]*<\/title>/i.test(source), `${file} must retain Tutorly branding in its title`);
   const inlineScripts = [...source.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi)]
     .filter((match) => !/type=["'](?:application\/(?:ld\+)?json|importmap|module)["']/i.test(match[1]));
   inlineScripts.forEach((match, index) => {
@@ -100,7 +100,8 @@ for (const variable of ["SMTP_HOST", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_FRO
 assert(backendEnvExample.includes("SMTP_HOST=smtp.gmail.com"), "Gmail SMTP host must be documented for OTP delivery");
 
 const contact = read("contact.html");
-assert(contact.includes("mailto:jay12.gopu@gmail.com"), "Support email link is missing");
+assert(contact.includes("mailto:support@tutorly.co.in"), "Approved support email link is missing");
+assert(contact.includes("tel:+917330766674"), "Approved support phone link is missing");
 assert(contact.includes('href="https://mytutor.co.in/">mytutor.co.in</a>'), "Support website link is missing");
 assert(!/Phone<\/strong>|Hours<\/strong>|Location<\/strong>/.test(contact), "Unsupported contact details must be omitted");
 

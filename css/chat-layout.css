@@ -24,6 +24,23 @@ body.chat-ui-refresh .main-header {
   background: var(--chat-canvas) !important;
   box-shadow: none;
 }
+/* Resolve stored history before displaying an empty screen. */
+body.chat-ui-refresh:not([data-chat-state]) .work-area { visibility: hidden; }
+body.chat-ui-refresh.has-chat .work-area .chat-empty-exit {
+  display: grid !important;
+  position: absolute;
+  grid-area: auto;
+  top: var(--exit-top);
+  left: var(--exit-left);
+  width: var(--exit-width) !important;
+  height: var(--exit-height) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none;
+  z-index: 0;
+}
+.chat-suggestion-icon img { display: block; width: 20px; height: 20px; opacity: .65; }
+body.chat-ui-refresh[data-theme="dark"] :is(.chat-suggestion-icon img, .side-nav-icon) { filter: invert(1); }
 body.chat-ui-refresh .work-area {
   min-width: 0;
   padding: 0 clamp(16px, 3vw, 48px) 16px;
@@ -182,3 +199,13 @@ body.chat-ui-refresh .bot-content { min-width: 0; }
     transition: none !important;
   }
 }
+/* Audit H08 / M01 / L02: explicit recovery and request cancellation. */
+.chat-stop-button { min-width: 52px; min-height: 44px; border: 1px solid currentColor; border-radius: 12px; background: var(--surface, #fff); color: var(--text, #24386f); cursor: pointer; }
+.chat-failure-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.message-actions.chat-failure-actions button, .message-actions.chat-failure-actions a { display: inline-flex; align-items: center; justify-content: center; width: auto; min-width: 80px; height: auto; min-height: 44px; white-space: nowrap; padding: 8px 14px; border-radius: 10px; border: 1px solid currentColor; color: inherit; background: transparent; }
+.chat-failure-actions small { overflow-wrap: anywhere; }
+.chat-stop-button[hidden] { display: none; }
+.reasoning-status-announcement { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+body[data-theme="dark"] :is(.bot-content h1,.bot-content h2,.bot-content h3,.model-selector-btn,.chat-stop-button) { color: #edf1ff; }
+body .upgrade-plans-btn { background: #405fd3 !important; color: #fff !important; }
+body[data-theme="dark"] .chat-stop-button { background: #23314f; }

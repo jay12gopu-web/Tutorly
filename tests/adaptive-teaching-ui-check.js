@@ -51,12 +51,14 @@ const env = vm.createContext({
   chatRequestInFlight: false,
   activeConversationId: "chat-active",
   selectedModel: "prime",
+  studySession: null,
+  window: {},
   showToast: (value) => notices.push(value)
 });
 vm.runInContext(`this.attach = ${sourceFunction("function attachBotMessageActions(", "function streamBotReply(")}`, env);
 
 function render(actions, extra = {}) {
-  const content = { appendChild(node) { this.actions = node; } };
+  const content = { querySelector: () => null, appendChild(node) { this.actions = node; } };
   const message = { dataset: {}, querySelector(selector) { return selector === ".bot-content" ? content : null; } };
   const context = { semanticRoute: { topic: "Magnetic field", subject: "physics" } };
   if (actions !== undefined) context.teachingActions = actions;

@@ -48,7 +48,9 @@
         else root.TutorlyCurriculum?.clearActiveContext?.();
         root.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
         render();
-        options.send(`Start my ${task.kind} task${task.part ? `, part ${task.part}` : ''}: ${context?.topicTitle || task.title}. Continue from what we have already covered in this conversation. Give me one small concept at a time, a 2–4 line explanation and an example, then a short check when useful. Wait for my response. Do not use Live Board.`, 'start');
+        // "Do not use Live Board" and micro-learning rules live in the backend's
+        // STUDY_SESSION_PROMPT, not in the student's visible message bubble.
+        options.send(`Start my ${task.kind} task${task.part ? `, part ${task.part}` : ''}: ${context?.topicTitle || task.title}.`, 'start');
       }
     });
     function context(action) {

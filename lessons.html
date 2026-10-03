@@ -263,7 +263,7 @@
       background: var(--lesson-paper);
     }
 
-    .reader-sidebar h3 { margin: 0 0 10px; font-size: 18px; }
+    .reader-sidebar .reader-contents-title { margin: 0 0 10px; font-size: 18px; font-weight: 600; }
     .reader-contents {
       display: grid;
       gap: 7px;
@@ -332,7 +332,7 @@
       flex-wrap: wrap;
     }
 
-    .reader-head h2 {
+    .reader-head #readerTitle {
       margin: 0;
       font-family: "Inter", sans-serif;
       font-size: clamp(30px, 4vw, 48px);
@@ -605,7 +605,7 @@
         overflow-x: auto;
         border-radius: 16px;
       }
-      .reader-sidebar h3 { display: none; }
+      .reader-sidebar .reader-contents-title { display: none; }
       .reader-contents {
         display: flex;
         min-width: max-content;
@@ -1144,7 +1144,7 @@
         <section class="learn-hero fade-up d2">
           <span class="learn-eyebrow">Your syllabus, organized for you</span>
           <h1>Learn one chapter at a time.</h1>
-          <p>Lessons, notes, revision, examples and diagrams — matched to the grade and board saved in your Tutorly profile.</p>
+          <p>Browse chapters matched to your saved Grade and Board. Reviewed teaching notes and lessons are being prepared.</p>
           <div class="learn-status">
             <span>Curriculum: <b id="curriculumStatus">Your saved curriculum</b></span>
             <span class="learn-status-dot" aria-hidden="true"></span>
@@ -1187,7 +1187,7 @@
       <div class="panel-head">
         <div>
           <span class="lesson-kicker">Chapter Library</span>
-          <h2 id="chapterSubjectName">Mathematics</h2>
+          <h1 id="chapterSubjectName">Mathematics</h1>
           <p id="chapterSubjectMeta">6 textbook chapters</p>
         </div>
         <button class="btn btn-soft" id="backToSubjects" type="button">Back to Subjects</button>
@@ -1198,7 +1198,7 @@
       <section class="view-panel fade-up d3" id="readerView" hidden>
       <div class="reader-layout">
         <aside class="reader-sidebar" aria-label="Lesson contents">
-          <h3>Contents</h3>
+          <p class="reader-contents-title">Contents</p>
           <nav class="reader-contents" id="readerContents"></nav>
         </aside>
 
@@ -1209,15 +1209,16 @@
 
           <div class="reader-head">
             <div>
-              <span class="lesson-kicker">Premium Revision Document</span>
-              <h2 id="readerTitle">Chapter Title</h2>
+              <span class="lesson-kicker">Curriculum chapter</span>
+              <h1 id="readerTitle">Chapter Title</h1>
               <p id="readerMeta">Subject | 30 min read | Medium</p>
             </div>
             <span class="progress-pill" id="lessonProgressText">0% read</span>
           </div>
 
+          <details class="reader-utilities"><summary>Reader tools</summary>
           <div class="reader-toolbar" aria-label="Lesson reader tools">
-            <input class="input" id="lessonSearch" type="search" placeholder="Search in chapter" />
+            <input class="input" id="lessonSearch" type="search" placeholder="Search in chapter" aria-label="Search in chapter" />
             <button class="btn btn-soft" id="quickModeBtn" type="button">Quick Revision</button>
             <button class="btn btn-soft" id="zoomOutBtn" type="button" title="Zoom out">A-</button>
             <button class="btn btn-soft" id="zoomInBtn" type="button" title="Zoom in">A+</button>
@@ -1230,6 +1231,7 @@
             <button class="btn btn-primary" id="pdfBtn" type="button">Download PDF</button>
           </div>
 
+          </details>
           <div class="lesson-content" id="lessonContent"></div>
         </div>
       </div>

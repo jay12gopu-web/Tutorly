@@ -52,7 +52,7 @@
     const params = new URLSearchParams(window.location.search);
     const stored = readJson(CONTEXT_KEY, {});
     return {
-      prompt: params.get("prompt") || stored.prompt || "Show me a visual lesson",
+      prompt: params.get("prompt") || (params.get("conversationId") ? stored.prompt : '') || '',
       conversationId: params.get("conversationId") || stored.conversationId || "",
       messageId: stored.messageId || "",
       semanticRoute: stored.semanticRoute || null,
@@ -93,6 +93,7 @@
         : "maths_gpt.html";
     }
     document.body.classList.toggle("no-live-visual", currentLesson.visualMode === "none");
+    [play, replay].forEach(button => { if (button) button.disabled = currentLesson.visualMode === "none"; });
   }
 
   function renderStep() {
@@ -207,7 +208,6 @@
     if (!prompt) return;
     input.value = "";
     addChat("student", prompt);
-    addChat("tutorly", "Got it. I’ll update the board using the same lesson context.");
     context.chatContext = [...(context.chatContext || []), { role: "student", content: prompt }].slice(-10);
     await generate(prompt, { followUp: true });
   }
@@ -226,5 +226,12 @@
     ? `I opened a Live Board for: ${context.prompt}`
     : "Ask a visual follow-up and I’ll update the board.");
   if (context.reply) addChat("tutorly", String(context.reply).slice(0, 260));
-  generate(context.prompt);
+  if (context.prompt) generate(context.prompt);
+  else {
+    title.textContent = 'What would you like to draw?';
+    summary.textContent = 'Enter a supported equation or construction below, or return to Tutorly chat.';
+    stepTitle.textContent = 'Start with a topic';
+    stepText.textContent = 'Try “Graph y = x^2” or “Construct a perpendicular bisector”. Unsupported diagrams will not be replaced with a misleading drawing.';
+    [prev, play, next, replay].forEach(button => { if (button) button.disabled = true; });
+  }
 })();

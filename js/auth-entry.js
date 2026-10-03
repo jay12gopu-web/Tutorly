@@ -3,6 +3,7 @@
 
   const entry = document.getElementById("authEntry");
   if (!entry) return;
+  const googleOnly = entry.dataset.authProvider === "google";
   const auth = root.TutorlyAuth;
   const emailForm = document.getElementById("emailForm");
   const codeForm = document.getElementById("codeForm");
@@ -60,8 +61,8 @@
   resolutionBack.addEventListener("click", async () => {
     if (auth) await auth.logout();
     setBusy(false);
-    showStep("email");
     showResolution(false);
+    showStep("email");
   });
 
   function setStatus(message, isError = false, field) {
@@ -110,6 +111,17 @@
   }
 
   function showStep(nextStep, focus = true) {
+    if (googleOnly) {
+      step = "email";
+      [emailForm, codeForm, passwordForm, back].forEach((node) => { node.hidden = true; });
+      social.hidden = false;
+      social.dataset.authStep = "email";
+      title.textContent = "Welcome Back";
+      subtitle.textContent = "Continue with Google to enter Tutorly.";
+      setStatus("");
+      if (focus) social.querySelector('[data-social-provider="google"]')?.focus();
+      return;
+    }
     step = nextStep;
     emailForm.hidden = step !== "email";
     codeForm.hidden = step !== "code";
@@ -119,7 +131,7 @@
     social.dataset.authStep = step;
     setStatus("");
     if (step === "email") {
-      title.textContent = "Welcome";
+      title.textContent = "Welcome Back";
       subtitle.textContent = "Your next chapter starts here.";
     } else if (step === "code") {
       title.textContent = "Verify your email";
@@ -138,7 +150,7 @@
   }
 
   async function sendCode() {
-    if (busy) return;
+    if (busy || googleOnly) return;
     showStep("code", false);
     if ((cooldowns.get(currentEmail) || 0) > Date.now()) {
       setStatus("A code was recently requested. Check your inbox, or resend when the timer ends.");
@@ -164,7 +176,7 @@
 
   emailForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (busy) return;
+    if (busy || googleOnly) return;
     email.value = email.value.trim();
     if (!email.value || !email.validity.valid) {
       setStatus("Enter a valid email address to continue.", true, email);
@@ -178,7 +190,7 @@
 
   codeForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (busy) return;
+    if (busy || googleOnly) return;
     const value = code.value.replace(/\s/g, "");
     if (!/^\d{6}$/.test(value)) {
       setStatus("Enter the complete 6-digit code from your email.", true, code);
@@ -198,7 +210,7 @@
 
   passwordForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (busy) return;
+    if (busy || googleOnly) return;
     if (!password.value) {
       setStatus("Enter your password, or use an email code instead.", true, password);
       return;
@@ -251,6 +263,7 @@
     password.value = "";
   });
 
+  showStep("email", false);
   if (!auth) {
     showResolution(true, "The sign-in page couldn’t load. Please retry.", true);
   } else if (new URLSearchParams(root.location.search).has("oauth_result")) {

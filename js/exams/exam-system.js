@@ -98,6 +98,22 @@
       ? `Grade ${state.profile.grade} · ${state.profile.board}`
       : "Academic profile required";
     bindStaticEvents();
+    const params = new URLSearchParams(location.search);
+    if (MODE_CONFIG[params.get('mode')]) state.mode = params.get('mode');
+    const chapterId = params.get('curriculumChapter');
+    if (chapterId && window.TutorlyCurriculum) {
+      const catalog = await window.TutorlyCurriculum.load();
+      const subject = window.TutorlyCurriculum.subjectModels(catalog).find(item => item.chapters.some(chapter => chapter.id === chapterId));
+      const chapter = subject?.chapters.find(item => item.id === chapterId);
+      const note = document.createElement('p'); note.className = 'audit-status';
+      note.setAttribute('role','status');
+      if (chapter) {
+        state.profile.curriculumContext = {board:catalog.board,grade:String(catalog.grade),academic_year:catalog.academic_year,medium:catalog.medium,
+          subject_id:subject.id,book_id:chapter.bookId,chapter_id:chapter.id};
+        note.textContent = `${subject.name} · ${chapter.bookTitle} · ${chapter.name}. Add your notes for this chapter. Questions use your notes; chapter completion is not inferred.`;
+      } else note.textContent = 'That chapter is not verified for your current profile. You can still create a paper from your own notes.';
+      $('materialStep').prepend(note);
+    }
     materialInput = window.TutorlyTestMaterials.create({onChange: () => {
       document.querySelector('[data-step="mode"]').disabled = !materialInput?.hasContent();
       $("continueToModes").disabled = materialInput?.reading();
@@ -463,6 +479,7 @@
       subject: state.subject,
       materialBased: state.materialBased,
       assessmentSource: state.materialBased ? "ai_generated_material_practice" : "legacy_practice",
+      curriculumContext: state.profile.curriculumContext || null,
       chapterIds,
       chapters: getSelectedChapters().map((chapter) => chapter.name),
       mode: state.mode,

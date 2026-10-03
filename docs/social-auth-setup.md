@@ -1,8 +1,12 @@
 # Tutorly social authentication setup
 
 Tutorly implements backend authorization-code/OpenID Connect flows for Google,
-Microsoft, and Apple. A provider is shown on Login and Sign Up only after every
-required server-side setting for that provider is present.
+Microsoft, and Apple. The authentication entry currently says **Welcome Back**
+and offers **Google only**. Existing email, Microsoft, and Apple backend support
+is preserved, but those entry controls are hidden for now. Google starts only
+when every required server-side setting is present; otherwise the page shows
+a clear unavailable state and Retry button. Existing sessions and student/teacher
+onboarding still use the same account system.
 
 ## Production URLs
 
@@ -97,9 +101,12 @@ when present. Apple private-relay email addresses are accepted normally.
 ## Local development
 
 When credentials are absent, `/api/auth/providers` reports that provider as
-disabled and the frontend hides its button. Email/password and OTP remain
-available. This is intentional; Tutorly never simulates a successful provider
-login.
+disabled and the Google-only entry shows an unavailable state. It does not offer
+email as a fallback. Tutorly never simulates a successful provider login.
+
+Existing email-only accounts must explicitly link Google from an authenticated
+Profile before using Google sign-in. The Google-only entry does not bypass the
+existing account-linking safeguards; contact support if the account is not linked.
 
 For local provider testing, create separate development credentials and use
 explicit localhost callback URIs in the matching environment variables.

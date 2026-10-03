@@ -161,3 +161,6 @@ a { color: inherit; text-decoration: none; }
   .foundation-main { padding-bottom: 48px; }
   .foundation-card { padding: 18px; border-radius: 18px; }
 }
+.foundation-card-wide { grid-column: 1 / -1; min-width: 0; }
+.foundation-card-wide .foundation-grid { grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
+.foundation-card { min-width: 0; overflow-wrap: anywhere; }

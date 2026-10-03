@@ -81,8 +81,7 @@
     } catch (error) {
       // If stored data is broken, fall back to a clean starter list.
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleBookmarks));
-    return sampleBookmarks;
+    return [];
   }
 
   function writeBookmarks(bookmarks) {
@@ -101,6 +100,7 @@
   function normalizeUrl(url) {
     const trimmed = String(url || "").trim();
     if (!trimmed) return "home.html";
+    if (/^(?:javascript|data|vbscript|file):|^\/\//i.test(trimmed)) return 'maths_gpt.html';
     if (/^(https?:|mailto:|tel:)/i.test(trimmed)) return trimmed;
     if (/\.html(?:$|[?#])/i.test(trimmed)) return trimmed;
     return trimmed.replace(/^\/+/, "") || "home.html";
@@ -164,9 +164,7 @@
   }
 
   function renderStats(allBookmarks) {
-    const activeItems = state.filter === "all"
-      ? allBookmarks
-      : allBookmarks.filter((item) => item.type === state.filter);
+    const activeItems = filteredBookmarks();
     if (els.total) els.total.textContent = allBookmarks.length;
     if (els.pinned) els.pinned.textContent = allBookmarks.filter((item) => item.pinned).length;
     if (els.completed) els.completed.textContent = allBookmarks.filter((item) => item.done).length;
@@ -311,5 +309,31 @@
     toast(`${current.length - next.length} completed bookmark(s) cleared.`);
   });
 
+  function backupControls() {
+    const controls = document.createElement('details'); controls.className = 'audit-status';
+    const summary = document.createElement('summary'); summary.textContent = 'Back up or restore bookmarks'; controls.append(summary);
+    const note = document.createElement('p'); note.textContent = 'Bookmarks are device-wide, not account-synced. Clearing site data removes them. Backups can contain private notes; keep yours safe. Restore adds items without overwriting existing IDs.'; controls.append(note);
+    const download = document.createElement('button'); download.type = 'button'; download.className = 'bookmark-btn'; download.textContent = 'Download backup';
+    download.addEventListener('click', () => { const url = URL.createObjectURL(new Blob([JSON.stringify({type:'tutorly-bookmark-backup',version:1,items:readBookmarks()},null,2)],{type:'application/json'})); const link = document.createElement('a'); link.href=url; link.download='tutorly-bookmarks-backup.json'; link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }); controls.append(download);
+    const label = document.createElement('label'); label.textContent = 'Restore bookmark backup';
+    const upload = document.createElement('input'); upload.type='file'; upload.accept='.json,application/json'; label.append(upload); controls.append(label);
+    upload.addEventListener('change', async () => {
+      const file = upload.files?.[0]; if (!file) return;
+      try {
+        if (file.size > 1000000) throw new Error('Use a backup under 1 MB.');
+        const data = JSON.parse(await file.text());
+        if (data?.type !== 'tutorly-bookmark-backup' || data.version !== 1 || !Array.isArray(data.items) || data.items.length > 500 || !data.items.every(item => item && typeof item.id === 'string' && item.id.length > 0 && item.id.length <= 200 && typeof item.title === 'string' && FILTERS.includes(item.type))) throw new Error('This is not a valid bookmark backup.');
+        if (new Set(data.items.map(item => item.id.slice(0,200))).size !== data.items.length) throw new Error('This backup contains duplicate bookmark IDs. Existing items kept.');
+        const existing = readBookmarks(), ids = new Set(existing.map(item=>item.id));
+        const incoming = data.items.filter(item => !ids.has(item.id)).map(item => ({id:item.id.slice(0,200),title:item.title.slice(0,300),type:item.type,note:String(item.note || '').slice(0,10000),url:normalizeUrl(String(item.url || '').slice(0,2000)),tags:Array.isArray(item.tags)?item.tags.map(tag=>String(tag).slice(0,80)).slice(0,20):[],pinned:!!item.pinned,done:!!item.done,createdAt:Number(item.createdAt)||Date.now()}));
+        if (incoming.length + existing.length > 500) throw new Error('Restore exceeds 500 bookmarks. Existing items kept.');
+        writeBookmarks([...incoming,...existing]); render(); toast('Missing bookmarks restored; existing items kept.');
+      } catch (error) { toast(error.message || 'Restore failed; existing bookmarks kept.'); }
+      upload.value='';
+    });
+    document.querySelector('.bookmark-toolbar')?.after(controls);
+    [['title','Bookmark title'],['url','Bookmark URL'],['note','Bookmark note'],['tags','Bookmark tags']].forEach(([key,label])=>els[key]?.setAttribute('aria-label',label));
+  }
+  backupControls();
   render();
 })();

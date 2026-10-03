@@ -219,7 +219,8 @@
     $("activityCalendar").replaceChildren(...cells);
     const summary = streaks(keys);
     const savedStreak = Math.max(0, Number(localStorage.getItem("tutorly_streak")) || 0);
-    const current = Math.max(summary.current, savedStreak);
+    // Progress and Profile use the same recorded streak, not page visits.
+    const current = savedStreak;
     const longest = Math.max(summary.longest, current, Number(localStorage.getItem("tutorly_longest_streak")) || 0);
     $("currentStreak").textContent = String(current);
     $("longestStreak").textContent = String(longest);

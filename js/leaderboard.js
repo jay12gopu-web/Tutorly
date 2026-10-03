@@ -20,7 +20,7 @@
     }
   };
   let period = "weekly";
-  const ownName = String(localStorage.getItem("tutorly_name") || localStorage.getItem("tutorly_user_name") || "Jayvardhan").trim() || "Jayvardhan";
+  const ownName = "Sample learner";
 
   function levelFor(xp) {
     return leaderboardData.levels.slice().reverse().find((level) => xp >= level.minXp) || leaderboardData.levels[0];
@@ -43,11 +43,11 @@
       return;
     }
     const labels = { weekly: "This week", monthly: "This month", allTime: "All time" };
-    position.innerHTML = `<div class="leaderboard-rank">#${current.rank}</div><div><h2>${escapeHtml(current.name)}</h2><p>Your position ${period === "weekly" ? "is up 2 places this week" : "in the Tutorly demo ranking"}.</p><div class="leaderboard-meta"><span>${current.level}</span><span>${current.xp.toLocaleString()} XP</span></div></div>`;
+    position.innerHTML = `<div class="leaderboard-rank">#${current.rank}</div><div><h2>${escapeHtml(current.name)}</h2><p>Illustrative position only · not your learning rank.</p><div class="leaderboard-meta"><span>${current.level}</span><span>${current.xp.toLocaleString()} sample XP</span></div></div>`;
     xpCard.innerHTML = `<small>${labels[period]} learning XP</small><strong>${current.xp.toLocaleString()} XP</strong><span class="human-tools-note">Level: ${current.level}</span>`;
     topThree.innerHTML = rows.slice(0, 3).map((entry, index) => `<article class="human-tools-card leaderboard-podium"><span class="leaderboard-medal">#${index + 1}</span><h3>${escapeHtml(entry.name)}</h3><p>${entry.xp.toLocaleString()} XP · ${entry.level}</p></article>`).join("");
     listTitle.textContent = labels[period];
-    list.innerHTML = rows.slice(3).map((entry) => `<article class="leaderboard-row ${entry.isCurrent ? "is-current" : ""}"><span class="leaderboard-row-rank">#${entry.rank}</span><div class="leaderboard-user"><span class="leaderboard-avatar">${initials(entry.name)}</span><span><strong>${escapeHtml(entry.name)}${entry.isCurrent ? " · You" : ""}</strong><small>${entry.isCurrent ? "Your study activity" : "Tutorly learner"}</small></span></div><span class="leaderboard-level">${entry.level}</span><span class="leaderboard-row-xp">${entry.xp.toLocaleString()} XP</span></article>`).join("");
+    list.innerHTML = rows.slice(3).map((entry) => `<article class="leaderboard-row ${entry.isCurrent ? "is-current" : ""}"><span class="leaderboard-row-rank">#${entry.rank}</span><div class="leaderboard-user"><span class="leaderboard-avatar">${initials(entry.name)}</span><span><strong>${escapeHtml(entry.name)}</strong><small>Sample learner · illustrative data</small></span></div><span class="leaderboard-level">${entry.level}</span><span class="leaderboard-row-xp">${entry.xp.toLocaleString()} sample XP</span></article>`).join("");
   }
   function escapeHtml(value) { const node = document.createElement("span"); node.textContent = String(value || ""); return node.innerHTML; }
   document.querySelectorAll("[data-period]").forEach((button) => button.addEventListener("click", () => { period = button.dataset.period; document.querySelectorAll("[data-period]").forEach((item) => item.setAttribute("aria-selected", String(item === button))); render(); }));

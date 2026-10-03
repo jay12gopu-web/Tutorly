@@ -97,7 +97,20 @@
     if (!options.keepBanner && mobileBanner) mobileBanner.hidden = true;
   }
 
+  function reset() {
+    ++requestToken; // Invalidate a lesson still being generated for the previous chat.
+    close({ keepBanner: false });
+    currentLesson = null;
+    pendingMobile = null;
+    context = {};
+    board.setLesson(null);
+    if (title) title.textContent = "Live Board";
+    if (summary) summary.textContent = "Ask for a visual in this conversation.";
+    setStatus("");
+  }
+
   async function generate(nextContext = {}, options = {}) {
+    if (context.conversationId && context.conversationId !== nextContext.conversationId) reset();
     context = { ...context, ...nextContext };
     if (isMobile() && !options.force) {
       pendingMobile = { context, options: { ...options, force: true } };
@@ -192,6 +205,7 @@
     open: generate,
     syncContext,
     close,
+    reset,
     isOpen: () => !panel.hidden,
     hasLesson: () => !!currentLesson,
     getCurrentLesson: () => currentLesson,

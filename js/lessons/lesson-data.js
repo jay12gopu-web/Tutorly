@@ -14,8 +14,9 @@
         ...subject,
         chapters: subject.chapters.map((chapter) => ({
           ...chapter,
-          concepts: chapter.concepts.length ? chapter.concepts : [chapter.title],
-          applications: ["classroom learning"],
+          concepts: chapter.concepts || [],
+          applications: [],
+          contentStatus: "awaiting_review",
           minutes: 0,
           difficulty: chapter.bookTitle
         }))

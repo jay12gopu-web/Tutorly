@@ -49,7 +49,7 @@
     document.getElementById("billingCredits").textContent = `${PlanConfig.formatCredits(subscription.remaining)} / ${PlanConfig.formatCredits(subscription.allowance)} premium credits remaining`;
     document.getElementById("billingCreditFill").style.width = `${subscription.allowance ? Math.min(100, (subscription.remaining / subscription.allowance) * 100) : 0}%`;
     document.getElementById("billingReset").textContent = subscription.trialActive ? "Trial credits" : "Monthly credits";
-    document.getElementById("billingResetDate").textContent = formatDate(subscription.creditsResetAt);
+    document.getElementById("billingResetDate").textContent = formatDate(subscription.creditsResetAt, "Reset date not supplied · contact support");
     document.getElementById("billingNextLabel").textContent = subscription.trialActive ? "Trial ends" : "Next billing date";
     document.getElementById("billingNextDate").textContent = formatDate(subscription.trialActive ? subscription.trialEndsAt : subscription.subscriptionExpiry);
     document.getElementById("billingCancelBtn").hidden = !subscription.activePremium;
@@ -69,16 +69,27 @@
   }
 
   async function sync() {
+    const note = document.getElementById('billingNote');
+    const freshness = document.getElementById('billingFreshness') || document.createElement('p');
+    freshness.id = 'billingFreshness'; freshness.className = 'audit-status'; freshness.setAttribute('role','status');
+    if (!freshness.isConnected) note?.after(freshness);
+    const retry = document.getElementById('billingRetry') || document.createElement('button');
+    retry.id = 'billingRetry'; retry.type = 'button'; retry.className = 'pay-action secondary'; retry.textContent = 'Retry billing sync';
+    if (!retry.isConnected) { freshness.after(retry); retry.addEventListener('click',sync); }
+    retry.disabled = true;
     render(readCached() || standardFallback());
-    if (!userId) return;
+    freshness.textContent = 'Checking live billing…';
+    if (!userId) { freshness.textContent = 'Billing has not been linked on this device. Displayed balance is not a live account confirmation.'; retry.disabled = false; return; }
     try {
       const data = await api(`/subscription/${encodeURIComponent(userId)}`);
       localStorage.setItem("tutorly_subscription", JSON.stringify(data.subscription));
       localStorage.setItem("tutorly_current_plan", PlanConfig.normalizePlanId(data.subscription.currentPlan));
       render(data.subscription);
+      freshness.textContent = 'Last checked: ' + new Date().toLocaleString();
     } catch (_error) {
-      showToast("Showing your saved plan. Live billing sync is temporarily unavailable.", "warn");
+      freshness.textContent = 'Live billing could not be checked. Showing a saved/device estimate, not a confirmed current balance. Retry or contact support; do not retry a payment just to check its status.';
     }
+    retry.disabled = false;
   }
 
   document.getElementById("billingCancelBtn")?.addEventListener("click", async () => {

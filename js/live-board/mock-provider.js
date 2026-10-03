@@ -60,7 +60,8 @@
 
   function graphLesson(request) {
     const equations = extractEquations(request.prompt);
-    const primary = equations[0] || "y = x^2";
+    if (!equations.length) return noVisualLesson(request);
+    const primary = equations[0];
     const context = commonContext(request, "graph");
     context.title = `Graph ${primary}`;
     context.topic = primary;
@@ -244,7 +245,10 @@
       ];
       return context;
     }
-    return flowDiagram(request);
+    // A component/structure is not a process. Never substitute arbitrary boxes
+    // for an unsupported cell, particle model or other scientific diagram.
+    if (/\bflowchart|flow chart|process diagram\b/.test(text)) return flowDiagram(request);
+    return noVisualLesson(request);
   }
 
   function noVisualLesson(request) {

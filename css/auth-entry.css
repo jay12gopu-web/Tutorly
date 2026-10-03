@@ -112,7 +112,7 @@ body.auth-entry-page {
   .auth-mobile-brand img { width: 32px; height: 32px; display: block; }
   .auth-intro h1 { font-size: 29px; }
   .auth-intro { margin-bottom: 25px; }
-  .auth-intro:has(+ #emailForm:not([hidden])) { text-align: center; }
+  .auth-intro:has(+ #emailForm:not([hidden])), [data-auth-provider="google"] .auth-intro { text-align: center; }
   .auth-entry-card { margin: auto 0; padding-bottom: 25px; }
   .auth-form input { font-size: 16px; }
   .auth-support { bottom: 25px; }

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
   <link rel="stylesheet" href="css/auth-social.css?v=auth-entry-20260913" />
-  <link rel="stylesheet" href="css/auth-entry.css?v=auth-entry-20260913" />
+  <link rel="stylesheet" href="css/auth-entry.css?v=google-only-20260927" />
 </head>
 <body data-tutorly-surface="auth" class="auth-entry-page">
   <main class="auth-entry-shell">
@@ -39,16 +39,17 @@
         <button type="button" class="auth-text-button" id="authResolutionBack" hidden>Use another account</button>
       </section>
       <noscript><p>Please enable JavaScript to sign in securely.</p></noscript>
-      <div class="auth-entry-card" id="authEntry" hidden>
+      <div class="auth-entry-card" id="authEntry" data-auth-provider="google" hidden>
         <button class="auth-back" id="authBack" type="button" hidden>
           <span aria-hidden="true">←</span> Back
         </button>
         <div class="auth-intro">
-          <h1 id="authTitle">Welcome</h1>
-          <p id="authSubtitle">Your next chapter starts here.</p>
+          <h1 id="authTitle">Welcome Back</h1>
+          <p id="authSubtitle">Continue with Google to enter Tutorly.</p>
         </div>
 
-        <form id="emailForm" class="auth-form" novalidate>
+        <!-- Retain the existing email flow for future use; Google is the only entry method for now. -->
+        <form id="emailForm" class="auth-form" novalidate hidden>
           <label for="email">Email address</label>
           <input id="email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com" aria-describedby="emailHelp authStatus" required />
           <button class="auth-primary" id="emailContinue" type="submit">Continue <span aria-hidden="true">→</span></button>
@@ -77,7 +78,7 @@
         </form>
 
         <p class="auth-status" id="authStatus" role="status" aria-live="polite" aria-atomic="true"></p>
-        <section class="social-auth" data-social-auth="login" aria-label="Other ways to continue"></section>
+        <section class="social-auth" data-social-auth="login" data-social-providers="google" data-social-only="true" aria-label="Sign in with Google"></section>
         <p class="auth-legal">By continuing, you agree to our <a href="Terms_Conditions.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>.</p>
         <noscript><p class="auth-status error">Please enable JavaScript to sign in securely.</p></noscript>
       </div>
@@ -85,7 +86,7 @@
     </section>
   </main>
   <script src="js/auth-client.js?v=onboarding-20260921"></script>
-  <script src="js/auth-entry.js?v=onboarding-20260921"></script>
-  <script src="js/social-auth-ui.js?v=onboarding-20260921"></script>
+  <script src="js/auth-entry.js?v=google-only-20260927"></script>
+  <script src="js/social-auth-ui.js?v=google-only-20260927"></script>
 </body>
 </html>

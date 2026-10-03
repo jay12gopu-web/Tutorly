@@ -153,7 +153,7 @@ assert.ok(!page.includes('id="sidebarViewAllChats"'), "the redundant view-all-co
 assert.ok(page.includes('id="sidebarPinnedSection"'), "pinned conversations should have their own sidebar section");
 assert.ok(page.includes('id="archivedChatsBtn"'), "archived conversations should have a dedicated sidebar entry point");
 assert.ok(!page.includes('href="practice.html" title="Practice"'), "Practice should not appear in the compact Study section");
-assert.ok(!page.includes('href="progress.html" title="Progress"'), "Progress should not appear in the compact Study section");
+assert.ok(page.includes('data-workspace-route="progress.html"'), "Progress should reuse the existing sidebar workspace navigation");
 assert.ok(app.includes("renderSidebarRecents"), "recent chats should render from the existing conversation store");
 assert.ok(app.includes("sidebarChatRowHtml"), "sidebar rows should expose the Pin, Archive, and Delete action menu");
 assert.ok(app.includes("getHistoryConversations"), "Search Chats should search the shared stored conversation history");
@@ -184,7 +184,8 @@ assert.ok(chatbotCss.includes("@media (max-width: 1080px)"), "responsive drawer 
   "progress.html",
   "bookmarks.html"
 ].forEach((route) => assert.ok(moreToolsPage.includes(`href="${route}"`), `More Tools should link to ${route}`));
-assert.ok(moreToolsPage.includes('class="tool-learn-crown"'), "More Tools should show the gold crown beside Learn");
+assert.ok(!moreToolsPage.includes('class="tool-learn-crown"'), "Free verified curriculum must not imply a paid Learn entitlement");
+assert.ok(moreToolsPage.includes('verified curriculum'), "Learn must explain its actual curriculum availability");
 assert.ok(page.includes('src="assets/premium-crown.png"'), "premium account and learning controls should use the supplied crown asset");
 assert.ok(!page.includes("&#9813;") && !moreToolsPage.includes("&#9813;"), "legacy crown glyphs should be removed");
 assert.ok(!page.includes("Download Apps"), "Download Apps must stay hidden until Tutorly is installable");

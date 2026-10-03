@@ -74,10 +74,20 @@ document.addEventListener("DOMContentLoaded", () => {
   let voiceLastUserRecord = null;
   let liveSessionMode = null;
   let chatRequestInFlight = false;
+  let activeChatRequestVersion = 0;
+  const stopChatBtn = document.createElement("button");
+  stopChatBtn.type = "button";
+  stopChatBtn.className = "chat-stop-button";
+  stopChatBtn.textContent = "Stop";
+  stopChatBtn.setAttribute("aria-label", "Stop generating response");
+  stopChatBtn.hidden = true;
+  sendBtn?.parentElement?.appendChild(stopChatBtn);
+  stopChatBtn.addEventListener("click", () => { abortActiveChatRequest(); showToast("Stopped. You can send another message."); });
   let pendingConfirmAction = null;
   let confirmReturnFocus = null;
   let shortcutReturnFocus = null;
   let composerTransition = null;
+  let emptyStateTransitions = [];
   let studySession = null;
   let studyAccountId = null;
   let studyAccountReady = null;
@@ -259,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (options.announce && nextModel !== "study") studySession?.reset();
     selectedModel = nextModel;
     try {
-      localStorage.setItem(MODEL_STORAGE_KEY, nextModel);
+      if (options.persist !== false) localStorage.setItem(MODEL_STORAGE_KEY, nextModel);
     } catch (error) {
       // localStorage can fail in strict privacy modes; the UI still updates for this session.
     }
@@ -343,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : null;
     const history = (conversation?.messages || [])
       .filter((item) => item?.role === "user" || item?.role === "assistant")
+      .filter((item) => !item.metadata?.failure)
       .slice(-8)
       .map((item) => ({ role: item.role, content: String(item.content || "").slice(0, 5000) }));
     const learner = context.memoryContext?.learner || {};
@@ -552,6 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!response.ok) {
       const error = new Error(`Chat backend returned ${response.status}`);
       error.status = response.status;
+      error.requestId = response.headers.get("X-Request-ID") || "";
       error.retryAfterSeconds = Number(response.headers.get("Retry-After")) || null;
       throw error;
     }
@@ -609,6 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function abortActiveChatRequest() {
+    ++activeChatRequestVersion;
     generatedImages?.cancelAll();
     activeReplyStreamToken += 1;
     if (pendingChatStartTimer) {
@@ -3098,6 +3111,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = message.querySelector(".bot-content");
     if (!content) return;
 
+    const failure = meta.failure || meta.context?.failure;
+    if (failure) {
+      message.classList.add("chat-failure");
+      content.setAttribute("role", "alert");
+      const actions = document.createElement("div");
+      actions.className = "message-actions chat-failure-actions";
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.textContent = "Retry";
+      retry.addEventListener("click", () => {
+        if (chatRequestInFlight) return;
+        if (meta.conversationId && meta.conversationId !== activeConversationId) return;
+        if (failure.hasImage) { showToast("Please attach the image again before retrying."); input.value = meta.prompt || ""; resizeInput(); updateSendState(); input.focus(); return; }
+        sendMessage({ text: meta.prompt || "", preserveComposer: true, skipPendingImage: true });
+      });
+      actions.appendChild(retry);
+      if (failure.status === 401) {
+        const login = document.createElement("a"); login.href = "login.html?intent=chatbot"; login.textContent = "Sign in again"; actions.appendChild(login);
+      }
+      if (failure.requestId) { const reference = document.createElement("small"); reference.textContent = "Reference: " + failure.requestId; actions.appendChild(reference); }
+      message.appendChild(actions);
+      return; // Transport failures are not teaching answers or feedback events.
+    }
+
     if (!content.querySelector('.study-quiz-card')) studySession?.mountCheck(content, meta.studyCheck || meta.context?.studyCheck, meta.messageId);
 
     const prompt = meta.prompt || message.dataset.prompt || "";
@@ -3443,6 +3480,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateSendState() {
+    stopChatBtn.hidden = !chatRequestInFlight;
     const locked = isWelcomeTrial && (welcomeTrialLocked || getWelcomeTrialCount() >= WELCOME_TRIAL_LIMIT);
     const hasReadyContent = input.value.trim().length > 0 || !!pendingImage;
     sendBtn.disabled = locked || chatRequestInFlight || !hasReadyContent;
@@ -3475,16 +3513,29 @@ document.addEventListener("DOMContentLoaded", () => {
     input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
   }
 
+  function clearEmptyStateTransitions() {
+    emptyStateTransitions.forEach(({ element, animation }) => {
+      animation.cancel();
+      element.classList.remove("chat-empty-exit");
+      ["--exit-top", "--exit-left", "--exit-width", "--exit-height"].forEach((key) => element.style.removeProperty(key));
+    });
+    emptyStateTransitions = [];
+  }
+
   function setChatMode(isActive, options = {}) {
     const wasActive = body.classList.contains("has-chat");
     const panel = document.querySelector(".composer-panel");
     const shouldAnimate = isActive && !wasActive && options.animate !== false
       && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (isActive !== wasActive || options.animate === false) {
+      clearEmptyStateTransitions();
       composerTransition?.cancel();
       composerTransition = null;
     }
     const previousRect = shouldAnimate && panel ? panel.getBoundingClientRect() : null;
+    const departing = shouldAnimate && workArea
+      ? [document.getElementById("hero"), chatSuggestions].filter(Boolean).map((element) => ({ element, rect: element.getBoundingClientRect() }))
+      : [];
     body.classList.toggle("has-chat", isActive);
     body.dataset.chatState = isActive ? "CONVERSATION" : "NEW_CHAT";
     [document.getElementById("hero"), chatSuggestions].forEach((element) => {
@@ -3492,6 +3543,23 @@ document.addEventListener("DOMContentLoaded", () => {
       element.inert = isActive;
       element.setAttribute("aria-hidden", String(isActive));
     });
+    if (departing.length) {
+      const area = workArea.getBoundingClientRect();
+      departing.forEach(({ element, rect }) => {
+        if (!element.animate || rect.width <= 0) return;
+        element.style.setProperty("--exit-top", `${rect.top - area.top + workArea.scrollTop}px`);
+        element.style.setProperty("--exit-left", `${rect.left - area.left}px`);
+        element.style.setProperty("--exit-width", `${rect.width}px`);
+        element.style.setProperty("--exit-height", `${rect.height}px`);
+        element.classList.add("chat-empty-exit");
+        const animation = element.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(-8px)" }], { duration: 160, fill: "forwards" });
+        emptyStateTransitions.push({ element, animation });
+        animation.onfinish = () => {
+          element.classList.remove("chat-empty-exit");
+          animation.cancel();
+        };
+      });
+    }
     if (chatTitle) {
       chatTitle.textContent = isActive ? "Tutorly chat" : "New chat";
     }
@@ -3795,13 +3863,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const requestVersion = ++activeChatRequestVersion;
     chatRequestInFlight = true;
     updateSendState();
-
+    try {
     const shouldShowTrialLimitAfterReply = registerWelcomeTrialAttempt();
     const imageDataUrl = hasImage
       ? await imageFileToDataUrl(imageToSend.uploadFile || imageToSend.file).catch(() => "")
       : "";
+    if (requestVersion !== activeChatRequestVersion) return;
     const botInputText = text || imageToSend?.extractedText || "Please read and explain the uploaded learning image.";
     const userDisplayText = text || imageToSend?.extractedText || "Uploaded learning image";
     const requestPayload = createChatRequestPayload(botInputText, {
@@ -3904,6 +3974,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     pendingChatStartTimer = window.setTimeout(async () => {
+      if (requestVersion !== activeChatRequestVersion) return;
       pendingChatStartTimer = null;
       let replyText;
       let replyFailed = false;
@@ -3914,18 +3985,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (error?.name === "AbortError") {
           ReasoningStatus?.stop?.(loadingMessage);
           loadingMessage?.remove();
-          chatRequestInFlight = false;
-          updateSendState();
           return;
         }
         replyFailed = true;
         replyText = getChatFailureMessage(error);
+        requestPayload.failure = { status: error.status || 0, requestId: error.requestId || "", hasImage };
       } finally {
-        chatRequestInFlight = false;
-        updateSendState();
+        if (requestVersion === activeChatRequestVersion) { chatRequestInFlight = false; updateSendState(); }
       }
+      if (requestVersion !== activeChatRequestVersion) return;
       const routedSubject = requestPayload.semanticRoute?.subject || subjectAtSend;
-      const toolkit = createStudyToolkit(routedSubject, botInputText, replyText, modelAtSend);
+      const toolkit = replyFailed ? null : createStudyToolkit(routedSubject, botInputText, replyText, modelAtSend);
       if (userRecord?.id && conversationId) {
         GPT?.updateMessage?.(conversationId, userRecord.id, { subject: routedSubject })
           || ChatHistory?.updateMessage?.(conversationId, userRecord.id, { subject: routedSubject });
@@ -3946,6 +4016,7 @@ document.addEventListener("DOMContentLoaded", () => {
           semanticRoute: requestPayload.semanticRoute || null,
           teachingActions: requestPayload.teachingActions,
           studyCheck: requestPayload.studyCheck || null,
+          failure: requestPayload.failure || null,
           activityChatId: requestPayload.activityChatId || null,
           generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
@@ -3966,12 +4037,13 @@ document.addEventListener("DOMContentLoaded", () => {
           semanticRoute: requestPayload.semanticRoute || null,
           teachingActions: requestPayload.teachingActions,
           studyCheck: requestPayload.studyCheck || null,
+          failure: requestPayload.failure || null,
           activityChatId: requestPayload.activityChatId || null,
           generatedImage: GeneratedImages?.createState(requestPayload.imageGeneration) || null,
           hasImage
         }
       });
-      if (!GPT) observeChatMemory(assistantRecord, conversationId, routedSubject);
+      if (!GPT && !replyFailed) observeChatMemory(assistantRecord, conversationId, routedSubject);
       if (!replyFailed) {
         updateLiveBoardFromResponse({
           conversationId,
@@ -3998,12 +4070,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     }, getResponseDelay(botInputText, modelAtSend, hasImage));
+    } catch (error) {
+      if (requestVersion !== activeChatRequestVersion) return;
+      chatRequestInFlight = false;
+      if (!input.value && text && !options.preserveComposer) input.value = text;
+      resizeInput(); updateSendState();
+      showToast("Tutorly couldn't prepare that message. Your text is kept; try again.");
+    }
   }
 
   function resetChat() {
     abortActiveChatRequest();
     studySession?.reset();
-    window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
+    setSelectedModel(getStoredModel(), { persist: false });
+    window.TutorlyLiveBoardPanel?.reset?.();
     window.TutorlyCurriculum?.clearActiveContext?.();
     messages.innerHTML = "";
     input.value = "";
@@ -4429,7 +4509,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     abortActiveChatRequest();
-    window.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
+    window.TutorlyLiveBoardPanel?.reset?.();
     messages.innerHTML = "";
     activeConversationId = conversation.id;
     studySession?.restore(conversation.id);
@@ -4449,6 +4529,7 @@ document.addEventListener("DOMContentLoaded", () => {
           semanticRoute: messageRecord.metadata?.semanticRoute || null,
           teachingActions: messageRecord.metadata?.teachingActions,
           studyCheck: messageRecord.metadata?.studyCheck || null,
+          failure: messageRecord.metadata?.failure || null,
           toolkit: messageRecord.tools
         });
         return;
@@ -5510,7 +5591,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeMobileSidebar();
       closeAccountMenu();
     },
-    selectStudyMode: () => setSelectedModel("study"),
+    selectStudyMode: () => setSelectedModel("study", { persist: false }),
     prepareConversation: (existingId, title) => {
       let conversation = existingId && (GPT?.getConversation?.(existingId) || ChatHistory?.getConversation?.(existingId));
       if (!conversation && !isGuestMode) conversation = ChatHistory?.createConversation?.({ title, source: "study-plan" });
@@ -5525,8 +5606,31 @@ document.addEventListener("DOMContentLoaded", () => {
     else showToast("Study Bot could not load. Refresh this page and try again.");
   });
   window.TutorlyChatSuggestions?.render?.(chatSuggestions, { onSelect: prefillChatSuggestion });
+  const curriculumEntryParams = new URLSearchParams(window.location.search);
   restoreConversation();
+  // Practice and Learn share the existing AI Tutor, using a catalog-validated ID.
+  (async () => {
+    const params = curriculumEntryParams;
+    const chapterId = params.get("practiceChapter") || params.get("curriculumChapter");
+    const subjectId = params.get("practiceSubject");
+    if (!chapterId && !subjectId) return;
+    try {
+      const catalog = await window.TutorlyCurriculum.load();
+      const subjects = window.TutorlyCurriculum.subjectModels(catalog);
+      const subject = subjects.find(item => subjectId ? item.id === subjectId : item.chapters.some(chapter => chapter.id === chapterId));
+      const chapter = chapterId && subject?.chapters.find(item => item.id === chapterId);
+      if (!subject || (chapterId && !chapter)) { showToast("This chapter is not available in your saved curriculum. Choose it again from Practice."); return; }
+      resetChat();
+      window.TutorlyCurriculum.setActiveContext({board:catalog.board,grade:catalog.grade,academic_year:catalog.academic_year,medium:catalog.medium,
+        subject_id:subject.id,subject:subject.name,book_id:chapter?.bookId || "",book:chapter?.bookTitle || "",chapter_id:chapter?.id || "",chapter:chapter?.name || chapter?.title || "",source_url:chapter?.sourceUrl || ""});
+      const label = chapter?.name || chapter?.title || subject.name;
+      const prompt = params.has("curriculumChapter") ? `Help me understand ${label}. Start with one small concept and example. These are AI explanations, not reviewed lesson notes.`
+        : `Let's practise ${subject.name}${chapter ? ': ' + label : ''}, ${catalog.board} Grade ${catalog.grade}. Give me 2 short questions, one at a time, and wait for my answer.`;
+      await sendMessage({text:prompt,skipPendingImage:true});
+    } catch (_) { showToast("Tutorly couldn't load that chapter. Return to Practice and retry. Chat still works."); }
+  })();
   window.addEventListener("pagehide", () => {
+    clearEmptyStateTransitions();
     composerTransition?.cancel();
     composerTransition = null;
   });

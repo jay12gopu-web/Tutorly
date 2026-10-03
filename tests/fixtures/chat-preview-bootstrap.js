@@ -16,7 +16,7 @@
   const json = (payload, status = 200) => new Response(JSON.stringify(payload), { status, headers: { 'Content-Type': 'application/json' } });
   const wait = (signal) => new Promise((resolve, reject) => {
     if (signal?.aborted) { reject(new DOMException('Aborted', 'AbortError')); return; }
-    const timer = setTimeout(resolve, 350);
+    const timer = setTimeout(resolve, preview.scenario === 'slow' ? 10000 : 350);
     signal?.addEventListener('abort', () => { clearTimeout(timer); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
   });
 
@@ -50,7 +50,7 @@
     }
     if (url.pathname === '/api/auth/logout') return json({ logged_out: true });
     if (url.pathname.startsWith('/subscription/')) return json({ subscription });
-    if (url.pathname === '/api/curriculum/catalog') return json({ available: false, subjects: [], message: 'Curriculum is not loaded in this chat-only fixture.' });
+    if (url.pathname === '/api/curriculum/catalog') return nativeFetch('/__preview/curriculum-catalog.json?grade=' + encodeURIComponent(url.searchParams.get('grade') || '9'));
     if (url.pathname === '/api/vision/extract') return json({ text: 'Graph y = x² - 4', language: 'en-IN' });
     if (url.pathname === '/upload-image') return json({ uploaded: false, preview_only: true });
     if (url.pathname === '/api/voice/config') return json({ enabled: false, reason: 'Voice connections disabled in local fixture preview.' });
@@ -126,7 +126,7 @@
     button('Use guest fixture', () => { ['tutorly_session_token', 'tutorly_logged_in', 'tutorly_signed_up', 'tutorly_account_role'].forEach(key => localStorage.removeItem(key)); localStorage.setItem('tutorly_bot_try_count', '0'); location.reload(); });
     button('Toggle preview theme', () => { localStorage.setItem('tutorly_theme', document.body.dataset.theme === 'dark' ? 'light' : 'dark'); location.reload(); });
     const label = document.createElement('label'); label.textContent = 'Response fixture '; const select = document.createElement('select'); select.setAttribute('aria-label', 'Response fixture');
-    [['normal', 'Normal response'], ['failure', 'Backend unavailable']].forEach(([value, copy]) => { const option = document.createElement('option'); option.value = value; option.textContent = copy; select.appendChild(option); });
+    [['normal', 'Normal response'], ['failure', 'Backend unavailable'], ['slow','Slow response (test Stop)']].forEach(([value, copy]) => { const option = document.createElement('option'); option.value = value; option.textContent = copy; select.appendChild(option); });
     select.addEventListener('change', () => { preview.scenario = select.value; controls.open = false; }); label.appendChild(select); actions.appendChild(label);
     document.body.appendChild(controls);
   });

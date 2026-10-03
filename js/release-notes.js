@@ -14,7 +14,7 @@
     items.replaceChildren(...group.items.map((entry) => {
       const item = document.createElement("section");
       item.className = "release-item";
-      const heading = document.createElement("h3");
+      const heading = document.createElement("h2");
       const copy = document.createElement("p");
       heading.textContent = entry.title;
       copy.textContent = entry.description;

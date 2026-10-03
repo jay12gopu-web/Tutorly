@@ -267,7 +267,7 @@ class GroqProvider(AIProvider):
         self._timeout_seconds = max(5.0, min(float(timeout_seconds), 45.0))
         self._max_completion_tokens = max(
             400,
-            min(int(os.getenv("TUTORLY_GROQ_MAX_COMPLETION_TOKENS", "900")), 1800),
+            min(int(os.getenv("TUTORLY_GROQ_MAX_COMPLETION_TOKENS", "2400")), 6000),
         )
         self._client = None
 
@@ -392,6 +392,8 @@ class GroqProvider(AIProvider):
             },
         )
         content = response.choices[0].message.content if response.choices else ""
+        if response.choices and getattr(response.choices[0], 'finish_reason', None) == 'length':
+            raise ProviderFailure('truncated_response')
         if not content or not str(content).strip():
             raise ProviderFailure("empty_response")
         try:

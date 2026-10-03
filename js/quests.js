@@ -2,12 +2,12 @@
   "use strict";
 
   const ROUTES = {
-    practice_question_correct: "practice.html",
-    practice_session_completed: "practice.html",
+    practice_question_correct: "tests.html?mode=practice",
+    practice_session_completed: "tests.html?mode=practice",
     test_completed: "tests.html",
     lesson_completed: "lessons.html",
-    topic_mastered: "progress.html",
-    weak_topic_improved: "progress.html"
+    topic_mastered: "tests.html?mode=practice",
+    weak_topic_improved: "tests.html?mode=practice"
   };
 
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -26,6 +26,8 @@
     const percent = Math.round((progress / target) * 100);
     const completed = quest.status === "completed" || quest.status === "claimed";
     const coins = Number(quest.coin_reward || 0);
+    // No page visit or material-only score is evidence of verified chapter mastery.
+    const unavailable = !completed && ['lesson_completed','topic_mastered','weak_topic_improved'].includes(quest.target_event);
     return `
       <article class="quest-card${completed ? " is-complete" : ""}">
         <div class="quest-top">
@@ -36,7 +38,7 @@
         <p class="quest-desc">${escapeHtml(quest.description)}</p>
         <div class="quest-progress-copy"><span>${completed ? "Completed" : `${progress} / ${target}`}</span><span>${escapeHtml(timeLabel(quest.expires_at))}</span></div>
         <div class="quest-progress" role="progressbar" aria-label="${escapeHtml(quest.title)} progress" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${progress}"><span style="width:${percent}%"></span></div>
-        <a class="btn ${completed ? "btn-soft" : "btn-primary"} quest-open" href="${ROUTES[quest.target_event] || "home.html"}">${completed ? "Done" : "Continue"}</a>
+        ${unavailable ? '<p class="quest-desc">Reviewed chapter assessments are not available yet. This objective cannot currently be completed; no reward is claimed.</p><button class="btn btn-soft quest-open" disabled>Unavailable yet</button>' : `<a class="btn ${completed ? "btn-soft" : "btn-primary"} quest-open" href="${ROUTES[quest.target_event] || "tests.html"}">${completed ? "Done" : "Continue"}</a>`}
       </article>
     `;
   }

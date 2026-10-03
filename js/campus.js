@@ -1,4 +1,7 @@
 (function () {
+  // The canonical profile hub owns its form and authenticated school profile.
+  // Legacy Campus augmentation must not replace it (audit M10/M11).
+  if (document.body.classList.contains('profile-hub-page')) return;
   if (window.__tutorlyCampusApplied) return;
   window.__tutorlyCampusApplied = true;
 

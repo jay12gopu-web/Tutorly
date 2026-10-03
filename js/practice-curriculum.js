@@ -16,7 +16,8 @@
       book_id: chapter.bookId || "", book: chapter.bookTitle || "",
       chapter_id: chapter.id || "", chapter: chapter.name || "", source_url: chapter.sourceUrl || ""
     });
-    window.location.href = "tests.html?mode=practice";
+    const selection = chapter.id ? `practiceChapter=${encodeURIComponent(chapter.id)}` : `practiceSubject=${encodeURIComponent(subject.id)}`;
+    window.location.href = `maths_gpt.html?${selection}`;
   }
 
   function renderSubjects(grid, status) {

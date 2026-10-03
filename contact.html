@@ -4,94 +4,81 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorly</title>
+  <meta name="description" content="Contact Tutorly for help with your account, subscriptions, learning tools, or feedback." />
   <link rel="canonical" href="https://mytutor.co.in/contact.html" />
   <link rel="icon" type="image/png" href="assets/brand-star.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site.css" />
-  <link rel="stylesheet" href="css/global-layout.css?v=responsive-20260905" />
-  <style>
-    .contact-wrap { margin-top: 14px; }
-    .contact-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 12px; margin-top: 12px; }
-    .contact-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: var(--muted); }
-    .contact-item span { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #eef3ff; }
-    .contact-form textarea { min-height: 140px; resize: vertical; }
-    @media (max-width: 900px) { .contact-layout { grid-template-columns: 1fr; } }
-  </style>
-  <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
+  <link rel="stylesheet" href="css/contact.css" />
+  <script src="js/contact.js" defer></script>
 </head>
-<body data-tutorly-surface="workspace">
-  <a class="back-home-btn" href="home.html" aria-label="Back to Home">Home</a>
-  <header class="shell header-wrap fade-up">
-  <div class="topbar">
-    <div class="brand"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></div>
-    <nav class="nav-links">
-      <a href="maths_gpt.html">Tutorly Chat</a>
-      <a href="home.html">Chat</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </div>
-</header>
-
-  <main class="shell contact-wrap">
-    <section class="panel panel-soft fade-up d2">
-      <span class="pill pill-blue">Need help? We are here.</span>
-      <h1 class="page-title" style="font-size: 42px; margin-top: 8px;">Contact Tutorly Team</h1>
-      <p class="page-sub">Questions about learning plans, account setup, referrals, or subscriptions? Reach us anytime.</p>
+<body class="contact-page" data-tutorly-surface="workspace">
+  <a class="contact-skip" href="#contactForm">Skip to contact form</a>
+  <header class="contact-header">
+    <a class="contact-brand" href="maths_gpt.html" aria-label="Tutorly home"><img src="assets/brand-star.png" width="38" height="38" alt="" />Tutorly</a>
+    <a class="contact-back" href="maths_gpt.html">Back to Chat <img src="assets/icons/chevron-right.svg" width="20" height="20" alt="" /></a>
+  </header>
+  <main class="contact-shell">
+    <section class="contact-story" aria-labelledby="contactTitle">
+      <img class="contact-art" src="assets/contact-support-square-ai.png" alt="" fetchpriority="high" />
+      <div class="contact-story-copy">
+        <h1 id="contactTitle">We’d love to<br />hear from you!</h1>
+        <p>Have a question or need help? We’re here for you.</p>
+        <address class="contact-details">
+          <a href="tel:+917330766674"><span class="contact-detail-icon"><img src="assets/icons/phone.svg" width="24" height="24" alt="" /></span><span>+91 73307 66674</span></a>
+          <a href="mailto:support@tutorly.co.in"><span class="contact-detail-icon"><img src="assets/icons/mail.svg" width="24" height="24" alt="" /></span><span>support@tutorly.co.in</span></a>
+        </address>
+      </div>
     </section>
-
-    <section class="contact-layout fade-up d3">
-      <article class="panel">
-        <h3 style="margin-top: 0;">Support details</h3>
-        <div class="contact-item"><span aria-hidden="true">@</span><div><strong>Email</strong><br /><a href="mailto:jay12.gopu@gmail.com">jay12.gopu@gmail.com</a></div></div>
-        <div class="contact-item"><span aria-hidden="true">↗</span><div><strong>Website</strong><br /><a href="https://mytutor.co.in/">mytutor.co.in</a></div></div>
-        <p class="muted">Send the Tutorly team your question and include the page or feature you need help with.</p>
-      </article>
-
-      <article class="panel contact-form">
-        <h3 style="margin-top: 0;">Send us a message</h3>
-        <form id="contactForm" class="grid" style="gap: 10px;">
-          <input class="input" type="text" id="name" placeholder="Your Name" required />
-          <input class="input" type="email" id="email" placeholder="Your Email" required />
-          <select class="select" id="topic" required>
-            <option value="">Select Topic</option>
-            <option>Account Help</option>
-            <option>Subscriptions</option>
-            <option>Tutor Support</option>
-            <option>Feedback</option>
-            <option>Bug Report</option>
+    <section class="contact-form-panel" aria-label="Send Tutorly a message">
+      <form id="contactForm" novalidate>
+        <div class="contact-field">
+          <label for="name">Full Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Enter your full name" maxlength="80" required aria-describedby="nameError" />
+          <p class="contact-error" id="nameError"></p>
+        </div>
+        <div class="contact-field">
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required aria-describedby="emailError" />
+          <p class="contact-error" id="emailError"></p>
+        </div>
+        <div class="contact-field">
+          <label for="phone">Phone Number <span class="contact-optional">(optional)</span></label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+91 98765 43210" maxlength="30" aria-describedby="phoneError" />
+          <p class="contact-error" id="phoneError"></p>
+        </div>
+        <div class="contact-field">
+          <label for="topic">Reason for Contact</label>
+          <select id="topic" name="topic" required aria-describedby="topicError">
+            <option value="">Select an option</option>
+            <option>Account Help</option><option>Subscriptions</option><option>Tutor Support</option><option>Feedback</option><option>Bug Report</option><option>Other</option>
           </select>
-          <textarea class="input" id="message" placeholder="Write your message here..." required></textarea>
-          <button class="btn btn-primary" type="submit">Submit Message</button>
-        </form>
-      </article>
+          <p class="contact-error" id="topicError"></p>
+        </div>
+        <div class="contact-field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Tell us how we can help..." maxlength="2000" required aria-describedby="messageError messageCount"></textarea>
+          <div class="contact-message-meta"><p class="contact-error" id="messageError"></p><span id="messageCount">0 / 2,000</span></div>
+        </div>
+        <div class="contact-attachment">
+          <img class="contact-attachment-icon" src="assets/icons/paperclip.svg" width="25" height="25" alt="" />
+          <div class="contact-attachment-copy"><label for="attachment">Add a screenshot <span>(optional)</span></label><p id="attachmentHelp">JPG, PNG or PDF (max 5 MB)</p></div>
+          <label class="contact-file-button" for="attachment">Choose File<input id="attachment" name="attachment" type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" aria-describedby="attachmentHelp attachmentError attachmentNotice" /></label>
+        </div>
+        <div class="contact-file-selection"><span id="attachmentName"></span><button id="removeAttachment" type="button" hidden>Remove file</button></div>
+        <p class="contact-error" id="attachmentError"></p>
+        <p class="contact-attachment-note" id="attachmentNotice">Files stay on your device. Attach your chosen file manually in your email app.</p>
+        <button class="contact-submit" id="contactSubmit" type="submit">Open email draft <img src="assets/icons/chevron-right.svg" width="21" height="21" alt="" /></button>
+        <p class="contact-form-note">Review your draft and press Send in your email app. Never include passwords or OTPs.</p>
+        <p id="contactStatus" class="contact-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="contact-fallback"><button id="copyMessage" type="button">Copy message</button><span aria-hidden="true">·</span><a id="emailFallback" href="mailto:support@tutorly.co.in">Email us directly</a></div>
+      </form>
+      <noscript><p class="contact-status">JavaScript is needed to prepare a draft. Email <a href="mailto:support@tutorly.co.in">support@tutorly.co.in</a> or call <a href="tel:+917330766674">+91 73307 66674</a>.</p></noscript>
     </section>
   </main>
-
-  <script>
-    (function applyRequestedTopic() {
-      const requestedTopic = new URLSearchParams(window.location.search).get('topic');
-      if (requestedTopic !== 'bug') return;
-      document.getElementById('topic').value = 'Bug Report';
-      document.getElementById('message').placeholder = 'What went wrong? What were you trying to do? Add the page name and any useful details.';
-    })();
-
-    document.getElementById('contactForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const topic = document.getElementById('topic').value;
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const message = document.getElementById('message').value.trim();
-      const subject = encodeURIComponent(`Tutorly support: ${topic}`);
-      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-      window.location.href = `mailto:jay12.gopu@gmail.com?subject=${subject}&body=${body}`;
-    });
-  </script>
-  <script src="js/global-layout.js?v=responsive-20260905b"></script>
-  <script src="js/swipe-home.js?v=nav-redesign-20260531d"></script>
-  <script src="js/mobile-app.js?v=responsive-20260905c"></script>
+  <footer class="contact-footer"><a href="https://mytutor.co.in/">mytutor.co.in</a><a href="privacy.html">Privacy Policy</a></footer>
 </body>
 </html>
 
