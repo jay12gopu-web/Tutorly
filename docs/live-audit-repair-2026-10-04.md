@@ -5,7 +5,15 @@
 Baseline: frontend/main commit `9ed2d22fa83ad0e370ac4d0a9bdf2cffb7a82a3d`.
 Scope: standalone Live Board entry, authenticated Profile presentation, and mobile navigation contrast. No backend, authentication model, curriculum data, Study Bot implementation or integrated chat-board engine was changed.
 
-The user subsequently approved pushing these repairs to main. This report records verification performed before that push. A push is not proof that the new frontend has deployed; a fresh production check is still necessary.
+The user subsequently approved pushing these repairs to main. Implementation commit `120d7d6a5cfa04524d2a832376fee12d8c16e68c` was pushed and confirmed on the remote main branch. Initial production checks still showed the old page; a later fresh browser load picked up the repaired frontend. Pre-push checks and the narrower post-push verification are distinguished below.
+
+### Post-push production verification
+
+- Standalone Live Board displayed the new labelled composer and “Ready for a topic”. Entering `Graph y = x^2` generated three steps. Play changed to Pause, advanced to Step 3, stopped, and left the real parabola visible (one graph path, no horizontal overflow).
+- Signed-out Profile at 390×844 displayed only the honest signed-out state, with account content hidden. Sign in opened the existing Google-only auth entry. The page referenced `profile-hub.css?v=session-20261004`.
+- Mobile chat loaded `chat-layout.css?v=contrast-20261004`. Its light drawer had dark `#172033` branding on white, opened/closed correctly and had no horizontal overflow. Dark-mode contrast was verified locally, not in an authenticated production session.
+- A new real guest prompt after deployment received a two-sentence explanation of blue light / Rayleigh scattering. This was not a fixture response.
+- Actual Google authentication, new-user onboarding and authenticated production Profile remain unverified pending human participation. No deployment or hosting configuration was manually changed.
 
 ## Repairs
 
@@ -138,12 +146,19 @@ Local screenshot artifacts are under `tmp/live-audit-20261004/`; this directory 
 
 All “after” screenshots in this section are local preview evidence, not deployment evidence.
 
+Fresh post-push production evidence:
+
+- [Deployed Live Board graph and completed playback](../tmp/live-audit-20261004/board-production-after.jpg)
+- [Deployed signed-out Profile](../tmp/live-audit-20261004/profile-production-after.jpg)
+- [Deployed mobile chat drawer](../tmp/live-audit-20261004/chat-production-mobile-after.jpg)
+- [Real chatbot response after deployment](../tmp/live-audit-20261004/chat-production-response-after.jpg)
+
 ## Remaining verification / follow-ups
 
 1. **Human Google account participation:** open the existing auth entry, click Continue with Google yourself and complete provider/terms consent. Test a returning student reaching chat/Profile without onboarding. For a fresh student, complete name/age/grade/board/optional school and confirm the values in Profile. For a fresh teacher, complete four pages with a test degree document, preferences and availability; confirm pending (not verified) status and the teacher destination. Only use non-sensitive test documents. Real signed-in production Profile and role redirects remain unverified until these checks.
 2. **Billing source:** authenticated balance/plan is absent from the current auth response. This patch deliberately displays unavailable; confirmed values need the existing billing service to provide account-bound data. No credentials or billing settings were changed.
 3. **Study Review edge case:** a task marked complete before starting a session needs a context-aware fallback instead of opening the last unrelated chat. This is a separate functional repair, not included in the three requested fixes.
-4. **Deployment:** check the new composer, signed-out Profile and mobile drawer on a fresh production load after hosting publishes the pushed commit. Do not equate a successful Git push with deployment success.
+4. **Authenticated production verification:** the fresh public checks above confirm the repaired frontend is being served. Signed-in balances, connected-login methods and teacher/student destinations still need the human Google checks; they are not established by public guest checks or a successful Git push.
 
 ## Protected local work
 
