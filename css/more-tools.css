@@ -422,12 +422,5 @@ body.tools-page[data-theme="dark"] .tool-card-featured .tool-arrow { color: #fff
   .tool-card,
   .tool-arrow { transition: none; }
 }
-.tools-group { margin:32px 0; }
-.tools-group h2 { margin:0 0 8px; font-size:24px; }
-.tools-group > p { margin:0 0 16px; color:var(--tutorly-muted); font-size:14px; }
-.tools-group .tools-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-.tools-group .tool-card { min-height:96px; border-radius:16px; box-shadow:none; background:var(--tutorly-surface); }
-.tools-group-organise .tool-card, .tools-group-extras .tool-card { min-height:72px; padding:16px; background:transparent; }
-.tools-group-extras .tool-icon { width:32px; height:32px; background:none; }
+.tools-catalog .tool-card { min-height:96px; border-radius:16px; box-shadow:none; background:var(--tutorly-surface); }
 .tools-progress-strip { margin-top:32px; box-shadow:none; background:transparent; }
-@media(max-width:768px) { .tools-group .tools-grid { grid-template-columns:1fr; } }

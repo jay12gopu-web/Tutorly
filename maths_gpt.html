@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="css/live-board.css?v=chat-panel-v2" />
   <link rel="stylesheet" href="css/chatbot-mobile-polish.css?v=study-composer-20260825" />
   <link rel="stylesheet" href="css/voice-chat.css?v=voice-settings-save-20260826" />
-  <link rel="stylesheet" href="css/chat-layout.css?v=contrast-20261004" />
+  <link rel="stylesheet" href="css/chat-layout.css?v=sidebar-20261004" />
   <link rel="stylesheet" href="css/study-planner.css?v=20260929" />
   <link rel="stylesheet" href="css/study-session.css?v=20260929" />
   <link rel="stylesheet" href="css/audit-repairs.css?v=20261002" />
@@ -66,8 +66,7 @@
         <span class="side-label">Archived Chats</span>
       </button>
 
-      <div class="sidebar-nav-scroll">
-        <div class="side-section-label side-label">Study</div>
+      <nav class="sidebar-primary-nav" aria-label="Study and tools">
         <button id="studyPlannerBtn" class="side-link" type="button" title="Study Bot" aria-controls="studyPlannerView">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 11h18M8 16l2 2 5-5" /></svg>
           <span class="side-label">Study Bot</span>
@@ -82,6 +81,18 @@
           <span class="side-label">Tests</span>
         </a>
 
+        <a class="side-link workspace-link" href="more-tools.html" data-workspace-route="more-tools.html" data-workspace-title="More Tools" title="More Tools">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2" />
+            <rect x="14" y="3" width="7" height="7" rx="2" />
+            <rect x="3" y="14" width="7" height="7" rx="2" />
+            <path d="M17.5 14v7M14 17.5h7" />
+          </svg>
+          <span class="side-label">More Tools</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-nav-scroll">
         <div id="sidebarConversationSections" class="sidebar-conversations side-label">
           <section id="sidebarPinnedSection" class="sidebar-chat-section" aria-labelledby="sidebarPinnedChatsLabel" hidden>
             <div id="sidebarPinnedChatsLabel" class="side-section-label">Pinned Chats</div>
@@ -92,17 +103,6 @@
             <div id="sidebarRecentChats" class="sidebar-recent-list" aria-live="polite"></div>
             <p id="sidebarRecentEmpty" class="sidebar-recent-empty">Your recent chats will appear here.</p>
           </section>
-        </div>
-        <div class="sidebar-tools-group"><div class="side-section-label side-label">Tools</div>
-        <a class="side-link workspace-link" href="more-tools.html" data-workspace-route="more-tools.html" data-workspace-title="More Tools" title="More Tools">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="2" />
-            <rect x="14" y="3" width="7" height="7" rx="2" />
-            <rect x="3" y="14" width="7" height="7" rx="2" />
-            <path d="M17.5 14v7M14 17.5h7" />
-          </svg>
-          <span class="side-label">More Tools</span>
-        </a>
         </div>
       </div>
 

@@ -36,6 +36,29 @@ check('lesson Bookmark remains visible and secondary tools remain in overflow', 
   assert(html.indexOf('id="bookmarkBtn"') < html.indexOf('<details class="reader-utilities">'));
   assert.match(html, /<details class="reader-utilities">/);
 });
+check('sidebar tools stay together above scrolling conversation history', () => {
+  const html = read('maths_gpt.html'), css = read('css/chat-layout.css');
+  const nav = html.match(/<nav class="sidebar-primary-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+  assert(nav, 'one primary navigation group exists');
+  assert(nav.indexOf('id="studyPlannerBtn"') < nav.indexOf('href="tests.html"'));
+  assert(nav.indexOf('href="tests.html"') < nav.indexOf('href="more-tools.html"'));
+  assert(html.indexOf('sidebar-primary-nav') < html.indexOf('id="sidebarConversationSections"'));
+  assert(html.indexOf('id="sidebarConversationSections"') < html.indexOf('class="sidebar-account"'));
+  assert.doesNotMatch(html, /side-section-label side-label">(?:Study|Tools)</);
+  assert.match(css, /\.sidebar-primary-nav\s*\{[^}]*flex:0 0 auto/);
+  assert.match(css, /\.sidebar-conversations,[^}]*\.sidebar-recent-list\s*\{\s*flex:0 0 auto/);
+  for (const id of ['sidebarPinnedSection', 'sidebarPinnedChats', 'sidebarRecentChats', 'sidebarRecentEmpty']) assert(html.includes(`id="${id}"`));
+});
+check('More Tools uses one catalog without category headings and preserves routes', () => {
+  const html = read('more-tools.html');
+  const catalog = html.match(/<nav class="tools-grid tools-catalog"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+  assert(catalog, 'one catalog exists');
+  assert.doesNotMatch(html, /<h2>\s*(?:Learn|Organise|Extras)\s*<\/h2>/i);
+  assert.doesNotMatch(html, /class="tools-group/);
+  for (const route of ['live-board.html', 'practice.html', 'tests.html', 'lessons.html', 'bookmarks.html', 'progress.html', 'quests.html', 'leaderboard.html']) {
+    assert(catalog.includes(`href="${route}"`), `${route} is preserved`);
+  }
+});
 check('degree presentation is private, compact and never claims automatic verification', () => {
   assert.match(read('css/onboarding.css'), /:has\(\.degree-file\)/);
   assert.match(read('js/onboarding.js'), /Private · used only for teacher verification · Pending review/);

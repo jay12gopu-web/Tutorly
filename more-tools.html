@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
-  <link rel="stylesheet" href="css/more-tools.css?v=tools-20260912" />
+  <link rel="stylesheet" href="css/more-tools.css?v=catalog-20261004" />
   <link rel="stylesheet" href="css/page-transitions.css" />
 </head>
 <body class="tools-page" data-tutorly-surface="workspace">
@@ -34,7 +34,8 @@
       <p>Jump into a lesson, practise a topic, take a test, complete quests, or review your progress.</p>
     </section>
 
-<section class="tools-group"><h2>Learn</h2><p>Use the right tool for what you’re studying.</p><div class="tools-grid">      <a class="tool-card" href="live-board.html">
+    <nav class="tools-grid tools-catalog" aria-label="Tutorly tools">
+      <a class="tool-card" href="live-board.html">
         <span class="tool-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M4 5h16v12H4z" /><path d="M8 21h8M12 17v4" /><path d="m7 14 3-4 3 2 4-6" /></svg>
         </span>
@@ -55,8 +56,8 @@
         <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H7a3 3 0 0 0-3 3V5.5Z" /><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /></svg></span>
         <span class="tool-copy"><strong>Learn</strong><small>Browse your verified curriculum. Reviewed lessons are being prepared.</small></span>
         <span class="tool-arrow" aria-hidden="true">&#8594;</span>
-      </a></div></section>
-<section class="tools-group tools-group-organise"><h2>Organise</h2><div class="tools-grid">      <a class="tool-card" href="bookmarks.html">
+      </a>
+      <a class="tool-card" href="bookmarks.html">
         <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4V3z" /></svg></span>
         <span class="tool-copy"><strong>Bookmarks</strong><small>Return to your saved study resources.</small></span>
         <span class="tool-arrow" aria-hidden="true">&#8594;</span>
@@ -65,12 +66,18 @@
         <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></svg></span>
         <span class="tool-copy"><strong>Progress</strong><small>See your learning activity and improvement.</small></span>
         <span class="tool-arrow" aria-hidden="true">&#8594;</span>
-      </a></div></section>
-<section class="tools-group tools-group-extras"><h2>Extras</h2><div class="tools-grid">      <a class="tool-card" href="quests.html">
+      </a>
+      <a class="tool-card" href="quests.html">
         <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m13 2-1 7h6l-8 13 1-8H5l8-12z" /></svg></span>
         <span class="tool-copy"><strong>Quests</strong><small>Complete daily challenges and earn rewards.</small></span>
         <span class="tool-arrow" aria-hidden="true">&#8594;</span>
-      </a><a class="tool-card" href="leaderboard.html"><span class="tool-copy"><strong>Leaderboard</strong><small>Weekly learning ranks · demo data</small></span><span class="tool-arrow" aria-hidden="true">→</span></a></div></section>
+      </a>
+      <a class="tool-card" href="leaderboard.html">
+        <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v6a5 5 0 0 1-10 0zM7 5H3v3a4 4 0 0 0 4 4M17 5h4v3a4 4 0 0 1-4 4M12 14v6M8 21h8" /></svg></span>
+        <span class="tool-copy"><strong>Leaderboard</strong><small>Weekly learning ranks · demo data</small></span>
+        <span class="tool-arrow" aria-hidden="true">&#8594;</span>
+      </a>
+    </nav>
 
     <section class="tool-card tools-progress-strip" aria-label="Learning level and leaderboard">
       <div class="tools-progress-stat">

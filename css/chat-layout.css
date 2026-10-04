@@ -4,6 +4,10 @@ body.chat-ui-refresh .main-area { min-width:0; background:var(--chat-canvas) !im
 body.chat-ui-refresh .main-area::before, body.chat-ui-refresh .main-area::after { display:none; }
 body.chat-ui-refresh .chat-shell { grid-template-columns:248px minmax(0,1fr); height:100dvh; min-height:0; }
 body.chat-ui-refresh .sidebar-nav-scroll { min-height:0; flex:1; overflow-y:auto; }
+body.chat-ui-refresh .sidebar-primary-nav { display:grid; gap:4px; flex:0 0 auto; padding:4px 0 12px; border-bottom:1px solid var(--chat-border); }
+body.chat-ui-refresh .sidebar-conversations, body.chat-ui-refresh #sidebarRecentSection, body.chat-ui-refresh .sidebar-recent-list { flex:0 0 auto; }
+body.chat-ui-refresh .sidebar-recent-list { overflow:visible; max-height:none; }
+body.chat-ui-refresh .sidebar-recent-empty { margin:4px 12px 8px; }
 body.chat-ui-refresh .chat-shell.sidebar-collapsed { grid-template-columns:80px minmax(0,1fr); }
 body.chat-ui-refresh .sidebar { padding:24px 12px; gap:8px; height:100dvh; min-height:0; background:var(--tutorly-soft) !important; color:var(--chat-ink); box-shadow:none; border-color:var(--chat-border); }
 body.chat-ui-refresh .side-top { margin-bottom:16px; }
@@ -13,7 +17,6 @@ body.chat-ui-refresh .side-link.active { color:var(--tutorly-blue) !important; b
 body.chat-ui-refresh .new-chat-link { border:1px solid var(--chat-border); background:var(--chat-card); font-weight:650; }
 body.chat-ui-refresh #chatHistoryBtn { color:var(--chat-muted) !important; }
 body.chat-ui-refresh .side-section-label { font-size:11px; letter-spacing:.07em; color:var(--chat-muted); margin:16px 12px 8px; }
-body.chat-ui-refresh .sidebar-tools-group { margin-top:auto; padding-top:16px; }
 body.chat-ui-refresh :is(.sidebar-recent-item,.sidebar-chat-item,.sidebar-conversation-item) { border-radius:8px; background:transparent; box-shadow:none; }
 body.chat-ui-refresh .sidebar-recent-open { font-size:13px; font-weight:400; color:var(--chat-muted); }
 body.chat-ui-refresh .sidebar-recent-item.active { background:color-mix(in srgb,var(--tutorly-blue) 8%,transparent); border-color:transparent; box-shadow:none; }
