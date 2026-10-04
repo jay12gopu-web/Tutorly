@@ -5592,6 +5592,12 @@ document.addEventListener("DOMContentLoaded", () => {
       closeAccountMenu();
     },
     selectStudyMode: () => setSelectedModel("study", { persist: false }),
+    openConversation: (id) => {
+      const conversation = id && (GPT?.getConversation?.(id) || ChatHistory?.getConversation?.(id));
+      if (!conversation || !Array.isArray(conversation.messages) || !conversation.messages.length) return false;
+      loadConversation(conversation.id);
+      return true;
+    },
     prepareConversation: (existingId, title) => {
       let conversation = existingId && (GPT?.getConversation?.(existingId) || ChatHistory?.getConversation?.(existingId));
       if (!conversation && !isGuestMode) conversation = ChatHistory?.createConversation?.({ title, source: "study-plan" });

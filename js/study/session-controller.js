@@ -51,6 +51,23 @@
         // "Do not use Live Board" and micro-learning rules live in the backend's
         // STUDY_SESSION_PROMPT, not in the student's visible message bubble.
         options.send(`Start my ${task.kind} task${task.part ? `, part ${task.part}` : ''}: ${context?.topicTitle || task.title}.`, 'start');
+      },
+      onReviewTask(plan, task, conversationId) {
+        if (options.isBusy()) { options.notify('Wait for the current answer to finish before reviewing a task.'); return true; }
+        // Review must only load a real saved chat. Unlike Start, it must never
+        // create a chat or fall back to the current/unrelated conversation.
+        if (!options.openConversation?.(conversationId)) return false;
+        planner.selectTask?.(plan.id, task.id);
+        active = true;
+        options.selectStudyMode();
+        options.showChat();
+        const context = planner.getActiveSessionContext();
+        if (context?.curriculumContext?.chapter_id) root.TutorlyCurriculum?.setActiveContext?.(context.curriculumContext);
+        else root.TutorlyCurriculum?.clearActiveContext?.();
+        root.TutorlyLiveBoardPanel?.close?.({ keepBanner: false });
+        render('Reviewing this task. Its completion status is unchanged.');
+        options.focusComposer();
+        return true;
       }
     });
     function context(action) {

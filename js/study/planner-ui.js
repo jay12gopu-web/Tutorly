@@ -196,15 +196,30 @@
       if (task.questionCount) copy.append(el('small', '', `${task.questionCount} questions planned`));
       row.append(copy);
       if (task.status === 'completed') {
-        row.append(el('span', 'study-complete', 'Completed'));
-        if (today() < plan.examDate) row.append(button('Undo completion', () => run(() => persist(engine.reopenTask(plan, task.id, { today: today() })), 'Task reopened and remaining work rebalanced. Quiz evidence is kept.')));
-        const review = el('a', 'study-button', 'Review in Tutorly');
-        review.href = plan.conversationId ? `maths_gpt.html?conversationId=${encodeURIComponent(plan.conversationId)}` : 'maths_gpt.html';
-        row.append(review); return row;
+        const actions = el('div', 'study-task-actions');
+        actions.append(el('span', 'study-complete', 'Completed'));
+        if (today() < plan.examDate) actions.append(button('Undo completion', () => run(() => persist(engine.reopenTask(plan, task.id, { today: today() })), 'Task reopened and remaining work rebalanced. Quiz evidence is kept.')));
+        const reviewState = el('div'); reviewState.hidden = true;
+        const message = el('p', 'study-subtitle'); message.setAttribute('role', 'status');
+        reviewState.append(message, button('Start this task in Tutorly', () => run(() => {
+          const current = getPlan(); const target = current?.tasks.find(item => item.id === task.id && item.status === 'completed');
+          if (!target) throw new Error('This completed task is no longer available. Reopen your plan.');
+          options.onStudyTask?.(current, target);
+        }, 'Task opened in Tutorly. Its completion status is unchanged.'), 'study-button study-button-primary'));
+        actions.append(button('Review in Tutorly', () => {
+          ensureAccount(); const current = getPlan(); const target = current?.tasks.find(item => item.id === task.id && item.status === 'completed');
+          if (!target) { announce('This completed task is no longer available. Reopen your plan.', true); return; }
+          const id = taskConversationId(current, target);
+          if (id && options.onReviewTask?.(current, target, id)) return;
+          message.textContent = id ? 'This study session is no longer available. Start this task again in Tutorly; completion will stay saved.'
+            : 'No study session yet. Start this task in Tutorly; its completion will stay saved.';
+          reviewState.hidden = false;
+        }), reviewState);
+        row.append(actions); return row;
       }
       if (today() >= plan.examDate) { row.append(el('span', 'study-subtitle', 'Preparation ended')); return row; }
       const actions = el('div', 'study-task-actions');
-      actions.append(button('Start', () => run(() => { store.select(plan.id, task.id); options.onStudyTask?.(plan, task); }, 'Task opened in Tutorly chat.'), 'study-button study-button-primary'));
+      actions.append(button('Start', () => run(() => { selectTask(plan.id, task.id); options.onStudyTask?.(plan, task); }, 'Task opened in Tutorly chat.'), 'study-button study-button-primary'));
       actions.append(button('Mark done', () => run(() => persist(engine.completeTask(plan, task.id, { today: today() })), 'Task marked complete.'), 'study-button study-button-quiet'));
       const move = el('details', 'study-move'); move.append(el('summary', '', 'Move')); const moveForm = el('form'); moveForm.noValidate = true; const date = input('date', task.date || today(), { min: today(), max: engine.addDays(plan.examDate, -1) }); moveForm.append(field('Move task to date', date)); const submit = el('button', 'study-button', 'Save date'); submit.type = 'submit'; moveForm.append(submit); moveForm.addEventListener('submit', event => { event.preventDefault(); run(() => persist(engine.moveTask(plan, task.id, date.value, { today: today() })), 'Task moved.'); }); move.append(moveForm); actions.append(move); row.append(actions); return row;
     }
@@ -214,7 +229,7 @@
       header(plan.title || plan.subject, `${dateLabel(plan.examDate)} · ${plan.minutesPerDay} minutes a day · ${daysRemaining} days remaining`);
       const controls = el('div', 'study-actions'); controls.append(button('All plans', () => { view = 'list'; render(); }, 'study-button study-button-quiet'), button('Edit plan', () => { view = 'edit'; render(); }), button('Rebalance unfinished work', () => run(() => persist(engine.rebalance(plan, { today: today() })), 'Unfinished work rebalanced. Completed work is unchanged.'))); container.append(controls);
       const todayTask = plan.tasks.find(task => task.status === 'pending' && task.date === today());
-      if (todayTask && daysRemaining > 0) container.append(button('Start today’s study', () => { store.select(plan.id, todayTask.id); options.onStudyTask?.(plan, todayTask); }, 'study-button study-button-primary'));
+      if (todayTask && daysRemaining > 0) container.append(button('Start today’s study', () => { selectTask(plan.id, todayTask.id); options.onStudyTask?.(plan, todayTask); }, 'study-button study-button-primary'));
       const progress = engine.progress(plan, { today: today() }); const meter = el('progress'); meter.max = 100; meter.value = progress.percentage; meter.setAttribute('aria-label', 'Completed planned study time');
       const progressWrap = el('section', 'study-progress'); progressWrap.append(el('p', '', `${progress.completedTasks} of ${progress.totalTasks} tasks completed · ${progress.percentage}% of planned study time`), meter, el('small', '', 'Weighted by each task’s planned minutes. Only tasks you mark done count, not page visits.')); container.append(progressWrap);
       safeList(plan.notices).forEach(notice => container.append(el('p', 'study-notice', notice.message)));
@@ -283,7 +298,7 @@
       if (!plan || !task || task.status === 'removed') return null;
       const topic = plan.topics.find(item => item.id === task.topicId);
       const progress = engine.progress(plan, { today: today() });
-      return { planId: plan.id, planTitle: plan.title, conversationId: plan.conversationId || null, completedTasks: progress.completedTasks, totalTasks: progress.totalTasks, subject: plan.subject, examDate: plan.examDate, minutesPerDay: plan.minutesPerDay, taskId: task.id, taskTitle: task.title, taskKind: task.kind, taskStatus: task.status, topicId: task.topicId, topicTitle: topic?.title || task.title, topicTitles: plan.topics.filter(item => !task.topicId || item.id === task.topicId).map(item => item.title), topics: plan.topics.map(item => ({id: item.id, title: item.title})), performanceEvidence: safeList(plan.studyChecks).slice(-8), estimatedMinutes: task.estimatedMinutes, questionCount: task.questionCount || null, targetScore: plan.targetScore, concerns: plan.concerns, curriculumContext: topic?.curriculumContext || plan.curriculumContext || {}, resourceLabels: safeList(plan.resourceLabels).filter(item => safeList(task.resourceIds).includes(item.id)).map(item => item.label) };
+      return { planId: plan.id, planTitle: plan.title, conversationId: taskConversationId(plan, task), completedTasks: progress.completedTasks, totalTasks: progress.totalTasks, subject: plan.subject, examDate: plan.examDate, minutesPerDay: plan.minutesPerDay, taskId: task.id, taskTitle: task.title, taskKind: task.kind, taskStatus: task.status, topicId: task.topicId, topicTitle: topic?.title || task.title, topicTitles: plan.topics.filter(item => !task.topicId || item.id === task.topicId).map(item => item.title), topics: plan.topics.map(item => ({id: item.id, title: item.title})), performanceEvidence: safeList(plan.studyChecks).slice(-8), estimatedMinutes: task.estimatedMinutes, questionCount: task.questionCount || null, targetScore: plan.targetScore, concerns: plan.concerns, curriculumContext: topic?.curriculumContext || plan.curriculumContext || {}, resourceLabels: safeList(plan.resourceLabels).filter(item => safeList(task.resourceIds).includes(item.id)).map(item => item.label) };
     }
     function completeActiveTask() {
       const context = getActiveSessionContext(); if (!context) return false;
@@ -333,15 +348,33 @@
       const plan = store.read().plans.find(item => item.id === context.planId);
       return root.TutorlyStudyMaterials?.excerpts(plan?.materials, context.topicId) || [];
     }
-    function selectTask(planId, taskId) { ensureAccount(); const state = store.select(planId, taskId); return !!state.activeTaskId; }
+    function taskConversationId(plan, task) {
+      // Old plans recorded only their last studied task. Never apply that link to
+      // another task, including one manually marked complete without studying.
+      const id = plan.taskConversationIds?.[task.id] || (!plan.taskConversationIds && plan.lastActiveTaskId === task.id ? plan.conversationId : null);
+      return typeof id === 'string' && id.trim() && id === id.trim() && id.length <= 250 ? id : null;
+    }
+    function selectTask(planId, taskId) {
+      ensureAccount(); const plan = store.read().plans.find(item => item.id === planId);
+      if (plan && !plan.taskConversationIds) {
+        const previous = plan.tasks.find(item => item.id === plan.lastActiveTaskId);
+        const id = previous && taskConversationId(plan, previous);
+        store.savePlan({ ...plan, taskConversationIds: id ? { [previous.id]: id } : {} });
+      }
+      const state = store.select(planId, taskId); return !!state.activeTaskId;
+    }
     function bindConversation(id) {
-      const context = getActiveSessionContext(); if (!context || typeof id !== 'string' || !id.trim()) return false;
-      const plan = store.read().plans.find(item => item.id === context.planId); store.savePlan({ ...plan, conversationId: id.slice(0, 250), lastActiveTaskId: context.taskId }); return true;
+      const context = getActiveSessionContext(); if (!context || typeof id !== 'string' || !id.trim() || id !== id.trim() || id.length > 250) return false;
+      const plan = store.read().plans.find(item => item.id === context.planId);
+      const conversationId = id;
+      store.savePlan({ ...plan, conversationId, taskConversationIds: { ...(plan.taskConversationIds || {}), [context.taskId]: conversationId }, lastActiveTaskId: context.taskId }); return true;
     }
     function restoreConversation(id) {
-      ensureAccount(); const plan = typeof id === 'string' && id ? store.read().plans.find(item => item.conversationId === id) : null;
-      if (!plan || !plan.tasks.some(task => task.id === plan.lastActiveTaskId && task.status !== 'removed')) { store.clearActiveSession(); return null; }
-      store.select(plan.id, plan.lastActiveTaskId); return getActiveSessionContext();
+      ensureAccount(); const plan = typeof id === 'string' && id ? store.read().plans.find(item => item.tasks.some(task => task.status !== 'removed' && taskConversationId(item, task) === id)) : null;
+      const tasks = plan?.tasks.filter(task => task.status !== 'removed' && taskConversationId(plan, task) === id) || [];
+      const task = tasks.find(item => item.id === plan.lastActiveTaskId) || tasks[tasks.length - 1];
+      if (!task) { store.clearActiveSession(); return null; }
+      selectTask(plan.id, task.id); return getActiveSessionContext();
     }
     return Object.freeze({ open({ draft: seed, planId } = {}) { ensureAccount(); container.hidden = false; if (seed) { draft = initialDraft(seed); step = 0; view = 'setup'; render(); loadCatalog(); } else { if (planId) { activePlanId = planId; const plan = getPlan(); if (plan && (plan.updatedDate !== today() || plan.tasks.some(task => task.status === 'pending' && task.date && task.date < today()))) persist(engine.rebalance(plan, { today: today() })); view = 'detail'; } render(); } }, close() { container.hidden = true; }, getActiveSessionContext, getMaterials, quizAttempt, completeActiveTask, recordPerformance, selectTask, bindConversation, restoreConversation, clearActiveSession() { ensureAccount(); store.clearActiveSession(); }, getConversationId(planId) { ensureAccount(); return store.read().plans.find(plan => plan.id === planId)?.conversationId || null; } });
   }
