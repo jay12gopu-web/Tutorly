@@ -11,7 +11,7 @@
     const engine = root.TutorlyStudyPlanEngine;
     const store = root.TutorlyStudyPlanStore.create({ getAccountKey: options.getAccountKey });
     let namespace = store.namespace(), view = 'list', step = 0, draft = {}, catalog = null, profile = {}, busy = false, loadToken = 0;
-    let statusNode, activePlanId = null;
+    let statusNode, storageNode, backupNode, activePlanId = null;
     let subjectChoices = [];
     root.TutorlyEducation?.load().then(registry => { subjectChoices = registry.subjects; if (view === 'setup' && step === 1) render(); }).catch(() => {});
     const today = () => engine.todayDate();
@@ -58,11 +58,11 @@
       const words = el('div'); words.append(el('p', 'study-eyebrow', 'TUTORLY · STUDY BOT'), el('h1', '', title), el('p', 'study-subtitle', subtitle));
       head.append(words, button('Back to chat', () => options.onReturnToChat?.(), 'study-button study-button-quiet'));
       container.append(head);
-      if (store.isGuest()) container.append(el('p', 'study-storage-note', 'Guest plans stay on this device only. Signing in uses your account’s separate plans.'));
-      else container.append(el('p', 'study-storage-note', 'Saved for your account in this browser. Cross-device sync is not available yet.'));
+      storageNode = el('p', 'study-storage-note', store.isGuest() ? 'Guest plans stay on this device only. Signing in uses your account’s separate plans.' : 'Saved for your account in this browser. Cross-device sync is not available yet.');
+      if (view !== 'detail') container.append(storageNode);
       statusNode = el('p', 'study-status'); statusNode.setAttribute('role', 'status'); statusNode.setAttribute('aria-live', 'polite'); container.append(statusNode);
       if (view !== 'setup') {
-        const backup = el('details'); backup.append(el('summary', '', 'Back up or restore plans'));
+        const backup = el('details', 'study-backup'); backup.append(el('summary', '', 'Back up or restore plans'));
         backup.append(el('p', 'study-storage-note', 'Clearing site data removes browser-only plans. Backups may contain private notes; keep yours safe. Restoring adds missing plans to the current account/device and never overwrites existing IDs.'));
         backup.append(button('Download backup', () => {
           const url = URL.createObjectURL(new Blob([store.exportPlans()], {type:'application/json'}));
@@ -78,14 +78,14 @@
           } catch (error) { announce(error.message || 'Backup could not be restored; saved plans kept.',true); }
           restore.value = '';
         });
-        backup.append(field('Restore backup', restore)); container.append(backup);
+        backup.append(field('Restore backup', restore)); backupNode = backup; if (view !== 'detail') container.append(backup);
       }
     }
     function showList() {
-      header('A calmer way to prepare', 'Choose what you’re preparing for. Tutorly will turn the time you have into a practical study plan.');
+      header('Your study plans', 'Choose an exam, then focus on what to study today.');
       container.append(button('Create study plan', () => { draft = initialDraft(); step = 0; view = 'setup'; render(); loadCatalog(); }, 'study-button study-button-primary'));
       const plans = store.read().plans;
-      if (!plans.length) { const empty = el('section', 'study-empty'); empty.append(el('h2', '', 'One day at a time'), el('p', '', 'Add an exam, the topics you need, and a little time each day. Learn, practise and revise in the same Tutorly conversation.')); container.append(empty); return; }
+      if (!plans.length) { const copy = 'Add an exam, the topics you need, and a little time each day. Learn, practise and revise in the same Tutorly conversation.'; const empty = root.TutorlyUIState ? root.TutorlyUIState.create({state:'empty',title:'One day at a time',message:copy}) : el('section', 'study-empty'); if (!root.TutorlyUIState) empty.append(el('h2', '', 'One day at a time'), el('p', '', copy)); container.append(empty); return; }
       const list = el('div', 'study-plan-list');
       plans.forEach(plan => {
         const card = el('article', 'study-plan-card'); const progress = engine.progress(plan, { today: today() });
@@ -191,7 +191,7 @@
       const next = el('button', 'study-button study-button-primary', step === 4 ? 'Create my plan' : 'Continue'); next.type = 'submit'; actions.append(next); form.append(actions); container.append(form);
     }
     function taskRow(plan, task) {
-      const row = el('article', 'study-task'); row.dataset.taskId = task.id;
+      const row = el('article', 'study-task'); row.dataset.status = task.status; row.dataset.taskId = task.id;
       const copy = el('div', 'study-task-copy'); copy.append(el('p', 'study-eyebrow', `${task.kind}${task.part ? ` · part ${task.part}` : ''} · ${task.estimatedMinutes} min`), el('h3', '', task.title));
       if (task.questionCount) copy.append(el('small', '', `${task.questionCount} questions planned`));
       row.append(copy);
@@ -227,7 +227,7 @@
       const plan = getPlan(); if (!plan) { view = 'list'; showList(); return; }
       const daysRemaining = Math.max(0, engine.daysBetween(today(), plan.examDate));
       header(plan.title || plan.subject, `${dateLabel(plan.examDate)} · ${plan.minutesPerDay} minutes a day · ${daysRemaining} days remaining`);
-      const controls = el('div', 'study-actions'); controls.append(button('All plans', () => { view = 'list'; render(); }, 'study-button study-button-quiet'), button('Edit plan', () => { view = 'edit'; render(); }), button('Rebalance unfinished work', () => run(() => persist(engine.rebalance(plan, { today: today() })), 'Unfinished work rebalanced. Completed work is unchanged.'))); container.append(controls);
+      const controls = el('div', 'study-actions'); controls.append(button('All plans', () => { view = 'list'; render(); }, 'study-button study-button-quiet'), button('Edit plan', () => { view = 'edit'; render(); }), button('Rebalance unfinished work', () => run(() => persist(engine.rebalance(plan, { today: today() })), 'Unfinished work rebalanced. Completed work is unchanged.')));
       const todayTask = plan.tasks.find(task => task.status === 'pending' && task.date === today());
       if (todayTask && daysRemaining > 0) container.append(button('Start today’s study', () => { selectTask(plan.id, todayTask.id); options.onStudyTask?.(plan, todayTask); }, 'study-button study-button-primary'));
       const progress = engine.progress(plan, { today: today() }); const meter = el('progress'); meter.max = 100; meter.value = progress.percentage; meter.setAttribute('aria-label', 'Completed planned study time');
@@ -235,15 +235,19 @@
       safeList(plan.notices).forEach(notice => container.append(el('p', 'study-notice', notice.message)));
       if (plan.examDate < today()) container.append(el('p', 'study-notice', 'Your exam date has passed. Completed work remains saved. Edit the date to continue this plan.'));
       const tasks = new Map(plan.tasks.filter(task => task.status !== 'removed').map(task => [task.id, task]));
+      const layout = el('div', 'study-plan-layout');
+      const now = el('section', 'study-now'); now.setAttribute('aria-label', 'Today’s study'); now.append(el('h2', '', 'What to study now'));
+      const timeline = el('aside', 'study-timeline'); timeline.setAttribute('aria-label', 'Upcoming study'); timeline.append(el('h2', '', 'Coming up'));
+      layout.append(now, timeline); container.append(layout);
       plan.days.forEach(day => {
         const rows = safeList(day.taskIds).map(id => tasks.get(id)).filter(Boolean); if (!rows.length && day.date !== today() && day.date !== engine.addDays(today(), 1)) return;
-        const section = el('details', 'study-day'); section.open = day.date === today() || day.date === engine.addDays(today(), 1);
+        const section = el('details', 'study-day'); section.open = day.date === today(); section.dataset.day = day.date === today() ? 'today' : day.date === engine.addDays(today(), 1) ? 'tomorrow' : 'later';
         const relative = day.date === today() ? 'Today' : day.date === engine.addDays(today(), 1) ? 'Tomorrow' : dateLabel(day.date);
         section.append(el('summary', '', `${relative}${day.date === plan.examDate ? ' · Exam day' : ''} · ${rows.length} tasks`));
         if (!rows.length) section.append(el('p', 'study-subtitle', 'No tasks scheduled. Keep this time free, or move an unfinished task here.'));
-        rows.forEach(task => section.append(taskRow(plan, task))); container.append(section);
+        rows.forEach(task => section.append(taskRow(plan, task))); (day.date === today() ? now : timeline).append(section);
       });
-      const examDay = el('details', 'study-day'); examDay.append(el('summary', '', `${dateLabel(plan.examDate)} · Exam day`), el('p', 'study-subtitle', 'Preparation ends before your exam. Leave room to rest and get ready.')); container.append(examDay);
+      const examDay = el('details', 'study-day'); examDay.append(el('summary', '', `${dateLabel(plan.examDate)} · Exam day`), el('p', 'study-subtitle', 'Preparation ends before your exam. Leave room to rest and get ready.')); timeline.append(examDay);
       const visibleIds = new Set(plan.days.flatMap(day => safeList(day.taskIds)));
       const completedHistory = plan.tasks.filter(task => task.status === 'completed' && !visibleIds.has(task.id));
       if (completedHistory.length) { const history = el('details', 'study-day'); history.append(el('summary', '', `Completed earlier · ${completedHistory.length} tasks`)); completedHistory.forEach(task => history.append(taskRow(plan, task))); container.append(history); }
@@ -252,6 +256,10 @@
       if (safeList(plan.materials).length) { const materials = el('details', 'study-day'); materials.append(el('summary', '', 'Your study material'));
         plan.materials.forEach(item => { const preview = el('details'); preview.append(el('summary', '', item.label), el('p', 'study-notes-preview', item.text), button('Remove notes', () => run(() => persist({ ...plan, materials: plan.materials.filter(source => source.id !== item.id), resourceLabels: safeList(plan.resourceLabels).filter(source => source.id !== item.id) }), 'Notes removed from this plan. Previously sent chat messages are unchanged.'))); materials.append(preview); }); container.append(materials);
       } else if (safeList(plan.resourceLabels).length) { const reminders = el('p', 'study-subtitle', `Material reminders (labels only): ${plan.resourceLabels.map(item => item.label).join(', ')}`); container.append(reminders); }
+      if (!plan.days.some(day => day.date === today())) now.append(el('p', 'study-subtitle', 'No tasks scheduled for today. Choose an upcoming day or move an unfinished task here.'));
+      // Storage and editing controls remain available, below the immediate study action.
+      const support = el('details', 'study-plan-support'); support.append(el('summary', '', 'Plan options & storage'));
+      support.append(controls, storageNode, backupNode); container.append(support);
       const results = el('details', 'study-day'); results.append(el('summary', '', 'Use previous quiz results (optional)'), el('p', 'study-subtitle', 'Earlier Tutorly test history is stored device-wide and may include another person’s work. Only import it if these are your results. Only exact single-chapter, Board and Grade matches are used.'));
       const consent = input('checkbox'); const consentLabel = field('These are my results on this device', consent); consentLabel.classList.add('study-check'); results.append(consentLabel);
       results.append(button('Use matching quiz results from this device', () => {

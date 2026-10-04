@@ -82,27 +82,6 @@
           <span class="side-label">Tests</span>
         </a>
 
-        <a class="side-link workspace-link" href="quests.html" data-workspace-route="quests.html" data-workspace-title="Quests" title="Quests">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m13 2-1 7h6l-8 13 1-8H5l8-12z" />
-          </svg>
-          <span class="side-label">Quests</span>
-        </a>
-
-        <a class="side-link workspace-link" href="progress.html" data-workspace-route="progress.html" data-workspace-title="Progress" title="Progress">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16v-4M12 16V8M17 16V4" /></svg><span class="side-label">Progress</span>
-        </a>
-
-        <a class="side-link workspace-link" href="more-tools.html" data-workspace-route="more-tools.html" data-workspace-title="More Tools" title="More Tools">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="2" />
-            <rect x="14" y="3" width="7" height="7" rx="2" />
-            <rect x="3" y="14" width="7" height="7" rx="2" />
-            <path d="M17.5 14v7M14 17.5h7" />
-          </svg>
-          <span class="side-label">More Tools</span>
-        </a>
-
         <div id="sidebarConversationSections" class="sidebar-conversations side-label">
           <section id="sidebarPinnedSection" class="sidebar-chat-section" aria-labelledby="sidebarPinnedChatsLabel" hidden>
             <div id="sidebarPinnedChatsLabel" class="side-section-label">Pinned Chats</div>
@@ -113,6 +92,17 @@
             <div id="sidebarRecentChats" class="sidebar-recent-list" aria-live="polite"></div>
             <p id="sidebarRecentEmpty" class="sidebar-recent-empty">Your recent chats will appear here.</p>
           </section>
+        </div>
+        <div class="sidebar-tools-group"><div class="side-section-label side-label">Tools</div>
+        <a class="side-link workspace-link" href="more-tools.html" data-workspace-route="more-tools.html" data-workspace-title="More Tools" title="More Tools">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2" />
+            <rect x="14" y="3" width="7" height="7" rx="2" />
+            <rect x="3" y="14" width="7" height="7" rx="2" />
+            <path d="M17.5 14v7M14 17.5h7" />
+          </svg>
+          <span class="side-label">More Tools</span>
+        </a>
         </div>
       </div>
 
@@ -210,8 +200,7 @@
 
       <section class="work-area">
         <section id="hero" class="hero">
-          <h1>What would you like to learn today?</h1>
-          <p class="hero-sub">Learn smarter with Tutorly.</p>
+          <h1>What are we learning today?</h1>
         </section>
 
         <section id="chatWindow" class="chat-window" aria-live="polite">
@@ -219,11 +208,13 @@
           <div id="messages" class="messages"></div>
         </section>
 
+        <nav id="chatSuggestions" class="chat-suggestions" aria-label="Suggested prompts"></nav>
+
         <section class="composer-wrap" aria-label="Chat composer">
           <div class="composer-panel">
             <div id="modelSelector" class="model-selector">
               <button id="modelSelectorBtn" class="model-selector-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
-                <span id="selectedModelIcon" class="model-glyph" aria-hidden="true">&#10022;</span>
+                <span id="selectedModelIcon" class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                 <span class="model-selected-copy">
                   <strong id="selectedModelName">Prime</strong>
                   <small id="selectedModelDesc">Best for most students</small>
@@ -233,45 +224,55 @@
                 </svg>
               </button>
               <div id="modelMenu" class="model-menu" role="listbox" aria-label="Choose Tutorly model">
+                <div class="model-group-label" role="presentation">Everyday learning</div>
                 <button class="model-option" type="button" role="option" data-model="spark">
-                  <span class="model-glyph model-glyph-spark" aria-hidden="true">&#9889;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Spark</strong><small>Fast homework help</small></span>
                 </button>
                 <button class="model-option" type="button" role="option" data-model="prime">
-                  <span class="model-glyph model-glyph-prime" aria-hidden="true">&#10022;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Prime</strong><small>Best for most students</small></span>
                 </button>
+                <div class="model-group-label" role="presentation">Focused tools</div>
                 <button class="model-option" type="button" role="option" data-model="lens">
-                  <span class="model-glyph model-glyph-lens" aria-hidden="true">&#9673;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Lens</strong><small>Solve from photos</small></span>
                 </button>
                 <button class="model-option" type="button" role="option" data-model="deep">
-                  <span class="model-glyph" aria-hidden="true">&#8756;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Deep Think</strong><small>Careful reasoning</small></span>
                 </button>
                 <button class="model-option" type="button" role="option" data-model="research">
-                  <span class="model-glyph" aria-hidden="true">&#8981;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Research</strong><small>Facts and citations</small></span>
                 </button>
                 <button class="model-option" type="button" role="option" data-model="creative">
-                  <span class="model-glyph" aria-hidden="true">&#10023;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Creative</strong><small>Ideas and writing</small></span>
                 </button>
                 <button class="model-option" type="button" role="option" data-model="study">
-                  <span class="model-glyph" aria-hidden="true">&#9635;</span>
+                  <span class="model-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg></span>
                   <span><strong>Study</strong><small>Quiz and revision</small></span>
                 </button>
               </div>
             </div>
             <div class="composer">
               <input id="uploadInput" class="file-input" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Upload image" />
+              <details class="composer-actions"><summary aria-label="Add an attachment or action" title="Add an attachment or action"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></summary><div class="composer-action-menu">
               <button id="uploadBtn" class="tool-btn" type="button" aria-label="Upload image" title="Upload image">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 5v14" />
                   <path d="M5 12h14" />
-                </svg>
+                </svg><span>Upload image</span>
               </button>
-              <textarea id="input" rows="1" placeholder="Ask anything about your studies..." aria-label="Ask Tutorly"></textarea>
+              <button id="cameraBtn" class="tool-btn camera-btn" type="button" aria-label="Take photo" title="Take photo">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg><span>Take photo</span>
+              </button>
+              </div></details>
+              <textarea id="input" rows="1" placeholder="Ask Tutorly anything..." aria-label="Ask Tutorly"></textarea>
               <div id="voiceWave" class="voice-wave" aria-hidden="true">
                 <span></span>
                 <span></span>
@@ -285,12 +286,6 @@
                 <span></span>
                 <span></span>
               </div>
-              <button id="cameraBtn" class="tool-btn camera-btn" type="button" aria-label="Take photo" title="Take photo">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-              </button>
               <button id="speechTextBtn" class="tool-btn speech-text-btn" type="button" aria-label="Speech to text" title="Speech to text">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" />
@@ -300,7 +295,7 @@
                 </svg>
               </button>
               <button id="voiceBtn" class="tool-btn voice-chat-btn" type="button" aria-label="Open Tutorly Voice Chat" title="Voice Chat">
-                <img class="voice-chat-wave-icon" src="assets/voice-chat-wave.png?v=20260825" alt="" aria-hidden="true" />
+                <svg class="voice-chat-wave-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4M8 6v12M12 3v18M16 6v12M20 10v4" /></svg>
               </button>
               <button id="sendBtn" class="send-btn" type="button" aria-label="Send message">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -312,7 +307,6 @@
           </div>
           <p class="disclaimer">Tutorly can make mistakes. Check important answers.</p>
         </section>
-        <nav id="chatSuggestions" class="chat-suggestions" aria-label="Suggested prompts"></nav>
       </section>
 
       <aside id="chatLiveBoardPanel" class="chat-live-board-panel" aria-label="Tutorly Live Board visual panel" hidden>
@@ -326,6 +320,7 @@
             <button id="chatLiveBoardClose" class="live-board-icon-btn" type="button" aria-label="Close Live Board">×</button>
           </div>
         </header>
+        <div class="board-mode-row"><span>Tutor Mode</span><button id="chatLiveBoardTryToggle" class="live-board-btn" type="button" aria-pressed="false">My Turn</button></div>
         <p id="chatLiveBoardSummary" class="chat-live-board-summary">A visual companion to this Tutorly answer.</p>
         <div id="chatLiveBoardStage" class="chat-live-board-stage" aria-label="Interactive Tutorly Live Board"></div>
         <article class="chat-live-board-step">
@@ -336,16 +331,15 @@
         </article>
         <div id="chatLiveBoardStudentTools" class="student-tools chat-live-board-tools" aria-label="Student drawing tools" hidden>
           <button type="button" data-student-tool="select">Select</button>
-          <button class="active" type="button" data-student-tool="pen">Pen</button>
-          <button type="button" data-student-tool="highlighter">Highlighter</button>
-          <button type="button" data-student-tool="point">Point</button>
+          <details class="board-tool-group"><summary>Draw</summary><div><button class="active" type="button" data-student-tool="pen">Pen</button><button type="button" data-student-tool="highlighter">Highlighter</button></div></details>
+          <details class="board-tool-group"><summary>Shapes</summary><div><button type="button" data-student-tool="point">Point</button>
           <button type="button" data-student-tool="line">Line</button>
           <button type="button" data-student-tool="ray">Ray</button>
           <button type="button" data-student-tool="arrow">Arrow</button>
           <button type="button" data-student-tool="circle">Circle</button>
-          <button type="button" data-student-tool="rectangle">Rectangle</button>
+          <button type="button" data-student-tool="rectangle">Rectangle</button></div></details>
           <button type="button" data-student-tool="text">Text</button>
-          <button type="button" data-student-tool="eraser">Eraser</button>
+          <button type="button" data-student-tool="eraser">Erase</button>
           <button type="button" data-board-action="undo">Undo</button>
           <button type="button" data-board-action="redo">Redo</button>
           <button type="button" data-board-action="clear">Clear My Work</button>
@@ -354,9 +348,7 @@
           <button id="chatLiveBoardPrev" class="live-board-btn" type="button">Previous</button>
           <button id="chatLiveBoardPlay" class="live-board-btn primary" type="button">Play</button>
           <button id="chatLiveBoardNext" class="live-board-btn" type="button">Next</button>
-          <button id="chatLiveBoardReplay" class="live-board-btn" type="button">Replay</button>
-          <button id="chatLiveBoardTryToggle" class="live-board-btn" type="button" aria-pressed="false">Let Me Try</button>
-          <button id="chatLiveBoardResetView" class="live-board-btn" type="button">Reset View</button>
+          <details class="board-options"><summary aria-label="More board controls">More</summary><div><button id="chatLiveBoardReplay" class="live-board-btn" type="button">Replay</button><button id="chatLiveBoardResetView" class="live-board-btn" type="button">Reset View</button></div></details>
         </footer>
       </aside>
 
@@ -512,6 +504,7 @@
   <script src="js/education-registry.js?v=20260930"></script>
   <script src="js/study/setup-controls.js?v=20260930"></script>
   <script src="js/study/quiz-card.js?v=20260929"></script>
+  <script src="js/ui-state.js"></script>
   <script src="js/study/planner-ui.js?v=task-review-20261004"></script>
   <script src="js/study/session-controller.js?v=task-review-20261004"></script>
   <script src="js/chatbot/response-policy.js"></script>

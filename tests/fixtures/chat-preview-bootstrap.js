@@ -32,6 +32,8 @@
     if (url.pathname === '/api/auth/me') {
       if (sessionStorage.getItem('preview_account_expired') === 'true') return json({ detail: 'Your session has expired.' }, 401);
       if (sessionStorage.getItem('preview_account_offline') === 'true') return json({ detail: 'Intentional account lookup fixture failure.' }, 503);
+      const setupRole = sessionStorage.getItem('preview_setup_role');
+      if (setupRole) return json({ authenticated: true, onboarding_required: true, role_selection_required: setupRole === 'new', user: {...user, role: setupRole === 'new' ? '' : setupRole, onboarding_completed:false, teacher_profile:setupRole === 'teacher' ? {degree:{id:'local-preview-document',name:'test-document.pdf',size:2048,content_type:'application/pdf',verification_status:'pending'}} : undefined} });
       return json({ authenticated: true, user });
     }
     if (url.pathname === '/api/tests/generate') {
@@ -107,7 +109,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
-    style.textContent = '#localPreviewControls{position:fixed;z-index:100001;right:8px;top:8px;max-width:calc(100vw - 16px);font:12px/1.45 system-ui;color:#17213a;background:#fff;border:1px solid #7185ab;border-radius:8px;box-shadow:0 2px 8px #0001}#localPreviewControls summary{padding:6px 10px;cursor:pointer}#localPreviewControls .preview-actions{padding:10px;display:grid;gap:7px;max-width:290px}#localPreviewControls button,#localPreviewControls select{font:inherit;padding:7px;border:1px solid #8293b4;border-radius:5px;background:white;color:#17213a;text-align:left}#localPreviewControls button:focus-visible{outline:3px solid #6366f1}';
+    style.textContent = '#localPreviewControls{position:fixed;z-index:100001;right:8px;top:70px;max-width:calc(100vw - 16px);font:12px/1.45 system-ui;color:#17213a;background:#fff;border:1px solid #7185ab;border-radius:8px;box-shadow:0 2px 8px #0001}#localPreviewControls summary{padding:6px 10px;cursor:pointer}#localPreviewControls .preview-actions{padding:10px;display:grid;gap:7px;max-width:290px}#localPreviewControls button,#localPreviewControls select{font:inherit;padding:7px;border:1px solid #8293b4;border-radius:5px;background:white;color:#17213a;text-align:left}#localPreviewControls button:focus-visible{outline:3px solid #6366f1}';
     document.head.appendChild(style);
     const controls = document.createElement('details');
     controls.id = 'localPreviewControls';
@@ -117,6 +119,9 @@
     const report = document.createElement('pre'); report.id = 'previewStudyContext'; report.style.cssText = 'white-space:pre-wrap;max-height:180px;overflow:auto;font-size:10px'; actions.appendChild(report);
     function button(label, handler) { const item = document.createElement('button'); item.type = 'button'; item.textContent = label; item.addEventListener('click', handler); actions.appendChild(item); }
     button('Use local student fixture', () => { activateStudent(); location.reload(); });
+    button('Preview new student onboarding', () => { activateStudent(); sessionStorage.setItem('preview_setup_role','student'); location.href='info.html'; });
+    button('Preview teacher onboarding (test document, not verified)', () => { activateStudent(); sessionStorage.setItem('preview_setup_role','teacher'); location.href='info.html'; });
+    button('Leave onboarding preview', () => { sessionStorage.removeItem('preview_setup_role'); activateStudent(); location.href='maths_gpt.html'; });
     button('Use unavailable account fixture', () => { activateStudent(); sessionStorage.setItem('preview_account_offline', 'true'); location.reload(); });
     button('Use expired session fixture', () => { activateStudent(); sessionStorage.setItem('preview_account_expired', 'true'); location.reload(); });
     button('Reconnect account fixture', () => { sessionStorage.removeItem('preview_account_offline'); controls.open = false; });

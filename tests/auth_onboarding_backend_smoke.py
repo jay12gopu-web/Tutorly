@@ -57,10 +57,20 @@ def main():
             assert profile["user"]["grade"] == str(grade)
             assert profile["user"]["board"] == ("CBSE" if grade == 1 else "telangana")
             assert profile["user"]["school"] == "" and profile["user"]["age"]
-            returned, _ = login(f"student{grade}@example.test")
+            # A fresh client has no browser/profile cache. Logging out must clear
+            # the session only, never the completed account or its saved details.
+            assert client.post("/api/auth/logout", headers=headers).status_code == 200
+            assert client.get("/api/auth/me", headers=headers).status_code == 401
+            fresh_client = TestClient(app)
+            returned = verified_test_session(fresh_client, f"student{grade}@example.test").json()
             assert not returned["onboarding_required"] and returned["user"]["id"] == identity["user"]["id"]
             assert returned["user"]["role"] == "student"
-            checks += 2
+            assert returned["user"] == profile["user"]
+            assert returned["role_selection_required"] is False
+            headers = {"Authorization": "Bearer " + returned["session_token"]}
+            restored = fresh_client.get("/api/auth/me", headers=headers).json()
+            assert restored["user"] == profile["user"] and restored["onboarding_required"] is False
+            checks += 4
 
         # Changing grades retains the canonical age and completion state.
         changed = client.post("/api/auth/profile", headers=headers, json={"grade": "Class 10", "board": "ICSE"})
@@ -166,15 +176,21 @@ def main():
                           json={"preferred_end_time": "20:15"}).status_code == 400
         checks += 3
         assert saved_teacher["teacher_profile"]["boards"] == ["CBSE", "CISCE", "telangana"]
-        returned, _ = login("teacher@example.test")
+        assert client.post("/api/auth/logout", headers=tutor_headers).status_code == 200
+        assert client.get("/api/auth/me", headers=tutor_headers).status_code == 401
+        fresh_client = TestClient(app)
+        returned = verified_test_session(fresh_client, "teacher@example.test").json()
         assert not returned["onboarding_required"] and returned["user"]["role"] == "teacher"
         assert returned["user"]["id"] == teacher["user"]["id"]
+        assert returned["user"] == saved_teacher
+        assert returned["role_selection_required"] is False
+        tutor_headers = {"Authorization": "Bearer " + returned["session_token"]}
         try:
             auth_routes.require_role(tutor_headers["Authorization"], "teacher")
             raise AssertionError("Pending teachers must not receive trusted privileges")
         except HTTPException as error:
             assert error.status_code == 403
-        checks += 3
+        checks += 5
 
         # Administrative approval is never exposed as a user-writable API.
         with auth_routes._connection() as connection:

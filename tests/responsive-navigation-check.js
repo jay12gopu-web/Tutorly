@@ -26,11 +26,10 @@ assert.ok(mobileJs.includes("if (!isEmbeddedTool) mountBottomNav()"), 'embedded 
 assert.ok(mobileJs.includes("'login.html', 'sign_up.html', 'welcome.html'"), 'auth and public pages must not receive workspace navigation');
 
 for (const item of [
-  "label: 'Home', href: 'home.html'",
-  "label: 'Learn', href: 'lessons.html'",
-  "label: 'AI', href: 'maths_gpt.html'",
-  "label: 'Quests', href: 'quests.html'",
-  "label: 'Tools', href: 'more-tools.html'"
+  "label: 'Chat', href: 'maths_gpt.html'",
+  "label: 'Study', href: 'maths_gpt.html?study=1'",
+  "label: 'Tools', href: 'more-tools.html'",
+  "label: 'Profile', href: 'profile.html'"
 ]) {
   assert.ok(mobileJs.includes(item), `mobile navigation is missing ${item}`);
 }

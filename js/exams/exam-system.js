@@ -186,8 +186,8 @@
       button.classList.toggle("done",mode && button.dataset.step === "material");
       if (button.dataset.step === "mode") button.disabled = !materialInput?.hasContent();
     });
-    $("flowTitle").textContent = mode ? "Shape the paper your way." : "Turn your notes into a test.";
-    $("flowLead").textContent = mode ? "Choose the test style, difficulty, question count, and timing." : "Add your material, choose your paper settings, and practise.";
+    $("flowTitle").textContent = mode ? "Configure your test" : "Add your study material";
+    $("flowLead").textContent = mode ? "Choose the style, difficulty and time that work for you." : "Upload files or paste notes. Your questions will use this material.";
     $("profilePill").textContent = [state.profile.grade ? "Grade " + state.profile.grade : "",state.profile.board].filter(Boolean).join(" · ") || "Your study material";
     window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
   }
@@ -615,7 +615,7 @@
       <div class="next-card">
         <strong>Recommended Next Test</strong>
         <span>${escapeHtml(report.subject.name)} | ${escapeHtml(report.chapters[0] || "Selected chapter")} | ${nextMode}</span>
-        <button class="btn btn-primary" type="button" id="recommendedStartBtn">Start Recommended</button>
+        <button class="btn btn-primary" type="button" id="recommendedStartBtn">${weak.length ? "Practice the topics you missed" : "Continue practice"}</button>
       </div>
     `;
   }

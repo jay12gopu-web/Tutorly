@@ -14,8 +14,8 @@
   <a class="back-home-btn" href="maths_gpt.html">Chat</a>
   <header class="shell header-wrap"><div class="topbar"><a class="brand" href="maths_gpt.html"><img class="brand-title-logo" src="assets/title-logo.png" alt="Tutorly" /></a><nav class="nav-links"><a href="maths_gpt.html">Chat</a><a href="subscriptions.html">Plans</a><a href="contact.html">Contact</a></nav></div></header>
   <main class="account-page-shell">
-    <section class="account-page-hero"><span class="account-page-kicker">Tutorly Help</span><h1>How can we help?</h1><p>Quick answers for getting started, studying with Tutorly, and managing your account.</p></section>
-    <section class="account-page-grid">
+    <section class="account-page-hero"><span class="account-page-kicker">Tutorly Help</span><h1>How can we help?</h1><p>Quick answers for getting started, studying with Tutorly, and managing your account.</p><div class="help-search"><label for="helpSearch">Search these help articles</label><input id="helpSearch" type="search" placeholder="Chat, images, voice, account…" aria-controls="helpArticles" /><p id="helpSearchStatus" role="status" hidden></p></div></section>
+    <section class="account-page-grid" id="helpArticles">
       <article class="account-page-card"><h2>Getting started</h2><p>Sign in, finish student setup, then open Tutorly Chat. Use New Chat for a fresh topic and Search Chats to revisit earlier work.</p></article>
       <article class="account-page-card"><h2>Using Tutorly Chat</h2><p>Ask naturally, include your class level when useful, and follow up with phrases like “simpler,” “show the next step,” or “give another example.”</p></article>
       <article class="account-page-card"><h2>Homework images</h2><p>Use the attachment button to add a readable JPG, PNG, or WebP question. Check the preview before sending and avoid uploading private information.</p></article>
@@ -25,6 +25,8 @@
       <article class="account-page-card wide"><h2>Still stuck?</h2><p><a href="contact.html">Contact Tutorly Support</a> with the page name and what you were trying to do. For a product issue, choose “Bug Report.”</p></article>
     </section>
   </main>
+  <script src="js/ui-state.js"></script>
+  <script src="js/help-search.js"></script>
   <script src="js/global-layout.js?v=responsive-20260905b"></script>
 </body>
 </html>

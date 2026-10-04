@@ -1,12 +1,12 @@
 :root {
-  --bg: #f8fbff;
-  --surface: #ffffff;
-  --surface-soft: #f1f6fe;
-  --text: #202124;
-  --muted: #5f6368;
-  --line: #e1e8f4;
-  --primary: #1a73e8;
-  --primary-dark: #185abc;
+  --bg: var(--tutorly-bg, #F7F9FC);
+  --surface: var(--tutorly-surface, #FFFFFF);
+  --surface-soft: var(--tutorly-soft, #F2F5FB);
+  --text: var(--tutorly-text, #172033);
+  --muted: var(--tutorly-muted, #66728A);
+  --line: var(--tutorly-border, #DDE4F0);
+  --primary: var(--tutorly-blue, #4F63E7);
+  --primary-dark: var(--tutorly-blue-hover, #4054CE);
   --secondary: #00a67e;
   --mint: #34a853;
   --pink: #d93075;
@@ -15,12 +15,12 @@
   --gemini-sky: #8ab4f8;
   --gemini-green: #00a67e;
   --gemini-violet: #7e57c2;
-  --radius-xl: 30px;
-  --radius-lg: 22px;
-  --radius-md: 16px;
-  --radius-sm: 12px;
-  --shadow-1: 0 10px 28px rgba(60, 64, 67, 0.10);
-  --shadow-2: 0 24px 54px rgba(60, 64, 67, 0.16);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-1: var(--tutorly-shadow-sm, 0 2px 8px #17203308);
+  --shadow-2: var(--tutorly-shadow, 0 8px 24px #17203312);
 }
 
 * { box-sizing: border-box; }
@@ -30,19 +30,8 @@ html, body {
   min-height: 100%;
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at 8% 10%, rgba(138,180,248,0.22), transparent 30%),
-    radial-gradient(circle at 88% 12%, rgba(126,87,194,0.14), transparent 27%),
-    radial-gradient(circle at 18% 92%, rgba(0,166,126,0.14), transparent 30%),
-    var(--bg);
+  background: var(--bg);
   scroll-behavior: smooth;
-}
-
-body { animation: pageIn 420ms ease; }
-
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 a { color: inherit; text-decoration: none; }
@@ -53,11 +42,11 @@ a { color: inherit; text-decoration: none; }
 }
 
 .header-wrap {
-  background: rgba(241, 246, 254, 0.86);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-1);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none;
 }
 
 .topbar {

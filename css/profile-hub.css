@@ -1,13 +1,13 @@
 :root {
-  --ph-bg: #f4f7ff;
-  --ph-surface: rgba(255, 255, 255, .94);
-  --ph-surface-soft: #f8faff;
-  --ph-text: #18213a;
-  --ph-muted: #6a748d;
-  --ph-line: #e2e8f4;
+  --ph-bg: var(--tutorly-bg);
+  --ph-surface: var(--tutorly-surface);
+  --ph-surface-soft: var(--tutorly-soft);
+  --ph-text: var(--tutorly-text);
+  --ph-muted: var(--tutorly-muted);
+  --ph-line: var(--tutorly-border);
   --ph-blue: var(--tutorly-blue, #347cff);
   --ph-violet: var(--tutorly-violet, #7a5cff);
-  --ph-shadow: 0 18px 52px rgba(39, 57, 108, .09);
+  --ph-shadow: var(--tutorly-shadow-sm);
   --ph-radius: 22px;
 }
 
@@ -18,22 +18,10 @@ body.profile-hub-page {
   margin: 0;
   color: var(--ph-text) !important;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at 9% 0%, rgba(52, 124, 255, .13), transparent 30%),
-    radial-gradient(circle at 93% 4%, rgba(122, 92, 255, .11), transparent 26%),
-    var(--ph-bg);
+  background: var(--ph-bg);
 }
 
-body.profile-hub-page[data-theme="dark"] {
-  --ph-bg: #0b1020;
-  --ph-surface: rgba(17, 24, 43, .95);
-  --ph-surface-soft: #141d31;
-  --ph-text: #f5f7ff;
-  --ph-muted: #a8b1c5;
-  --ph-line: rgba(226, 232, 255, .13);
-  --ph-shadow: 0 20px 58px rgba(0, 0, 0, .27);
-  color-scheme: dark;
-}
+body.profile-hub-page[data-theme="dark"] { color-scheme: dark; }
 
 .profile-hub-page button,
 .profile-hub-page input,
@@ -76,7 +64,7 @@ body.profile-hub-page[data-theme="dark"] {
   position: sticky;
   top: 12px;
   z-index: 50;
-  width: min(1240px, calc(100% - 32px));
+  width: min(var(--tutorly-page-width, 1120px), calc(100% - 32px));
   min-height: 66px;
   display: flex;
   align-items: center;
@@ -86,9 +74,9 @@ body.profile-hub-page[data-theme="dark"] {
   padding: 9px 14px;
   border: 1px solid var(--ph-line);
   border-radius: 20px;
-  background: color-mix(in srgb, var(--ph-surface) 88%, transparent);
-  box-shadow: 0 12px 34px rgba(36, 51, 94, .08);
-  backdrop-filter: blur(18px);
+  background: var(--ph-bg);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .profile-brand,
@@ -116,7 +104,7 @@ body.profile-hub-page[data-theme="dark"] {
   border-radius: 13px;
   padding: 0 16px;
   color: #fff;
-  background: linear-gradient(135deg, var(--ph-blue), var(--ph-violet));
+  background: var(--ph-blue);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -160,7 +148,7 @@ select:focus-visible { outline: 3px solid rgba(52, 124, 255, .25); outline-offse
   border: 4px solid color-mix(in srgb, var(--ph-surface) 85%, white);
   border-radius: 26px;
   color: #fff;
-  background: linear-gradient(135deg, var(--ph-blue), var(--ph-violet));
+  background: var(--ph-blue);
   box-shadow: 0 12px 30px rgba(71, 84, 228, .25);
   font-size: 35px;
   font-weight: 850;
@@ -203,7 +191,7 @@ select:focus-visible { outline: 3px solid rgba(52, 124, 255, .25); outline-offse
 .settings-sidebar nav { display: grid; gap: 4px; }
 .settings-nav-button { width: 100%; min-height: 42px; border: 0; border-radius: 12px; padding: 0 12px; color: var(--ph-muted); background: transparent; text-align: left; font-size: 13px; font-weight: 730; cursor: pointer; }
 .settings-nav-button:hover { color: var(--ph-text); background: var(--ph-surface-soft); }
-.settings-nav-button.active { color: #fff; background: linear-gradient(135deg, var(--ph-blue), var(--ph-violet)); box-shadow: 0 9px 18px rgba(74, 96, 233, .18); }
+.settings-nav-button.active { color: var(--ph-blue); background: color-mix(in srgb, var(--ph-blue) 9%, transparent); box-shadow: none; }
 .settings-content { min-width: 0; }
 .settings-panel { padding: clamp(20px, 3vw, 32px); border-radius: var(--ph-radius); }
 .settings-panel[hidden], [data-student-profile][hidden], [data-teacher-profile][hidden], #boardInput[hidden], #boardFallbackLabel[hidden] { display: none !important; }
@@ -264,7 +252,7 @@ input[readonly] { color: var(--ph-muted); cursor: not-allowed; }
 .preference-list small { margin-top: 4px; color: var(--ph-muted); font-size: 10px; line-height: 1.4; }
 .preference-list input[type="checkbox"] { width: 42px; height: 24px; flex: 0 0 auto; appearance: none; border-radius: 999px; background: var(--ph-line); cursor: pointer; transition: background 160ms ease; }
 .preference-list input[type="checkbox"]::before { content: ""; display: block; width: 18px; height: 18px; margin: 3px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.16); transition: transform 160ms ease; }
-.preference-list input[type="checkbox"]:checked { background: linear-gradient(135deg, var(--ph-blue), var(--ph-violet)); }
+.preference-list input[type="checkbox"]:checked { background: var(--ph-blue); }
 .preference-list input[type="checkbox"]:checked::before { transform: translateX(18px); }
 .select-field { max-width: 360px; margin-top: 20px; }
 
@@ -286,7 +274,7 @@ input[readonly] { color: var(--ph-muted); cursor: not-allowed; }
 .usage-meter { margin-top: 20px; padding: 18px; border: 1px solid var(--ph-line); border-radius: 17px; background: var(--ph-surface-soft); }
 .usage-meter > div { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; font-weight: 760; }
 .usage-meter > i { height: 9px; display: block; margin: 13px 0 8px; overflow: hidden; border-radius: 999px; background: var(--ph-line); }
-.usage-meter > i > b { width: 100%; height: 100%; display: block; border-radius: inherit; background: linear-gradient(90deg, var(--ph-blue), var(--ph-violet)); }
+.usage-meter > i > b { width: 100%; height: 100%; display: block; border-radius: inherit; background: var(--ph-blue); }
 .usage-meter > small { color: var(--ph-muted); font-size: 10px; }
 .link-list { margin-top: 20px; overflow: hidden; border: 1px solid var(--ph-line); border-radius: 17px; }
 .link-list a { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 15px; border-bottom: 1px solid var(--ph-line); background: var(--ph-surface-soft); }
@@ -331,3 +319,16 @@ input[readonly] { color: var(--ph-muted); cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .001ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
 }
+/* Identity precedes Settings. Device activity is optional, after the settings content. */
+.profile-overview { padding: 24px; background: var(--ph-surface); box-shadow: none; }
+.profile-avatar { width: 72px; height: 72px; border-radius: 18px; box-shadow: none; }
+.profile-title-row h1 { font-size: 32px; }
+#profileEducation { margin: 8px 0 0; font-size: 14px; color: var(--ph-text); }
+#profileSchool { margin: 4px 0 0; font-size: 13px; color: var(--ph-muted); }
+#profileUsername { font-size: 12px; }
+.profile-plan-line { font-size: 12px; }
+.profile-activity { padding: 24px 0; margin-top: 16px; color: var(--ph-muted); font-size: 13px; }
+.profile-activity > summary { cursor: pointer; }
+.settings-panel, .settings-sidebar { box-shadow: none; }
+.profile-readonly div { padding: 16px; }
+@media (max-width: 768px) { .profile-activity { margin-bottom: 72px; } }

@@ -148,7 +148,7 @@
     const name = document.createElement("p"); name.className = "degree-filename"; name.textContent = pendingFile?.name || state.degree?.name || "Degree certificate";
     const status = document.createElement("p"); status.className = "degree-status"; status.setAttribute("role", "status");
     const size = pendingFile?.size || state.degree?.size || 0;
-    status.textContent = busy ? "Uploading certificate…" : uploadError ? "Upload didn’t finish. Retry or choose another file." : `${(size / 1024).toFixed(0)} KB · Uploaded securely`;
+    status.textContent = busy ? "Uploading certificate…" : uploadError ? "Upload didn’t finish. Retry or choose another file." : `${(size / 1024).toFixed(0)} KB · Private · used only for teacher verification · Pending review`;
     const actions = document.createElement("div"); actions.className = "degree-actions";
     if (uploadError && pendingFile) actions.append(degreeButton("Retry upload", "degreeRetry", uploadDegree));
     if (state.degree && !pendingFile) actions.append(degreeButton("Preview", "degreePreview", previewDegree));

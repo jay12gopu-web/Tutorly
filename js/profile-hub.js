@@ -121,6 +121,10 @@
     const initial = String(profile.name || "Student").trim().charAt(0).toUpperCase() || "S";
     $("profileTitle").textContent = profile.name || "Student";
     $("profileUsername").textContent = `@${safeUsername()}`;
+    const education = document.getElementById("profileEducation");
+    if (education) education.textContent = isTeacher ? "Teacher account" : [profile.grade ? `Grade ${profile.grade}` : "", profile.board || ""].filter(Boolean).join(" · ");
+    const school = document.getElementById("profileSchool");
+    if (school) { school.textContent = profile.school || ""; school.hidden = !profile.school; }
     $("profileAvatarInitial").textContent = initial;
     const image = $("profileAvatarImage");
     if (profile.avatar && /^(?:data:image\/(?:png|jpeg|webp);base64,|https?:\/\/)/i.test(profile.avatar)) {

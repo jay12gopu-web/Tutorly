@@ -90,7 +90,7 @@
     panel.hidden = true;
     document.body.classList.remove("live-board-open", "live-board-expanded", "student-work-mode");
     if (tryToggle) {
-      tryToggle.textContent = "Let Me Try";
+      tryToggle.textContent = "My Turn";
       tryToggle.setAttribute("aria-pressed", "false");
     }
     if (studentTools) studentTools.hidden = true;
@@ -177,7 +177,7 @@
   tryToggle?.addEventListener("click", () => {
     const active = !document.body.classList.contains("student-work-mode");
     document.body.classList.toggle("student-work-mode", active);
-    tryToggle.textContent = active ? "Return to Lesson" : "Let Me Try";
+    tryToggle.textContent = active ? "Tutor Mode" : "My Turn";
     tryToggle.setAttribute("aria-pressed", String(active));
     if (studentTools) studentTools.hidden = !active;
     board.setTool(active ? "pen" : "select");

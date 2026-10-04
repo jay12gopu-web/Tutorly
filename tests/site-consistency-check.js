@@ -32,14 +32,16 @@ for (const file of htmlFiles) {
   });
 }
 
+const theme = read("css/tutorly-theme.css");
+const bundledInter = /@font-face\s*\{[^}]*font-family:\s*["']Inter["'][^}]*Inter\.ttf/.test(theme)
+  && fs.existsSync(path.join(root, "assets/fonts/Inter.ttf"));
 for (const file of activePages) {
   const source = read(file);
   assert(source.includes("css/tutorly-theme.css"), `${file} must load the shared Tutorly theme`);
-  assert(source.includes("family=Inter"), `${file} must load Inter`);
+  assert(source.includes("family=Inter") || bundledInter, `${file} must load Inter from the shared theme or its existing font link`);
   assert(/data-tutorly-surface="(public|auth|workspace)"/.test(source), `${file} must declare its Tutorly surface`);
 }
 
-const theme = read("css/tutorly-theme.css");
 for (const variable of [
   "--tutorly-blue", "--tutorly-blue-dark", "--tutorly-violet", "--tutorly-cyan",
   "--tutorly-bg-dark", "--tutorly-bg-light", "--tutorly-surface", "--tutorly-text",
@@ -48,8 +50,8 @@ for (const variable of [
   assert(theme.includes(variable), `Missing shared theme variable ${variable}`);
 }
 assert(theme.includes("--tutorly-page-duration: 270ms"), "Page motion must use 270ms");
-assert(theme.includes("--tutorly-panel-duration: 200ms"), "Panel motion must use 200ms");
-assert(theme.includes("--tutorly-button-duration: 170ms"), "Button motion must use 170ms");
+assert(theme.includes("--tutorly-panel-duration: 220ms"), "Panel motion must use 220ms");
+assert(theme.includes("--tutorly-button-duration: 160ms"), "Button motion must use 160ms");
 assert(theme.includes("--tutorly-sidebar-duration: 220ms"), "Sidebar motion must use 220ms");
 assert(theme.includes("prefers-reduced-motion: reduce"), "Reduced motion must be supported");
 for (const width of ["1024px", "768px", "390px"]) {

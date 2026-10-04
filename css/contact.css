@@ -1,20 +1,20 @@
-body.contact-page { margin: 0; padding: 14px clamp(20px, 4.3vw, 72px) 24px; min-height: 100svh; background: #f7f9fd; color: #0a183f; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+body.contact-page { margin: 0; padding: 14px clamp(20px, 4.3vw, 72px) 24px; min-height: 100svh; background: var(--tutorly-bg); color: var(--tutorly-text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
 .contact-page *, .contact-page *::before, .contact-page *::after { box-sizing: border-box; }
 .contact-page [hidden] { display: none !important; }
 .contact-page a { text-decoration: none; }
 .contact-page button, .contact-page input, .contact-page select, .contact-page textarea { font: inherit; }
 .contact-page button, .contact-page select { cursor: pointer; }
 .contact-page :is(a, button, input, select, textarea):focus-visible { outline: 3px solid #608bff; outline-offset: 4px; }
-.contact-header { max-width: 1528px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 50px; }
-.contact-brand { display: inline-flex; align-items: center; gap: 10px; color: #091538; font-size: 31px; line-height: 1; font-weight: 750; letter-spacing: -.04em; }
+.contact-header { max-width: var(--width-workspace, 1280px); margin: 0 auto 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 50px; }
+.contact-brand { display: inline-flex; align-items: center; gap: 10px; color: #091538; font-size: 28px; line-height: 1; font-weight: 750; letter-spacing: -.04em; }
 .contact-brand img { object-fit: contain; transform: scale(1.65); }
-.contact-back { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 11px 22px; background: #073780; color: white; border-radius: 18px; font-size: 16px; font-weight: 600; }
+.contact-back { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 11px 22px; background: var(--tutorly-blue); color: white; border-radius: 18px; font-size: 16px; font-weight: 600; }
 .contact-back img, .contact-submit img, .contact-detail-icon img { filter: brightness(0) invert(1); }
-.contact-shell { max-width: 1528px; margin: auto; display: grid; grid-template-columns: 1.13fr 1fr; border-radius: 24px; overflow: hidden; background: #fff; box-shadow: 0 7px 30px rgba(30, 55, 100, .07); }
-.contact-story { position: relative; min-width: 0; min-height: 760px; overflow: hidden; background: #052b62; color: #fff; }
+.contact-shell { max-width: var(--width-workspace, 1280px); margin: auto; display: grid; grid-template-columns: 1.13fr 1fr; border-radius: 24px; overflow: hidden; background: #fff; box-shadow: 0 7px 30px rgba(30, 55, 100, .07); }
+.contact-story { position: relative; min-width: 0; min-height: 720px; overflow: hidden; background: #052b62; color: #fff; }
 .contact-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
 .contact-story-copy { position: relative; z-index: 1; padding: clamp(35px, 5vw, 80px) clamp(26px, 3vw, 49px) 30px; }
-.contact-story h1 { margin: 0; color: white; font-size: clamp(38px, 4vw, 64px); font-weight: 750; letter-spacing: -.045em; line-height: 1.06; }
+.contact-story h1 { margin: 0; color: white; font-size: clamp(32px, 3.5vw, 48px); font-weight: 750; letter-spacing: -.045em; line-height: 1.06; }
 .contact-story-copy > p { margin: 20px 0 34px; max-width: 530px; font-size: clamp(16px, 1.4vw, 22px); line-height: 1.55; color: #d0ddf6; }
 .contact-details { display: grid; gap: 20px; font-style: normal; }
 .contact-details a { display: flex; align-items: center; gap: 20px; width: fit-content; max-width: 100%; color: #fff; font-size: clamp(15px, 1.4vw, 22px); font-weight: 600; overflow-wrap: anywhere; }
@@ -46,7 +46,7 @@ body.contact-page { margin: 0; padding: 14px clamp(20px, 4.3vw, 72px) 24px; min-
 #attachmentName { overflow-wrap: anywhere; flex: 1; }
 .contact-file-selection button { flex-shrink: 0; min-height: 35px; color: #a0293c; background: transparent; border: 0; text-decoration: underline; }
 .contact-attachment-note { color: #6e7b94; font-size: 11px; line-height: 1.5; margin: -8px 0 0; }
-.contact-submit { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; min-height: 55px; padding: 13px; color: #fff; background: #073780; border: 0; border-radius: 21px; font-weight: 600; font-size: 18px !important; }
+.contact-submit { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; min-height: 55px; padding: 13px; color: #fff; background: var(--tutorly-blue); border: 0; border-radius: 21px; font-weight: 600; font-size: 18px !important; }
 .contact-submit:hover, .contact-back:hover { background: #124694; }
 .contact-form-note { margin: -6px 6px 0; font-size: 11px; line-height: 1.5; text-align: center; color: #6c7892; }
 .contact-status { font-size: 13px; line-height: 1.6; margin: 0; color: #2d568e; overflow-wrap: anywhere; }
@@ -54,7 +54,7 @@ body.contact-page { margin: 0; padding: 14px clamp(20px, 4.3vw, 72px) 24px; min-
 .contact-fallback { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; color: #7d89a0; margin-top: -9px; }
 .contact-fallback button, .contact-fallback a { border: 0; padding: 7px 0; background: transparent; color: #415d8e; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
 .contact-copy-fallback { width: 100%; min-height: 130px; padding: 12px; color: inherit; background: transparent; font: inherit; }
-.contact-footer { max-width: 1528px; margin: 16px auto 0; display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+.contact-footer { max-width: var(--width-workspace, 1280px); margin: 16px auto 0; display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
 .contact-footer a { color: #697893; padding: 5px 0; }
 .contact-skip { position: fixed; z-index: 5; left: 15px; top: -100px; padding: 12px; border-radius: 8px; background: #fff; color: #163a76; }
 .contact-skip:focus { top: 10px; }

@@ -26,9 +26,10 @@
 
   function pageTab() {
     if (path === 'home.html') return 'home';
-    if (['lessons.html', 'ask_doubt.html', 'offline_tutor.html', 'online_tutor.html'].includes(path)) return 'learn';
-    if (path === 'maths_gpt.html') return 'ai';
-    if (path === 'quests.html') return 'quests';
+    if (['lessons.html', 'ask_doubt.html', 'offline_tutor.html', 'online_tutor.html'].includes(path)) return 'tools';
+    if (path === 'maths_gpt.html') return new URLSearchParams(location.search).get('study') === '1' ? 'study' : 'ai';
+    if (path === 'profile.html') return 'profile';
+    if (path === 'quests.html') return 'tools';
     if (['more-tools.html', 'tests.html', 'practice.html', 'progress.html', 'refer_earn.html', 'payment-history.html', 'subscriptions.html', 'shop.html', 'bookmarks.html'].includes(path)) return 'tools';
     return '';
   }
@@ -42,14 +43,13 @@
   }
 
   function mountBottomNav() {
-    if (['maths_gpt.html', 'login.html', 'sign_up.html', 'welcome.html'].includes(path)) return;
+    if (['login.html', 'sign_up.html', 'welcome.html', 'info.html', 'onboarding.html'].includes(path)) return;
     if ($('.mt-native-bottom-nav')) return;
     const tabs = [
-      { tab: 'home', label: 'Home', href: 'home.html', icon: icons.home },
-      { tab: 'learn', label: 'Learn', href: 'lessons.html', icon: icons.learn },
-      { tab: 'ai', label: 'AI', href: 'maths_gpt.html', icon: icons.ai },
-      { tab: 'quests', label: 'Quests', href: 'quests.html', icon: icons.bolt },
-      { tab: 'tools', label: 'Tools', href: 'more-tools.html', icon: icons.card }
+      { tab: 'ai', label: 'Chat', href: 'maths_gpt.html', icon: icons.ai },
+      { tab: 'study', label: 'Study', href: 'maths_gpt.html?study=1', icon: icons.test },
+      { tab: 'tools', label: 'Tools', href: 'more-tools.html', icon: icons.card },
+      { tab: 'profile', label: 'Profile', href: 'profile.html', icon: icons.profile }
     ];
     const active = pageTab();
     const nav = document.createElement('nav');
@@ -58,6 +58,11 @@
     nav.innerHTML = tabs.map((item) => (
       `<a href="${item.href}" data-tab="${item.tab}" class="${item.tab === active ? 'active' : ''}">${item.icon}<span>${item.label}</span></a>`
     )).join('');
+    nav.addEventListener('click', event => {
+      const link = event.target.closest('[data-tab="study"]');
+      const study = document.getElementById('studyPlannerBtn');
+      if (link && study) { event.preventDefault(); study.click(); }
+    });
     document.body.appendChild(nav);
   }
 

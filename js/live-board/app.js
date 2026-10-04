@@ -189,7 +189,7 @@
   tryToggle?.addEventListener("click", () => {
     const active = !document.body.classList.contains("student-work-mode");
     document.body.classList.toggle("student-work-mode", active);
-    tryToggle.textContent = active ? "Return to Lesson" : "Let Me Try";
+    tryToggle.textContent = active ? "Tutor Mode" : "My Turn";
     tryToggle.setAttribute("aria-pressed", String(active));
     studentTools.hidden = !active;
     board.setTool(active ? "pen" : "select");

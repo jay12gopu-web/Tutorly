@@ -17,7 +17,7 @@
       <a class="live-board-brand" href="maths_gpt.html" target="_top" aria-label="Back to Tutorly chat">
         <img src="assets/brand-star.png" alt="" aria-hidden="true" />
         <strong>Tutorly</strong>
-        <span>Live Board</span>
+        <span>Visual workspace</span>
       </a>
       <div class="live-board-actions">
         <span id="liveBoardStatus" class="live-board-status" role="status">Ready for a topic</span>
@@ -32,33 +32,31 @@
             <h1 id="liveBoardTitle">Tutorly Live Board</h1>
             <p id="liveBoardSummary">A step-by-step visual explanation.</p>
           </div>
-          <div class="live-board-actions">
-            <button id="liveBoardTryToggle" class="live-board-btn primary" type="button" aria-pressed="false">Let Me Try</button>
-            <button id="liveBoardResetView" class="live-board-btn" type="button">Reset View</button>
+          <div class="live-board-actions board-mode-row"><span>Tutor Mode</span>
+            <button id="liveBoardTryToggle" class="live-board-btn primary" type="button" aria-pressed="false">My Turn</button>
           </div>
         </div>
 
         <form id="liveBoardTopicForm" class="live-board-topic-form">
           <label for="liveBoardTopic">Topic or equation</label>
           <div class="live-board-composer">
-            <input id="liveBoardTopic" type="text" maxlength="500" placeholder="Graph y = x^2" autocomplete="off" aria-describedby="liveBoardTopicHelp" required />
+            <input id="liveBoardTopic" type="text" maxlength="500" placeholder="An equation or geometry construction…" autocomplete="off" aria-describedby="liveBoardTopicHelp" required />
             <button id="liveBoardGenerate" class="live-board-btn primary" type="submit">Draw</button>
           </div>
-          <small id="liveBoardTopicHelp">Try an equation or a supported geometry construction.</small>
+          <small id="liveBoardTopicHelp">Try “Graph y = x^2” or “Construct a perpendicular bisector”.</small>
         </form>
         <div id="liveBoardStage" class="live-board-stage" aria-label="Interactive visual board"></div>
         <div id="studentTools" class="student-tools" aria-label="Student drawing tools" hidden>
           <button type="button" data-student-tool="select">Select</button>
-          <button class="active" type="button" data-student-tool="pen">Pen</button>
-          <button type="button" data-student-tool="highlighter">Highlighter</button>
-          <button type="button" data-student-tool="point">Point</button>
+          <details class="board-tool-group"><summary>Draw</summary><div><button class="active" type="button" data-student-tool="pen">Pen</button><button type="button" data-student-tool="highlighter">Highlighter</button></div></details>
+          <details class="board-tool-group"><summary>Shapes</summary><div><button type="button" data-student-tool="point">Point</button>
           <button type="button" data-student-tool="line">Line</button>
           <button type="button" data-student-tool="ray">Ray</button>
           <button type="button" data-student-tool="arrow">Arrow</button>
           <button type="button" data-student-tool="circle">Circle</button>
-          <button type="button" data-student-tool="rectangle">Rectangle</button>
+          <button type="button" data-student-tool="rectangle">Rectangle</button></div></details>
           <button type="button" data-student-tool="text">Text</button>
-          <button type="button" data-student-tool="eraser">Eraser</button>
+          <button type="button" data-student-tool="eraser">Erase</button>
           <input id="studentTextValue" type="text" value="Note" aria-label="Student text value" />
           <button type="button" data-board-action="undo">Undo</button>
           <button type="button" data-board-action="redo">Redo</button>
@@ -87,7 +85,7 @@
       <button id="liveBoardPrev" class="live-board-btn" type="button">Previous</button>
       <button id="liveBoardPlay" class="live-board-btn primary" type="button">Play</button>
       <button id="liveBoardNext" class="live-board-btn" type="button">Next</button>
-      <button id="liveBoardReplay" class="live-board-btn" type="button">Replay</button>
+      <details class="board-options"><summary aria-label="More board controls">More</summary><div><button id="liveBoardReplay" class="live-board-btn" type="button">Replay</button><button id="liveBoardResetView" class="live-board-btn" type="button">Reset View</button></div></details>
     </footer>
   </div>
 

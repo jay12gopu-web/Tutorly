@@ -12,31 +12,9 @@
   z-index: 1;
 }
 
-.upgrade-plans-btn::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: -70%;
-  bottom: -70%;
-  left: -42%;
-  width: 28%;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.72),
-    rgba(255, 255, 255, 0)
-  );
-  transform: skewX(-24deg);
-  animation: tutorlyUpgradeGlaze 3.15s cubic-bezier(.2,.8,.2,1) infinite;
-}
 
-@keyframes tutorlyUpgradeGlaze {
-  0%, 58% { left: -42%; opacity: 0; }
-  64% { opacity: 0.85; }
-  88% { left: 116%; opacity: 0.68; }
-  100% { left: 116%; opacity: 0; }
-}
+
+
 
 .voice-chat-wave-icon {
   width: 34px;
@@ -70,15 +48,15 @@
     height: 100%;
     min-height: 100%;
     overflow: hidden !important;
-    color-scheme: light;
+    color-scheme: light dark;
   }
 
   body.mt-mobile-chat,
   body[data-theme="dark"].mt-mobile-chat {
-    --ink: #1c2740;
-    --muted: #69758f;
-    color: #1c2740 !important;
-    background: #f5f8ff !important;
+    --ink: var(--tutorly-text);
+    --muted: var(--tutorly-muted);
+    color: var(--tutorly-text) !important;
+    background: var(--tutorly-bg) !important;
   }
 
   body.mt-mobile-chat .app-shell {
@@ -97,10 +75,7 @@
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
-    background:
-      radial-gradient(circle at 14% 6%, rgba(79, 124, 255, 0.12), transparent 32%),
-      radial-gradient(circle at 92% 12%, rgba(139, 92, 246, 0.1), transparent 34%),
-      linear-gradient(180deg, #f9fbff 0%, #f3f7ff 100%) !important;
+    background: var(--tutorly-bg) !important;
   }
 
   body.mt-mobile-chat .main-area::before,
@@ -111,22 +86,23 @@
 
   body.mt-mobile-chat .main-header,
   body[data-theme="dark"].mt-mobile-chat .main-header {
-    width: calc(100% - 20px) !important;
+    width: 100% !important;
     height: 58px !important;
     min-height: 58px !important;
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto !important;
     align-items: center !important;
     gap: 8px !important;
-    margin: max(8px, env(safe-area-inset-top)) 10px 0 !important;
+    margin: 0 !important;
     padding: 7px 8px 7px 13px !important;
-    border: 1px solid rgba(116, 137, 184, 0.16) !important;
-    border-radius: 18px !important;
-    color: #1c2740 !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 9px 26px rgba(48, 70, 126, 0.09) !important;
-    backdrop-filter: blur(18px) saturate(1.08) !important;
-    -webkit-backdrop-filter: blur(18px) saturate(1.08) !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--tutorly-border) !important;
+    border-radius: 0 !important;
+    color: var(--tutorly-text) !important;
+    background: var(--tutorly-bg) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   body.mt-mobile-chat .brand-area {
@@ -137,7 +113,7 @@
   body.mt-mobile-chat .header-wordmark,
   body[data-theme="dark"].mt-mobile-chat .header-wordmark {
     min-width: 0;
-    color: #273454 !important;
+    color: var(--tutorly-text) !important;
     font-size: 18px !important;
     letter-spacing: -0.025em;
   }
@@ -169,7 +145,7 @@
     border-radius: 13px !important;
     font-size: 11.5px !important;
     line-height: 1.1;
-    box-shadow: 0 8px 18px rgba(74, 91, 215, 0.2) !important;
+    box-shadow: none !important;
   }
 
   body.mt-mobile-chat .upgrade-crown {
@@ -474,7 +450,7 @@
 
   body.mt-mobile-chat #uploadBtn,
   body.mt-mobile-chat .speech-text-btn {
-    color: #43516e !important;
+    color: var(--tutorly-muted) !important;
     background: transparent !important;
   }
 
@@ -487,7 +463,8 @@
   body[data-theme="dark"].mt-mobile-chat .voice-chat-btn {
     padding: 3px !important;
     border: 0 !important;
-    background: #fff !important;
+    background: var(--tutorly-blue) !important;
+    color: #fff !important;
     overflow: hidden;
   }
 

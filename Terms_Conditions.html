@@ -11,12 +11,12 @@
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="css/global-layout.css?v=responsive-20260905" />
   <style>
-    .terms-wrap { margin-top: 14px; }
+    .terms-wrap { width: min(var(--width-reading, 760px), calc(100% - 32px)); margin: 32px auto; }
     .legal-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: var(--shadow-1);
+      border: 0; border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
       padding: 16px;
       margin-top: 12px;
     }
@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
 </head>
-<body data-tutorly-surface="public">
+<body class="legal-page" data-tutorly-surface="public">
   <a class="back-home-btn" href="maths_gpt.html" aria-label="Back to Tutorly Chat">Back to Chat</a>
   <header class="shell header-wrap fade-up">
   <div class="topbar">

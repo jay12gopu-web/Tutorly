@@ -719,7 +719,7 @@
     <section class="test-flow-header fade-up d2">
       <div>
         <span class="exam-kicker" id="flowKicker">Create a test paper</span>
-        <h1 class="exam-title" id="flowTitle">Turn your notes into a test.</h1>
+        <h1 class="exam-title" id="flowTitle">Create a test</h1>
         <p class="exam-subtitle" id="flowLead">Add your material, choose your paper settings, and practise.</p>
       </div>
       <span class="profile-pill" id="profilePill">Your study material</span>
@@ -727,8 +727,9 @@
 
     <section class="setup-panel fade-up d3" id="setupPanel">
       <div class="stepper" aria-label="Exam setup steps">
-        <button type="button" data-step="material" class="active"><b>1</b> Your material</button>
-        <button type="button" data-step="mode" disabled><b>2</b> Paper setup</button>
+        <button type="button" data-step="material" class="active"><b>1</b> Add material</button>
+        <button type="button" data-step="mode" disabled><b>2</b> Configure test</button>
+        <span class="stepper-upcoming"><b>3</b> Take test</span>
       </div>
 
       <section class="content-card" id="materialStep">
@@ -823,6 +824,9 @@
         <div class="metric-card"><span>Time</span><strong id="reportTime">16m</strong></div>
       </div>
 
+      <section class="feedback-box" id="aiFeedback" aria-label="AI tutor feedback"></section>
+      <div class="report-next-actions"><a class="btn btn-soft" href="#questionReview">Review answers</a><button class="btn btn-soft" id="retakeBtn" type="button">Retake</button></div>
+      <details class="report-analytics"><summary>Test analytics</summary>
       <div class="report-grid">
         <article class="metric-card"><span>Correct</span><strong id="correctCount">0</strong></article>
         <article class="metric-card"><span>Incorrect</span><strong id="incorrectCount">0</strong></article>
@@ -853,7 +857,7 @@
         <div class="topic-bars" id="topicBars"></div>
       </section>
 
-      <section class="feedback-box" id="aiFeedback" aria-label="AI tutor feedback"></section>
+      </details>
 
       <section class="review-panel">
         <div class="review-head">
@@ -873,11 +877,10 @@
 
       <div class="setup-actions">
         <button class="btn btn-soft" id="newExamBtn" type="button">Create New Test</button>
-        <button class="btn btn-primary" id="retakeBtn" type="button">Retake Test</button>
       </div>
     </section>
 
-    <section class="history-panel fade-up d4">
+    <details class="history-panel fade-up d4"><summary>Previous attempts</summary>
       <div class="history-head">
         <div>
           <span class="section-kicker">Test History</span>
@@ -897,7 +900,7 @@
         </select>
       </div>
       <div class="history-list" id="historyList"></div>
-    </section>
+    </details>
   </main>
 
   <script src="js/auth-client.js?v=curriculum-20260826"></script>

@@ -1,29 +1,41 @@
+/* Locally served, OFL-licensed fonts: branding/headings and reading/UI. */
+@font-face { font-family: "Inter"; src: url("../assets/fonts/Inter.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("../assets/fonts/SpaceGrotesk.ttf") format("truetype"); font-style: normal; font-weight: 300 700; font-display: swap; }
 :root {
-  --tutorly-blue: #2563eb;
-  --tutorly-blue-dark: #1d4ed8;
-  --tutorly-violet: #7c3aed;
-  --tutorly-cyan: #22d3ee;
-  --tutorly-bg-dark: #050816;
-  --tutorly-bg-light: #f3f5ff;
-  --tutorly-surface: rgba(255, 255, 255, 0.92);
+  --tutorly-blue: #4f63e7;
+  --tutorly-blue-dark: #4054ce;
+  --tutorly-violet: #7357e8;
+  --tutorly-cyan: #4f63e7;
+  --tutorly-bg-dark: #0c1220;
+  --tutorly-bg-light: #f7f9fc;
+  --tutorly-bg: var(--tutorly-bg-light);
+  --tutorly-surface: #ffffff;
   --tutorly-text: #172033;
   --tutorly-muted: #66728a;
-  --tutorly-border: #dce3f4;
+  --tutorly-border: #dde4f0;
   --tutorly-success: #16855b;
   --tutorly-warning: #b56812;
   --tutorly-danger: #c2414d;
   --tutorly-gradient: linear-gradient(135deg, var(--tutorly-blue), var(--tutorly-violet));
-  --tutorly-radius-sm: 12px;
+  --tutorly-radius-sm: 10px;
   --tutorly-radius-md: 16px;
-  --tutorly-radius-lg: 20px;
+  --tutorly-radius-lg: 18px;
   --tutorly-radius-xl: 24px;
-  --tutorly-shadow-sm: 0 8px 24px rgba(48, 62, 108, 0.08);
-  --tutorly-shadow: 0 18px 48px rgba(48, 62, 108, 0.11);
+  --tutorly-shadow-sm: 0 2px 8px rgba(23, 32, 51, 0.04);
+  --tutorly-shadow: 0 12px 32px rgba(23, 32, 51, 0.10);
   --tutorly-ease: cubic-bezier(.2, .8, .2, 1);
   --tutorly-page-duration: 270ms;
-  --tutorly-panel-duration: 200ms;
-  --tutorly-button-duration: 170ms;
+  --tutorly-panel-duration: 220ms;
+  --tutorly-button-duration: 160ms;
   --tutorly-sidebar-duration: 220ms;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --width-reading: 760px; --width-page: 1120px; --width-workspace: 1280px; --width-onboarding: 460px;
+  --tutorly-soft: #f2f5fb; --tutorly-focus: #4f63e7;
+  --tutorly-font-body: "Inter", "Segoe UI", sans-serif;
+  --tutorly-primary-soft: color-mix(in srgb, var(--tutorly-blue) 9%, var(--tutorly-surface));
+  --tutorly-surface-soft: var(--tutorly-soft);
 
   /* Compatibility aliases for the existing pages. */
   --primary: var(--tutorly-blue);
@@ -35,7 +47,7 @@
   --gemini-green: var(--tutorly-cyan);
   --bg: var(--tutorly-bg-light);
   --surface: #ffffff;
-  --surface-soft: #f6f7ff;
+  --surface-soft: #f2f5fb;
   --text: var(--tutorly-text);
   --muted: var(--tutorly-muted);
   --line: var(--tutorly-border);
@@ -106,7 +118,7 @@ samp {
 body {
   min-width: 320px;
   overflow-x: clip;
-  animation: tutorlyPageEnter var(--tutorly-page-duration) var(--tutorly-ease) both !important;
+  line-height: 1.6;
 }
 
 body[data-tutorly-surface="public"] {
@@ -125,21 +137,16 @@ body[data-tutorly-surface="auth"] {
     linear-gradient(145deg, #040817, #09132d 54%, #160c36);
 }
 
-body[data-tutorly-surface="workspace"] {
-  color: var(--tutorly-text);
-  background:
-    radial-gradient(circle at 5% 8%, rgba(37, 99, 235, 0.11), transparent 30%),
-    radial-gradient(circle at 94% 3%, rgba(124, 58, 237, 0.1), transparent 28%),
-    linear-gradient(145deg, #f7faff, var(--tutorly-bg-light));
-}
+body[data-tutorly-surface="workspace"] { color: var(--tutorly-text); background: var(--tutorly-bg-light); }
 
 body[data-tutorly-surface="workspace"][data-theme="dark"],
 body[data-tutorly-surface="workspace"].profile-dark {
-  --tutorly-bg-light: #0b1020;
-  --tutorly-surface: rgba(17, 24, 45, 0.92);
+  --tutorly-bg-light: #0c1220;
+  --tutorly-surface: #151d2f;
+  --tutorly-bg: var(--tutorly-bg-dark);
   --tutorly-text: #eef2ff;
   --tutorly-muted: #aab5ce;
-  --tutorly-border: rgba(194, 207, 255, 0.14);
+  --tutorly-border: #2b3549;
   --surface: #11182c;
   --surface-soft: #151e35;
   --text: var(--tutorly-text);
@@ -166,10 +173,7 @@ body[data-tutorly-surface="workspace"].profile-dark {
   --exam-surface: var(--tutorly-surface);
   --exam-soft: #151e35;
   color: var(--tutorly-text);
-  background:
-    radial-gradient(circle at 7% 6%, rgba(37, 99, 235, 0.16), transparent 30%),
-    radial-gradient(circle at 96% 2%, rgba(124, 58, 237, 0.15), transparent 30%),
-    #0b1020;
+  background: var(--tutorly-bg-light);
   color-scheme: dark;
 }
 
@@ -197,7 +201,7 @@ body[data-tutorly-surface="workspace"] :where(.panel, .card, .profile-card, .set
   .exam-view, .report-view, .history-panel, .plan-card, .payment-panel,
   .foundation-card, .lesson-panel, .bookmark-panel, .contact-layout > article) {
   background: var(--tutorly-surface) !important;
-  backdrop-filter: blur(16px);
+  backdrop-filter: none;
 }
 
 body[data-tutorly-surface="workspace"][data-theme="dark"] :where(
@@ -238,8 +242,8 @@ body[data-tutorly-surface="workspace"][data-theme="dark"] :where(
   .plan-button:not(.secondary), .pay-action:not(.secondary), .mode-btn.active, .role-btn.active) {
   color: #ffffff !important;
   border-color: transparent !important;
-  background: var(--tutorly-gradient) !important;
-  box-shadow: 0 10px 24px rgba(61, 77, 204, 0.22) !important;
+  background: var(--tutorly-blue) !important;
+  box-shadow: none;
 }
 
 :where(.btn-soft, .button.soft, .foundation-button-secondary, .plan-button.secondary,
@@ -282,7 +286,7 @@ body[data-tutorly-surface="workspace"][data-theme="dark"] :where(
   border-color: var(--tutorly-border) !important;
   background: color-mix(in srgb, var(--tutorly-surface) 88%, transparent) !important;
   box-shadow: var(--tutorly-shadow-sm) !important;
-  backdrop-filter: blur(18px);
+  backdrop-filter: none;
 }
 
 .topbar {
@@ -534,6 +538,21 @@ body.mt-page-ready :where(.shell, .app-shell, main, .panel, .card, .glass-card,
     max-width: 100%;
   }
 }
+
+/* Shared type hierarchy. Chat content stays Inter, including its headings. */
+:where(h1, h2, .sidebar-brand, .header-wordmark, .profile-brand, .tools-brand, .auth-wordmark, .auth-mobile-brand, .contact-brand, .live-board-brand) { font-family: "Space Grotesk", "Inter", sans-serif !important; }
+h1 { font-size: clamp(32px, 3vw, 40px); line-height: 1.16; font-weight: 700; }
+h2 { font-size: clamp(24px, 2vw, 28px); line-height: 1.25; font-weight: 650; }
+h3 { font-size: 20px; line-height: 1.35; font-weight: 650; }
+:where(.bot-content h1,.bot-content h2,.bot-content h3,.bot-content h4) { font-family: "Inter",sans-serif !important; }
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible { outline: 3px solid var(--tutorly-focus); outline-offset: 3px; }
+/* Shared presentation primitives: never infer service success or account data. */
+.tutorly-state { padding: var(--space-5); border: 1px solid var(--tutorly-border); border-radius: var(--tutorly-radius-md); background: var(--tutorly-surface); color: var(--tutorly-muted); }
+.tutorly-state-action { min-height:44px; padding:8px 16px; border:1px solid var(--tutorly-border); border-radius:10px; background:var(--tutorly-surface); color:var(--tutorly-blue); cursor:pointer; }
+.tutorly-state h2 { color: var(--tutorly-text); margin: 0 0 var(--space-2); }
+.tutorly-state[data-state="error"],.tutorly-state[data-state="offline"] { border-inline-start: 3px solid var(--tutorly-danger); }
+.tutorly-state[data-state="demo"],.tutorly-state[data-state="locked"],.tutorly-state[data-state="coming-soon"] { border-inline-start: 3px solid var(--tutorly-warning); }
+@media(max-width:768px) { :where(.panel,.card,.profile-topbar,.header-wrap,.foundation-header) { backdrop-filter: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto !important; }

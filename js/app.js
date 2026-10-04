@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     body.classList.remove(...MODEL_BODY_CLASSES);
     body.classList.add(`model-${config.id}`);
 
-    if (selectedModelIcon) selectedModelIcon.textContent = config.icon;
+    if (selectedModelIcon) selectedModelIcon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4Z"/></svg>';
     if (selectedModelName) selectedModelName.textContent = config.name;
     if (selectedModelDesc) selectedModelDesc.textContent = config.description;
 
@@ -3484,13 +3484,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const locked = isWelcomeTrial && (welcomeTrialLocked || getWelcomeTrialCount() >= WELCOME_TRIAL_LIMIT);
     const hasReadyContent = input.value.trim().length > 0 || !!pendingImage;
     sendBtn.disabled = locked || chatRequestInFlight || !hasReadyContent;
-    sendBtn.hidden = !hasReadyContent;
+    sendBtn.hidden = chatRequestInFlight || !hasReadyContent;
     sendBtn.classList.toggle("active", !locked && !chatRequestInFlight && hasReadyContent);
     if (voiceBtn) {
-      voiceBtn.hidden = hasReadyContent;
+      voiceBtn.hidden = chatRequestInFlight || hasReadyContent;
       voiceBtn.disabled = locked || chatRequestInFlight;
       voiceBtn.classList.toggle("active", !locked && !chatRequestInFlight && !hasReadyContent);
-      voiceBtn.setAttribute("aria-hidden", String(hasReadyContent));
+      voiceBtn.setAttribute("aria-hidden", String(chatRequestInFlight || hasReadyContent));
     }
     if (speechTextBtn) {
       speechTextBtn.hidden = false;
@@ -3498,6 +3498,7 @@ document.addEventListener("DOMContentLoaded", () => {
       speechTextBtn.setAttribute("aria-hidden", "false");
     }
     body.classList.toggle("composer-ready", hasReadyContent);
+    body.classList.toggle("chat-generating", chatRequestInFlight);
   }
 
   function appendToInput(text) {
@@ -5614,6 +5615,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.TutorlyChatSuggestions?.render?.(chatSuggestions, { onSelect: prefillChatSuggestion });
   const curriculumEntryParams = new URLSearchParams(window.location.search);
   restoreConversation();
+  if (curriculumEntryParams.get("study") === "1") document.getElementById("studyPlannerBtn")?.click();
   // Practice and Learn share the existing AI Tutor, using a catalog-validated ID.
   (async () => {
     const params = curriculumEntryParams;

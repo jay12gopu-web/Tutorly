@@ -103,8 +103,8 @@ assert.ok(voiceSource.includes('speak(mode === "vision"'), "the headset action s
 assert.ok(voiceSource.includes('utterance.addEventListener("boundary"'), "the microphone orb should pulse gently with Tutorly's spoken cadence");
 assert.ok(voiceSource.includes("speakerEchoFloor * 2.15"), "barge-in should distinguish a nearby user from Tutorly's own speaker echo");
 assert.ok(app.includes("speechTextBtn.hidden = false"), "speech-to-text should remain visible when the composer contains text");
-assert.ok(app.includes("voiceBtn.hidden = hasReadyContent"), "Voice Chat should be replaced completely when the composer has sendable content");
-assert.ok(app.includes("sendBtn.hidden = !hasReadyContent"), "Send should appear only when text or an attachment is ready");
+assert.ok(app.includes("voiceBtn.hidden = chatRequestInFlight || hasReadyContent"), "Voice Chat should be replaced completely when the composer has sendable content");
+assert.ok(app.includes("sendBtn.hidden = chatRequestInFlight || !hasReadyContent"), "Send should appear only when text or an attachment is ready");
 assert.ok(chatbotCss.includes(".voice-chat-btn[hidden]"), "hidden Voice Chat controls should not occupy composer space on mobile");
 assert.ok(!app.includes("openLiveActionSheet") && !app.includes("data-live-mode"), "Voice Chat should not show the old mode picker");
 assert.ok(chatbotCss.includes("body.composer-ready #voiceBtn"), "Voice Chat should collapse when the composer is ready to send");
@@ -136,7 +136,6 @@ assert.ok(voiceSource.includes("Auto-detect"), "voice language selection should 
   'href="release-notes.html"',
   'href="privacy.html"',
   'href="tests.html"',
-  'href="quests.html"',
   'href="more-tools.html"',
   'href="subscriptions.html"',
   'id="confirmOverlay"',
@@ -153,7 +152,7 @@ assert.ok(!page.includes('id="sidebarViewAllChats"'), "the redundant view-all-co
 assert.ok(page.includes('id="sidebarPinnedSection"'), "pinned conversations should have their own sidebar section");
 assert.ok(page.includes('id="archivedChatsBtn"'), "archived conversations should have a dedicated sidebar entry point");
 assert.ok(!page.includes('href="practice.html" title="Practice"'), "Practice should not appear in the compact Study section");
-assert.ok(page.includes('data-workspace-route="progress.html"'), "Progress should reuse the existing sidebar workspace navigation");
+assert.ok(read("more-tools.html").includes('href="progress.html"'), "Progress stays accessible under Tools rather than primary Chat navigation");
 assert.ok(app.includes("renderSidebarRecents"), "recent chats should render from the existing conversation store");
 assert.ok(app.includes("sidebarChatRowHtml"), "sidebar rows should expose the Pin, Archive, and Delete action menu");
 assert.ok(app.includes("getHistoryConversations"), "Search Chats should search the shared stored conversation history");

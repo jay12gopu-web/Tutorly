@@ -5,12 +5,12 @@
   // Only capabilities already supported in Tutorly appear in the new-chat UI.
   // A future integration needs a working adapter and approved icon before activation.
   const registry = Object.freeze([
-    { id: "notes", plugin: "tutorly", icon: "notes", label: "Make clear revision notes", prompt: "Make concise revision notes about ", status: "available", action: "prefill" },
-    { id: "essay", plugin: "tutorly", icon: "writing", label: "Help me write an essay", prompt: "Help me write an essay about ", status: "available", action: "prefill" },
-    { id: "study-plan", plugin: "tutorly", icon: "calendar", label: "Plan my study time", prompt: "Help me plan my study time for ", status: "available", action: "prefill" },
+    { id: "notes", plugin: "tutorly", icon: "notes", label: "Make notes", prompt: "Make concise revision notes about ", status: "available", action: "prefill" },
+    { id: "essay", plugin: "tutorly", icon: "writing", label: "Write an essay", prompt: "Help me write an essay about ", status: "available", action: "prefill" },
+    { id: "study-plan", plugin: "tutorly", icon: "calendar", label: "Plan my study", prompt: "Help me plan my study time for ", status: "available", action: "prefill" },
     { id: "graph", plugin: "tutorly-live-board", icon: "graph", label: "Graph an equation", prompt: "Graph ", status: "available", action: "prefill" },
-    { id: "revision", plugin: "tutorly", icon: "revision", label: "Quiz me on a topic", prompt: "Quiz me one question at a time on ", status: "available", action: "prefill" },
-    { id: "presentation", plugin: "tutorly", icon: "presentation", label: "Outline a presentation", prompt: "Create a slide-by-slide presentation outline about ", status: "available", action: "prefill" },
+    { id: "revision", plugin: "tutorly", icon: "revision", label: "Quiz me", prompt: "Quiz me one question at a time on ", status: "available", action: "prefill" },
+    { id: "presentation", plugin: "tutorly", icon: "presentation", label: "Presentation outline", prompt: "Create a slide-by-slide presentation outline about ", status: "available", action: "prefill" },
     ...["notion", "canva", "google-docs", "youtube", "google-classroom", "google-calendar", "google-drive", "desmos"].map(id => ({ id, plugin: id, status: "unavailable", action: null, icon: null }))
   ].map(item => Object.freeze(item)));
   const storageKey = "tutorly_chat_suggestions_v1";

@@ -66,6 +66,17 @@
     state.catalog = await window.TutorlyCurriculum.load({ refresh });
     state.subjects = window.TutorlyCurriculum.subjectModels(state.catalog);
     if (!refresh) state.subject = null;
+    const active = window.TutorlyCurriculum.getActiveContext?.();
+    const resume = document.getElementById("practiceContinue");
+    const subject = state.subjects.find(item => item.id === active?.subject_id);
+    const chapter = subject?.chapters.find(item => item.id === active?.chapter_id);
+    if (resume) {
+      resume.hidden = !chapter;
+      if (chapter) {
+        resume.innerHTML = `<h2>Continue Practice</h2><p>${escapeHtml(subject.name)} · ${escapeHtml(chapter.name)}</p><button class="foundation-button" type="button">Practise this topic</button>`;
+        resume.querySelector("button").addEventListener("click", () => startPractice(subject, chapter));
+      }
+    }
     state.subject ? renderChapters(grid, status) : renderSubjects(grid, status);
   }
 

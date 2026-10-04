@@ -1,16 +1,16 @@
 /* Tutorly mobile-first app layer. Desktop styles intentionally remain untouched. */
 :root {
-  --mtm-bg: #f6f8fc;
-  --mtm-card: #ffffff;
-  --mtm-ink: #141b2d;
-  --mtm-muted: #667085;
-  --mtm-line: #e5ebf5;
-  --mtm-blue: #2563eb;
-  --mtm-purple: #7c3aed;
-  --mtm-green: #12b76a;
-  --mtm-amber: #f59e0b;
-  --mtm-shadow: 0 14px 34px rgba(16, 24, 40, 0.1);
-  --mtm-nav-h: 78px;
+  --mtm-bg: var(--tutorly-bg);
+  --mtm-card: var(--tutorly-surface);
+  --mtm-ink: var(--tutorly-text);
+  --mtm-muted: var(--tutorly-muted);
+  --mtm-line: var(--tutorly-border);
+  --mtm-blue: var(--tutorly-blue);
+  --mtm-purple: var(--tutorly-violet);
+  --mtm-green: var(--tutorly-success);
+  --mtm-amber: var(--tutorly-warning);
+  --mtm-shadow: var(--tutorly-shadow-sm);
+  --mtm-nav-h: 64px;
 }
 
 .mt-mobile-home-surface {
@@ -28,10 +28,8 @@
     width: 100% !important;
     padding: 0 0 calc(var(--mtm-nav-h) + env(safe-area-inset-bottom) + 14px) !important;
     color: var(--mtm-ink) !important;
-    background:
-      radial-gradient(circle at 20% -8%, rgba(37, 99, 235, 0.14), transparent 34%),
-      linear-gradient(180deg, #fbfdff 0%, var(--mtm-bg) 42%, #f3f6fb 100%) !important;
-    font-family: Inter, "Nunito", "Segoe UI", system-ui, sans-serif !important;
+    background: var(--mtm-bg) !important;
+    font-family: var(--tutorly-font-body) !important;
     overflow-x: hidden !important;
     -webkit-tap-highlight-color: transparent;
   }
@@ -80,34 +78,35 @@
 
   .mt-native-bottom-nav {
     position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 9000;
     height: var(--mtm-nav-h);
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: end;
     gap: 4px;
-    border: 1px solid rgba(214, 224, 242, 0.92);
-    border-radius: 24px;
-    padding: 8px 8px 9px;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 18px 42px rgba(16, 24, 40, 0.18);
-    backdrop-filter: blur(18px) saturate(1.12);
+    border: 0;
+    border-top: 1px solid var(--tutorly-border);
+    border-radius: 0;
+    padding: 8px;
+    background: var(--tutorly-surface, #fff);
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .mt-native-bottom-nav a {
     min-width: 0;
-    min-height: 54px;
+    min-height: 44px;
     display: grid;
     place-items: center;
     gap: 3px;
     border-radius: 18px;
-    color: #77849a;
+    color: var(--mtm-muted);
     text-decoration: none;
     font-size: 11px;
-    font-weight: 850;
+    font-weight: 600;
   }
 
   .mt-native-bottom-nav svg {
@@ -121,24 +120,12 @@
   }
 
   .mt-native-bottom-nav a.active {
-    color: #fff;
-    background: linear-gradient(135deg, var(--mtm-blue), var(--mtm-purple));
-    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+    color: var(--mtm-blue);
+    background: var(--tutorly-primary-soft);
+    box-shadow: none;
   }
 
-  .mt-native-bottom-nav a[data-tab="ai"] {
-    position: relative;
-    min-height: 64px;
-    margin-top: -14px;
-    color: #fff;
-    background: linear-gradient(135deg, var(--mtm-blue), var(--mtm-purple));
-    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
-  }
 
-  .mt-native-bottom-nav a[data-tab="ai"] svg {
-    width: 25px;
-    height: 25px;
-  }
 
   .mt-mobile-home-surface {
     display: none;

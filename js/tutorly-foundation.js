@@ -35,6 +35,8 @@
     const chatbotState = JSON.parse(localStorage.getItem('tutorly_chatbot_history_v1') || '{}');
     const savedChats = Array.isArray(chatbotState.conversations) ? chatbotState.conversations : (Array.isArray(chats) ? chats : []);
     const streak = Number(localStorage.getItem('tutorly_streak') || 0);
+    const insight = document.getElementById('progressInsight');
+    if (insight) insight.textContent = completed ? `You completed ${completed} ${completed === 1 ? 'test' : 'tests'} on this device. Review your answers to choose what to practise next.` : 'Start a test or study session to build a clearer picture of your learning.';
     document.getElementById('progressTests').textContent = String(completed);
     document.getElementById('progressScore').textContent = completed ? average + '%' : '—';
     document.getElementById('progressChats').textContent = String(savedChats.length);

@@ -116,12 +116,11 @@
 
   function navItems(current) {
     const items = [
-      { key: 'home', label: 'Home', href: 'home.html', match: ['home.html', 'welcome.html'] },
-      { key: 'ai', label: 'AI Tutor', href: 'maths_gpt.html', match: ['maths_gpt.html'] },
+      { key: 'ai', label: 'Chat', href: 'maths_gpt.html', match: ['maths_gpt.html'] },
+      { key: 'lessons', label: 'Study Bot', href: 'maths_gpt.html?study=1', match: [] },
       { key: 'subjects', label: 'Tests', href: 'tests.html', match: ['tests.html'] },
-      { key: 'practice', label: 'Practice', href: 'practice.html', match: ['practice.html'] },
-      { key: 'lessons', label: 'Lessons', href: 'lessons.html', match: ['lessons.html'] },
-      { key: 'profile', label: 'Profile', href: 'profile.html', match: ['profile.html', 'contact.html', 'terms_conditions.html'] }
+      { key: 'menu', label: 'More Tools', href: 'more-tools.html', match: ['more-tools.html', 'practice.html', 'lessons.html', 'progress.html', 'bookmarks.html', 'quests.html', 'shop.html', 'leaderboard.html'] },
+      { key: 'profile', label: 'Settings', href: 'profile.html', match: ['profile.html'] }
     ];
     return items.map(function (item) {
       const active = item.match.indexOf(current) !== -1 ? ' active' : '';
@@ -277,11 +276,10 @@
     nav.setAttribute('aria-label', 'Bottom navigation');
 
     const tabs = [
-      { key: 'home', label: 'Home', href: 'home.html', match: ['home.html', 'welcome.html'] },
-      { key: 'ai', label: 'AI Tutor', href: 'maths_gpt.html', match: ['maths_gpt.html'] },
-      { key: 'lessons', label: 'Lessons', href: 'lessons.html', match: ['lessons.html'] },
-      { key: 'practice', label: 'Tests', href: 'tests.html', match: ['tests.html'] },
-      { key: 'profile', label: 'Profile', href: 'profile.html', match: ['profile.html', 'contact.html'] }
+      { key: 'ai', label: 'Chat', href: 'maths_gpt.html', match: ['maths_gpt.html'] },
+      { key: 'lessons', label: 'Study', href: 'maths_gpt.html?study=1', match: [] },
+      { key: 'menu', label: 'Tools', href: 'more-tools.html', match: ['more-tools.html', 'practice.html', 'lessons.html', 'tests.html', 'progress.html', 'bookmarks.html', 'quests.html', 'shop.html', 'leaderboard.html'] },
+      { key: 'profile', label: 'Profile', href: 'profile.html', match: ['profile.html'] }
     ];
 
     nav.innerHTML = tabs.map(function (tab) {
