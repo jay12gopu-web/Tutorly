@@ -29,8 +29,11 @@
     try { payload = JSON.parse(options.body || '{}'); } catch (_) { /* Binary/form fixtures have no JSON body. */ }
     calls.push({ path: url.pathname, method: options.method || 'GET', payload });
     preview.lastRequest = payload;
-    if (url.pathname === '/api/auth/me') return sessionStorage.getItem('preview_account_offline') === 'true'
-      ? json({ detail: 'Intentional account lookup fixture failure.' }, 503) : json({ authenticated: true, user });
+    if (url.pathname === '/api/auth/me') {
+      if (sessionStorage.getItem('preview_account_expired') === 'true') return json({ detail: 'Your session has expired.' }, 401);
+      if (sessionStorage.getItem('preview_account_offline') === 'true') return json({ detail: 'Intentional account lookup fixture failure.' }, 503);
+      return json({ authenticated: true, user });
+    }
     if (url.pathname === '/api/tests/generate') {
       await wait(options.signal);
       if (preview.scenario === 'failure') return json({detail:'Intentional test-generation fixture failure.'},503);
@@ -95,6 +98,8 @@
   if (navigator.sendBeacon) navigator.sendBeacon = () => false;
 
   function activateStudent() {
+    sessionStorage.removeItem('preview_account_expired');
+    sessionStorage.removeItem('preview_account_offline');
     const fields = { tutorly_session_token: fixtureToken, tutorly_logged_in: 'true', tutorly_signed_up: 'true', tutorly_account_role: 'student', tutorly_signup_full_name: user.full_name,
       tutorly_email: user.email, tutorly_grade: user.grade, tutorly_board: user.board, tutorly_user_id: user.id, tutorly_subscription: JSON.stringify(subscription), tutorly_theme: 'light' };
     Object.entries(fields).forEach(([key, value]) => localStorage.setItem(key, value));
@@ -113,6 +118,7 @@
     function button(label, handler) { const item = document.createElement('button'); item.type = 'button'; item.textContent = label; item.addEventListener('click', handler); actions.appendChild(item); }
     button('Use local student fixture', () => { activateStudent(); location.reload(); });
     button('Use unavailable account fixture', () => { activateStudent(); sessionStorage.setItem('preview_account_offline', 'true'); location.reload(); });
+    button('Use expired session fixture', () => { activateStudent(); sessionStorage.setItem('preview_account_expired', 'true'); location.reload(); });
     button('Reconnect account fixture', () => { sessionStorage.removeItem('preview_account_offline'); controls.open = false; });
     button('Seed saved conversation fixture', () => {
       activateStudent();

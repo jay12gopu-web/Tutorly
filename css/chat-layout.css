@@ -14,6 +14,26 @@ body.chat-ui-refresh[data-theme="dark"] {
   --chat-muted: #a9b6cd;
   --chat-border: #303d55;
 }
+
+/* The mobile polish layer used a white drawer in both themes. Keep its
+   behavior, but give branding, links and account controls one coherent surface. */
+@media (max-width: 767px) {
+  body.chat-ui-refresh.mt-mobile-chat .sidebar {
+    background: var(--chat-card) !important;
+    color: var(--chat-ink) !important;
+    border-color: var(--chat-border) !important;
+  }
+  body.chat-ui-refresh.mt-mobile-chat .sidebar :is(.sidebar-brand, .side-link, .sidebar-account-button, .sidebar-account-action, .icon-btn) {
+    color: var(--chat-ink) !important;
+  }
+  body.chat-ui-refresh.mt-mobile-chat .sidebar :is(.side-section-label, .sidebar-account-subtitle, .sidebar-recent-empty) {
+    color: var(--chat-muted) !important;
+  }
+  body.chat-ui-refresh.mt-mobile-chat .sidebar :is(.sidebar-account-menu, .sidebar-account-panel) {
+    background: var(--chat-card) !important; color: var(--chat-ink) !important;
+    border-color: var(--chat-border) !important;
+  }
+}
 body.chat-ui-refresh .main-area {
   min-width: 0;
   background: var(--chat-canvas) !important;

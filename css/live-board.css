@@ -75,7 +75,7 @@ body.live-board-page {
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -216,6 +216,18 @@ body.live-board-page {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
 }
+
+.live-board-topic-form { display: grid; gap: 7px; padding: 0 4px; }
+.live-board-topic-form label { font-size: 13px; font-weight: 700; }
+.live-board-topic-form small { color: var(--lb-muted); }
+.live-board-topic-form input {
+  min-width: 0; min-height: 44px; box-sizing: border-box; padding: 10px 12px;
+  border: 1px solid var(--lb-line); border-radius: 12px;
+  color: var(--lb-ink); background: var(--lb-surface-strong); font: inherit;
+}
+.live-board-topic-form button { min-height: 44px; }
+.live-board-page :is(input, button, a):focus-visible { outline: 3px solid var(--lb-blue); outline-offset: 3px; }
+.live-board-page button:disabled { opacity: .55; cursor: default; }
 
 .live-board-composer textarea {
   min-height: 46px;

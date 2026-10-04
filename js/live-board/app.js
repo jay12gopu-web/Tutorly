@@ -12,9 +12,9 @@
   const stepTitle = document.getElementById("liveBoardStepTitle");
   const stepText = document.getElementById("liveBoardStepText");
   const stepHint = document.getElementById("liveBoardStepHint");
-  const chatLog = document.getElementById("liveBoardChatLog");
-  const input = document.getElementById("liveBoardInput");
-  const send = document.getElementById("liveBoardSend");
+  const topicForm = document.getElementById("liveBoardTopicForm");
+  const input = document.getElementById("liveBoardTopic");
+  const send = document.getElementById("liveBoardGenerate");
   const status = document.getElementById("liveBoardStatus");
   const panel = document.getElementById("liveBoardPanel");
   const panelToggle = document.getElementById("liveBoardPanelToggle");
@@ -33,6 +33,7 @@
   let context = readContext();
   let playing = false;
   let playTimer = null;
+  let generating = false;
   const board = new LB.BoardEngine(stage, { onStudentChange: persistSession });
 
   function readJson(key, fallback) {
@@ -50,10 +51,13 @@
 
   function readContext() {
     const params = new URLSearchParams(window.location.search);
-    const stored = readJson(CONTEXT_KEY, {});
+    const saved = readJson(CONTEXT_KEY, {});
+    const conversationId = params.get("conversationId") || "";
+    // A standalone topic must not inherit another conversation's route or reply.
+    const stored = conversationId && conversationId === saved.conversationId ? saved : {};
     return {
       prompt: params.get("prompt") || (params.get("conversationId") ? stored.prompt : '') || '',
-      conversationId: params.get("conversationId") || stored.conversationId || "",
+      conversationId,
       messageId: stored.messageId || "",
       semanticRoute: stored.semanticRoute || null,
       reply: stored.reply || "",
@@ -93,7 +97,7 @@
         : "maths_gpt.html";
     }
     document.body.classList.toggle("no-live-visual", currentLesson.visualMode === "none");
-    [play, replay].forEach(button => { if (button) button.disabled = currentLesson.visualMode === "none"; });
+    [play, replay, tryToggle, resetView].forEach(button => { if (button) button.disabled = currentLesson.visualMode === "none"; });
   }
 
   function renderStep() {
@@ -111,16 +115,12 @@
     if (next) next.disabled = board.stepIndex >= currentLesson.steps.length - 1;
   }
 
-  function addChat(role, copy) {
-    if (!chatLog) return;
-    const item = document.createElement("article");
-    item.className = `lb-chat-message ${role}`;
-    item.textContent = copy;
-    chatLog.appendChild(item);
-    chatLog.scrollTop = chatLog.scrollHeight;
-  }
-
   async function generate(prompt, options = {}) {
+    if (generating) return null;
+    generating = true;
+    stopPlayback();
+    if (send) send.disabled = true;
+    topicForm?.setAttribute("aria-busy", "true");
     setStatus("Structuring the board...");
     try {
       const validatedLesson = await LB.generateLesson({
@@ -146,6 +146,10 @@
       });
       if (fallback.ok) setLesson(fallback.value);
       return null;
+    } finally {
+      generating = false;
+      if (send) send.disabled = false;
+      topicForm?.setAttribute("aria-busy", "false");
     }
   }
 
@@ -157,7 +161,8 @@
   }
 
   function startPlayback() {
-    if (!currentLesson) return;
+    if (!currentLesson || generating || currentLesson.visualMode === "none") return;
+    if (board.stepIndex >= currentLesson.steps.length - 1) { board.replay(); renderStep(); }
     playing = true;
     if (play) play.textContent = "Pause";
     playTimer = window.setInterval(() => {
@@ -203,35 +208,27 @@
     }
   });
 
-  async function submitFollowUp() {
+  async function submitTopic(event) {
+    event.preventDefault();
     const prompt = String(input?.value || "").trim();
-    if (!prompt) return;
-    input.value = "";
-    addChat("student", prompt);
-    context.chatContext = [...(context.chatContext || []), { role: "student", content: prompt }].slice(-10);
-    await generate(prompt, { followUp: true });
+    if (!prompt || generating) return;
+    // This is a topic composer, not a second chat. Chat follow-ups remain in Tutorly.
+    context.prompt = prompt;
+    context.semanticRoute = null;
+    await generate(prompt);
   }
 
-  send?.addEventListener("click", submitFollowUp);
-  input?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      submitFollowUp();
-    }
-  });
+  topicForm?.addEventListener("submit", submitTopic);
 
   window.addEventListener("pagehide", stopPlayback);
 
-  addChat("tutorly", context.prompt
-    ? `I opened a Live Board for: ${context.prompt}`
-    : "Ask a visual follow-up and I’ll update the board.");
-  if (context.reply) addChat("tutorly", String(context.reply).slice(0, 260));
-  if (context.prompt) generate(context.prompt);
+  if (context.prompt) { if (input) input.value = context.prompt; generate(context.prompt); }
   else {
     title.textContent = 'What would you like to draw?';
     summary.textContent = 'Enter a supported equation or construction below, or return to Tutorly chat.';
     stepTitle.textContent = 'Start with a topic';
     stepText.textContent = 'Try “Graph y = x^2” or “Construct a perpendicular bisector”. Unsupported diagrams will not be replaced with a misleading drawing.';
-    [prev, play, next, replay].forEach(button => { if (button) button.disabled = true; });
+    setStatus('Ready for a topic');
+    [prev, play, next, replay, tryToggle, resetView].forEach(button => { if (button) button.disabled = true; });
   }
 })();

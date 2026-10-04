@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
   <link rel="stylesheet" href="css/campus.css?v=campus-20260629" />
   <link rel="stylesheet" href="css/mobile-app.css?v=responsive-20260905" />
-  <link rel="stylesheet" href="css/profile-hub.css?v=profile-hub-20260903" />
+  <link rel="stylesheet" href="css/profile-hub.css?v=session-20261004" />
   <link rel="stylesheet" href="css/education-select.css" />
 </head>
 <body class="profile-hub-page" data-tutorly-surface="workspace">
@@ -24,6 +24,15 @@
   </header>
 
   <main class="profile-page-shell">
+    <section id="profileSessionState" class="profile-session-state" aria-labelledby="profileSessionTitle" aria-busy="true">
+      <h1 id="profileSessionTitle">Checking your account…</h1>
+      <p id="profileSessionMessage" role="status">Please wait while Tutorly checks your session.</p>
+      <div class="form-actions">
+        <button id="profileSessionRetry" class="button button-secondary" type="button" hidden>Retry</button>
+        <a id="profileSignIn" class="button" href="login.html?intent=profile" hidden>Sign in</a>
+      </div>
+    </section>
+    <div id="profileAccountContent" hidden>
     <section class="profile-overview" aria-labelledby="profileTitle">
       <div class="profile-identity">
         <div class="profile-avatar" id="profileAvatar"><span id="profileAvatarInitial">S</span><img id="profileAvatarImage" alt="Student profile" hidden /></div>
@@ -32,16 +41,16 @@
             <div><p class="profile-kicker">Your Tutorly account</p><h1 id="profileTitle">Student</h1><p id="profileUsername">@student</p></div>
             <button class="button button-secondary" id="editProfileBtn" type="button">Edit profile</button>
           </div>
-          <div class="profile-plan-line"><span class="plan-pill" id="profilePlan">Standard</span><span id="profileCredits">100 premium credits remaining</span></div>
+          <div class="profile-plan-line"><span class="plan-pill" id="profilePlan">Plan unavailable</span><span id="profileCredits">Credits unavailable</span></div>
         </div>
       </div>
       <div class="overview-stats" aria-label="Study summary">
-        <article><span>Premium credits</span><strong id="creditsStat">100</strong><small id="creditsAllowance">of 100 this month</small></article>
+        <article><span>Premium credits</span><strong id="creditsStat">—</strong><small id="creditsAllowance">Balance not confirmed</small></article>
         <article><span>Current streak</span><strong><span id="currentStreak">0</span> <small>days</small></strong><small>Keep learning to build momentum</small></article>
         <article><span>Longest streak</span><strong><span id="longestStreak">0</span> <small>days</small></strong><small>Your personal best</small></article>
       </div>
       <div class="activity-calendar-wrap">
-        <div class="calendar-copy"><strong>Study activity</strong><span id="activitySummary">No learning activity yet.</span></div>
+        <div class="calendar-copy"><strong>Study activity on this device</strong><span id="activitySummary">No learning activity yet.</span></div>
         <div class="activity-calendar" id="activityCalendar" role="img" aria-label="Study activity over the last ten weeks"></div>
         <div class="calendar-legend" aria-hidden="true"><span>Less</span><i></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><span>More</span></div>
       </div>
@@ -108,16 +117,17 @@
           </form>
         </section>
 
-        <section class="settings-panel" data-settings-panel="billing" aria-labelledby="billingTitle" hidden><header class="panel-heading"><div><p>Subscription</p><h2 id="billingTitle">Billing &amp; Plan</h2><span>Your current Tutorly plan and billing tools.</span></div></header><div class="plan-summary-card"><div><span>Current plan</span><strong id="billingPlan">Standard</strong><small id="billingCredits">100 premium credits remaining</small></div><a class="button" id="managePlanLink" href="subscriptions.html">View plans</a></div></section>
-        <section class="settings-panel" data-settings-panel="usage" aria-labelledby="usageTitle" hidden><header class="panel-heading"><div><p>This month</p><h2 id="usageTitle">Usage</h2><span>Premium tools use credits. Normal Tutorly chat stays included.</span></div></header><div class="usage-meter"><div><span id="usageRemaining">100 credits remaining</span><strong id="usagePercentage">100%</strong></div><i><b id="usageMeterFill"></b></i><small id="usageReset">Resets with your next monthly cycle</small></div></section>
-        <section class="settings-panel" data-settings-panel="security" aria-labelledby="securityTitle" hidden><header class="panel-heading"><div><p>Sign-in methods</p><h2 id="securityTitle">Security &amp; Login</h2><span>Review the verified accounts connected to your Tutorly login.</span></div></header><article data-connected-accounts-card hidden><div class="connected-accounts-list" data-connected-accounts></div></article><p class="empty-inline" id="securityEmpty">Your email login remains active. Configured social accounts will appear here.</p></section>
+        <section class="settings-panel" data-settings-panel="billing" aria-labelledby="billingTitle" hidden><header class="panel-heading"><div><p>Subscription</p><h2 id="billingTitle">Billing &amp; Plan</h2><span>Only account-confirmed plan and credit information appears here.</span></div></header><div class="plan-summary-card"><div><span>Current plan</span><strong id="billingPlan">Plan unavailable</strong><small id="billingCredits">Balance not confirmed. Check Billing for its sync status.</small></div><a class="button" id="managePlanLink" href="billing.html">Check billing</a></div></section>
+        <section class="settings-panel" data-settings-panel="usage" aria-labelledby="usageTitle" hidden><header class="panel-heading"><div><p>This month</p><h2 id="usageTitle">Usage</h2><span>Premium tools use credits. Normal Tutorly chat stays included.</span></div></header><div class="usage-meter"><div><span id="usageRemaining">Credits unavailable</span><strong id="usagePercentage">—</strong></div><i><b id="usageMeterFill" style="width:0"></b></i><small id="usageReset">Reset date not confirmed</small></div></section>
+        <section class="settings-panel" data-settings-panel="security" aria-labelledby="securityTitle" hidden><header class="panel-heading"><div><p>Sign-in methods</p><h2 id="securityTitle">Security &amp; Login</h2><span>Review the verified accounts connected to your Tutorly login.</span></div></header><article data-connected-accounts-card hidden><div class="connected-accounts-list" data-connected-accounts></div></article><p class="empty-inline" id="securityEmpty">No connected sign-in methods could be confirmed. Refresh to retry.</p></section>
         <section class="settings-panel" data-settings-panel="privacy" aria-labelledby="privacyTitle" hidden><header class="panel-heading"><div><p>Your information</p><h2 id="privacyTitle">Data &amp; Privacy</h2><span>Review Tutorly's privacy and account-data terms.</span></div></header><div class="link-list"><a href="privacy.html"><span><strong>Privacy Policy</strong><small>How Tutorly handles your information</small></span><b>›</b></a><a href="Terms_Conditions.html"><span><strong>Terms of Service</strong><small>The rules for using Tutorly</small></span><b>›</b></a></div></section>
         <section class="settings-panel" data-settings-panel="account" aria-labelledby="accountTitle" hidden><header class="panel-heading"><div><p>Session</p><h2 id="accountTitle">Account</h2><span>Manage this signed-in Tutorly session.</span></div></header><div class="account-action-row"><div><strong>Log out of Tutorly</strong><span>You can sign back in with any connected login method.</span></div><button class="button button-danger" id="logoutBtn" type="button">Log out</button></div></section>
       </div>
     </div>
+    </div>
   </main>
 
   <div class="profile-toast" id="profileToast" role="status" aria-live="polite"></div>
-  <script src="shared/tutorly-plans.js"></script><script src="js/auth-client.js?v=onboarding-20260922"></script><script src="js/education-registry.js"></script><script src="js/education-select.js"></script><script src="js/curriculum-client.js?v=curriculum-20260913"></script><script src="js/chatbot/voice-config.js?v=eight-voices-20260826"></script><script src="js/profile-hub.js?v=onboarding-20260922"></script><script src="js/connected-accounts.js?v=social-auth-20260825"></script><script src="js/global-layout.js?v=responsive-20260905b"></script><script src="js/swipe-home.js?v=nav-redesign-20260531d"></script><script src="js/campus.js?v=campus-20260629"></script><script src="js/mobile-app.js?v=responsive-20260905c"></script>
+  <script src="shared/tutorly-plans.js"></script><script src="js/auth-client.js?v=onboarding-20260922"></script><script src="js/education-registry.js"></script><script src="js/education-select.js"></script><script src="js/curriculum-client.js?v=curriculum-20260913"></script><script src="js/chatbot/voice-config.js?v=eight-voices-20260826"></script><script src="js/profile-hub.js?v=session-20261004"></script><script src="js/connected-accounts.js?v=social-auth-20260825"></script><script src="js/global-layout.js?v=responsive-20260905b"></script><script src="js/swipe-home.js?v=nav-redesign-20260531d"></script><script src="js/campus.js?v=campus-20260629"></script><script src="js/mobile-app.js?v=responsive-20260905c"></script>
 </body>
 </html>

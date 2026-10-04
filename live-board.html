@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tutorly-theme.css?v=unified-20260822" />
-  <link rel="stylesheet" href="css/live-board.css?v=live-board-v1" />
+  <link rel="stylesheet" href="css/live-board.css?v=entry-20261004" />
 </head>
 <body class="live-board-page" data-tutorly-surface="workspace">
   <div class="live-board-shell">
@@ -20,7 +20,7 @@
         <span>Live Board</span>
       </a>
       <div class="live-board-actions">
-        <span id="liveBoardStatus" class="live-board-status" role="status">Getting board ready...</span>
+        <span id="liveBoardStatus" class="live-board-status" role="status">Ready for a topic</span>
         <a id="liveBoardBackToChat" class="live-board-btn" href="maths_gpt.html" target="_top">Back to chat</a>
       </div>
     </header>
@@ -38,6 +38,14 @@
           </div>
         </div>
 
+        <form id="liveBoardTopicForm" class="live-board-topic-form">
+          <label for="liveBoardTopic">Topic or equation</label>
+          <div class="live-board-composer">
+            <input id="liveBoardTopic" type="text" maxlength="500" placeholder="Graph y = x^2" autocomplete="off" aria-describedby="liveBoardTopicHelp" required />
+            <button id="liveBoardGenerate" class="live-board-btn primary" type="submit">Draw</button>
+          </div>
+          <small id="liveBoardTopicHelp">Try an equation or a supported geometry construction.</small>
+        </form>
         <div id="liveBoardStage" class="live-board-stage" aria-label="Interactive visual board"></div>
         <div id="studentTools" class="student-tools" aria-label="Student drawing tools" hidden>
           <button type="button" data-student-tool="select">Select</button>
@@ -90,6 +98,6 @@
   <script src="js/live-board/board-engine.js?v=live-board-v1"></script>
   <script src="js/live-board/mock-provider.js?v=live-board-v1"></script>
   <script src="js/live-board/provider.js?v=live-board-v1"></script>
-  <script src="js/live-board/app.js?v=live-board-v1"></script>
+  <script src="js/live-board/app.js?v=entry-20261004"></script>
 </body>
 </html>

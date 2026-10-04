@@ -28,19 +28,12 @@
   const $ = (id) => document.getElementById(id);
   let boardPicker;
   const state = {
-    profile: {
-      name: localStorage.getItem("tutorly_name") || localStorage.getItem("math-bot-name") || localStorage.getItem("tutorly_signup_full_name") || "Student",
-      email: localStorage.getItem("tutorly_email") || localStorage.getItem("tutorly_signup_email") || "",
-      grade: localStorage.getItem("tutorly_grade") || "",
-      board: localStorage.getItem("tutorly_board") || "",
-      school: localStorage.getItem("tutorly_school") || "",
-      age: localStorage.getItem("tutorly_age") || "",
-      role: "student",
-      avatar: localStorage.getItem("tutorly_avatar") || ""
-    },
-    personalization: { ...DEFAULTS, ...readJson("tutorly_personalization", {}) },
-    subscription: readSubscription()
+    authStatus: "loading",
+    profile: {},
+    personalization: { ...DEFAULTS },
+    subscription: null
   };
+  let profileRequest = 0;
 
   function readJson(key, fallback) {
     try {
@@ -51,13 +44,43 @@
     }
   }
 
-  function readSubscription() {
-    const saved = readJson("tutorly_subscription", {});
-    const storedPlan = saved.currentPlan || localStorage.getItem("tutorly_current_plan") || "standard";
-    const plan = Plans?.getPlan?.(storedPlan) || { id: "standard", name: "Standard", premium: false, monthlyPremiumCredits: 100 };
-    const allowance = Number.isFinite(Number(saved.creditAllowance)) ? Math.max(0, Number(saved.creditAllowance)) : plan.monthlyPremiumCredits;
-    const remaining = Number.isFinite(Number(saved.premiumCreditsRemaining)) ? Math.min(allowance, Math.max(0, Number(saved.premiumCreditsRemaining))) : allowance;
-    return { ...saved, plan, allowance, remaining };
+  function readSubscription(payload) {
+    // Only consume a subscription returned with this authenticated account.
+    // The current auth API does not supply billing yet; a device cache is not proof.
+    const saved = payload.subscription || payload.user?.subscription;
+    if (!saved || !Plans?.PLANS?.[saved.currentPlan]) return null;
+    const validNumber = (value) => typeof value === "number" && Number.isFinite(value) && value >= 0;
+    if (!validNumber(saved.creditAllowance) || !validNumber(saved.premiumCreditsRemaining)) return null;
+    return { ...saved, plan: Plans.PLANS[saved.currentPlan], allowance: saved.creditAllowance,
+      remaining: Math.min(saved.creditAllowance, saved.premiumCreditsRemaining) };
+  }
+
+  function showSession(status, message) {
+    state.authStatus = status;
+    $("profileAccountContent").hidden = status !== "authenticated";
+    $("profileSessionState").hidden = status === "authenticated";
+    $("profileSessionState").setAttribute("aria-busy", String(status === "loading"));
+    $("profileSessionTitle").textContent = {
+      loading: "Checking your account…", signed_out: "You're signed out", expired: "Your session has expired",
+      error: "We couldn't check your account", onboarding: "Finish setting up your profile"
+    }[status] || "Your Tutorly account";
+    $("profileSessionMessage").textContent = message || (status === "loading"
+      ? "Please wait while Tutorly checks your session."
+      : "Sign in to view your account, plan and settings. Your learning data on this device has not been removed.");
+    $("profileSessionRetry").hidden = status !== "error";
+    $("profileSessionRetry").disabled = status === "loading";
+    $("profileSignIn").hidden = !["signed_out", "expired", "error", "onboarding"].includes(status);
+    $("profileSignIn").href = status === "onboarding" ? "info.html" : "login.html?intent=profile";
+    $("profileSignIn").textContent = status === "onboarding" ? "Continue setup" : "Sign in";
+  }
+
+  function handleSessionError(error) {
+    if (error?.status === 401) {
+      Auth?.clearSession?.();
+      showSession("expired");
+      return true;
+    }
+    return false;
   }
 
   function toast(message, type = "success") {
@@ -71,7 +94,7 @@
   }
 
   function safeUsername() {
-    const explicit = localStorage.getItem("tutorly_username");
+    const explicit = state.profile.username;
     if (explicit) return explicit.replace(/^@/, "");
     const emailName = String(state.profile.email || "").split("@")[0].replace(/[^a-z0-9._-]/gi, "");
     const name = String(state.profile.name || "student").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -125,7 +148,19 @@
   }
 
   function renderSubscription() {
-    state.subscription = readSubscription();
+    if (!state.subscription) {
+      $("profilePlan").textContent = $("billingPlan").textContent = "Plan unavailable";
+      $("profilePlan").dataset.premium = "false";
+      $("profileCredits").textContent = $("usageRemaining").textContent = "Credits unavailable";
+      $("creditsStat").textContent = $("usagePercentage").textContent = "—";
+      $("creditsAllowance").textContent = "Balance not confirmed";
+      $("billingCredits").textContent = "Balance not confirmed. Check Billing for its sync status.";
+      $("usageMeterFill").style.width = "0%";
+      $("usageReset").textContent = "Reset date not confirmed";
+      $("managePlanLink").href = "billing.html";
+      $("managePlanLink").textContent = "Check billing";
+      return;
+    }
     const { plan, allowance, remaining } = state.subscription;
     const credits = Plans?.formatCredits?.(remaining) || remaining.toLocaleString("en-IN");
     const total = Plans?.formatCredits?.(allowance) || allowance.toLocaleString("en-IN");
@@ -339,21 +374,27 @@
   }
 
   async function loadBackendProfile() {
-    if (!Auth?.getSessionToken?.()) return;
+    const request = ++profileRequest;
+    const token = Auth?.getSessionToken?.();
+    showSession(token ? "loading" : "signed_out");
+    if (!token) return;
     try {
       const payload = await Auth.currentUser();
-      const user = payload.user || {};
+      if (request !== profileRequest || token !== Auth.getSessionToken()) return;
+      if (payload?.authenticated !== true) { handleSessionError({ status: 401 }); return; }
+      const user = payload.user;
+      if (!user?.id || !user.email) throw new Error("No verified account details were returned. Please retry.");
+      if (payload.onboarding_required) { showSession("onboarding", "Complete your Tutorly profile before opening account settings."); return; }
       state.profile = {
-        ...state.profile,
-        name: user.full_name || state.profile.name,
-        email: user.email || state.profile.email,
+        name: user.full_name || "Your account", email: user.email, username: user.username,
         role: user.role || "student", age: user.age || "", teacher: user.teacher_profile,
         grade: user.grade || "",
         board: user.board || "",
-        school: typeof user.school === "string" ? user.school : state.profile.school,
-        avatar: state.profile.avatar || user.avatar_url || ""
+        school: user.school || "",
+        avatar: user.avatar_url || localStorage.getItem("tutorly_avatar") || ""
       };
-      if (user.personalization) state.personalization = { ...DEFAULTS, ...user.personalization };
+      state.personalization = { ...DEFAULTS, ...(user.personalization || {}) };
+      state.subscription = readSubscription(payload);
       localStorage.setItem("tutorly_name", state.profile.name);
       localStorage.setItem("math-bot-name", state.profile.name);
       localStorage.setItem("tutorly_email", state.profile.email);
@@ -362,14 +403,19 @@
       localStorage.setItem("tutorly_school", state.profile.school);
       renderProfile();
       renderPersonalization();
+      renderSubscription();
+      renderActivity();
+      showSession("authenticated");
+      await renderVoices();
     } catch (error) {
-      toast(error.message || "Tutorly could not refresh your account.", "error");
+      if (request !== profileRequest || token !== Auth.getSessionToken()) return;
+      if (!handleSessionError(error)) showSession("error", "Tutorly couldn't reach your account. Retry or sign in again. Account details are hidden until your session is confirmed.");
     }
   }
 
   async function saveProfile(event) {
     event.preventDefault();
-    if (!Auth?.getSessionToken?.()) {
+    if (state.authStatus !== "authenticated" || !Auth?.getSessionToken?.()) {
       toast("Log in to save your profile.", "error");
       return;
     }
@@ -397,13 +443,14 @@
       setEditMode(false);
       toast("Profile saved.");
     } catch (error) {
+      handleSessionError(error);
       toast(error.message || "Profile could not be saved.", "error");
     }
   }
 
   async function savePersonalization(event) {
     event.preventDefault();
-    if (!Auth?.getSessionToken?.()) {
+    if (state.authStatus !== "authenticated" || !Auth?.getSessionToken?.()) {
       toast("Log in to save personalization.", "error");
       return;
     }
@@ -413,6 +460,7 @@
       renderPersonalization();
       toast("Personalization saved. New chats will use it.");
     } catch (error) {
+      handleSessionError(error);
       toast(error.message || "Personalization could not be saved.", "error");
     }
   }
@@ -424,7 +472,7 @@
       toast("Choose a Tutorly voice first.", "error");
       return;
     }
-    if (!Auth?.getSessionToken?.()) {
+    if (state.authStatus !== "authenticated" || !Auth?.getSessionToken?.()) {
       toast("Log in to save voice settings.", "error");
       return;
     }
@@ -437,6 +485,7 @@
       await Auth.savePersonalization(state.personalization);
       toast("Voice settings saved.");
     } catch (error) {
+      handleSessionError(error);
       toast(error.message || "Voice settings could not be saved.", "error");
     }
   }
@@ -449,6 +498,14 @@
   }
 
   function bind() {
+    $("profileSessionRetry").addEventListener("click", loadBackendProfile);
+    root.addEventListener("storage", (event) => {
+      if (event.key === "tutorly_session_token" || event.key === null) loadBackendProfile();
+    });
+    // Revalidate after returning to an open Profile tab, including an expired session.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") loadBackendProfile();
+    });
     document.querySelectorAll("[data-settings-target]").forEach((button) => button.addEventListener("click", () => openSection(button.dataset.settingsTarget)));
     $("settingsSectionSelect").addEventListener("change", (event) => openSection(event.target.value, { scroll: true }));
     $("editProfileBtn").addEventListener("click", () => { openSection("profile", { scroll: true }); setEditMode(true); });
@@ -485,15 +542,11 @@
       const option = document.createElement("option"); option.value = String(i + 1); option.textContent = `Grade ${i + 1}`; return option;
     }));
     populateLanguages();
-    renderProfile();
-    renderSubscription();
-    renderActivity();
-    renderPersonalization();
     syncTheme();
     bind();
     openSection(location.hash.slice(1), { hash: false });
-    await Promise.allSettled([loadBackendProfile(), renderVoices()]);
-    if (state.profile.role !== "teacher") {
+    await loadBackendProfile();
+    if (state.authStatus === "authenticated" && state.profile.role !== "teacher") {
       try {
         const registry = await root.TutorlyEducation.load();
         boardPicker = root.TutorlyEducationSelect.mount($("profileBoardSelect"), {
